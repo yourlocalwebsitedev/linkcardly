@@ -21,7 +21,10 @@
 <meta name="twitter:description" content="Build your digital business card in minutes: photo, one-tap save contact, call, WhatsApp and a permanent QR code.">
 <meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/app/vendor/resources.js"></script>
+<script src="/assets/js/rules.js"></script>
 <script src="/app/support.js"></script>
+<link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/app/skin.css">
 </head>
 <body>
@@ -316,8 +319,8 @@ select option{background:var(--surface);color:var(--ink-2);}
 
     <aside aria-label="Live preview" style="display:{{ pv.display }};flex:{{ pv.flex }};order:{{ pv.order }};margin:0 auto;position:sticky;top:{{ pv.top }};z-index:5;flex-direction:column;align-items:center;gap:10px;padding:{{ pv.pad }};background:{{ pv.bg }};">
       
-      <div style="position:relative;width:{{ pv.w }};height:{{ pv.h }};border-radius:20px;overflow:hidden;background:#06120d;transition:height .3s ease;box-shadow:0 18px 40px -18px rgba(0,0,0,0.6);">
-        <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:16px;left:16px;z-index:8;width:46px;height:46px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.32);background:rgba(16,24,32,0.28);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.25),0 6px 16px -8px rgba(0,0,0,0.5);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
+      <div style="position:relative;width:{{ pv.w }};height:{{ pv.h }};border-radius:{{ pv.radius }};overflow:hidden;background:#06120d;transition:height .3s ease;box-shadow:{{ pv.cardShadow }};">
+        <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:8;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.22);background:rgba(11,27,43,0.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
         <iframe ref="{{ previewRef }}" onLoad="{{ onPreviewLoad }}" src="/app/card.html?preview=1" title="Live preview of your card" scrolling="{{ pv.scrolling }}" style="position:absolute;top:0;left:0;width:390px;height:{{ pv.ih }};border:0;transform:scale({{ pv.scale }});transform-origin:0 0;"></iframe>
         <sc-if value="{{ showSeaPv }}" hint-placeholder-val="{{ false }}">
           <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:52px;right:8px;z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
@@ -326,9 +329,9 @@ select option{background:var(--surface);color:var(--ink-2);}
         </sc-if>
       </div>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;width:100%;height:{{ pv.barSpace }};"></div></sc-if>
-      <div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
-        <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ swToggle }}" onTouchStart="{{ handleTouchStart }}" onTouchEnd="{{ handleTouchEnd }}" aria-label="{{ handleLabel }}" aria-expanded="{{ swOpenStr }}" style="align-self:stretch;margin:-10px -16px -6px;height:22px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;touch-action:none;"><span style="width:36px;height:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.18);"></span></button></sc-if>
-        <sc-if value="{{ swShow }}" hint-placeholder-val="{{ true }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
+      <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardStyleControls" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" open="{{ scs.open }}" on-toggle="{{ scs.toggle }}" on-select="{{ scs.select }}" on-next="{{ next }}" next-label="{{ pv.nextText }}" next-icon="{{ scs.nextIcon }}" busy="{{ busy }}" max-width="{{ scs.maxWidth }}" hint-size="390px,80px"></x-import></sc-if>
+      <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
+        <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
           <button type="button" onClick="{{ collPrev }}" aria-label="Previous collection" style="width:40px;height:40px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
           <div aria-live="polite" aria-label="{{ collPos }}" style="min-width:150px;display:flex;flex-direction:column;align-items:center;gap:5px;">
             <span style="font-size:15px;font-weight:800;color:var(--ink);line-height:1;">{{ collName }}</span>
@@ -345,16 +348,8 @@ select option{background:var(--surface);color:var(--ink-2);}
               <span aria-hidden="true" style="position:relative;display:block;width:58px;height:80px;border-radius:10px;overflow:hidden;background:{{ c.bg }};box-shadow:{{ c.ring2 }};"><sc-for list="{{ c.blocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for><sc-if value="{{ c.rec }}"><span style="position:absolute;left:3px;top:3px;padding:2px 5px;border-radius:999px;background:#FFFFFF;color:#101820;font-size:8px;font-weight:800;letter-spacing:0.04em;box-shadow:0 1px 3px rgba(0,0,0,0.25);">BEST</span></sc-if></span>{{ c.name }}
             </button></sc-if>
           </sc-for><span aria-hidden="true" style="width:0;flex:none;"></span></div><sc-if value="{{ swFade }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="position:absolute;top:0;right:0;bottom:0;width:24px;background:linear-gradient(90deg, rgba(var(--bg-rgb,245,242,236),0) 0%, var(--bg) 100%);pointer-events:none;"></div></sc-if></div>
-</div></sc-if>
-        <sc-if value="{{ pv.showNext }}" hint-placeholder-val="{{ false }}">
-          <div style="width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
-            <button type="button" onClick="{{ swToggle }}" aria-expanded="{{ swOpenStr }}" style="min-width:0;min-height:54px;padding:0 14px;justify-content:center;border-radius:999px;border:{{ swPillBd }};background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;"><sc-if value="{{ pillDot }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16.6A4.4 4.4 0 0 0 21 10.8C21 6.5 17 3 12 3zM6.8 12.2a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm2.9-3.8a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm4.6 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm2.9 3.8a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8z"></path></svg></sc-if><sc-if value="{{ pillThumb }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:relative;display:block;width:26px;height:36px;border-radius:6px;overflow:hidden;background:{{ pillBg }};box-shadow:0 0 0 1px rgba(var(--fg-rgb),0.14);"><sc-for list="{{ pillBlocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for></span></sc-if><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ colourName }}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ swChevron }};transition:transform .2s ease;"><path d="m18 15-6-6-6 6"></path></svg></button>
-            <button type="button" onClick="{{ next }}" style="min-width:0;min-height:54px;white-space:nowrap;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">{{ pv.nextText }}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-          </button>
-          </div>
-        </sc-if>
-      </div>
+</div>
+      </div></sc-if>
       <sc-if value="{{ pv.mobile }}" hint-placeholder-val="{{ false }}">
         <button type="button" onClick="{{ pv.toggle }}" aria-expanded="{{ pv.expanded }}" style="min-height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--surface);color:var(--ink-2);font:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pv.icon }}"></path></svg>{{ pv.toggleLabel }}
@@ -627,6 +622,9 @@ const DEMO_D = (() => {
 const STEP_LABELS = ['Plan', 'Your card', 'Preview', 'Payment'];
 const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40) || 'card';
+// Linkcardly: the handle claimed on the home page (/create?h=) wins over the generated one.
+// Legacy slugs are a-z0-9- only, so dots become dashes; reserved words fall back to autoSlug.
+const claimedSlug = () => { try { const h = slugify(new URLSearchParams(location.search).get('h') || '').slice(0, 30).replace(/-+$/, ''); const rs = (window.LC_RULES && window.LC_RULES.reserved) || []; return h.length >= 3 && !rs.includes(h) ? h : ''; } catch (e) { return ''; } };
 const addYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 const DRAFT_KEY = 'nbr-order-draft';
 /* Card changes are done by our team. Put your business WhatsApp number here (digits with country code, e.g. '919876543210'); empty = email. */
@@ -981,7 +979,7 @@ class Component extends DCLogic {
     if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
     this.setState({ busy: true, submitError: '' });
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
-    const slug = await this.uniqueSlug(autoSlug(d));
+    const slug = await this.uniqueSlug(claimedSlug() || autoSlug(d));
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
       card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
@@ -1170,22 +1168,22 @@ class Component extends DCLogic {
       editMsgText: S.editLoading ? 'One moment.' : S.editError === 'invalid' ? 'It may have been reset. Message us and we’ll send you a new one.' : S.editError === 'expired' ? 'Renew your card to make changes. Message us and we’ll help.' : S.editError === 'busy' ? 'Too many tries from this connection. Please wait an hour and try again.' : 'Check your connection and refresh the page.',
       hasEditLink: false, changesNote: 'Need a change? Send us what you want changed and we’ll update your card.', changeHref: done ? changeLink('Hi Linkcardly, I’d like a change to my card ' + this.urlOf(done) + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '#', editLinkLabel: done && done.tok ? BASE_HOST + '/e/' + done.tok : '', copyEditLink: this.copyEditLink, copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy edit link',
       notEditDone: !(done && done.edit), isEditDone: !!(done && done.edit), keepEditing: this.keepEditing,
-      rootPad: S.vw < 960 ? '2px 16px 40px' : 'clamp(32px,5vw,56px) 24px clamp(64px,8vw,104px)',
-      modesGap: S.vw < 960 ? '12px' : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
+      rootPad: S.vw < 960 && S.step === 3 ? '0' : S.vw < 960 ? '2px 16px 40px' : 'clamp(32px,5vw,56px) 24px clamp(64px,8vw,104px)',
+      modesGap: S.vw < 960 ? (S.step === 3 ? '0' : '12px') : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
       pv: (() => {
         const mobile = S.vw < 960;
-        if (!mobile) return { barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
-        const docH = S.pvDocH || 806, w = Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
+        if (!mobile) return { barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
         const fx = S.step === 3;
-        return { barPos: fx ? 'fixed' : 'sticky', barW: fx ? '100%' : w + 'px', barPad: fx ? '14px 16px calc(14px + env(safe-area-inset-bottom))' : '16px', barRadius: fx ? '18px 18px 0 0' : '16px 16px 0 0', barShadow: fx ? '0 -10px 24px -12px rgba(16,24,32,0.28)' : 'none', fixedBar: fx, barSpace: (S.barH || 240) + 'px',
-          display: S.step === 3 ? 'flex' : 'none', scrolling: 'no', ih: docH + 'px', showNext: true, nextText: S.editToken ? (S.busy ? 'Saving…' : 'Save changes') : 'Continue', showBack: true, mobile: false, desktop: false, flex: '1 1 100%', order: '-1', top: 'auto', pad: '0', bg: 'transparent', w: w + 'px', h: full + 'px', scale: sc.toFixed(4),
+        // The Preview step shows the card full-bleed; other steps never show it on phones.
+        const docH = S.pvDocH || 806, w = fx ? S.vw : Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
+        // Phone preview: no footer bar. CardStyleControls (components/card-style-controls.js) floats over
+        // the card; the spacer lets the end of the card scroll clear of it.
+        return { fixedBar: fx, barSpace: 'calc(96px + env(safe-area-inset-bottom))', radius: fx ? '0' : '20px', cardShadow: fx ? 'none' : '0 18px 40px -18px rgba(0,0,0,0.6)',
+          display: S.step === 3 ? 'flex' : 'none', scrolling: 'no', ih: docH + 'px', showNext: true, nextText: S.editToken ? (S.busy ? 'Saving…' : 'Save changes') : 'Continue to payment', showBack: true, mobile: false, desktop: false, flex: '1 1 100%', order: '-1', top: 'auto', pad: '0', bg: 'transparent', w: w + 'px', h: full + 'px', scale: sc.toFixed(4),
           expanded: S.pvOpen ? 'true' : 'false', toggleLabel: S.pvOpen ? 'Collapse preview' : 'See full card', icon: S.pvOpen ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6',
           toggle: () => this.setState(s => ({ pvOpen: !s.pvOpen })) };
       })(),
       barRef: this.barRef, formBarRef: this.formBarRef,
-      handleLabel: S.swOpen !== false ? 'Hide styles' : 'Show styles',
-      handleTouchStart: e => { this._hy = e.touches && e.touches[0] ? e.touches[0].clientY : null; },
-      handleTouchEnd: e => { const y = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : null; if (this._hy == null || y == null) return; const dy = y - this._hy; this._hy = null; if (Math.abs(dy) < 24) return; e.preventDefault(); this.setState({ swOpen: dy < 0, swEnd: false }); },
       fb: (() => { const fx = S.vw < 960 && (S.step === 1 || S.step === 4); return fx
         ? { fixed: true, pos: 'fixed', margin: '0', pad: '12px 16px calc(12px + env(safe-area-inset-bottom))', radius: '18px 18px 0 0', space: (S.fbH || 80) + 'px' }
         : { fixed: false, pos: 'relative', margin: '0 -4px -4px', pad: '16px 4px 4px', radius: '0', space: '0px' }; })(),
@@ -1213,12 +1211,15 @@ class Component extends DCLogic {
       bizTiles: BUSINESSES.map(b => { const on = b.prof === d.profession || (b === BUSINESSES[0] && !BUSINESSES.some(x => x.prof === d.profession)); return { name: b.name, sub: b.sub, pressed: on ? 'true' : 'false', border: on ? 'rgba(16,24,32,0.9)' : 'rgba(255,255,255,0.85)', bg: on ? 'linear-gradient(180deg,#1b2632,#0f1822)' : 'rgba(255,255,255,0.55)', ink: on ? '#FFFFFF' : 'var(--ink)', shadow: on ? '0 8px 18px -8px rgba(16,24,32,0.55), inset 0 1px 0 rgba(255,255,255,0.18)' : 'inset 0 1px 0 rgba(255,255,255,0.95), 0 2px 6px -3px rgba(16,24,32,0.18)', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ d: { ...s.d, profession: b.prof, colour: first } })); } }; }),
       profession: d.profession, professionOptions: PROFESSIONS, onProfession: e => this.set('profession', e.target.value),
       layouts: LAYOUTS.map(l => { const c = l.id === d.layout; return { ...l, checked: c ? 'true' : 'false', border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.10)', pick: () => this.set('layout', l.id) }; }),
-      colourName: col.name, pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
-      swShow: S.vw >= 960 || S.swOpen !== false, swGap: listFor(collId).some(isTh) ? '12px' : '16px', swOpenStr: S.swOpen !== false ? 'true' : 'false', swChevron: S.swOpen !== false ? 'rotate(180deg)' : 'none', swPillBd: S.swOpen !== false ? '1.5px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.15)', swToggle: () => this.setState(s => ({ swOpen: s.swOpen === false, swEnd: false })),
+      pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
+      swGap: listFor(collId).some(isTh) ? '12px' : '16px',
+      // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
+      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
+        value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
+        nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px' },
       showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },
       collName: COLLS[ci].name, collPrev: () => goColl(-1), collNext: () => goColl(1), collPos: (ci + 1) + ' of ' + COLLS.length, collDots: COLLS.map((_, i) => ({ w: i === ci ? '16px' : '4px', bg: i === ci ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.18)' })),
       colours: listFor(collId).map((c, ci) => { const s = c.id === d.colour, th = isTh(c); return { ...c, isDot: !th, isThumb: th, rec: th && ci === 0, blocks: th ? thumbBlocks(c, 58, 80, thumbPh) : [], labelInk: s ? 'var(--ink)' : 'var(--muted)', checked: s ? 'true' : 'false', ring: s ? '0 0 0 3px var(--bg), 0 0 0 5px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.12)', ring2: s ? '0 0 0 2px var(--bg), 0 0 0 4px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.14)', pick: () => this.set('colour', c.id) }; }),
-      pillThumb: isTh(col), pillDot: !isTh(col), pillName: 'Style', pillBg: col.bg, pillBlocks: isTh(col) ? thumbBlocks(col, 26, 36, thumbPh) : [],
       hasDetailsSub: !!(S.editToken || dfm), detailsTitle: S.editToken ? 'Edit your card' : 'Your details', detailsSub: S.editToken ? 'Update anything below, then save. Changes go live straight away.' : dfm ? 'Only name, mobile and email are required. Add anything else you want on the card.' : (S.vw < 960 ? "Fields marked * are required. You'll preview your card next." : 'Fields marked * are required. Everything shows on your card as you type.'),
       avatarBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : col.bg, accent: col.accent, initials: d.photo ? '' : (((d.firstName || '')[0] || '') + ((d.lastName || '')[0] || '')).toUpperCase() || '+',
       adjDown: this.adjDown, adjBgColor: col.bg, adjBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),

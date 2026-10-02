@@ -11,7 +11,7 @@ const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=de
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
-<link rel="stylesheet" href="/assets/css/site.css">`;
+<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">`;
 
 const header = p => `<header class="top">
   <nav class="nav" aria-label="Main">

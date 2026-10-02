@@ -1,10 +1,10 @@
-import { FILE_EXT } from '../config.js';
+import { FILE_EXT, STATIC_PAGES, STATIC_PREFIXES, ORDER_ALIASES } from '../config.js';
 
-export const RESERVED = new Set([
-  'designs', 'pricing', 'teams', 'create', 'contact', 'privacy', 'terms', 'refunds',
-  'admin', 'login', 'logout', 'signup', 'api', 'edit', 'help', 'about', 'blog',
-  'assets', 'static', 'app', 'order', 'e', 'c', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'health'
-]);
+// Handles that can't be claimed: every first path segment the Worker routes itself (derived from
+// config.js, so new pages and prefixes are reserved automatically), plus words kept for later use.
+const ROUTED = ['create', 'api', 'health', 'e', 'c', ...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES];
+const KEPT = ['admin', 'login', 'logout', 'signup', 'edit', 'help', 'about', 'blog', 'static', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
+export const RESERVED = new Set([...ROUTED, ...KEPT].filter(Boolean));
 
 export const HANDLE_RE = /^[a-z0-9](?:[a-z0-9.-]{1,28})[a-z0-9]$/;
 

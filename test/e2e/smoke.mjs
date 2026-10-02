@@ -37,11 +37,24 @@ for (const p of ['/alexmorgan', '/c/nbr_ab12cd', '/e/' + 'a'.repeat(40)]) {
 {
   const page = await ctx.newPage();
   await page.goto(BASE + '/');
-  await page.fill('[data-hero-input]', 'janedoe');
+  await page.fill('form[data-claim] input', 'janedoe');
   await page.click('form[data-claim] button');
   await page.waitForLoadState('load');
   out['claim keeps handle'] = page.url().includes('janedoe');
   if (!out['claim keeps handle']) failed = true;
+}
+
+// The order and card apps boot from self-hosted React and Babel (no unpkg) and render their templates.
+for (const p of ['/create', '/alexmorgan']) {
+  const page = await ctx.newPage(), cdn = [], errors = [];
+  page.on('request', r => { if (/unpkg\.com/.test(r.url())) cdn.push(r.url()); });
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto(BASE + p, { waitUntil: 'load' });
+  await page.waitForFunction(() => !!window.React && !document.body.innerText.includes('{{'), null, { timeout: 20000 }).catch(() => {});
+  const r = await page.evaluate(() => ({ react: !!window.React, rawTemplates: document.body.innerText.includes('{{') }));
+  out[`app boots ${p}`] = { ...r, cdn, errors };
+  if (!r.react || r.rawTemplates || cdn.length || errors.length) failed = true;
+  await page.close();
 }
 
 // Reduced motion: no running animations.
