@@ -323,12 +323,13 @@ select option{background:var(--surface);color:var(--ink-2);}
         <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:8;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.22);background:rgba(11,27,43,0.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
         <iframe ref="{{ previewRef }}" onLoad="{{ onPreviewLoad }}" src="/app/card.html?preview=1" title="Live preview of your card" scrolling="{{ pv.scrolling }}" style="position:absolute;top:0;left:0;width:390px;height:{{ pv.ih }};border:0;transform:scale({{ pv.scale }});transform-origin:0 0;"></iframe>
         <sc-if value="{{ showSeaPv }}" hint-placeholder-val="{{ false }}">
-          <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:52px;right:8px;z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+          <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:{{ pv.seaTop }};left:{{ pv.seaLeft }};right:{{ pv.seaRight }};z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
             <sc-for list="{{ seaPv }}" as="sp"><button type="button" role="radio" aria-checked="{{ sp.checked }}" aria-label="{{ sp.label }}" title="{{ sp.label }}" onClick="{{ sp.pick }}" style="width:34px;height:34px;padding:0;border:0;border-radius:50%;background:{{ sp.bg }};color:{{ sp.fg }};display:grid;place-items:center;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ sp.icon }}"></path></svg></button></sc-for>
           </div>
         </sc-if>
       </div>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;width:100%;height:{{ pv.barSpace }};"></div></sc-if>
+      <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" on-select="{{ scs.select }}" hint-size="44px,230px"></x-import></sc-if>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardStyleControls" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" open="{{ scs.open }}" on-toggle="{{ scs.toggle }}" on-select="{{ scs.select }}" on-next="{{ next }}" next-label="{{ pv.nextText }}" next-icon="{{ scs.nextIcon }}" busy="{{ busy }}" max-width="{{ scs.maxWidth }}" hint-size="390px,80px"></x-import></sc-if>
       <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
         <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
@@ -488,6 +489,9 @@ const COLLECTIONS = [
   { id: 'cc', name: 'Corporate', preset: 'entrepreneur', category: 'Consulting', tagline: 'Strategy · Growth · Results' },
 ];
 const collOf = id => STYLE_BY_ID[id] ? (STYLE_BY_ID[id].layout === 'professional' ? 'professional' : STYLE_BY_ID[id].layout === 'estate' ? (STYLE_BY_ID[id].biz || 'realestate') : 'luxury') : 'personal';
+// Personal's colours are variants of one design: the phone style picker shows them as one tile and lists
+// the colours in a strip on the card (CardColourRail).
+const PERSONAL_FAMILY = { id: 'personal', name: 'Classic' };
 const COLOURS = [
   { id: 'forest', name: 'Forest', bg: '#06120d', accent: '#f2c98a' },
   { id: 'burgundy', name: 'Rosé', bg: '#1a0a0e', accent: '#f2a3a8' },
@@ -1172,13 +1176,14 @@ class Component extends DCLogic {
       modesGap: S.vw < 960 ? (S.step === 3 ? '0' : '12px') : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
       pv: (() => {
         const mobile = S.vw < 960;
-        if (!mobile) return { barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
+        if (!mobile) return { seaTop: '52px', seaLeft: 'auto', seaRight: '8px', barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
         const fx = S.step === 3;
         // The Preview step shows the card full-bleed; other steps never show it on phones.
         const docH = S.pvDocH || 806, w = fx ? S.vw : Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
         // Phone preview: no footer bar. CardStyleControls (components/card-style-controls.js) floats over
         // the card; the spacer lets the end of the card scroll clear of it.
-        return { fixedBar: fx, barSpace: 'calc(96px + env(safe-area-inset-bottom))', radius: fx ? '0' : '20px', cardShadow: fx ? 'none' : '0 18px 40px -18px rgba(0,0,0,0.6)',
+        // Phone Preview: Personal's colour strip owns the top right, so seasonal themes sit under the back button.
+        return { seaTop: fx ? 'calc(70px + env(safe-area-inset-top))' : '52px', seaLeft: fx ? '14px' : 'auto', seaRight: fx ? 'auto' : '8px', fixedBar: fx, barSpace: 'calc(96px + env(safe-area-inset-bottom))', radius: fx ? '0' : '20px', cardShadow: fx ? 'none' : '0 18px 40px -18px rgba(0,0,0,0.6)',
           display: S.step === 3 ? 'flex' : 'none', scrolling: 'no', ih: docH + 'px', showNext: true, nextText: S.editToken ? (S.busy ? 'Saving…' : 'Save changes') : 'Continue to payment', showBack: true, mobile: false, desktop: false, flex: '1 1 100%', order: '-1', top: 'auto', pad: '0', bg: 'transparent', w: w + 'px', h: full + 'px', scale: sc.toFixed(4),
           expanded: S.pvOpen ? 'true' : 'false', toggleLabel: S.pvOpen ? 'Collapse preview' : 'See full card', icon: S.pvOpen ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6',
           toggle: () => this.setState(s => ({ pvOpen: !s.pvOpen })) };
@@ -1214,7 +1219,7 @@ class Component extends DCLogic {
       pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
       swGap: listFor(collId).some(isTh) ? '12px' : '16px',
       // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
-      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
+      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(cl.id === 'personal' ? { family: PERSONAL_FAMILY } : {}), thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
         value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
         nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px' },
       showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },

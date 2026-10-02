@@ -181,7 +181,7 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
   // Minimal React stand-in: records the element tree; hooks return stable refs.
   const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
-  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {} };
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {}, useState: v => [v, () => {}] };
   const doc = { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}), currentScript: { src: 'https://x.test/app/components/card-style-controls.js' } };
   const win = { React };
   runInNewContext(src, { window: win, document: doc, URL, Set });
@@ -203,22 +203,60 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   assert.equal(selector.props['aria-hidden'], 'true', 'closed selector is hidden from assistive tech');
   assert.ok(!cls('lcs')[0].props.className.includes('is-open'));
   const opts = cls('lcs-option');
-  assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true', 'false']);
-  assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0, -1], 'roving tabindex');
-  assert.equal(cls('lcs-selector__sep').length, 1, 'divider between collections');
-  trigger.props.onClick(); next.props.onClick(); opts[2].props.onClick();
-  assert.deepEqual(calls, ['toggle', 'next', 'select:c']);
+  assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true']);
+  assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0], 'roving tabindex');
+  // Several collections: one tab each, and the row shows only the current style's collection.
+  assert.deepEqual(cls('lcs-tab').map(t => t.props['data-group']), ['Personal', 'Luxury']);
+  assert.equal(cls('lcs-tab').find(t => t.props['aria-selected'] === 'true').props['data-group'], 'Personal');
+  assert.equal(cls('lcs-trigger__sub')[0].children[0], 'Personal', 'trigger names the collection');
+  trigger.props.onClick(); next.props.onClick(); opts[0].props.onClick();
+  assert.deepEqual(calls, ['toggle', 'next', 'select:a']);
   const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
   assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('is-open'));
-  assert.equal(open.find(n => n.props.className === 'lcs-selector').props['aria-hidden'], undefined);
+  assert.equal(open.find(n => String(n.props.className || '').split(' ').includes('lcs-selector')).props['aria-hidden'], undefined);
   assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--dark'), '#000 card: dark glass');
-  assert.equal(open.find(n => n.props.className === 'lcs-selector__title').children[0], 'Personal styles');
-  assert.equal(open.find(n => n.props.className === 'lcs-selector__count').children[0], '1 of 2');
   assert.ok(open.find(n => n.props.className === 'lcs__dim'), 'dim layer behind the open sheet');
   assert.equal(C.toneOf('#F4F1EC'), 'light'); assert.equal(C.toneOf('#14213D'), 'dark'); assert.equal(C.toneOf('linear-gradient(red,blue)'), 'dark');
   const light = all(render(el(C, { options: [{ id: 'l', name: 'Yard Sign', thumb: { bg: '#fff' } }], value: 'l', onToggle() {}, onSelect() {}, onNext() {} })));
   assert.ok(light.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--light'));
   assert.equal(open.find(n => String(n.props.className || '').split(' ').includes('lcs-next')).props.disabled, true);
+});
+
+test('CardStyleControls: colour variants collapse into one tile; CardColourRail lists them', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
+  const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {}, useState: v => [v, () => {}] };
+  const win = { React };
+  runInNewContext(src, { window: win, document: { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}) }, URL, Set });
+  const render = node => { if (!node || typeof node !== 'object') return node; if (typeof node.type === 'function') return render(node.type({ ...node.props, children: node.children })); return { ...node, children: node.children.map(render) }; };
+  const all = (n, out = []) => { if (n && typeof n === 'object') { out.push(n); n.children.forEach(c => all(c, out)); } return out; };
+  const fam = { id: 'personal', name: 'Classic' };
+  const options = [
+    { id: 'forest', name: 'Forest', group: 'Personal', family: fam, thumb: { bg: '#06120d', dot: '#f2c98a' } },
+    { id: 'teal', name: 'Lagoon', group: 'Personal', family: fam, thumb: { bg: '#061618', dot: '#74d3c6' } },
+    { id: 'lux-marble', name: 'Marble', group: 'Luxury', thumb: { bg: '#f7f6f3', dot: '#9c8a6e' } }];
+  const nodes = all(render(el(win.LcCardStyleControls, { options, value: 'teal', open: true, onToggle() {}, onSelect() {}, onNext() {} })));
+  const cls = c => nodes.filter(n => String(n.props.className || '').split(' ').includes(c));
+  assert.equal(cls('lcs-option').length, 1, 'one tile for the family');
+  assert.equal(cls('lcs-option__label')[0].children[0], 'Classic');
+  assert.equal(cls('lcs-option')[0].props['data-id'], 'teal', 'the tile stands for the selected colour');
+  assert.ok(cls('lcs-selector__hint').length, 'hint points to the colour strip');
+  const rail = all(render(el(win.LcCardColourRail, { options, value: 'teal', onSelect() {} })));
+  const sw = rail.filter(n => String(n.props.className || '').includes('lcr__swatch'));
+  assert.deepEqual(sw.map(n => n.props['aria-label']), ['Forest', 'Lagoon']);
+  assert.deepEqual(sw.map(n => n.props['aria-checked']), ['false', 'true']);
+  assert.ok(rail[0].props.className.includes('lcs--dark'));
+  assert.equal(render(el(win.LcCardColourRail, { options, value: 'lux-marble' })), null, 'no strip for styles without colours');
+});
+
+test('order app: Personal colours are one family; the phone preview shows the colour strip', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /cl\.id === 'personal' \? \{ family: PERSONAL_FAMILY \}/);
+  assert.match(html, /<x-import component-from-global-scope="LcCardColourRail" from="\/app\/components\/card-style-controls\.js"/);
+  assert.match(html, /aria-label="Preview seasonal theme" style="position:absolute;top:\{\{ pv\.seaTop \}\};left:\{\{ pv\.seaLeft \}\}/);
 });
 
 test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and reduced motion', async () => {
