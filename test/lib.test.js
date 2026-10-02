@@ -211,21 +211,31 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
   assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('is-open'));
   assert.equal(open.find(n => n.props.className === 'lcs-selector').props['aria-hidden'], undefined);
-  assert.equal(open.find(n => n.props.className === 'lcs-next').props.disabled, true);
+  assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--dark'), '#000 card: dark glass');
+  assert.equal(open.find(n => n.props.className === 'lcs-selector__title').children[0], 'Personal styles');
+  assert.equal(open.find(n => n.props.className === 'lcs-selector__count').children[0], '1 of 2');
+  assert.ok(open.find(n => n.props.className === 'lcs__dim'), 'dim layer behind the open sheet');
+  assert.equal(C.toneOf('#F4F1EC'), 'light'); assert.equal(C.toneOf('#14213D'), 'dark'); assert.equal(C.toneOf('linear-gradient(red,blue)'), 'dark');
+  const light = all(render(el(C, { options: [{ id: 'l', name: 'Yard Sign', thumb: { bg: '#fff' } }], value: 'l', onToggle() {}, onSelect() {}, onNext() {} })));
+  assert.ok(light.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--light'));
+  assert.equal(open.find(n => String(n.props.className || '').split(' ').includes('lcs-next')).props.disabled, true);
 });
 
-test('CardStyleControls CSS: spec sizes, safe area, tokens and reduced motion', async () => {
+test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and reduced motion', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('../public/app/components/card-style-controls.css', import.meta.url), 'utf8');
-  assert.match(css, /padding:12px 16px max\(24px,calc\(16px \+ env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(css, /padding:10px 16px max\(24px,calc\(16px \+ env\(safe-area-inset-bottom\)\)\)/);
   assert.match(css, /\.lcs-trigger\{width:auto;min-width:160px;[^}]*height:56px;[^}]*border-radius:28px/);
-  assert.match(css, /\.lcs-next\{width:56px;height:56px;[^}]*border-radius:28px;background:var\(--lcs-accent\)/);
-  assert.match(css, /\.lcs-selector\{height:120px/);
-  assert.match(css, /\.lcs__panel\{[^}]*border-radius:16px 16px 0 0;background:var\(--lcs-panel\);[^}]*backdrop-filter:blur\(12px\)/);
-  assert.match(css, /--lcs-panel:rgba\(10,20,40,0\.85\)/);
+  assert.match(css, /\.lcs-next\{width:56px;height:56px;[^}]*border-radius:28px/);
+  assert.match(css, /\.lcs-glass\{[^}]*background:var\(--lcs-glass\);[^}]*backdrop-filter:var\(--lcs-blur\)/);
+  assert.match(css, /\.lcs__panel\{[^}]*left:8px;right:8px;bottom:8px;[^}]*border-radius:34px;\s*background:var\(--lcs-sheet\)/);
+  assert.match(css, /\.lcs--light\{[^}]*--lcs-ink:var\(--lcs-navy\)/, 'light cards get navy ink');
+  assert.match(css, /\.lcs__fade\{[^}]*var\(--lcs-card\)/, 'fade uses the card colour');
+  assert.ok(!/rgba\(10,20,40/.test(css), 'no navy panel');
   // Palette comes from the card UI tokens, not hex values in the component.
   assert.match(css, /--lcs-navy:var\(--lc-navy/);
   assert.match(css, /--lcs-cream:var\(--lc-cream/);
   assert.match(css, /--lcs-accent:var\(--lc-terracotta/);
+  assert.match(css, /@supports not/, 'opaque fallback without backdrop-filter');
   assert.match(css, /prefers-reduced-motion:reduce/);
 });
