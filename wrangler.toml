@@ -69,3 +69,19 @@ LEGACY_HOSTS = ""
 name = "RATE_LIMITER"
 namespace_id = "1002"
 simple = { limit = 30, period = 60 }
+
+# Pull-request previews (Cloudflare Workers Builds runs `wrangler preview` on every PR branch).
+# Like environments, previews don't inherit vars or rate limits. Previews stay in proxy mode against the
+# NexBizRise worker; links that need an absolute URL (redirects, vCards, share links) point at production.
+[previews.vars]
+SITE_URL = "https://linkcardly.com"
+MODE = "proxy"
+LEGACY_ORIGIN = "https://card.nexbizrise.com"
+SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+TURNSTILE_SITE_KEY = "0x4AAAAAAFIAJl64rp47Hazn"
+LEGACY_HOSTS = ""
+
+[[previews.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1003"
+simple = { limit = 30, period = 60 }
