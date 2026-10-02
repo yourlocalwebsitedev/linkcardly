@@ -167,8 +167,10 @@ test('order app, phone Preview step: floating controls instead of a footer bar; 
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
   const phone = html.slice(html.indexOf('const docH = S.pvDocH'), html.indexOf("toggle: () => this.setState(s => ({ pvOpen"));
-  assert.match(phone, /barBg: fx \? 'transparent'/);
-  assert.match(phone, /barPe: fx \? 'none'/);
+  // Closed: no background and taps pass through; open: the same box becomes the glass panel.
+  assert.match(phone, /barBg: open \? 'rgba\([^)]*\)' : 'transparent'/);
+  assert.match(phone, /barPe: open \? 'auto' : 'none'/);
+  assert.ok(!/barPad: open|barW: open|barBottom: open/.test(phone), 'controls keep one position whether the picker is open or closed');
   assert.match(html, /barBg: 'var\(--bg\)', barPe: 'auto'/, 'desktop keeps its panel');
   // Picker closed by default on phones, always shown on desktop.
   assert.match(html, /swShow: S\.vw >= 960 \|\| S\.swOpen === true/);
