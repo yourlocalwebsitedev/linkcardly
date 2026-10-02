@@ -1,0 +1,2 @@
+# Not served publicly (wrangler reads this from the assets directory).
+app/README.md

@@ -31,6 +31,7 @@ test('internal links on marketing pages resolve to a known route', async () => {
     for (const [, href] of html.matchAll(/href="(\/[^"#?]*)/g)) {
       const first = href.split('/')[1] || '';
       assert.ok(STATIC_PAGES.has(first) || ['create', 'assets', 'app', 'favicon.svg'].includes(first), `${p.name}: ${href}`);
+      assert.ok(href === '/' || !href.endsWith('/'), `${p.name}: ${href} has a trailing slash`);
     }
   }
 });
@@ -50,16 +51,35 @@ test('form inputs on marketing pages have accessible names', async () => {
   }
 });
 
-test('production config: no placeholder Turnstile site key is shipped', { todo: 'DEF-03: YOUR_TURNSTILE_SITE_KEY on /contact' }, async () => {
-  assert.ok(!(await read('contact/index.html')).includes('YOUR_TURNSTILE_SITE_KEY'));
+test('production config: no placeholder Turnstile site key is shipped', async () => {
+  const html = await read('contact/index.html');
+  assert.ok(!/YOUR_TURNSTILE_SITE_KEY|\{\{/.test(html));
+  assert.match(html, /data-sitekey="0x[0-9A-Za-z_-]+"/);
+  const toml = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  assert.ok(!toml.includes('YOUR_TURNSTILE_SITE_KEY'));
 });
 
 test('production content: legal pages have real policy text', { todo: 'DEF-10: "Policy text goes here"' }, async () => {
   for (const p of ['privacy', 'terms', 'refunds']) assert.ok(!(await read(p + '/index.html')).includes('Policy text goes here'), p);
 });
 
-test('claim form passes the typed handle to /create', { todo: 'DEF-11: site.js computes h then drops it' }, async () => {
+test('claim form passes the typed handle to /create', async () => {
   const js = await read('assets/js/site.js');
-  const line = js.split('\n').find(l => l.includes("form[data-claim]"));
-  assert.match(line, /h=|[?&]h\b|encodeURIComponent\(h\)/);
+  const block = js.slice(js.indexOf("form[data-claim]"), js.indexOf('// live availability'));
+  assert.match(block, /'h=' \+ encodeURIComponent\(h\)/);
+});
+
+test('site.js: marquee state is declared before the chip strip uses it (no TDZ crash on home)', async () => {
+  const js = await read('assets/js/site.js');
+  assert.ok(js.indexOf('let x = 0') < js.indexOf('if (loop) x = 0'));
+});
+
+test('skip link becomes visible on focus', async () => {
+  assert.match(await read('index.html'), /<a class="skip" href="#main">/);
+  assert.match(await read('assets/css/site.css'), /\.skip:focus\{left:/);
+});
+
+test('vendored app README and legacy images are not published', async () => {
+  assert.match(await read('.assetsignore'), /^app\/README\.md$/m);
+  await assert.rejects(read('assets/img/legacy/nexbizrise-logo.png'));
 });

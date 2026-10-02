@@ -1,6 +1,7 @@
 // Server-rendered public card (MODE = "native").
 import { svg, splitRows, LABELS } from '../lib/icons.js';
 import { theme } from '../lib/themes.js';
+import { safeUrl, sanitizeHtml } from '../lib/sanitize.js';
 
 const e = (v = '') => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const mix = (a, b, p) => `color-mix(in srgb, ${a} ${p}%, ${b})`;
@@ -13,7 +14,7 @@ function linkHref(l) {
     case 'whatsapp': return `https://wa.me/${v.replace(/\D/g, '')}`;
     case 'email': return `mailto:${v}`;
     case 'directions': return `https://maps.google.com/?q=${encodeURIComponent(v)}`;
-    default: return /^https?:\/\//.test(v) ? v : `https://${v}`;
+    default: return safeUrl(/^https?:\/\//i.test(v) ? v : `https://${v}`, ['https:', 'http:']) || '#';
   }
 }
 
@@ -38,16 +39,18 @@ export function renderCard(card, links, env, opts = {}) {
   const visible = links.filter(l => l.is_visible !== false).sort((a, b) => a.sort_order - b.sort_order).slice(0, 10);
   const details = [['Area', card.service_area], ['City', card.city], ['Hours', card.hours]].filter(([, v]) => v);
   const tags = (card.services || []).slice(0, 6);
-  const portrait = card.video_url && card.plan === 'motion'
-    ? `<video class="cover-media" src="${e(card.video_url)}" autoplay muted loop playsinline poster="${e(card.cover_url || '')}"></video>`
-    : card.cover_url ? `<img class="cover-media" src="${e(card.cover_url)}" alt="" style="object-position:${e(card.cover_focus || '50% 30%')}">` : '';
+  const avatar = safeUrl(card.avatar_url), cover = safeUrl(card.cover_url), video = safeUrl(card.video_url), booking = safeUrl(card.booking_url, ['https:', 'http:']);
+  const focus = /^\d{1,3}% \d{1,3}%$/.test(card.cover_focus || '') ? card.cover_focus : '50% 30%';
+  const portrait = video && card.plan === 'motion'
+    ? `<video class="cover-media" src="${e(video)}" autoplay muted loop playsinline poster="${e(cover)}"></video>`
+    : cover ? `<img class="cover-media" src="${e(cover)}" alt="" style="object-position:${focus}">` : '';
 
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${e(title)}</title><meta name="description" content="${e(desc)}">
 <link rel="canonical" href="${e(url)}">
 <meta property="og:type" content="profile"><meta property="og:title" content="${e(title)}"><meta property="og:description" content="${e(desc)}"><meta property="og:url" content="${e(url)}">
-${card.avatar_url ? `<meta property="og:image" content="${e(card.avatar_url)}">` : ''}<meta name="twitter:card" content="summary_large_image">
+${avatar ? `<meta property="og:image" content="${e(avatar)}">` : ''}<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="${t.bg}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/assets/css/card.css">
@@ -59,7 +62,7 @@ ${card.avatar_url ? `<meta property="og:image" content="${e(card.avatar_url)}">`
   </div>
   <div class="body">
     <header class="who">
-      <div class="avatar">${card.avatar_url ? `<img src="${e(card.avatar_url)}" alt="${e(card.full_name)}">` : ''}</div>
+      <div class="avatar">${avatar ? `<img src="${e(avatar)}" alt="${e(card.full_name)}">` : ''}</div>
       <h1>${e(card.full_name)}</h1>
       ${card.title ? `<p class="role">${e(card.title)}</p>` : ''}
       ${card.company ? `<p class="co">${e(card.company)}</p>` : ''}
@@ -68,7 +71,7 @@ ${card.avatar_url ? `<meta property="og:image" content="${e(card.avatar_url)}">`
     ${visible.length ? `<nav class="icons" aria-label="Contact options">${iconRows(visible)}</nav>` : ''}
     <div class="actions">
       <a class="btn primary" href="/${e(card.handle)}/contact.vcf">${svg('userPlus', 19)}Save contact</a>
-      ${card.booking_url ? `<a class="btn" href="${e(card.booking_url)}" target="_blank" rel="noopener">${svg('calendar', 19)}${e(card.booking_label || 'Book a time')}</a>` : ''}
+      ${booking ? `<a class="btn" href="${e(booking)}" target="_blank" rel="noopener">${svg('calendar', 19)}${e(card.booking_label || 'Book a time')}</a>` : ''}
       <button class="btn" data-qr="${e(url)}">${svg('qr', 19)}Show QR code</button>
     </div>
     ${details.length || tags.length ? `<section class="details">
@@ -84,7 +87,7 @@ ${card.avatar_url ? `<meta property="og:image" content="${e(card.avatar_url)}">`
       <div class="cf-turnstile" data-sitekey="${e(env.TURNSTILE_SITE_KEY)}"></div>
       <button class="btn primary" type="submit">Send</button>
     </form>` : ''}
-    ${card.compliance_html ? `<footer class="compliance">${card.compliance_html}</footer>` : ''}
+    ${card.compliance_html ? `<footer class="compliance">${sanitizeHtml(card.compliance_html)}</footer>` : ''}
     ${card.powered_by !== false ? `<a class="powered" href="${env.SITE_URL}/create">Powered by Linkcardly · Get a card like this</a>` : ''}
   </div>
 </main>

@@ -24,7 +24,7 @@ test('handles: invalid examples are rejected with a reason', () => {
   assert.equal(validateHandle(undefined).ok, false);
 });
 
-test('handles: a missing value (null, e.g. /api/handle with no ?h=) is invalid', { todo: 'DEF-22: null normalises to the handle "null"' }, () => {
+test('handles: a missing value (null, e.g. /api/handle with no ?h=) is invalid', () => {
   assert.equal(validateHandle(null).ok, false);
 });
 
@@ -37,14 +37,23 @@ test('handles: every static marketing page is reserved', async () => {
   for (const p of [...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES]) if (p) assert.ok(RESERVED.has(p), p);
 });
 
-test('handles: suggestions are themselves valid handles', () => {
-  for (const s of suggestions('alex')) assert.equal(validateHandle(s).ok, true, s);
+test('handles: suggestions are themselves valid handles, even for 30-character names', () => {
+  for (const h of ['alex', 'x'.repeat(30), 'a'.repeat(27) + '-bc']) {
+    const s = suggestions(h);
+    assert.equal(s.length, 3, h);
+    for (const x of s) assert.equal(validateHandle(x).ok, true, x);
+  }
 });
 
-test('handles: browser reserved list (assets/js/config.js) matches the server list', { todo: 'DEF-17: lists diverge' }, async () => {
-  const src = await (await import('node:fs/promises')).readFile(new URL('../public/assets/js/config.js', import.meta.url), 'utf8');
-  const client = new Set(JSON.parse(src.match(/reserved:\s*(\[[^\]]*\])/)[1].replace(/'/g, '"')));
-  for (const r of RESERVED) if (r.length >= 3 && !r.includes('.')) assert.ok(client.has(r), `missing in browser list: ${r}`);
+test('handles: names that would be routed as files are reserved', () => {
+  for (const h of ['me.png', 'site.css', 'favicon.svg', 'card.vcf']) assert.equal(validateHandle(h).ok, false, h);
+  assert.equal(validateHandle('alex.co').ok, true);
+});
+
+test('handles: browser reserved list is generated from the server list', async () => {
+  const src = await (await import('node:fs/promises')).readFile(new URL('../public/assets/js/rules.js', import.meta.url), 'utf8');
+  const client = JSON.parse(src.match(/window\.LC_RULES = (\{.*\});/)[1]);
+  assert.deepEqual(client.reserved, [...RESERVED].sort());
 });
 
 test('handles: DB check constraint matches HANDLE_RE', async () => {
@@ -62,14 +71,15 @@ test('vcard: escapes special characters and uses CRLF', () => {
   assert.ok(!v.includes('undefined'));
 });
 
-test('vcard: CR characters cannot inject extra properties', { todo: 'DEF-24: \\r is not escaped' }, () => {
+test('vcard: CR characters cannot inject extra properties', () => {
   const v = buildVCard({ full_name: 'Eve\rEMAIL:attacker@evil.test', public_url: 'x' });
   assert.ok(!/\r(EMAIL|TEL|URL)[:;]/.test(v.replace(/\r\n/g, '\n')));
 });
 
-test('vcard: lines over 75 octets are folded (RFC 2426)', { todo: 'DEF-25: no line folding' }, () => {
-  const v = buildVCard({ full_name: 'A'.repeat(120), public_url: 'x' });
+test('vcard: lines over 75 octets are folded (RFC 2426) without splitting characters', () => {
+  const v = buildVCard({ full_name: 'A'.repeat(120) + 'é'.repeat(60), public_url: 'x' });
   for (const line of v.split('\r\n')) assert.ok(Buffer.byteLength(line) <= 75, line.length);
+  assert.match(v.replace(/\r\n /g, ''), new RegExp('FN:' + 'A'.repeat(120) + 'é'.repeat(60)));
 });
 
 test('icons: row split rules', () => {
@@ -90,9 +100,23 @@ test('themes: unknown key falls back to folio', () => {
   assert.equal(theme('nope'), THEMES.folio);
 });
 
-test('themes: every colourway offered in the browser catalogue exists on the server', { todo: 'DEF-19: estate, hivis missing in themes.js' }, async () => {
+test('themes: every colourway offered in the browser catalogue exists on the server', async () => {
   const src = await (await import('node:fs/promises')).readFile(new URL('../public/assets/js/catalogue.js', import.meta.url), 'utf8');
   const keys = [...src.matchAll(/^\s{4}([a-z]+): \[/gm)].map(m => m[1]);
   assert.ok(keys.length > 5);
   for (const k of keys) assert.ok(THEMES[k], `missing theme ${k}`);
+});
+
+test('sanitizeHtml / safeUrl', async () => {
+  const { sanitizeHtml, safeUrl } = await import('../src/lib/sanitize.js');
+  assert.equal(sanitizeHtml('<b>Hi</b> & <i>you</i>'), '<b>Hi</b> &amp; <i>you</i>');
+  assert.equal(sanitizeHtml('a &amp; b'), 'a &amp; b');
+  assert.equal(sanitizeHtml('<svg onload=alert(1)>x</svg>'), 'x');
+  assert.equal(sanitizeHtml('<a href=" javascript:alert(1)">x</a>'), '<a>x</a>');
+  assert.equal(sanitizeHtml('1 < 2 > 0'), '1 &lt; 2 &gt; 0');
+  assert.equal(sanitizeHtml(null), '');
+  assert.equal(safeUrl('https://a.b/c'), 'https://a.b/c');
+  assert.equal(safeUrl('http://a.b'), '');
+  assert.equal(safeUrl('http://a.b', ['http:']), 'http://a.b');
+  assert.equal(safeUrl('not a url'), '');
 });

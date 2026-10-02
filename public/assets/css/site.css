@@ -14,6 +14,8 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--a700)}a:hover{color:var(--a600)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:8px;z-index:100;background:var(--text);color:var(--n100);padding:10px 16px;border-radius:999px;font-weight:700}
+.skip:focus{left:12px}
 ::selection{background:var(--a200)}
 img{max-width:100%;display:block}
 h1,h2,h3{font-family:var(--font-h);font-weight:400;margin:0;text-wrap:balance}
@@ -49,6 +51,7 @@ p{margin:0;text-wrap:pretty}
 @media (min-width:641px){.chips{flex-wrap:wrap}}
 .claim{display:flex;align-items:center;gap:6px;background:var(--n100);border-radius:999px;padding:6px 6px 6px 16px;box-shadow:var(--shadow-md);width:100%;max-width:520px}
 .claim span{font-weight:700;color:var(--n700);white-space:nowrap;font-size:15px}
+.claim:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .claim input{flex:1;min-width:40px;border:0;background:transparent;font:700 15px var(--font-b);color:var(--a700);outline:none;padding:12px 0}
 .claim .btn{padding:13px 16px}
 @media (min-width:641px){.claim{padding-left:22px}.claim span,.claim input{font-size:16px}.claim .btn{padding:13px 22px}}
@@ -60,7 +63,7 @@ p{margin:0;text-wrap:pretty}
 .status-alt:hover{background:var(--a200)}
 .field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:700;color:var(--n800)}
 .input{width:100%;border:1.5px solid var(--n300);background:var(--n100);border-radius:999px;padding:13px 18px;font:400 16px var(--font-b);color:var(--text);outline:none;min-height:50px}
-.input:focus{border-color:var(--accent)}
+.input:focus{border-color:var(--accent)}.input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 textarea.input{border-radius:24px;resize:vertical}
 select.input{appearance:none;cursor:pointer}
 .pill{display:flex;align-items:center;gap:7px;background:var(--n100);border:1.5px solid var(--n300);border-radius:999px;padding:6px 12px 6px 9px;font-size:13px;font-weight:700;white-space:nowrap}

@@ -10,12 +10,13 @@ globalThis.Request = class extends NodeRequest {
 
 const PUBLIC = new URL('../public/', import.meta.url).pathname;
 
-// Stand-in for the Workers static-assets binding with html_handling = "auto-trailing-slash",
-// including its 307s: /x.html → /x, /x/index.html → /x/, and /x → /x/ when only x/index.html exists.
-const exists = async p => { try { return await readFile(join(PUBLIC, decodeURIComponent(p))); } catch (_) { return null; } };
+// Stand-in for the Workers static-assets binding with html_handling = "drop-trailing-slash",
+// including its 307s: /x.html → /x, /x/index.html → /x, /x/ → /x; /x serves x.html or x/index.html.
 // A Request built fresh in the Worker has redirect "follow" and the binding follows the 307 itself;
 // one built from the incoming request inherits redirect "manual" and the 307 reaches the browser.
+const exists = async p => { try { return await readFile(join(PUBLIC, decodeURIComponent(p))); } catch (_) { return null; } };
 const redirect = (req, to) => new Response(null, { status: 307, headers: { Location: new URL(to, req.url).href } });
+const ok = (body, p) => new Response(body, { status: 200, headers: { 'Content-Type': /\.html$/.test(p) ? 'text/html; charset=utf-8' : 'application/octet-stream' } });
 export const assets = {
   calls: [],
   async fetch(req) {
@@ -25,13 +26,13 @@ export const assets = {
   async raw(req) {
     const u = new URL(req.url), path = u.pathname;
     this.calls.push(path);
-    if (path.endsWith('/index.html')) return redirect(req, path.slice(0, -10) + u.search);
+    if (path.endsWith('/index.html')) return redirect(req, (path.slice(0, -11) || '/') + u.search);
     if (path.endsWith('.html')) return redirect(req, path.slice(0, -5) + u.search);
-    const ok = (body, p) => new Response(body, { status: 200, headers: { 'Content-Type': p.endsWith('.html') ? 'text/html' : 'application/octet-stream' } });
-    if (path.endsWith('/')) { const b = await exists(path + 'index.html'); return b ? ok(b, '.html') : new Response('nope', { status: 404 }); }
+    if (path === '/') return ok(await exists('/index.html'), '.html');
+    if (path.endsWith('/')) return redirect(req, path.slice(0, -1) + u.search);
     let b = await exists(path); if (b) return ok(b, path);
     b = await exists(path + '.html'); if (b) return ok(b, '.html');
-    if (await exists(path + '/index.html')) return redirect(req, path + '/' + u.search);
+    b = await exists(path + '/index.html'); if (b) return ok(b, '.html');
     return new Response('nope', { status: 404 });
   }
 };

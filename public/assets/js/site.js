@@ -24,7 +24,11 @@
   sticky && addEventListener('scroll', () => sticky.classList.toggle('show', scrollY > 640), { passive: true });
 
   // claim forms → /create?h=
-  $$('form[data-claim]').forEach(f => f.addEventListener('submit', e => { e.preventDefault(); const h = clean(f.querySelector('input').value); location.href = orderHref(); }));
+  $$('form[data-claim]').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const h = clean(f.querySelector('input').value), href = orderHref();
+    location.href = h ? href + (href.includes('?') ? '&' : '?') + 'h=' + encodeURIComponent(h) : href;
+  }));
 
   // live availability (reads the same public_cards view the card page uses)
   const isTaken = async h => {
@@ -44,7 +48,7 @@
     const h = clean(input.value), id = ++seq;
     if (!h) return setStatus(out, '', '');
     if (h.length < 3) return setStatus(out, 'bad', 'Use at least 3 letters or numbers.');
-    if ((C.reserved || []).includes(h)) return setStatus(out, 'bad', `<b>linkcardly.com/${esc(h)}</b> is reserved. Try another name.`);
+    if (((window.LC_RULES || {}).reserved || C.reserved || []).includes(h)) return setStatus(out, 'bad', `<b>linkcardly.com/${esc(h)}</b> is reserved. Try another name.`);
     setStatus(out, 'wait', 'Checking…');
     timer = setTimeout(async () => {
       try {
@@ -114,6 +118,9 @@
     if (!reduce) setInterval(() => { if (!user) render(counts[(counts.indexOf(n) + 1) % counts.length]); }, 2600);
   }
 
+  // marquee state (declared before the chip strip, which resets x when it refills)
+  let x = 0, paused = false, last = performance.now();
+
   // category chips (strip + grid)
   const catList = cat => Object.entries(D.themes).filter(([, t]) => cat === 'All' || t[1] === cat);
   const tile = ([k, t]) => `<a class="tile" href="${window.LC_CREATE_URL || '/create'}" data-tile>${mini(k)}<div style="text-align:center"><strong>${t[0]}</strong><br><small>${t[1]}</small></div></a>`;
@@ -130,7 +137,6 @@
     fill('All');
   });
   // marquee
-  let x = 0, paused = false, last = performance.now();
   const track = $('[data-loop]');
   if (track && !reduce) {
     const strip = track.parentElement;
@@ -189,8 +195,13 @@
     e.preventDefault();
     const msg = $('[data-contact-msg]'), body = Object.fromEntries(new FormData(contact)); body.turnstile = token(contact);
     if (!body.name.trim() || !/.+@.+\..+/.test(body.email) || !body.message.trim()) { msg.textContent = 'Add your name, a valid email and a message.'; return; }
-    const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (r.ok) { contact.hidden = true; const d = $('[data-contact-done]'); d.hidden = false; $('[data-cname]').textContent = body.name.trim().split(' ')[0]; }
-    else msg.textContent = (await r.json()).error;
+    const btn = contact.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (r.ok) { contact.hidden = true; const d = $('[data-contact-done]'); d.hidden = false; $('[data-cname]').textContent = body.name.trim().split(' ')[0]; return; }
+      const j = await r.json().catch(() => ({}));
+      msg.textContent = j.error || 'Something went wrong. Please try again, or email hello@linkcardly.com.';
+    } catch (_) { msg.textContent = 'Could not send. Check your connection and try again.'; }
+    btn.disabled = false; window.turnstile && turnstile.reset();
   });
 })();

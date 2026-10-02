@@ -9,6 +9,7 @@
     "test": "npm run build && node --test test/*.test.js"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "wrangler": "^4.0.0"
   }
 }

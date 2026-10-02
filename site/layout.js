@@ -40,13 +40,13 @@ export const layout = (p, body) => `<!doctype html>
 <html lang="en"><head>
 ${head(p)}
 </head><body>
-<a href="#main" style="position:absolute;left:-999px">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a>
 ${header(p)}
 <main id="main">
 ${body}</main>
 ${footer(p)}
 ${p.sticky ? stickyBar : ''}
 ${p.turnstile ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}
-<script src="/assets/js/config.js"></script><script src="/assets/js/catalogue.js"></script><script src="/assets/js/icons.js"></script><script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/config.js"></script><script src="/assets/js/rules.js"></script><script src="/assets/js/catalogue.js"></script><script src="/assets/js/icons.js"></script><script src="/assets/js/site.js" defer></script>
 </body></html>
 `;
