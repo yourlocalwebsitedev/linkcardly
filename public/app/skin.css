@@ -1,0 +1,4 @@
+/* Linkcardly additions for the vendored order app (visual only, no behaviour).
+   The order flow keeps its original colours, type and shapes. Only the logo (app/brand.js) is Linkcardly. */
+/* NexBizRise breadcrumb (Services / Digital Business Card) has no Linkcardly destination */
+nav[aria-label="Breadcrumb"]{display:none!important}

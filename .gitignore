@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+.DS_Store
+
+# Build output (npm run build)
+public/index.html
+public/404.html
+public/*/index.html
+public/sitemap.xml
+public/assets/js/icons.js

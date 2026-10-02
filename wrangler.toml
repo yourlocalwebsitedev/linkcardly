@@ -1,0 +1,32 @@
+name = "linkcardly"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "none"
+run_worker_first = true
+
+[vars]
+SITE_URL = "https://linkcardly.com"
+
+# /create embeds the existing NexBizRise order flow unchanged (src in public/create/index.html).
+
+# PHASE 1 — proxy mode (default). Linkcardly serves its own marketing pages,
+# and forwards /api/* and every card page to the existing NexBizRise worker,
+# so the current Supabase project, Turnstile, payments, admin and edit links
+# keep working with their existing credentials. Nothing is duplicated.
+MODE = "proxy"
+LEGACY_ORIGIN = "https://card.nexbizrise.com"
+
+# PHASE 2 — native mode. Set MODE = "native", fill these, run the migration,
+# then set LEGACY_HOSTS so old card.nexbizrise.com links 301 to linkcardly.com.
+SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+TURNSTILE_SITE_KEY = "YOUR_TURNSTILE_SITE_KEY"
+LEGACY_HOSTS = ""
+
+# Secrets for native mode (wrangler secret put …):
+# SUPABASE_SERVICE_KEY
+# TURNSTILE_SECRET

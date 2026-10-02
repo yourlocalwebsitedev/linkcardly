@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Order your digital business card | Linkcardly</title>
+<meta name="description" content="Build your digital business card in minutes: photo, one-tap save contact, call, WhatsApp and a permanent QR code.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
+<link rel="canonical" href="https://linkcardly.com/create">
+<meta name="theme-color" content="#F5F2EC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Linkcardly">
+<meta property="og:title" content="Order your digital business card | Linkcardly">
+<meta property="og:description" content="Build your digital business card in minutes: photo, one-tap save contact, call, WhatsApp and a permanent QR code.">
+<meta property="og:url" content="https://linkcardly.com/create">
+<meta property="og:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Order your digital business card | Linkcardly">
+<meta name="twitter:description" content="Build your digital business card in minutes: photo, one-tap save contact, call, WhatsApp and a permanent QR code.">
+<meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/app/support.js"></script>
+<link rel="stylesheet" href="/app/skin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order your digital business card | Linkcardly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="/app/qrcode.js"></script>
+<script>try{var t='light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<style>
+:root,[data-theme="dark"]{--bg:#070B14;--bg-2:#0A0F1A;--surface:#0F1624;--surface-1:#0C121E;--surface-hi:#1B2536;--ink:#FFFFFF;--ink-2:#E8EEF5;--ink-3:#C4CEDB;--body:#B4C0CF;--muted:#A0AEC0;--faint:#7D8CA1;--accent:var(--btn);--accent-hover:#7DF3FF;--danger:#FF8A8A;--fg-rgb:255,255,255;color-scheme:dark;}
+[data-theme="light"]{--gold:#B7893E;--mint:#EEF6F4;--mint-2:#D6ECE8;--sand:#F3E9D8;--sand-2:#EAD7B4;--sand-ink:#6B4A1C;--bg:#F7F3EC;--bg-2:#EDE7DC;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E7E1D6;--ink:#101820;--ink-2:#1A222B;--ink-3:#2E3440;--body:#2E3440;--muted:#5A6068;--faint:#6B7078;--accent:#0B7C86;--accent-hover:#086670;--accent-2:#0B7C86;--danger:#A1281C;--fg-rgb:16,24,32;--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;color-scheme:light;}
+:root{--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;}
+html[data-skin="card"]{--gold:#B7893E;--mint:#EEF6F4;--mint-2:#D6ECE8;--sand:#F3E9D8;--sand-2:#EAD7B4;--sand-ink:#6B4A1C;--bg:#F7F3EC;--bg-2:#EDE7DC;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E7E1D6;--ink:#101820;--ink-2:#1A222B;--ink-3:#2E3440;--body:#2E3440;--muted:#5A6068;--faint:#6B7078;--accent:#0B7C86;--accent-hover:#086670;--accent-2:#0B7C86;--danger:#A1281C;--fg-rgb:16,24,32;--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;color-scheme:light;}
+body{margin:0;background:var(--bg);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+@keyframes nbrSpin{to{transform:rotate(360deg);}}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent-hover);}
+input::placeholder,textarea::placeholder{color:var(--faint);}
+select option{background:var(--surface);color:var(--ink-2);}
+</style>
+</helmet>
+
+<sc-if value="{{ showSaHeader }}" hint-placeholder-val="{{ false }}">
+  <header style="position:sticky;top:0;z-index:20;height:{{ hdrH }};transform:{{ hdrY }};transition:transform .25s ease;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);font-family:'Plus Jakarta Sans',system-ui,sans-serif;">
+    <a href="{{ homeHref }}" aria-label="Linkcardly home" style="display:flex;align-items:center;gap:6px;color:var(--ink);"><x-import component-from-global-scope="nbr-logo" from="/app/brand.js" height="{{ hdrLogoN }}" font="{{ hdrFontN }}" hint-size="150px,36px"></x-import></a>
+    <sc-if value="{{ hdrWide }}" hint-placeholder-val="{{ true }}">
+    <span style="display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:999px;background:var(--bg-2);border:1px solid rgba(var(--fg-rgb),0.06);font-size:12.5px;font-weight:600;color:var(--ink-3);white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6.5 16c.6-1.3 1.5-2 2.5-2s1.9.7 2.5 2M14 10h4M14 13.5h3"></path></svg>{{ headerChip }}</span>
+    </sc-if>
+    <sc-if value="{{ hdrNarrow }}" hint-placeholder-val="{{ false }}">
+      <a href="{{ closeHref }}" aria-label="{{ closeLabel }}" style="width:34px;height:34px;flex:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1.5px solid rgba(32,30,29,0.14);color:#201e1d;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></a>
+    </sc-if>
+  </header>
+</sc-if>
+<div data-screen-label="Order Card" style="max-width:1200px;margin:0 auto;padding:{{ rootPad }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink-2);">
+
+<sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+  <sc-if value="{{ showIntro }}" hint-placeholder-val="{{ true }}">
+  <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:var(--faint);">
+    <a href="#/services" style="color:var(--muted);">Services</a><span aria-hidden="true">/</span>
+    <a href="#/services/tap-card" style="color:var(--muted);">Digital Business Card</a><span aria-hidden="true">/</span>
+    <span style="color:var(--ink-2);" aria-current="page">Order</span>
+  </nav>
+  <div style="margin-top:28px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;">
+    <div style="max-width:620px;">
+      <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;color:var(--accent);">ORDER YOUR CARD</p>
+      <h1 style="margin:0;font-size:clamp(34px,4.8vw,54px);line-height:1.05;font-weight:800;letter-spacing:-0.03em;color:var(--ink);text-wrap:balance;">Your digital card, ready to share.</h1>
+      <p style="margin:16px 0 0;font-size:17px;line-height:1.6;color:var(--body);text-wrap:pretty;">Build it yourself and watch the preview update as you type, or send us your details and we'll design it for you.</p>
+    </div>
+  </div>
+  </sc-if>
+
+
+  <sc-if value="{{ editMsgShow }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="max-width:560px;margin:40px auto 0;padding:32px;border-radius:20px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);display:flex;flex-direction:column;gap:10px;text-align:center;">
+      <h1 style="margin:0;font-size:28px;color:var(--ink);">{{ editMsgTitle }}</h1>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:var(--muted);text-wrap:pretty;">{{ editMsgText }}</p>
+    </div>
+  </sc-if>
+  <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+  <div style="margin-top:{{ modesGap }};display:flex;flex-wrap:wrap;gap:{{ bodyGap }};align-items:flex-start;">
+    <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:20px;">
+      <sc-if value="{{ showSteps }}" hint-placeholder-val="{{ true }}"><ol aria-label="Steps" style="position:relative;list-style:none;margin:0;padding:4px;display:grid;grid-template-columns:{{ stepCols }};border-radius:999px;background:var(--bg-2);border:1px solid rgba(var(--fg-rgb),0.06);">
+        <li aria-hidden="true" style="position:absolute;top:4px;bottom:4px;left:4px;width:{{ stepW }};border-radius:999px;background:var(--btn);box-shadow:0 2px 8px rgba(16,24,32,0.18);transform:translateX({{ stepX }});transition:transform .35s cubic-bezier(.3,.7,.2,1);"></li>
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+          <li style="position:relative;z-index:1;display:flex;min-width:0;">
+            <button type="button" onClick="{{ s.go }}" disabled="{{ s.locked }}" aria-current="{{ s.current }}" style="flex:1;min-width:0;height:40px;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 4px;border:0;border-radius:999px;background:transparent;font:inherit;font-size:12.5px;font-weight:700;color:{{ s.pillFg }};cursor:{{ s.cursor }};transition:color .25s;">
+              <sc-if value="{{ s.done }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.label }}</span>
+            </button>
+          </li>
+        </sc-for>
+      </ol></sc-if>
+
+      <section style="background:{{ panelBg }};border:{{ panelBd }};border-radius:24px;box-shadow:{{ panelSh }};padding:{{ panelPad }};display:{{ panelDisplay }};flex-direction:column;gap:20px;">
+
+        <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:0.16em;color:var(--gold);">{{ stepEyebrow }}</span>
+            <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">Choose a plan</h2>
+            <p style="margin:0;font-size:15px;color:var(--muted);">Link, QR code &amp; socials. Restyle free, anytime.</p>
+          </div>
+                    <div role="radiogroup" aria-label="Plan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));grid-auto-rows:1fr;gap:12px;">
+            <sc-for list="{{ plans }}" as="p" hint-placeholder-count="2">
+              <button type="button" role="radio" aria-checked="{{ p.checked }}" onClick="{{ p.pick }}" style="text-align:left;display:flex;flex-direction:column;gap:12px;padding:{{ p.pad }};border-radius:20px;border:{{ p.border }};background:{{ p.bg }};color:var(--ink-2);font:inherit;cursor:pointer;box-shadow:0 10px 24px -20px rgba(90,60,20,0.45);transition:background .2s,border-color .2s;">
+                <span style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap;">{{ p.name }}</span>
+                  <span style="flex:1;"></span>
+                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--mint-2);color:#0B6F78;font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
+                  <span aria-hidden="true" style="width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid {{ p.radioRing }};display:grid;place-items:center;"><span style="width:12px;height:12px;border-radius:50%;background:var(--accent);opacity:{{ p.radioDot }};"></span></span>
+                </span>
+                <span style="display:flex;gap:12px;align-items:flex-start;">
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;">
+                    <span style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;"><sc-if value="{{ p.hasWas }}"><s style="font-size:18px;color:var(--faint);">{{ p.was }}</s></sc-if><span style="font-size:{{ p.priceFs }};font-weight:800;letter-spacing:-0.03em;color:var(--ink);">{{ p.price }}</span><span style="font-size:14px;color:var(--muted);">{{ perYear }}</span></span>
+                    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;">
+                      <sc-for list="{{ p.features }}" as="f">
+                        <li style="display:flex;gap:8px;font-size:{{ p.featFs }};line-height:1.4;color:var(--ink-3);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px;"><path d="M20 6L9 17l-5-5"></path></svg>{{ f }}</li>
+                      </sc-for>
+                    </ul>
+                  </span>
+                  <sc-if value="{{ p.thumb }}" hint-placeholder-val="{{ false }}">
+                    <span aria-hidden="true" style="position:relative;width:92px;height:152px;flex:none;border-radius:12px;overflow:hidden;background:#101820;box-shadow:0 8px 18px -8px rgba(16,24,32,0.45);display:flex;flex-direction:column;">
+                      <span style="position:relative;height:84px;flex:none;background-image:url('{{ p.img }}');background-size:cover;background-position:center 25%;">
+                        <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,24,32,0) 40%,#101820 100%);"></span>
+                        
+                      </span>
+                      <span style="padding:0 8px;display:flex;flex-direction:column;gap:1px;margin-top:-10px;position:relative;">
+                        <span style="font-size:9.5px;font-weight:700;color:#fff;line-height:1.2;">{{ thumbName }}</span>
+                        <span style="font-size:7px;color:rgba(255,255,255,0.7);">{{ thumbTitle }}</span>
+                      </span>
+                      <span style="padding:7px 8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">
+                        <span style="height:18px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6.5px;font-weight:700;display:grid;place-items:center;">Call</span><span style="height:18px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6.5px;font-weight:700;display:grid;place-items:center;">Text</span><span style="height:18px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6.5px;font-weight:700;display:grid;place-items:center;">Email</span>
+                      </span>
+                      <span style="padding:5px 8px 0;display:flex;flex-direction:column;">
+                        <span style="height:18px;border-radius:999px;background:#F5F2EC;color:#101820;font-size:6.5px;font-weight:800;display:grid;place-items:center;">Save contact</span>
+                      </span>
+                    </span>
+                  </sc-if>
+                </span>
+              </button>
+            </sc-for>
+            
+          </div>
+            <a href="{{ teamHref }}" style="display:flex;flex-direction:column;gap:10px;padding:{{ teamPad }};border-radius:20px;border:1px solid var(--sand-2);background:var(--sand);color:var(--sand-ink);text-decoration:none;" style-hover="border-color:var(--gold);">
+              <span style="display:flex;align-items:center;gap:12px;"><span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:12px;background:var(--sand-2);color:var(--sand-ink);display:grid;place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.4"></circle><path d="M3 19a6 6 0 0 1 12 0M14.5 19a4.5 4.5 0 0 1 6.5-4"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:18px;font-weight:800;color:#3F2A0E;">Team pricing</span><span style="font-size:13px;line-height:1.4;color:var(--sand-ink);">Teams of 20+ · matching cards · one invoice</span></span><span style="flex:none;display:grid;grid-template-columns:1fr;gap:6px;"><span style="height:34px;padding:0 14px;box-sizing:border-box;border-radius:999px;background:#FFFFFF;border:1px solid var(--sand-2);color:var(--sand-ink);font-size:12px;font-weight:800;letter-spacing:0.06em;white-space:nowrap;display:flex;align-items:center;justify-content:center;">TEAMS 20+</span>
+              <span style="height:34px;padding:0 14px;box-sizing:border-box;border-radius:999px;background:#3F2A0E;border:1px solid #3F2A0E;color:#FFFFFF;font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px;">Get a quote<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></span></span>
+            </a>
+        </sc-if>
+
+        
+        <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ hasDetailsSub }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:0.16em;color:var(--gold);">{{ stepEyebrow }}</span>
+            <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">{{ detailsTitle }}</h2>
+            <p style="margin:0;font-size:15px;color:var(--muted);">{{ detailsSub }}</p>
+          </div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <h2 id="o-business-label" style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);">{{ cardHeading }}</h2>
+            <sc-if value="{{ bizNeedPick }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:15px;line-height:1.5;color:var(--muted);">Pick your category first. We'll show the right fields and designs for it.</p>
+              <div role="listbox" aria-labelledby="o-business-label" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:8px;">
+                <sc-for list="{{ bizItems }}" as="bi" hint-placeholder-count="6"><button type="button" role="option" aria-selected="{{ bi.selected }}" onClick="{{ bi.pick }}" style="min-height:64px;padding:10px 12px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.12);background:var(--surface);display:flex;align-items:center;gap:12px;font:inherit;text-align:left;cursor:pointer;" style-hover="border-color:var(--btn);background:var(--bg-2);"><span style="width:36px;height:36px;flex:none;border-radius:10px;background:var(--bg-2);color:var(--ink);display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ bi.icon }}"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ bi.short }}</span><span style="font-size:12.5px;color:var(--muted);">{{ bi.sub }}</span></span></button></sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showBizForm }}" hint-placeholder-val="{{ true }}">
+            <div style="position:relative;">
+              <button type="button" onClick="{{ toggleBiz }}" aria-haspopup="listbox" aria-expanded="{{ bizOpenStr }}" aria-labelledby="o-business-label" style="width:100%;height:52px;padding:0 14px;border-radius:12px;border:{{ bizBorder }};background:var(--surface);display:flex;align-items:center;gap:12px;font:inherit;text-align:left;cursor:pointer;">
+                <sc-if value="{{ bizPicked }}" hint-placeholder-val="{{ false }}"><span style="width:32px;height:32px;flex:none;border-radius:9px;background:var(--btn);color:var(--btn-ink);display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ bizIcon }}"></path></svg></span></sc-if>
+                <span style="flex:1;min-width:0;font-size:{{ bizFs }};font-weight:{{ bizFw }};color:{{ bizInk }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ bizLabel }}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:var(--ink);transform:{{ bizChevron }};transition:transform .2s ease;"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ bizOpen }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ closeBiz }}" aria-hidden="true" style="position:fixed;inset:0;z-index:29;"></div>
+                <div role="listbox" aria-labelledby="o-business-label" style="position:absolute;top:58px;left:0;right:0;z-index:30;padding:6px;border-radius:14px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 14px 30px -14px rgba(0,0,0,0.3);display:flex;flex-direction:column;gap:2px;">
+                  <sc-for list="{{ bizItems }}" as="bi" hint-placeholder-count="5"><button type="button" role="option" aria-selected="{{ bi.selected }}" onClick="{{ bi.pick }}" style="min-height:52px;padding:0 10px;border:0;border-radius:10px;background:{{ bi.rowBg }};display:flex;align-items:center;gap:12px;font:inherit;text-align:left;cursor:pointer;" style-hover="background:var(--bg-2);"><span style="width:32px;height:32px;flex:none;border-radius:9px;background:{{ bi.tileBg }};color:{{ bi.tileInk }};display:grid;place-items:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ bi.icon }}"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ bi.short }}</span><span style="font-size:12.5px;color:var(--muted);">{{ bi.sub }}</span></span><span style="opacity:{{ bi.checkOp }};color:var(--accent);display:flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span></button></sc-for>
+                </div>
+              </sc-if>
+            </div>
+            </sc-if>
+            <sc-if value="{{ hasBizErr }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:13px;font-weight:600;color:var(--danger);">{{ bizErr }}</span></sc-if>
+          </div>
+          <sc-if value="{{ showBizForm }}" hint-placeholder-val="{{ true }}">
+          <div onDragOver="{{ onDragOver }}" onDrop="{{ onDrop }}" style="display:flex;flex-direction:column;gap:14px;padding:{{ phPad }};border-radius:16px;border:{{ phBorder }};background:var(--surface);">
+            <input ref="{{ fileRef }}" type="file" accept="{{ photoAccept }}" onChange="{{ onPhoto }}" tabindex="-1" aria-hidden="true" style="display:none;">
+            <sc-if value="{{ noPhotoAdj }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;">
+                <button type="button" onClick="{{ pickPhoto }}" aria-label="{{ uploadLabel }}" style="position:relative;width:104px;height:104px;margin-bottom:8px;padding:0;border:0;border-radius:50%;background:var(--bg-2);cursor:pointer;display:grid;place-items:center;overflow:visible;">
+                  <svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true" style="border-radius:50%;"><circle cx="52" cy="42" r="18" fill="rgba(16,24,32,0.14)"></circle><path d="M18 96c4-20 18-30 34-30s30 10 34 30z" fill="rgba(16,24,32,0.14)"></path></svg>
+                  <span aria-hidden="true" style="position:absolute;right:-2px;bottom:4px;width:34px;height:34px;border-radius:50%;background:var(--surface);box-shadow:0 2px 8px -2px rgba(0,0,0,0.25);color:var(--ink);display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
+                </button>
+                <span style="font-size:16px;font-weight:700;color:var(--ink);">{{ addPhotoTitle }}</span>
+                <sc-if value="{{ noPhotoMsg }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;line-height:1.45;color:var(--muted);text-wrap:pretty;">{{ addPhotoHint }}</span></sc-if>
+                <sc-if value="{{ hasPhotoMsg }}"><span role="alert" style="font-size:13px;line-height:1.45;color:var(--danger);">{{ photoNote }}</span></sc-if>
+                <button type="button" onClick="{{ pickPhoto }}" style="margin-top:10px;min-height:48px;padding:0 22px;white-space:nowrap;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M4 15v5h16v-5"></path></svg>{{ uploadLabel }}</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:8px;">
+                <button type="button" onClick="{{ pickPhoto }}" style="min-height:48px;min-width:0;padding:0 8px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:14.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="m21 16-5-5-9 9"></path></svg>Change photo</button>
+                <button type="button" onClick="{{ removePhoto }}" style="min-height:48px;min-width:0;padding:0 8px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);background:rgba(220,38,38,0.06);color:var(--danger);font:inherit;font-size:14.5px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>Remove</button>
+              </div>
+              <sc-if value="{{ noPhotoMsg }}" hint-placeholder-val="{{ true }}"><span style="margin-top:-4px;font-size:13px;line-height:1.45;color:var(--muted);text-wrap:pretty;">{{ addPhotoHint }}</span></sc-if>
+              <sc-if value="{{ hasPhotoMsg }}"><span role="alert" style="margin-top:-4px;font-size:13px;line-height:1.45;color:var(--danger);">{{ photoNote }}</span></sc-if>
+              <div onPointerDown="{{ adjDown }}" aria-label="Drag to position the photo" style="position:relative;width:100%;aspect-ratio:1 / 1;max-width:420px;align-self:center;border-radius:16px;overflow:hidden;background:{{ adjBgColor }};cursor:grab;touch-action:none;user-select:none;">
+                <div data-ph="1" style="position:absolute;inset:0;background-image:{{ adjBg }};background-size:cover;background-position:{{ adjPos }};transform:scale({{ adjZoom }});transform-origin:{{ adjPos }};pointer-events:none;"></div>
+                <div aria-hidden="true" style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);background-size:33.33% 33.33%;pointer-events:none;"></div>
+                <span style="position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,0.55);color:#fff;font-size:12.5px;font-weight:700;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3"></path></svg>Drag to move</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <label for="o-zoom" style="font-size:15px;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;"><span>Zoom</span><span style="font-weight:600;color:var(--muted);">{{ zoomLabel }}</span></label>
+                <input id="o-zoom" type="range" min="1" max="2.5" step="0.05" value="{{ adjZoom }}" onChange="{{ onZoom }}" style="width:100%;accent-color:var(--accent);">
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
+                <sc-for list="{{ focusPresets }}" as="fp" hint-placeholder-count="4"><button type="button" onClick="{{ fp.pick }}" style="min-height:64px;padding:8px 4px;border-radius:12px;border:1px solid {{ fp.bd }};background:{{ fp.bg }};color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ fp.icon }}"></path></svg>{{ fp.label }}</button></sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:grid;grid-template-columns:{{ fieldCols }};gap:14px;">
+            <sc-for list="{{ fields }}" as="f" hint-placeholder-count="10">
+              <div style="grid-column:{{ f.span }};display:flex;flex-direction:column;gap:6px;min-width:0;">
+                <label for="{{ f.id }}" style="font-size:14px;font-weight:600;">{{ f.label }}</label>
+                <sc-if value="{{ f.isYn }}"><div id="{{ f.id }}" role="radiogroup" aria-label="{{ f.label }}" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;height:48px;"><sc-for list="{{ f.yn }}" as="o" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{ o.checked }}" onClick="{{ o.pick }}" style="border-radius:10px;border:{{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font:inherit;font-size:15px;font-weight:700;cursor:pointer;">{{ o.label }}</button></sc-for></div></sc-if>
+                <sc-if value="{{ f.hasPrefix }}"><span style="position:relative;display:flex;"><span aria-hidden="true" style="position:absolute;left:14px;top:0;bottom:0;display:flex;align-items:center;font-size:15px;color:var(--faint);pointer-events:none;">{{ f.prefix }}</span><input id="{{ f.id }}" type="text" autoComplete="off" autoCapitalize="none" spellCheck="false" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.onChange }}" aria-invalid="{{ f.invalid }}" style="flex:1;height:50px;padding:0 14px 0 {{ f.prefixPad }};border-radius:12px;border:1px solid {{ f.border }};background:var(--surface);font:inherit;font-size:16px;color:var(--ink-2);outline:none;min-width:0;" style-focus="border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--acc-rgb),0.14);"></span></sc-if>
+                <sc-if value="{{ f.isPlainInput }}"><input id="{{ f.id }}" type="{{ f.type }}" autoComplete="{{ f.ac }}" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.onChange }}" aria-invalid="{{ f.invalid }}" style="height:50px;padding:0 14px;border-radius:12px;border:1px solid {{ f.border }};background:var(--surface);font:inherit;font-size:16px;color:var(--ink-2);outline:none;min-width:0;transition:border-color .15s,box-shadow .15s;" style-focus="border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--acc-rgb),0.14);"></sc-if>
+                <sc-if value="{{ f.isArea }}"><textarea id="{{ f.id }}" rows="3" placeholder="{{ f.ph }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="padding:12px 14px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font:inherit;font-size:16px;line-height:1.5;color:var(--ink-2);outline:none;resize:vertical;" style-focus="border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--acc-rgb),0.14);"></textarea></sc-if>
+                <sc-if value="{{ f.hasError }}"><span role="alert" style="font-size:13px;font-weight:600;color:var(--danger);">{{ f.error }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ isMotionPlan }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);">
+            <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="min-height:48px;padding:0;border:0;background:transparent;color:var(--ink);font:inherit;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;cursor:pointer;">
+              <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                <span style="font-size:15px;font-weight:700;">Seasonal themes</span>
+                <span style="font-size:13px;line-height:1.45;color:var(--muted);">{{ seaSub }}</span>
+              </span>
+              <span aria-hidden="true" style="width:44px;height:26px;border-radius:999px;background:{{ seaBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ seaKnob }};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s ease;"></span></span>
+            </button>
+            <sc-if value="{{ showGreeting }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label for="o-greeting" style="font-size:14px;font-weight:600;">Your holiday greeting</label>
+                <input id="o-greeting" type="text" maxLength="60" placeholder="{{ greetingPh }}" value="{{ greetingVal }}" onChange="{{ onGreeting }}" style="height:48px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--bg);font:inherit;font-size:16px;color:var(--ink-2);outline:none;min-width:0;">
+                <span style="font-size:13px;color:var(--muted);">Optional. Leave blank for “Happy Holidays from {{ greetingName }}”.</span>
+              </div>
+            </sc-if>
+          </div>
+          </sc-if>
+          </sc-if>
+        </sc-if>
+
+
+        <sc-if value="{{ isStep5 }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:0.16em;color:var(--gold);">{{ stepEyebrow }}</span>
+            <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">Complete your card</h2>
+          </div>
+          <div style="display:flex;flex-direction:column;border-radius:20px;border:1px solid rgba(var(--fg-rgb),0.07);background:var(--surface);box-shadow:0 12px 30px -24px rgba(90,60,20,0.4);overflow:hidden;">
+            <div style="display:flex;gap:14px;padding:14px;align-items:flex-start;">
+              <span aria-hidden="true" style="position:relative;width:104px;height:152px;flex:none;border-radius:14px;overflow:hidden;background:#101820;box-shadow:0 8px 18px -8px rgba(16,24,32,0.45);display:flex;flex-direction:column;">
+                <span style="position:relative;height:86px;flex:none;background-image:url('{{ payImg }}');background-size:cover;background-position:center 25%;"><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,24,32,0) 40%,#101820 100%);"></span></span>
+                <span style="padding:0 8px;display:flex;flex-direction:column;gap:1px;margin-top:-10px;position:relative;"><span style="font-size:9.5px;font-weight:700;color:#fff;line-height:1.2;">{{ thumbName }}</span><span style="font-size:7px;color:rgba(255,255,255,0.7);">{{ thumbTitle }}</span></span>
+                <span style="padding:6px 8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;"><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Call</span><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Text</span><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Email</span></span>
+                <span style="padding:4px 8px 0;"><span style="height:16px;border-radius:999px;background:#F5F2EC;color:#101820;font-size:6px;font-weight:800;display:grid;place-items:center;">Save contact</span></span>
+              </span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:17px;font-weight:800;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:14px;color:var(--muted);">1 year</span></div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span style="font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);">{{ subtotal }}</span><sc-if value="{{ payHasWas }}"><s style="font-size:13px;color:var(--faint);">{{ payWas }}</s></sc-if></div>
+                </div>
+                <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">
+                  <sc-for list="{{ payFeatures }}" as="f" hint-placeholder-count="4"><li style="display:flex;gap:8px;font-size:13.5px;line-height:1.4;color:var(--ink-3);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px;"><path d="M20 6L9 17l-5-5"></path></svg>{{ f }}</li></sc-for>
+                </ul>
+              </div>
+            </div>
+            <sc-if value="{{ hasCoupon }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2);">Coupon <span style="padding:2px 8px;border-radius:6px;background:rgba(var(--acc-rgb),0.1);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:0.04em;">{{ couponCode }}</span></span><span style="font-size:15px;font-weight:700;color:var(--accent);">− {{ couponOff }}</span></div></sc-if>
+            <sc-if value="{{ hasGst }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="font-size:15px;color:var(--ink-2);">GST (18%)</span><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ gst }}</span></div></sc-if>
+            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--mint);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#0B6F78;">{{ total }}</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--mint);">
+            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint-2);color:#0B6F78;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:800;color:var(--ink);">{{ secureTitle }}</span><span style="font-size:13.5px;color:var(--ink-3);">{{ secureSub }}</span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label for="o-coupon" style="font-size:14px;font-weight:700;color:var(--ink-2);">Coupon code <span style="font-weight:500;color:var(--faint);">(optional)</span></label>
+            <div style="display:flex;gap:8px;">
+              <input id="o-coupon" value="{{ couponInput }}" onInput="{{ onCouponInput }}" onKeyDown="{{ couponKey }}" disabled="{{ hasCoupon }}" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="32" placeholder="Enter code" style="flex:1;min-width:0;height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;letter-spacing:0.04em;box-sizing:border-box;" style-focus="border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--acc-rgb),0.14);outline:none;">
+              <sc-if value="{{ noCoupon }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ applyCoupon }}" disabled="{{ couponBusy }}" style="height:52px;padding:0 22px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer;" style-hover="border-color:var(--ink);">{{ couponBtn }}</button></sc-if>
+              <sc-if value="{{ hasCoupon }}"><button type="button" onClick="{{ removeCoupon }}" style="height:48px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.16);background:transparent;color:var(--ink-2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;">Remove</button></sc-if>
+            </div>
+            <sc-if value="{{ hasCouponMsg }}"><p role="status" style="margin:0;font-size:13px;font-weight:600;color:{{ couponMsgColor }};">{{ couponMsg }}</p></sc-if>
+          </div>
+          <div ref="{{ tsRef }}" style="display:flex;justify-content:center;"></div>
+        </sc-if>
+
+        <sc-if value="{{ isPayStep }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:12.5px;line-height:1.55;text-align:center;color:var(--muted);text-wrap:pretty;">By placing your order you agree to our <a href="/terms" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline;">Terms</a>, <a href="/refunds" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline;">Refund Policy</a> and <a href="/privacy" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline;">Privacy Policy</a>.</p></sc-if>
+
+        <sc-if value="{{ hasSubmitError }}"><p role="alert" style="margin:0;font-size:14px;font-weight:600;color:var(--danger);">{{ submitError }}</p></sc-if>
+
+        <sc-if value="{{ fb.fixed }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;height:{{ fb.space }};margin-top:-20px;"></div></sc-if>
+        <div ref="{{ formBarRef }}" style="position:{{ fb.pos }};left:0;right:0;bottom:0;z-index:40;margin:{{ fb.margin }};padding:{{ fb.pad }};background:var(--bg);border-top:1px solid rgba(var(--fg-rgb),0.06);border-radius:{{ fb.radius }};box-shadow:0 -14px 18px -14px rgba(16,24,32,0.22);display:flex;align-items:center;gap:12px;">
+          <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" style="flex:1 1 0;min-width:0;min-height:54px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>{{ backLabel }}</button></sc-if>
+          <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="flex:1 1 0;"></span></sc-if>
+          <button type="button" onClick="{{ next }}" disabled="{{ busy }}" style="flex:1.35 1 0;min-width:0;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ nextLabel }}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <aside aria-label="Live preview" style="display:{{ pv.display }};flex:{{ pv.flex }};order:{{ pv.order }};margin:0 auto;position:sticky;top:{{ pv.top }};z-index:5;flex-direction:column;align-items:center;gap:10px;padding:{{ pv.pad }};background:{{ pv.bg }};">
+      
+      <div style="position:relative;width:{{ pv.w }};height:{{ pv.h }};border-radius:20px;overflow:hidden;background:#06120d;transition:height .3s ease;box-shadow:0 18px 40px -18px rgba(0,0,0,0.6);">
+        <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:16px;left:16px;z-index:8;width:46px;height:46px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.32);background:rgba(16,24,32,0.28);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.25),0 6px 16px -8px rgba(0,0,0,0.5);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
+        <iframe ref="{{ previewRef }}" onLoad="{{ onPreviewLoad }}" src="/app/card.html?preview=1" title="Live preview of your card" scrolling="{{ pv.scrolling }}" style="position:absolute;top:0;left:0;width:390px;height:{{ pv.ih }};border:0;transform:scale({{ pv.scale }});transform-origin:0 0;"></iframe>
+        <sc-if value="{{ showSeaPv }}" hint-placeholder-val="{{ false }}">
+          <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:52px;right:8px;z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+            <sc-for list="{{ seaPv }}" as="sp"><button type="button" role="radio" aria-checked="{{ sp.checked }}" aria-label="{{ sp.label }}" title="{{ sp.label }}" onClick="{{ sp.pick }}" style="width:34px;height:34px;padding:0;border:0;border-radius:50%;background:{{ sp.bg }};color:{{ sp.fg }};display:grid;place-items:center;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ sp.icon }}"></path></svg></button></sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;width:100%;height:{{ pv.barSpace }};"></div></sc-if>
+      <div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
+        <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ swToggle }}" onTouchStart="{{ handleTouchStart }}" onTouchEnd="{{ handleTouchEnd }}" aria-label="{{ handleLabel }}" aria-expanded="{{ swOpenStr }}" style="align-self:stretch;margin:-10px -16px -6px;height:22px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;touch-action:none;"><span style="width:36px;height:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.18);"></span></button></sc-if>
+        <sc-if value="{{ swShow }}" hint-placeholder-val="{{ true }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
+          <button type="button" onClick="{{ collPrev }}" aria-label="Previous collection" style="width:40px;height:40px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+          <div aria-live="polite" aria-label="{{ collPos }}" style="min-width:150px;display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <span style="font-size:15px;font-weight:800;color:var(--ink);line-height:1;">{{ collName }}</span>
+            <span aria-hidden="true" style="display:flex;gap:4px;"><sc-for list="{{ collDots }}" as="cd" hint-placeholder-count="3"><span style="height:4px;width:{{ cd.w }};border-radius:2px;background:{{ cd.bg }};transition:all .25s;"></span></sc-for></span>
+          </div>
+          <button type="button" onClick="{{ collNext }}" aria-label="Next collection" style="width:40px;height:40px;flex:none;border:0;border-radius:50%;background:var(--btn);color:var(--btn-ink);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--btn-hover);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button>
+        </div></sc-if>
+        <div style="position:relative;width:100%;"><div role="radiogroup" aria-label="Colour palette" onScroll="{{ onSwScroll }}" style="display:flex;justify-content:{{ swJustify }};gap:{{ swGap }};overflow-x:auto;scrollbar-width:none;padding:6px 0;"><span aria-hidden="true" style="width:0;flex:none;"></span>
+          <sc-for list="{{ colours }}" as="c" hint-placeholder-count="6">
+            <sc-if value="{{ c.isDot }}" hint-placeholder-val="{{ true }}"><button type="button" role="radio" aria-checked="{{ c.checked }}" aria-label="{{ c.name }}" title="{{ c.name }}" onClick="{{ c.pick }}" style="width:44px;height:44px;flex:none;border-radius:50%;border:0;cursor:pointer;background:{{ c.bg }};box-shadow:{{ c.ring }};display:grid;place-items:center;">
+              <span aria-hidden="true" style="width:16px;height:16px;border-radius:50%;background:{{ c.accent }};"></span>
+            </button></sc-if>
+            <sc-if value="{{ c.isThumb }}" hint-placeholder-val="{{ false }}"><button type="button" role="radio" aria-checked="{{ c.checked }}" aria-label="{{ c.name }}" onClick="{{ c.pick }}" style="flex:none;padding:0;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;font-size:11.5px;font-weight:700;color:{{ c.labelInk }};cursor:pointer;">
+              <span aria-hidden="true" style="position:relative;display:block;width:58px;height:80px;border-radius:10px;overflow:hidden;background:{{ c.bg }};box-shadow:{{ c.ring2 }};"><sc-for list="{{ c.blocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for><sc-if value="{{ c.rec }}"><span style="position:absolute;left:3px;top:3px;padding:2px 5px;border-radius:999px;background:#FFFFFF;color:#101820;font-size:8px;font-weight:800;letter-spacing:0.04em;box-shadow:0 1px 3px rgba(0,0,0,0.25);">BEST</span></sc-if></span>{{ c.name }}
+            </button></sc-if>
+          </sc-for><span aria-hidden="true" style="width:0;flex:none;"></span></div><sc-if value="{{ swFade }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="position:absolute;top:0;right:0;bottom:0;width:24px;background:linear-gradient(90deg, rgba(var(--bg-rgb,245,242,236),0) 0%, var(--bg) 100%);pointer-events:none;"></div></sc-if></div>
+</div></sc-if>
+        <sc-if value="{{ pv.showNext }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+            <button type="button" onClick="{{ swToggle }}" aria-expanded="{{ swOpenStr }}" style="min-width:0;min-height:54px;padding:0 14px;justify-content:center;border-radius:999px;border:{{ swPillBd }};background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;"><sc-if value="{{ pillDot }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16.6A4.4 4.4 0 0 0 21 10.8C21 6.5 17 3 12 3zM6.8 12.2a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm2.9-3.8a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm4.6 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm2.9 3.8a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8z"></path></svg></sc-if><sc-if value="{{ pillThumb }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:relative;display:block;width:26px;height:36px;border-radius:6px;overflow:hidden;background:{{ pillBg }};box-shadow:0 0 0 1px rgba(var(--fg-rgb),0.14);"><sc-for list="{{ pillBlocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for></span></sc-if><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ colourName }}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ swChevron }};transition:transform .2s ease;"><path d="m18 15-6-6-6 6"></path></svg></button>
+            <button type="button" onClick="{{ next }}" style="min-width:0;min-height:54px;white-space:nowrap;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">{{ pv.nextText }}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+          </button>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ pv.mobile }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ pv.toggle }}" aria-expanded="{{ pv.expanded }}" style="min-height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--surface);color:var(--ink-2);font:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pv.icon }}"></path></svg>{{ pv.toggleLabel }}
+        </button>
+      </sc-if>
+      <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}">
+        <p style="margin:0;font-size:13px;text-align:center;color:var(--muted);max-width:300px;">{{ previewNote }}</p>
+      </sc-if>
+    </aside>
+  </div>
+  </sc-if>
+</sc-if>
+
+<sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+  <div style="position:relative;max-width:760px;margin:0 auto;padding-top:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;">
+    <div aria-hidden="true" style="position:absolute;left:50%;top:-40px;width:100vw;max-width:1100px;height:380px;transform:translateX(-50%);overflow:hidden;pointer-events:none;z-index:0;">
+      <span style="position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0%,#F1E2C4 0%,rgba(241,226,196,0) 72%);"></span>
+      <span style="position:absolute;left:-18%;top:150px;width:64%;height:240px;border-radius:50%;border-top:28px solid rgba(233,207,160,0.34);transform:rotate(-12deg);"></span>
+      <span style="position:absolute;right:-22%;top:110px;width:70%;height:260px;border-radius:50%;border-top:36px solid rgba(233,207,160,0.26);transform:rotate(16deg);"></span>
+      <span style="position:absolute;right:-8%;top:200px;width:46%;height:180px;border-radius:50%;border-top:10px solid rgba(215,178,110,0.22);transform:rotate(20deg);"></span>
+      <span style="position:absolute;left:50%;top:0;width:360px;height:220px;transform:translateX(-50%);"><span style="position:absolute;left:8%;top:84px;width:5px;height:10px;border-radius:2px;background:#D9B06A;transform:rotate(-30deg);"></span><span style="position:absolute;left:4%;top:180px;width:4px;height:8px;border-radius:2px;background:#E5C48A;transform:rotate(25deg);"></span><span style="position:absolute;left:16%;top:162px;width:6px;height:6px;border-radius:50%;background:#EAD3A2;transform:rotate(0deg);"></span><span style="position:absolute;left:78%;top:72px;width:5px;height:10px;border-radius:2px;background:#D9B06A;transform:rotate(35deg);"></span><span style="position:absolute;left:88%;top:168px;width:4px;height:9px;border-radius:2px;background:#C9A45C;transform:rotate(-20deg);"></span><span style="position:absolute;left:70%;top:186px;width:5px;height:5px;border-radius:50%;background:#9FD3CC;transform:rotate(0deg);"></span><span style="position:absolute;left:26%;top:48px;width:4px;height:4px;border-radius:50%;background:#9FD3CC;transform:rotate(0deg);"></span><span style="position:absolute;left:62%;top:36px;width:4px;height:8px;border-radius:2px;background:#E5C48A;transform:rotate(-40deg);"></span></span>
+    </div>
+    <sc-if value="{{ showCardBox }}" hint-placeholder-val="{{ true }}">
+    <span aria-hidden="true" style="position:relative;z-index:1;width:68px;height:68px;border-radius:50%;background:#E3F1E6;border:1px solid #BFDCC6;box-shadow:0 0 0 10px rgba(227,241,230,0.55);color:#1F6B3A;display:grid;place-items:center;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
+    </sc-if>
+    <sc-if value="{{ isUnpaid }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:relative;z-index:1;width:64px;height:64px;border-radius:50%;background:rgba(250,204,21,0.14);border:1px solid rgba(202,138,4,0.35);color:#A16207;display:grid;place-items:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h4"></path></svg></span></sc-if>
+    <h1 ref="{{ doneRef }}" tabindex="-1" style="position:relative;z-index:1;margin:8px 0 0;font-size:clamp(32px,4.4vw,48px);line-height:1.08;font-weight:800;letter-spacing:-0.03em;color:var(--ink);outline:none;">{{ doneTitle }}</h1>
+    <p style="position:relative;z-index:1;margin:0;max-width:520px;font-size:17px;line-height:1.6;color:var(--body);text-wrap:pretty;">{{ doneText }}</p>
+    <sc-if value="{{ payOnline }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ retryPay }}" style="min-height:56px;padding:0 32px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ payBtn }}</button>
+    </sc-if>
+    <sc-if value="{{ hasPayError }}"><p role="alert" style="margin:0;max-width:520px;font-size:14px;line-height:1.5;font-weight:600;color:var(--danger);">{{ payError }}</p></sc-if>
+    <sc-if value="{{ isVerifying }}"><span aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:3px solid rgba(var(--fg-rgb),0.12);border-top-color:var(--ink);animation:nbrSpin .8s linear infinite;"></span></sc-if>
+
+    <sc-if value="{{ showCardBox }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative;z-index:1;margin-top:10px;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;gap:20px;align-items:center;padding:20px;border-radius:24px;background:var(--surface);box-shadow:0 18px 40px -28px rgba(90,60,20,0.45);text-align:left;">
+      <div style="width:168px;height:168px;flex:none;margin:0 auto;padding:12px;box-sizing:border-box;border-radius:20px;border:1px solid var(--sand-2);background:#FFFDF9;">{{ qrNode }}</div>
+      <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;color:var(--muted);">YOUR CARD LINK</span>
+          <span style="font-size:18px;font-weight:700;color:var(--ink);overflow-wrap:anywhere;">{{ linkLabel }}</span>
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.45;color:var(--muted);"><span aria-hidden="true" style="width:26px;height:26px;flex:none;border-radius:50%;background:var(--sand);color:var(--sand-ink);display:grid;place-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"></path></svg></span>{{ linkNote }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+          <a href="{{ openHref }}" target="_blank" rel="noopener" style="min-height:64px;padding:8px 6px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;" style-hover="border-color:var(--ink);color:var(--ink);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Open card</a>
+          <button type="button" onClick="{{ copyLink }}" style="min-height:64px;padding:8px 6px;border-radius:14px;border:0;background:var(--btn);color:var(--btn-ink);box-shadow:0 8px 16px -10px rgba(16,24,32,0.6);font:inherit;font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" style-hover="border-color:var(--ink);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg>{{ copyLabel }}</button>
+          <button type="button" onClick="{{ downloadQR }}" style="min-height:64px;padding:8px 6px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink);font:inherit;font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;" style-hover="border-color:var(--ink);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download QR</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showChangeBox }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;z-index:1;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:18px 20px;border-radius:20px;background:linear-gradient(120deg,var(--mint) 0%,var(--bg) 100%);text-align:left;">
+        <span aria-hidden="true" style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--mint-2);color:#0B6F78;display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></span>
+        <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:16px;font-weight:800;color:var(--ink);">Restyle anytime, free</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--ink-3);">{{ changesNote }}</span>
+        </div>
+        <a href="{{ changeHref }}" target="_blank" rel="noopener" style="min-height:46px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:#FFFFFF;color:var(--ink);font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">Request a change</a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ notEditDone }}" hint-placeholder-val="{{ true }}"><div style="position:relative;z-index:1;width:100%;box-sizing:border-box;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;background:var(--surface);box-shadow:0 10px 26px -22px rgba(90,60,20,0.45);text-align:left;">
+      <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:50%;background:var(--sand);color:var(--sand-ink);display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6zM9 11h6M9 15h6"></path></svg></span>
+      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;color:var(--muted);">Order number</span><span style="font-size:16px;font-weight:800;letter-spacing:0.03em;color:var(--ink);">{{ orderNo }}</span><span style="font-size:12.5px;color:var(--muted);">Keep this for support or future changes.</span></span>
+      <button type="button" onClick="{{ copyOrder }}" style="min-height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.16);background:#FFFFFF;color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;">{{ copyOrderLabel }}</button>
+    </div></sc-if>
+
+    <div style="position:relative;z-index:1;width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:2px;">
+      <sc-if value="{{ notEditDone }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ reset }}" style="min-height:48px;padding:0 20px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.2);background:#FFFFFF;color:var(--ink);font:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Order another card</button></sc-if>
+      <sc-if value="{{ isEditDone }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ keepEditing }}" style="min-height:48px;padding:0 20px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:transparent;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer;">Keep editing</button></sc-if>
+      <a href="{{ orderHref }}" style="min-height:48px;padding:0 8px;display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:var(--accent);">Back to home<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const SUPABASE_URL = 'https://hyaqvmrtqafqhbhcdecd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV';
+const CARD_BASE = 'https://linkcardly.com';
+const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
+const LOCAL_KEY = 'nbr-orders';
+/* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
+const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
+const VIA_WORKER = () => /(^|\.)nexbizrise\.com$|(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
+
+const PRICING = {
+  IN: { label: 'India · ₹', cur: '₹', code: 'INR', locale: 'en-IN', basic: 799, basicWas: 999, motion: 1799, motionWas: 2499, phone: '+91 98765 43210', city: 'Hyderabad' },
+  US: { label: 'USA · $', cur: '$', code: 'USD', locale: 'en-US', basic: 49, basicWas: 69, motion: 79, motionWas: 99, phone: '+1 (816) 555-0123', city: 'Kansas City' },
+};
+const GST = 0.18;
+const priceOf = (reg, plan) => { const base = (PRICING[reg] || PRICING.US)[plan]; const tax = reg === 'IN' ? Math.round(base * GST) : 0; return { base, tax, total: base + tax }; };
+const money = (reg, n) => { const r = PRICING[reg] || PRICING.US; return r.cur + Number(n).toLocaleString(r.locale); };
+const PLANS = [
+  { id: 'basic', name: 'Digital Card', price: 49, popular: true, features: ['Your photo, name and title', 'One-tap save contact', 'Call, text, WhatsApp and email buttons', 'Restyle anytime: new looks, seasons, offers. Free'] },
+  { id: 'motion', name: 'Motion Card', price: 79, features: ['Everything in Digital Card', 'Moving portrait at the top of your card', 'Selfie video or GIF, up to 10 s'] },
+];
+const PRO_STYLES = [
+  { id: 'pro-executive', name: 'Midnight', layout: 'professional', mode: 'banner', bg: '#0f1a2e', ink: '#f1ece2', card: '#17243d', accent: '#d8b36a', on: '#15120a', font: "'Cormorant Garamond',Georgia,serif", rad: '12px', align: 'left', boxed: true },
+  { id: 'pro-minimal', name: 'Paper', layout: 'professional', mode: 'side', bg: '#ffffff', ink: '#111418', card: '#f3f4f6', accent: '#111418', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '10px', align: 'left', boxed: false },
+  { id: 'pro-classic', name: 'Ivory', layout: 'professional', mode: 'ring', bg: '#f4efe6', ink: '#1c1a17', card: '#fbf8f2', accent: '#b08a45', on: '#ffffff', font: "'Cormorant Garamond',Georgia,serif", rad: '2px', align: 'center', boxed: false },
+  { id: 'pro-modern', name: 'Graphite', layout: 'professional', mode: 'tile', bg: '#1f2124', ink: '#f2f0ec', card: '#2a2d31', accent: '#c7ccd4', on: '#15171a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '999px', align: 'left', boxed: true },
+  { id: 'pro-corporate', name: 'Harbor', layout: 'professional', mode: 'band', bg: '#eef2f7', ink: '#14243b', card: '#ffffff', accent: '#2f5d9a', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '12px', align: 'center', boxed: true },
+  { id: 'pro-studio', name: 'Noir', layout: 'professional', mode: 'hero', bg: '#0b0b0c', ink: '#f5f3ee', card: '#161618', accent: '#e6d3a3', on: '#15120a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '14px', align: 'left', boxed: true },
+];
+const LUX_STYLES = [
+  { id: 'lux-champagne', name: 'Champagne', layout: 'luxuryEstate', bg: '#f4efe6', ink: '#1c1a17', accent: '#c9a45c', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-onyx', name: 'Onyx', layout: 'luxuryEstate', bg: '#0c0b0a', ink: '#f3ead8', accent: '#d4af37', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-emerald', name: 'Emerald', layout: 'luxuryEstate', bg: '#0b2a20', ink: '#f1e9d6', accent: '#d9b56a', frame: 'circle', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-marble', name: 'Marble', layout: 'luxuryEstate', bg: '#f7f6f3', ink: '#22201d', accent: '#9c8a6e', frame: 'square', font: "Newsreader,Georgia,serif" },
+  { id: 'lux-velvet', name: 'Velvet', layout: 'luxuryEstate', bg: '#2a0d14', ink: '#f5e6e0', accent: '#e0b28a', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-sapphire', name: 'Sapphire', layout: 'luxuryEstate', bg: '#0e1633', ink: '#eef0f7', accent: '#b8c4e6', frame: 'circle', font: "Newsreader,Georgia,serif" },
+];
+const RE_STYLES = [
+  { id: 're-poster', name: 'Skyline', layout: 'estate', mode: 'poster', bg: '#14213D', ink: '#FFFFFF', accent: '#F2E8D5' },
+  { id: 're-list', name: 'Crisp', layout: 'estate', mode: 'list', bg: '#FFFFFF', ink: '#14213D', accent: '#14213D' },
+  { id: 're-blueprint', name: 'Blueprint', layout: 'estate', mode: 'blueprint', bg: '#F3F1EC', ink: '#1F3A5F', accent: '#1F3A5F' },
+  { id: 're-home', name: 'Hearth', layout: 'estate', mode: 'home', bg: '#EFE9E1', ink: '#3A3A3A', accent: '#E9A866' },
+];
+/* Same four layouts for every business, each with its own colours: [prefix, poster, list, blueprint, home] as [bg, ink, accent] */
+const BIZ_PAL = {
+  hc: [['#0B3B37', '#FFFFFF', '#D8F3EE'], ['#FFFFFF', '#0B2B28', '#0F766E'], ['#F1F6F5', '#0B2B28', '#0F766E'], ['#EAF4F2', '#0B2B28', '#0F766E']],
+  bw: [['#3E2A22', '#FFFFFF', '#F3D9C9'], ['#FBF7F2', '#5B3A2E', '#C98E74'], ['#F6EFE8', '#5B3A2E', '#7A4A3A'], ['#F6EFE8', '#5B3A2E', '#C98E74']],
+  lf: [['#0B1733', '#FFFFFF', '#E9C46A'], ['#FFFFFF', '#0B1733', '#0B1733'], ['#F2F2F0', '#0B1733', '#0B1733'], ['#ECEBE6', '#0B1733', '#E9C46A']],
+  hs: [['#1C1C1C', '#FFFFFF', '#FFC400'], ['#FFFFFF', '#1C1C1C', '#FFC400'], ['#F5F3EE', '#1C1C1C', '#1C1C1C'], ['#F5F3EE', '#1C1C1C', '#FFC400']],
+  cc: [['#0E1620', '#FFFFFF', '#DCE6F5'], ['#FFFFFF', '#0E1620', '#2563EB'], ['#EEF2F7', '#0E1620', '#1E3A8A'], ['#EEF2F7', '#0E1620', '#2563EB']],
+};
+const BIZ_STYLE_NAMES = { hc: ['Clinic', 'Pure', 'Chart', 'Calm'], bw: ['Mocha', 'Petal', 'Linen', 'Silk'], lf: ['Chambers', 'Counsel', 'Ledger', 'Heritage'], hs: ['Hi-Vis', 'Toolbox', 'Draft', 'Workshop'], cc: ['Boardroom', 'Memo', 'Metric', 'Summit'] };
+const BIZ_STYLES = Object.entries(BIZ_PAL).flatMap(([p, v]) => ['poster', 'list', 'blueprint', 'home'].map((mode, i) => ({ id: p + '-' + mode, name: (BIZ_STYLE_NAMES[p] || ['Poster', 'List', 'Grid', 'Classic'])[i], layout: 'estate', mode, bg: v[i][0], ink: v[i][1], accent: v[i][2], biz: p })));
+const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES).map(s => [s.id, s]));
+const COLLECTIONS = [
+  { id: 'personal', name: 'Personal', preset: null },
+  { id: 'professional', name: 'Professional', preset: 'entrepreneur', category: "Let's connect", tagline: 'Trusted · Professional · Reliable' },
+  { id: 'luxury', name: 'Luxury', preset: 'entrepreneur', category: "Let's connect", tagline: 'Excellence · Discretion · Service' },
+  { id: 'realestate', name: 'Real Estate', preset: 'realEstate', category: 'Real Estate', tagline: 'Buy · Sell · Rent' },
+  { id: 'hc', name: 'Health', preset: 'healthcare', category: 'Healthcare', tagline: 'Care · Treat · Heal' },
+  { id: 'bw', name: 'Beauty', preset: 'services', category: 'Beauty & Wellness', tagline: 'Style · Care · Glow' },
+  { id: 'lf', name: 'Legal & Finance', preset: 'entrepreneur', category: 'Legal & Finance', tagline: 'Advice · Protect · Plan' },
+  { id: 'hs', name: 'Home Services', preset: 'services', category: 'Home Services', tagline: 'Fix · Build · Maintain' },
+  { id: 'cc', name: 'Corporate', preset: 'entrepreneur', category: 'Consulting', tagline: 'Strategy · Growth · Results' },
+];
+const collOf = id => STYLE_BY_ID[id] ? (STYLE_BY_ID[id].layout === 'professional' ? 'professional' : STYLE_BY_ID[id].layout === 'estate' ? (STYLE_BY_ID[id].biz || 'realestate') : 'luxury') : 'personal';
+const COLOURS = [
+  { id: 'forest', name: 'Forest', bg: '#06120d', accent: '#f2c98a' },
+  { id: 'burgundy', name: 'Rosé', bg: '#1a0a0e', accent: '#f2a3a8' },
+  { id: 'teal', name: 'Lagoon', bg: '#061618', accent: '#74d3c6' },
+  { id: 'plum', name: 'Plum', bg: '#140a1c', accent: '#d6b4ee' },
+  { id: 'espresso', name: 'Espresso', bg: '#160d09', accent: '#e8a57f' },
+  { id: 'blush', name: 'Blush', bg: '#1c0a14', accent: '#ff9ecb' },
+];
+const PRESETS = {
+  entrepreneur: { category: "Let's connect", tagline: 'Connect · Share · Grow' },
+  realEstate: { category: 'Real Estate', tagline: 'Buy · Sell · Rent' },
+  services: { category: 'Services', tagline: 'Design · Style · Transform' },
+  healthcare: { category: 'Healthcare', tagline: 'Care · Treat · Smile' },
+};
+const PROFESSIONS = ['Entrepreneur / Business owner', 'Real Estate', 'Healthcare', 'Beauty & Wellness', 'Home Services', 'Interior / Design services', 'Consultant / Coach', 'Legal / Finance', 'Retail / Shop', 'Other'];
+const BIZ_ICON = {"Real Estate":["Property","M3 10.5 12 3l9 7.5V21H3z"],"Healthcare":["Health","M12 5v14M5 12h14"],"Beauty & Wellness":["Beauty","M6 3a3 3 0 1 0 0 6a3 3 0 1 0 0-6M6 15a3 3 0 1 0 0 6a3 3 0 1 0 0-6M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"],"Legal / Finance":["Legal","M12 3v18M5 7h14M5 7l-3 7h6zM19 7l-3 7h6z"],"Home Services":["Trades","M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"],"Consultant / Coach":["Corporate","M3 7h18v13H3zM8 7V4h8v3M3 12h18"],"Entrepreneur / Business owner":["Personal","M12 3a4 4 0 1 0 0 8a4 4 0 1 0 0-8M4 21a8 8 0 0 1 16 0"]};
+/* Step 2 starts with "What's your business?". Each type shows only the design collections made for it. */
+const BUSINESSES = [
+  { prof: 'Entrepreneur / Business owner', name: 'Personal', sub: 'Any profession', colls: ['personal', 'professional', 'luxury'] },
+  { prof: 'Real Estate', name: 'Real Estate', sub: 'Agents, brokers, builders', colls: ['realestate'], hiddenColls: ['luxury', 'professional'] },
+  { prof: 'Healthcare', name: 'Health & Clinics', sub: 'Doctors, dentists, clinics', colls: ['hc'], hiddenColls: ['professional', 'personal'] },
+  { prof: 'Beauty & Wellness', name: 'Beauty & Wellness', sub: 'Salons, stylists, spas, trainers', colls: ['bw'], hiddenColls: ['luxury', 'personal'] },
+  { prof: 'Legal / Finance', name: 'Legal & Finance', sub: 'Lawyers, CAs, insurance advisors', colls: ['lf'], hiddenColls: ['professional', 'luxury'] },
+  { prof: 'Home Services', name: 'Home Services', sub: 'Plumbers, electricians, cleaners', colls: ['hs'] },
+  { prof: 'Consultant / Coach', name: 'Corporate & Consultants', sub: 'Sales, founders, freelancers', colls: ['cc'], hiddenColls: ['professional', 'luxury'] },
+];
+/* Personal shows Personal, Professional and Luxury. Business categories show only their own designs; hiddenColls lists extra designs to restore later. */
+const VISIBLE_BIZ = BUSINESSES.filter(b => !b.hidden);
+/* Mini card previews only where designs differ in layout (Real Estate and business collections). Personal, Professional and Luxury differ by colour, so they use round swatches. */
+const isTh = c => c.layout === 'estate' && !!c.mode;
+const thumbBlocks = (c, w, h, ph) => { const s = w / 58, px = n => (n * s).toFixed(1) + 'px', bg = c.bg, ink = c.ink, acc = c.accent, mix = p => 'color-mix(in srgb, ' + ink + ' ' + p + '%, ' + bg + ')', B = (l, t, ww, hh, r, b, sh) => ({ l: px(l), t: px(t), w: px(ww), h: px(hh), r: px(r), bg: b, sh: sh || 'none' });
+  if (!c.mode) { const dark = (() => { const x = String(bg).replace('#', ''); if (x.length < 6) return true; const n = parseInt(x.slice(0, 6), 16); return (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) < 140; })(), fg = dark ? '#FFFFFF' : '#101820', soft = dark ? 'rgba(255,255,255,0.16)' : 'rgba(16,24,32,0.10)';
+    return [B(0, 0, 58, 42, 0, ph || ('color-mix(in srgb, ' + acc + ' 30%, ' + bg + ')')), B(0, 26, 58, 16, 0, 'linear-gradient(180deg, transparent, ' + bg + ')'), B(6, 45, 32, 5, 2, fg), B(6, 53, 20, 3, 2, acc), B(6, 60, 14, 7, 2, soft), B(22, 60, 14, 7, 2, soft), B(38, 60, 14, 7, 2, soft), B(6, 70, 46, 6, 3, acc)]; }
+  if (c.mode === 'poster') return [B(0, 0, 58, 44, 0, ph || mix(18)), B(6, 56, 34, 5, 2, ink), B(6, 65, 22, 3, 2, acc)];
+  if (c.mode === 'list') return [B(18, 9, 22, 22, 11, ph || mix(22))].concat([37, 47, 57, 67].map(y => B(7, y, 44, 6, 2, mix(12))));
+  if (c.mode === 'blueprint') return [B(0, 0, 58, 32, 0, acc)].concat([[5, 38], [31, 38], [5, 58], [31, 58]].map(([x, y]) => B(x, y, 22, 16, 3, mix(12))));
+  return [B(14, 7, 30, 30, 15, ph || mix(22), '0 0 0 ' + px(2) + ' #FFFFFF'), B(6, 42, 46, 31, 4, '#FFFFFF'), B(11, 48, 26, 4, 2, acc)]; };
+const firstStyleOf = id => (id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS)[0].id;
+const bizOf = p => BUSINESSES.find(b => b.prof === p) || BUSINESSES[0];
+const PROF_PRESET = { 'Entrepreneur / Business owner': 'entrepreneur', 'Real Estate': 'realEstate', 'Healthcare': 'healthcare', 'Beauty & Wellness': 'services', 'Home Services': 'services', 'Interior / Design services': 'services', 'Consultant / Coach': 'entrepreneur', 'Legal / Finance': 'entrepreneur', 'Retail / Shop': 'services', 'Other': 'entrepreneur' };
+const LAYOUTS = [
+  { id: 'original', name: 'Original', tag: 'Flip card · any profession', thumb: 'linear-gradient(180deg, #134a33 0%, #06120d 55%, #06120d 70%, #f2c98a 70% 78%, #06120d 78%)' },
+];
+/* Real estate fields that change by the client's country: [label, placeholder]. null keeps the default. */
+const RE_REGION = {
+  IN: { brokerage: ['Agency / firm', 'Skyline Realty'], licenseNo: ['RERA number', 'A51800012345'], listingsUrl: [null, '99acres, MagicBricks, Housing.com or your site'], bookingUrl: ['Site visit booking link', null], officeAddress: [null, 'Hill Road, Bandra West, Mumbai 400050'] },
+  US: { licenseNo: ['License number', '0712345'] },
+};
+/* Business fields: labels by business and country. */
+const BIZ_LABEL = {
+  'Entrepreneur / Business owner': { title: [null, 'Founder · Designer · Coach'], company: [null, 'Your business (optional)'] },
+  'Real Estate': { title: [null, 'Property Consultant'], company: [null, 'Skyline Realty'] },
+  'Consultant / Coach': { title: [null, 'Sales Director · Consultant'], company: [null, 'Northstar Advisory'] },
+  'Healthcare': { title: [null, 'Dentist · Orthodontist'], company: ['Clinic / hospital name', { IN: 'Smile Dental Clinic', US: 'Bright Smile Dental' }], officeAddress: ['Clinic address', { IN: 'Indiranagar 100 Ft Rd, Bengaluru 560038', US: '1200 Main St, Suite 4, Omaha, NE 68102' }],  regNo: { IN: ['Medical Council reg. no.', 'KMC 12345'], US: ['NPI or state license no.', '1234567890'] }, bookingUrl: ['Appointment booking link', 'Practo, Calendly or clinic site'] },
+  'Legal / Finance': { title: [null, { IN: 'Advocate · Chartered Accountant', US: 'Attorney · CPA' }], company: ['Firm name', { IN: 'Mehta & Associates', US: 'Carter & Reed LLP' }], officeAddress: ['Office address', { IN: 'Nariman Point, Mumbai 400021', US: '200 S 10th St, Suite 300, Omaha, NE 68102' }],  regNo: { IN: ['Bar / CA / ARN no.', 'K/1234/2008'], US: ['State Bar / license no.', 'NE Bar #24561'] }, bookingUrl: ['Consultation booking link', 'Calendly or booking page'] },
+  'Home Services': { title: [null, { IN: 'Plumber · Electrician', US: 'Licensed Plumber' }], company: [null, 'Rapid Fix Plumbing'], hours: [null, 'Mon–Sat · 8 am – 8 pm'], services: [null, 'Leak repair, drain cleaning, water heaters'],  regNo: { IN: ['GST no. (optional)', '29ABCDE1234F1Z5'], US: ['Contractor license no.', 'NE #54321'] }, bookingUrl: ['Quote request link', 'Form or booking page (optional)'] },
+  'Beauty & Wellness': { title: [null, 'Hair Stylist · Salon Owner'], company: ['Salon / studio name', 'Glow Studio'], hours: [null, 'Tue–Sun · 10 am – 8 pm'], services: ['Services & starting prices', 'Haircut from $30, Colour from $80, Facial from $60'], bookingUrl: ['Booking link', 'Fresha, Booksy or Calendly'] },
+};
+const FIELDS = [
+  { k: 'firstName', label: 'First name', req: 'all', ph: '', ac: 'given-name', span: 1 },
+  { k: 'lastName', label: 'Last name', ph: '', ac: 'family-name', span: 1 },
+  { k: 'title', label: 'Job title', req: 'builder', ph: 'Property Consultant', ac: 'organization-title', span: 1 },
+  { k: 'company', label: 'Business name', ph: 'Skyline Realty', ac: 'organization', span: 1 },
+  { k: 'phone', label: 'Mobile', req: 'all', ph: '', type: 'tel', ac: 'tel', span: 1, live: 'phone' },
+  { k: 'whatsapp', label: 'WhatsApp', ph: '', type: 'tel', ac: 'off', span: 1, live: 'phone' },
+  { k: 'email', label: 'Email', req: 'all', ph: '', type: 'email', ac: 'email', span: 1 },
+  { k: 'city', label: 'City', ph: '', ac: 'address-level2', span: 1 },
+  { k: 'website', label: 'Website', ph: '', type: 'text', ac: 'url', span: 2 },
+  { k: 'instagram', notBiz: ['Consultant / Coach', 'Legal / Finance'], label: 'Instagram username', ph: 'yourname', type: 'text', ac: 'off', span: 1, handle: '@' },
+  { k: 'linkedin', notBiz: ['Beauty & Wellness', 'Healthcare', 'Home Services'], label: 'LinkedIn ID', ph: 'your-name', type: 'text', ac: 'off', span: 1, handle: 'in/' },
+  { k: 'xHandle', notBiz: ['Beauty & Wellness', 'Healthcare', 'Home Services'], label: 'X username', ph: 'yourname', type: 'text', ac: 'off', span: 1, handle: '@' },
+  { k: 'brokerage', label: 'Brokerage', req: 'all', inOptional: true, re: true, ph: 'Lone Star Realty Group', ac: 'organization', span: 1 },
+  { k: 'licenseNo', label: 'License number', req: 'all', re: true, ph: '0712345', ac: 'off', span: 1 },
+  { k: 'licenseState', label: 'License state', re: true, usOnly: true, ph: 'TX', ac: 'off', span: 1 },
+  { k: 'facebook', label: 'Facebook', re: true, ph: 'facebook.com/yourpage', type: 'text', ac: 'off', span: 1 },
+  { k: 'listingsUrl', label: 'Listings page', re: true, ph: 'Zillow, Realtor.com or your site', type: 'text', ac: 'url', span: 2 },
+  { k: 'bookingUrl', label: 'Showing booking link', biz: ['Real Estate', 'Healthcare', 'Beauty & Wellness', 'Legal / Finance', 'Home Services'], ph: 'Calendly or booking page (optional)', type: 'text', ac: 'url', span: 2 },
+  { k: 'regNo', label: 'Registration number', biz: ['Healthcare', 'Legal / Finance', 'Home Services'], ph: '', ac: 'off', span: 1 },
+  { k: 'quals', label: 'Qualifications', biz: ['Healthcare'], ph: 'BDS, MDS', phUS: 'DDS, MS', ac: 'off', span: 1 },
+  { k: 'practice', label: 'Practice areas', biz: ['Legal / Finance'], ph: 'Property, GST, tax filing', phUS: 'Real estate, contracts, family law', ac: 'off', span: 2 },
+  { k: 'services', label: 'Services', biz: ['Beauty & Wellness', 'Home Services'], ph: 'Separate with commas', ac: 'off', span: 2 },
+  { k: 'serviceArea', label: 'Service area', biz: ['Home Services'], ph: 'Whitefield and nearby areas', phUS: 'Omaha and 20 miles around', ac: 'off', span: 1 },
+  { k: 'insured', label: 'Insured?', biz: ['Home Services'], yn: true, ac: 'off', span: 1, usOnly: true },
+  { k: 'emergency', label: '24×7 emergency?', biz: ['Home Services'], yn: true, ac: 'off', span: 1 },
+  { k: 'hours', label: 'Opening hours', biz: ['Healthcare', 'Beauty & Wellness', 'Home Services'], ph: 'Mon–Sat · 10 am – 7 pm', ac: 'off', span: 2 },
+  { k: 'officeAddress', label: 'Office address', re: true, alsoBiz: ['Healthcare', 'Legal / Finance'], ph: '401 Congress Ave, Austin, TX 78701', ac: 'street-address', span: 2 },
+  { k: 'iabsUrl', label: 'Texas IABS form link', re: true, tx: true, usOnly: true, ph: 'Link to your IABS PDF', type: 'text', ac: 'off', span: 2 },
+  { k: 'bio', label: 'Short bio', ph: 'One or two sentences about what you do.', area: true, span: 2 },
+  { k: 'notes', label: 'Notes for our designer', ph: 'Colours you like, services to list, tagline ideas…', area: true, span: 2, dfmOnly: true },
+];
+const toE164 = (raw, region) => { let s = String(raw || '').trim(); const plus = s.startsWith('+'); let n = s.replace(/\D/g, ''); if (!n) return ''; if (plus) return '+' + n; if (region === 'IN') { if (n.length === 11 && n[0] === '0') n = n.slice(1); if (n.length === 10) return '+91' + n; if (n.length === 12 && n.startsWith('91')) return '+' + n; } else { if (n.length === 10) return '+1' + n; if (n.length === 11 && n[0] === '1') return '+' + n; } return '+' + n; };
+const fmtPhone = (raw, region) => { const e = toE164(raw, region), n = e.replace(/\D/g, ''); if (n.length === 11 && n[0] === '1') return '+1 (' + n.slice(1, 4) + ') ' + n.slice(4, 7) + '-' + n.slice(7); if (n.length === 12 && n.startsWith('91')) return '+91 ' + n.slice(2, 7) + ' ' + n.slice(7); return String(raw || '').trim() || e; };
+/* Formats a phone as the user types: +91 98765 43210 (India) or +1 (816) 555-0123 (US). */
+const fmtLive = (raw, region) => {
+  const s = String(raw || '').trim(); if (!s) return '';
+  const IN = region === 'IN', cc = IN ? '91' : '1'; let d = s.replace(/\D/g, ''), n;
+  if (s.startsWith('+')) { if (!d.startsWith(cc)) return '+' + d.slice(0, 15); n = d.slice(cc.length); }
+  else { n = d; if (IN) { if (n.length > 10 && n.startsWith('91')) n = n.slice(2); else if (n.startsWith('0')) n = n.slice(1); } else if (n.length > 10 && n.startsWith('1')) n = n.slice(1); }
+  n = n.slice(0, 10); if (!n) return '';
+  if (IN) return '+91 ' + n.slice(0, 5) + (n.length > 5 ? ' ' + n.slice(5) : '');
+  return '+1 ' + (n.length > 3 ? '(' + n.slice(0, 3) + ') ' + n.slice(3, 6) + (n.length > 6 ? '-' + n.slice(6) : '') : n);
+};
+const normLink = (k, raw) => {
+  let v = String(raw || '').trim().replace(/\s+/g, ''); if (!v) return '';
+  if (k === 'instagram' && !/[./]/.test(v.replace(/^@/, ''))) return 'https://instagram.com/' + v.replace(/^@/, '');
+  if (k === 'linkedin' && !/[./]/.test(v)) return 'https://linkedin.com/in/' + v.replace(/^@/, '');
+  if (k === 'x' && !/[./]/.test(v.replace(/^@/, ''))) return 'https://x.com/' + v.replace(/^@/, '');
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
+  return v;
+};
+const STEP_LABELS = ['Plan', 'Your card', 'Preview', 'Payment'];
+const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40) || 'card';
+const addYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
+const DRAFT_KEY = 'nbr-order-draft';
+/* Card changes are done by our team. Put your business WhatsApp number here (digits with country code, e.g. '919876543210'); empty = email. */
+const SUPPORT_WA = '';
+const SUPPORT_EMAIL = 'hello@linkcardly.com';
+const CHANGES_INCLUDED = { basic: 2, motion: 4 };
+const changeLink = (msg, subj) => SUPPORT_WA ? 'https://wa.me/' + SUPPORT_WA + '?text=' + encodeURIComponent(msg) : 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(msg);
+const readLocal = () => { try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch (e) { return []; } };
+const EMPTY = { profession: '', layout: 'original', colour: 'forest', photo: '', photoX: 50, photoY: 50, photoZoom: 1, firstName: '', lastName: '', title: '', company: '', phone: '', whatsapp: '', email: '', city: '', website: '', instagram: '', linkedin: '', bio: '', notes: '', seasonal: true, greeting: '', brokerage: '', licenseNo: '', licenseState: '', facebook: '', listingsUrl: '', bookingUrl: '', officeAddress: '', iabsUrl: '' };
+
+const NBR_PHOTO_MAX = 1080;
+/* Total GIF play time in seconds (sum of frame delays; 0 delay plays as 0.1s in browsers). */
+const gifSeconds = b => { let t = 0; for (let i = 0; i < b.length - 5; i++) if (b[i] === 0x21 && b[i + 1] === 0xF9 && b[i + 2] === 0x04) { const cs = b[i + 4] | (b[i + 5] << 8); t += (cs < 2 ? 10 : cs); i += 7; } return t / 100; };
+const isGifSrc = d => /^data:image\/gif/i.test(d.photoData || '') || /\.gif(\?|$)/i.test(d.photo || '') || NBR_VID.test(d.photo || '') || /^data:video\//i.test(d.photoData || '');
+const nbrCompress = file => new Promise((res, rej) => {
+  if (file.type === 'image/gif') return res(file);
+  const img = new Image(), u = URL.createObjectURL(file);
+  img.onload = () => {
+    const k = Math.min(1, NBR_PHOTO_MAX / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+    c.toBlob(b => b && b.type === 'image/webp' ? res(b) : c.toBlob(j => j ? res(j) : rej(new Error('compress')), 'image/jpeg', 0.85), 'image/webp', 0.82);
+  };
+  img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('image')); };
+  img.src = u;
+});
+/* Video portraits: photo divs (data-ph) get a muted looping <video> layered inside. */
+const NBR_VID = /\.(mp4|webm)(\?|#|$)|#video$|^data:video\//i;
+const nbrSyncVids = (src, root) => {
+  const isV = NBR_VID.test(src || '');
+  (root || document).querySelectorAll('[data-ph]').forEach(el => {
+    let v = el.querySelector('video[data-nbrv]');
+    if (!isV) { if (v) v.remove(); return; }
+    if (!v) {
+      v = document.createElement('video'); v.setAttribute('data-nbrv', ''); v.setAttribute('aria-hidden', 'true');
+      v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.preload = 'auto';
+      v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;border-radius:inherit;';
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      el.appendChild(v);
+    }
+    if (v.getAttribute('src') !== src) { v.setAttribute('src', src); }
+    v.style.objectPosition = el.style.backgroundPosition || '50% 50%';
+    if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  });
+};
+/* Shrinks a phone video to a <=10 s, <=720px silent clip in the browser (MediaRecorder). */
+const NBR_VID_MAX_IN = 200 * 1048576;
+const nbrVideo = (file, onPct) => new Promise((res, rej) => {
+  const v = document.createElement('video'), u = URL.createObjectURL(file);
+  v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.src = u;
+  v.onerror = () => { URL.revokeObjectURL(u); rej(new Error('read')); };
+  v.onloadedmetadata = () => {
+    const dur = isFinite(v.duration) && v.duration > 0 ? v.duration : 10, len = Math.min(dur, 10);
+    const W = v.videoWidth, H = v.videoHeight; if (!W || !H) { rej(new Error('read')); return; }
+    const sc = Math.min(1, 720 / Math.max(W, H)), cw = Math.round(W * sc / 2) * 2, ch = Math.round(H * sc / 2) * 2;
+    const c = document.createElement('canvas'); c.width = cw; c.height = ch; const ctx = c.getContext('2d');
+    const mime = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(m => { try { return window.MediaRecorder && MediaRecorder.isTypeSupported(m); } catch (e) { return false; } });
+    if (!mime || !c.captureStream) { URL.revokeObjectURL(u); if (/^video\/(mp4|webm)$/.test(file.type) && file.size <= 5 * 1048576 && dur <= 10.5) res(file); else rej(new Error('unsupported')); return; }
+    const rec = new MediaRecorder(c.captureStream(30), { mimeType: mime, videoBitsPerSecond: 1500000 }), chunks = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => { URL.revokeObjectURL(u); const b = new Blob(chunks, { type: mime.split(';')[0] }); b.size ? res(b) : rej(new Error('empty')); };
+    let done = false;
+    const stop = () => { if (done) return; done = true; try { v.pause(); } catch (e) {} setTimeout(() => rec.state !== 'inactive' && rec.stop(), 120); };
+    const draw = () => { if (done) return; ctx.drawImage(v, 0, 0, cw, ch); if (onPct) onPct(Math.min(99, Math.round(v.currentTime / len * 100))); if (v.currentTime >= len || v.ended) stop(); else requestAnimationFrame(draw); };
+    v.onended = stop;
+    v.currentTime = 0;
+    v.play().then(() => { rec.start(250); draw(); }).catch(() => { URL.revokeObjectURL(u); rej(new Error('play')); });
+  };
+});
+/* Square JPG for link previews (WhatsApp, iMessage, LinkedIn). Uses the photo, or a frame from a video portrait. */
+const nbrShareJpg = (src, px, py, zoom) => new Promise(res => {
+  if (!src) { res(null); return; }
+  const S = 600, done = el => { try { const w = el.videoWidth || el.naturalWidth || el.width, h = el.videoHeight || el.naturalHeight || el.height; if (!w || !h) { res(null); return; }
+    const c = document.createElement('canvas'); c.width = S; c.height = S; const x = c.getContext('2d');
+    const z = Math.max(1, Number(zoom) || 1), k = S / Math.min(w, h) * z, dw = w * k, dh = h * k;
+    x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, S, S);
+    x.drawImage(el, (S - dw) * ((px ?? 50) / 100), (S - dh) * ((py ?? 50) / 100), dw, dh);
+    c.toBlob(b => res(b), 'image/jpeg', 0.86); } catch (e) { res(null); } };
+  const t = setTimeout(() => res(null), 8000);
+  const isVid = /^data:video\//.test(src) || /\.(mp4|webm)(\?|$)/i.test(src) || (window.__nbrVidBlob && src === window.__nbrVidBlob);
+  if (isVid) {
+    const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous';
+    v.onloadeddata = () => { try { v.currentTime = Math.min(0.6, (v.duration || 1) / 2); } catch (e) { clearTimeout(t); done(v); } };
+    v.onseeked = () => { clearTimeout(t); done(v); }; v.onerror = () => { clearTimeout(t); res(null); };
+    v.src = src; return;
+  }
+  const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => { clearTimeout(t); done(i); }; i.onerror = () => { clearTimeout(t); res(null); }; i.src = src;
+});
+/* Upload to Cloudflare R2 via the site's /api/upload. Returns '' when R2 isn't available (caller falls back to Supabase storage). */
+const nbrUpload = async blob => {
+  window.__nbrUpErr = '';
+  if (!/(^|\.)nexbizrise\.com$|(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname)) { window.__nbrUpErr = 'preview'; return ''; }
+  try {
+    const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type || 'application/octet-stream' }, body: blob });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.url) { window.__nbrUpErr = r.status + ' ' + (j.error || 'no url') + ' · ' + Math.round(blob.size / 1024) + 'KB ' + (blob.type || '?'); return ''; }
+    return j.url;
+  } catch (e) { window.__nbrUpErr = 'network: ' + (e && e.message || e); return ''; }
+};
+
+class Component extends DCLogic {
+  state = { region: 'US', vw: 1280, vh: 800, pvOpen: false, mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, busy: false, done: null, copied: false, submitError: '' };
+  previewRef = React.createRef();
+  barRef = React.createRef();
+  formBarRef = React.createRef();
+  watchFormBar() {
+    const el = this.formBarRef.current; if (!el || this._fbEl === el || typeof ResizeObserver === 'undefined') return;
+    try { this._fbRO && this._fbRO.disconnect(); } catch (e) {}
+    this._fbEl = el;
+    this._fbRO = new ResizeObserver(() => { const h = Math.round(el.getBoundingClientRect().height); if (h && Math.abs(h - (this.state.fbH || 0)) > 2) this.setState({ fbH: h }); });
+    this._fbRO.observe(el);
+  }
+  watchBar() {
+    const el = this.barRef.current; if (!el || this._barEl === el || typeof ResizeObserver === 'undefined') return;
+    try { this._barRO && this._barRO.disconnect(); } catch (e) {}
+    this._barEl = el;
+    this._barRO = new ResizeObserver(() => { const h = Math.round(el.getBoundingClientRect().height); if (h && Math.abs(h - (this.state.barH || 0)) > 2) this.setState({ barH: h }); });
+    this._barRO.observe(el);
+  }
+  fileRef = React.createRef();
+  doneRef = React.createRef();
+  tsRef = React.createRef();
+  renderTs = () => {
+    if (!TURNSTILE_SITE_KEY) return;
+    const go = () => { const el = this.tsRef.current; if (!el || !window.turnstile || el.childElementCount) return; this.tsToken = ''; this.tsWidget = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, size: 'flexible', callback: t => { this.tsToken = t; }, 'expired-callback': () => { this.tsToken = ''; } }); };
+    if (window.turnstile) { setTimeout(go, 50); return; }
+    if (!document.getElementById('cf-ts')) { const s = document.createElement('script'); s.id = 'cf-ts'; s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = () => setTimeout(go, 50); document.head.appendChild(s); } else setTimeout(go, 800);
+  };
+  resetTs = () => { try { if (window.turnstile && this.tsWidget != null) window.turnstile.reset(this.tsWidget); } catch (e) {} this.tsToken = ''; };
+
+  componentDidUpdate() { try { nbrSyncVids(this.state.d.photo); } catch (e) {} this.watchBar(); this.watchFormBar(); }
+  componentDidMount() {
+    this.onMsg = ev => { if (ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
+    window.addEventListener('message', this.onMsg);
+    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    try { if (/[?&]qa=1/.test(location.search)) window.__nbrOrder = this; } catch (e) {}
+    const tok = this.editTokenFromUrl();
+    if (tok) { document.documentElement.setAttribute('data-skin', 'card'); this.setState({ standalone: true, editToken: tok, editLoading: true, step: 2, maxStep: 3 }); this.loadEdit(tok); }
+    else try {
+      const sa = !/NexBizRise%20Website|NexBizRise Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)\/?$/.test(location.pathname));
+      const q = new URLSearchParams(location.search), plan = q.get('plan');
+      const dd = !VIA_WORKER() && q.get('demoDone');
+      if (dd) { const ireg = q.get('region') === 'IN' ? 'IN' : 'US'; document.documentElement.setAttribute('data-skin', 'card');
+        this.setState({ standalone: true, region: ireg, regionTouched: true, mode: dd === 'dfm' ? 'dfm' : 'builder', d: { ...this.state.d, firstName: 'Alex', lastName: 'Morgan', title: 'Realtor', company: 'Skyline Realty', phone: ireg === 'IN' ? '+91 98765 43210' : '+1 (816) 555-0123', email: 'alex@skylinerealty.com', profession: 'Real Estate', colour: 're-poster' } },
+          () => this.showDone({ orderNo: 'LC-K7Q2XP', slug: 'alexmorgan0123', pid: 'nbr_7f3a91', tok: '', remote: false, mode: dd === 'dfm' ? 'dfm' : 'builder', idem: '', total: priceOf(ireg, 'basic').total, region: ireg, paid: dd === 'paid' || dd === 'dfm', unpaid: dd === 'unpaid', online: true }));
+        return; }
+      if ((q.get('paid') || q.get('unpaid')) && VIA_WORKER()) { document.documentElement.setAttribute('data-skin', 'card'); this.setState({ standalone: sa }); this.checkPayReturn(q); }
+      const upd = { standalone: sa, ref: q.get('from') || '' };
+      if (sa || q.get('skin') === 'card') {
+        document.documentElement.setAttribute('data-skin', 'card');
+      }
+      const rq = (q.get('region') || '').toUpperCase(); if (rq === 'IN' || rq === 'US') upd.region = rq; else this.detectRegion();
+      if (q.get('fresh') !== '1' && !/^\/create\/?$/.test(location.pathname)) try { const dr = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); if (dr && dr.d && (dr.d.firstName || dr.d.phone || dr.d.email || dr.d.photo)) Object.assign(upd, { d: (x => { const pd = String(x.photoData || ''); x.photo = pd.startsWith('data:image/') ? pd : /^https:\/\//.test(x.photo || '') ? x.photo : ''; if (!x.photo) x.photoData = ''; return x; })({ ...EMPTY, ...dr.d }), plan: dr.plan || 'basic', step: dr.step || 1, maxStep: dr.maxStep || dr.step || 1 }); } catch (e) {}
+      if (plan === 'basic' || plan === 'motion') Object.assign(upd, { plan, step: Math.max(2, upd.step || 1), maxStep: Math.max(2, upd.maxStep || 1) });
+      else if (q.get('from') || q.get('region')) Object.assign(upd, { step: 1 });
+      { const qc = q.get('colour'); if (qc && STYLE_BY_ID[qc]) upd.d = { ...EMPTY, ...(upd.d || {}), colour: qc, profession: STYLE_BY_ID[qc].layout === 'estate' ? 'Real Estate' : ((upd.d || {}).profession || EMPTY.profession) }; }
+      if (upd.d) { const vb = VISIBLE_BIZ.find(b => b.prof === upd.d.profession); if (!vb || !vb.colls.includes(collOf(upd.d.colour))) { upd.d = { ...upd.d, profession: vb ? vb.prof : '', colour: vb ? firstStyleOf(vb.colls[0]) : EMPTY.colour }; if (!vb) { upd.step = Math.min(upd.step || 1, 2); upd.maxStep = Math.min(upd.maxStep || 1, 2); } } }
+      this.setState(upd);
+    } catch (e) {}
+    this.onResize(); window.addEventListener('resize', this.onResize);
+    this.lastY = window.scrollY || 0;
+    this.onScrollHdr = () => { const y = window.scrollY || 0, dy = y - this.lastY; if (Math.abs(dy) < 6) return; this.lastY = y; const hide = this.state.vw < 960 && y > 80 && dy > 0; if (hide !== !!this.state.hdrHidden) this.setState({ hdrHidden: hide }); };
+    window.addEventListener('scroll', this.onScrollHdr, { passive: true });
+  }
+  backToCard = () => {
+    const local = /\.dc\.html$/.test(decodeURIComponent(location.pathname));
+    const slug = this.state.ref && /^[a-z0-9-]+$/.test(this.state.ref) ? this.state.ref : '';
+    location.href = local ? '/app/card.html?plans=1' + (slug ? '&c=' + slug : '') : '/' + slug + '?plans=1';
+  };
+  async detectRegion() {
+    let reg = '';
+    try { const r = await fetch('/cdn-cgi/trace', { cache: 'no-store' }); if (r.ok) { const m = (await r.text()).match(/loc=([A-Z]{2})/); if (m) reg = m[1] === 'IN' ? 'IN' : 'US'; } } catch (e) {}
+    if (!reg) { try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; reg = /Kolkata|Calcutta/.test(tz) || /-IN$/i.test(navigator.language || '') ? 'IN' : 'US'; } catch (e) { reg = 'US'; } }
+    if (!this.state.regionTouched) this.setState({ region: reg });
+  }
+  componentWillUnmount() { window.removeEventListener('scroll', this.onScrollHdr); window.removeEventListener('message', this.onMsg); window.removeEventListener('resize', this.onResize); clearTimeout(this.pvT); }
+  setState(u, cb) {
+    return super.setState(u, () => { const S = this.state; if (S.d !== this.__lastD || S.plan !== this.__lastPlan) { this.__lastD = S.d; this.__lastPlan = S.plan; clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 100); } if (S.step === 4 && !S.done && !S.editToken) this.renderTs(); if (cb) cb(); });
+  }
+
+  row(slug, active, forSave) {
+    const d0 = this.state.d, prof0 = d0.profession, d = { ...d0 };
+    FIELDS.forEach(f => { if ((f.re && prof0 !== 'Real Estate') || (f.biz && !f.biz.includes(prof0)) || (f.usOnly && this.state.region === 'IN') || (f.tx && String(d0.licenseState || '').trim().toUpperCase() !== 'TX')) d[f.k] = ''; });
+    const preset = PROF_PRESET[d.profession] || 'entrepreneur', pre = PRESETS[preset];
+    const reg = this.state.region || 'US', p = toE164(d.phone, reg);
+    const stl = STYLE_BY_ID[d.colour], cl = COLLECTIONS.find(c => c.id === collOf(d.colour));
+    const preset2 = cl.preset || preset, pre2 = PRESETS[preset2] || pre;
+    return { slug, region: this.state.region || 'US', layout: stl ? stl.layout : 'original', photo_x: Math.round(d.photoX ?? 50), photo_y: Math.round(d.photoY ?? 50), photo_zoom: Number(d.photoZoom || 1), phone_display: fmtPhone(d.phone, reg), signature: '', titles: '', contact_photo_url: '', show_powered_by: true,
+      profession: d.profession, profession_other: '', city: d.city || '', notes: d.notes || '', prefix: '', first_name: d.firstName, last_name: d.lastName || '', title: d.title || '', company: d.company || '',
+      preset: preset2, colour: d.colour, category: cl.category || pre2.category, tagline: cl.tagline || pre2.tagline, phone: p, whatsapp: d.whatsapp ? toE164(d.whatsapp, reg).replace(/\D/g, '') : '', email: d.email || '', linkedin: normLink('linkedin', d.linkedin), instagram: normLink('instagram', d.instagram), website: d.website || '',
+      extras: { x_url: normLink('x', d.xHandle), meeting_url: normLink('booking', d.meetingUrl), booking_url: normLink('booking', d.bookingUrl), reg_no: (d.regNo || '').trim(), quals: (d.quals || '').trim(), hours: (d.hours || '').trim(), services: (d.services || '').trim(), practice: (d.practice || '').trim(), service_area: (d.serviceArea || '').trim(), insured: (d.insured || '').trim(), emergency: (d.emergency || '').trim(), ...((d.profession === 'Healthcare' || d.profession === 'Legal / Finance') && d.officeAddress ? { office_address: d.officeAddress.trim() } : {}), ...(d.profession === 'Real Estate' ? { brokerage: (d.brokerage || '').trim(), license_no: (d.licenseNo || '').trim(), license_state: this.state.region === 'IN' ? '' : (d.licenseState || '').trim().toUpperCase().slice(0, 2), facebook: normLink('facebook', d.facebook), listings_url: normLink('listings', d.listingsUrl), booking_url: normLink('booking', d.bookingUrl), office_address: (d.officeAddress || '').trim(), iabs_url: normLink('iabs', d.iabsUrl), lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' } : { lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' }) },
+      quote: '', bio: d.bio || '', photo_url: (forSave ? d.photoData : d.photo) || '', plan: this.state.plan, renewal: addYear(), active: !!active };
+  }
+  postPreview = () => {
+    const f = this.previewRef.current; if (!f || !f.contentWindow) return;
+    const d = this.state.d, r = this.row('preview', true);
+    if (!d.firstName && !d.lastName) { r.first_name = 'Your'; r.last_name = 'Name'; }
+    if (!d.title) r.title = 'Your job title';
+    if (!d.phone) r.phone = '+18165550123';
+    r.name_placeholder = !String(d.firstName || '').trim();
+    r.preview_season = (this.state.plan !== 'motion' || this.state.d.seasonal === false) ? 'off' : (this.state.pvSeason || 'off');
+    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: r }, '*'); } catch (e) {}
+    clearTimeout(this.msT); this.msT = setTimeout(this.measurePreview, 500);
+    if (d.photo !== this.__pvPhoto) { this.__pvPhoto = d.photo; try { f.contentWindow.scrollTo(0, 0); } catch (e) {} }
+  };
+  onPreviewLoad = () => { this.postPreview(); setTimeout(this.postPreview, 400); setTimeout(this.postPreview, 1200); };
+  measurePreview = () => {
+    const f = this.previewRef.current; if (!f) return;
+    try {
+      if (!f.offsetParent) return;
+      const doc = f.contentDocument, prev = f.style.height;
+      f.style.height = '806px';
+      const hh = Math.max(806, Math.ceil(Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0)));
+      f.style.height = prev;
+      if (Math.abs(hh - (this.state.pvDocH || 0)) > 4) this.setState({ pvDocH: hh });
+    } catch (e) {}
+  };
+
+  saveDraft = () => {
+    const S = this.state;
+    if (S.editToken || window.__nbrOrder === this || /[?&]fresh=1/.test(location.search)) return;
+    if (S.done) { if (this.lastDraftD !== 'done') { this.lastDraftD = 'done'; try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} } return; }
+    if (this.lastDraftD === S.d && this.lastDraftStep === S.step && this.lastDraftPlan === S.plan) return;
+    this.lastDraftD = S.d; this.lastDraftStep = S.step; this.lastDraftPlan = S.plan;
+    clearTimeout(this.draftT);
+    this.draftT = setTimeout(() => { const S2 = this.state; if (S2.done) return; const dd = { ...S2.d, photo: String(S2.d.photo || '').startsWith('blob:') ? '' : S2.d.photo }; const v = { d: dd, plan: S2.plan, step: S2.step, maxStep: S2.maxStep }; try { localStorage.setItem(DRAFT_KEY, JSON.stringify(v)); } catch (e) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...v, d: { ...dd, photo: '', photoData: '' } })); } catch (e2) {} } }, 400);
+  };
+  set = (k, v) => this.setState(s => ({ d: { ...s.d, [k]: v }, errors: { ...s.errors, [k]: '' } }));
+  pickPhoto = () => { const i = this.fileRef.current; if (i) { i.value = ''; i.click(); } };
+  readPhoto = file => {
+    if (!file) return;
+    const motion = this.state.plan === 'motion';
+    if (/^video\//.test(file.type) || /\.(mov|mp4|m4v|webm)$/i.test(file.name || '')) {
+      if (!motion) { this.setState({ photoMsg: 'Videos are part of the Motion Card. Use a photo (JPG, PNG or WebP), or switch to Motion.' }); return; }
+      if (file.size > NBR_VID_MAX_IN) { this.setState({ photoMsg: 'That video is too large. Please record a shorter clip (3 to 10 seconds).' }); return; }
+      this.setState({ vidBusy: true, vidPct: 0, photoMsg: '' });
+      nbrVideo(file, p => { if (p !== this.state.vidPct) this.setState({ vidPct: p }); }).then(b => {
+        if (b.size > 5 * 1048576) { this.setState({ vidBusy: false, photoMsg: 'That video is still over 5 MB after shrinking. Please record a shorter clip.' }); return; }
+        const fr = new FileReader(); fr.onload = () => { const bu = URL.createObjectURL(b) + '#video'; this.setState(s => ({ vidBusy: false, photoMsg: '', d: { ...s.d, photo: bu, photoData: fr.result, photoX: 50, photoY: 50, photoZoom: 1 } })); }; fr.readAsDataURL(b);
+      }).catch(() => this.setState({ vidBusy: false, photoMsg: "We couldn't read that video on this device. Try an MP4, or upload a GIF or photo." }));
+      return;
+    }
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) { this.setState({ photoMsg: motion ? 'Use a JPG, PNG, WebP or GIF.' : 'Use a photo (JPG, PNG or WebP).' }); return; }
+    if (file.type === 'image/gif') {
+      if (!motion) { this.setState({ photoMsg: 'Moving photos (GIF) are part of the Motion Card. Use a photo (JPG, PNG or WebP), or switch to Motion.' }); return; }
+      if (file.size > 5 * 1048576) { this.setState({ photoMsg: 'GIF is over 5 MB. Please upload a shorter or smaller GIF.' }); return; }
+      file.arrayBuffer().then(buf => { const sec = gifSeconds(new Uint8Array(buf));
+      if (sec > 10.05) { this.setState({ photoMsg: 'GIF is ' + sec.toFixed(1) + ' seconds long. Please upload a GIF of 10 seconds or less.' }); return; }
+      const fr = new FileReader(); fr.onload = () => { const bu = URL.createObjectURL(file); this.setState(s => ({ d: { ...s.d, photo: bu, photoData: fr.result, photoX: 50, photoY: 50, photoZoom: 1 } })); this.setState({ photoMsg: '' }); }; fr.readAsDataURL(file); }).catch(() => this.setState({ photoMsg: "We couldn't read that GIF. Try another file." })); return;
+    }
+    if (file.size > 15 * 1048576) { this.setState({ photoMsg: 'Photo is over 15 MB. Please pick a smaller one.' }); return; }
+    nbrCompress(file).then(b => {
+      const fr = new FileReader(); fr.onload = () => { const bu = URL.createObjectURL(b); this.setState(s => ({ d: { ...s.d, photo: bu, photoData: fr.result, photoX: 50, photoY: 50, photoZoom: 1 }, photoMsg: '' })); }; fr.readAsDataURL(b);
+    }).catch(() => this.setState({ photoMsg: 'We could not read that photo. Try a JPG or PNG.' }));
+  };
+
+  adjDown = e => {
+    const d = this.state.d; if (!d.photo) return;
+    const box = e.currentTarget.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY, x0 = d.photoX ?? 50, y0 = d.photoY ?? 50, k = 140 / (d.photoZoom || 1);
+    const move = ev => {
+      const x = Math.max(0, Math.min(100, x0 - (ev.clientX - sx) / box.width * k));
+      const y = Math.max(0, Math.min(100, y0 - (ev.clientY - sy) / box.height * k));
+      this.setState(s => ({ d: { ...s.d, photoX: x, photoY: y } }));
+    };
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    e.preventDefault();
+  };
+  validate() {
+    const d = this.state.d, dfm = this.state.mode === 'dfm', e = {};
+    const isRE = d.profession === 'Real Estate';
+    if (!this.state.editToken && !BUSINESSES.some(b => b.prof === d.profession)) e.profession = 'Pick your card category';
+    if (e.profession) return e;
+    FIELDS.forEach(f => { if (f.re && !isRE) return; if (f.biz && !f.biz.includes(d.profession)) return; if (f.inOptional && this.state.region === 'IN') return; if ((f.req === 'all' || (f.req === 'builder' && !dfm)) && !(this.state.editToken && f.k === 'email') && !String(d[f.k] || '').trim()) e[f.k] = 'Enter your ' + f.label.toLowerCase(); });
+    if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim())) e.email = 'Enter a valid email';
+    if (d.phone) { const dg = String(d.phone).replace(/\D/g, ''), IN = this.state.region === 'IN'; const ok = IN ? /^(91|0)?[6-9]\d{9}$/.test(dg) : /^1?[2-9]\d{9}$/.test(dg); if (!ok && !this.state.editToken) e.phone = IN ? 'Enter a 10-digit Indian mobile number' : 'Enter a 10-digit US phone number'; else if (dg.length < 7) e.phone = 'Enter a valid mobile number'; }
+    ['website'].forEach(k => { const v = normLink(k, d[k]); if (v !== (d[k] || '')) d[k] = v; if (v && !/^https?:\/\/[^\s.]+\.[^\s]+/.test(v)) e[k] = 'Enter a web address, like yourbusiness.com'; });
+    [['instagram', 'Instagram username'], ['linkedin', 'LinkedIn ID'], ['xHandle', 'X username']].forEach(([k, n]) => { const v = String(d[k] || '').trim(); if (v && !/^[A-Za-z0-9._-]{2,100}$/.test(v)) e[k] = 'Enter just your ' + n + ', no spaces'; });
+    return e;
+  }
+  goStep = n => { if (n > 2 && !this.state.editToken && !VISIBLE_BIZ.some(b => b.prof === this.state.d.profession)) { this.setState(s => ({ errors: { ...(s.errors || {}), profession: 'Pick your card category' } })); n = 2; } if (n === 3 && this.state.vw >= 960) n = this.state.step > 3 ? 2 : 4; this.setState(s => ({ step: n, maxStep: Math.max(s.maxStep, n), submitError: '' }), () => { [80, 400, 1200].forEach(ms => setTimeout(this.measurePreview, ms)); if (this.state.step === 4) this.renderTs(); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  next = () => {
+    const { step } = this.state;
+    if (step === 2) {
+      const e = this.validate();
+      if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k && document.getElementById('o-' + k.k); el && el.focus(); return; }
+    }
+    if (this.state.editToken) { if (step === 2 && this.state.vw < 960) this.goStep(3); else this.saveEdit(); return; }
+    if (step < 4) this.goStep(step + 1); else this.placeOrder();
+  };
+
+  async uniqueSlug(base) {
+    const local = readLocal().map(o => o.card && o.card.slug);
+    let s = base;
+    for (let i = 0; i < 5; i++) {
+      let taken = local.includes(s);
+      if (!taken) { try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(s), { headers: { apikey: SUPABASE_KEY } }); const j = await r.json(); taken = Array.isArray(j) && j.length > 0; } catch (e) {} }
+      if (!taken) return s;
+      s = base + Math.floor(10 + Math.random() * 90);
+    }
+    return s;
+  }
+  couponFor = S => { const c = S.coupon; return c && c.plan === S.plan && c.region === (S.region || 'US') ? c : null; };
+  applyCoupon = async () => {
+    const S = this.state, code = String(S.couponInput || '').trim().toUpperCase();
+    if (S.couponBusy) return;
+    if (!/^[A-Z0-9_-]{4,32}$/.test(code)) { this.setState({ couponMsg: 'Enter a valid coupon code.', couponOk: false }); return; }
+    this.setState({ couponBusy: true, couponMsg: '' });
+    try {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/check_coupon', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_code: code, p_plan: S.plan, p_region: S.region || 'US', p_email: (S.d.email || '').trim() }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { this.setState({ couponBusy: false, couponMsg: /too many/i.test(j.message || '') ? 'Too many attempts. Please try again in an hour.' : 'Could not check the code. Please try again.', couponOk: false }); return; }
+      if (!j.ok) { this.setState({ couponBusy: false, coupon: null, couponMsg: 'This code is not valid for your order.', couponOk: false }); return; }
+      this.setState({ couponBusy: false, coupon: { code: j.code, discount: +j.discount, tax: +j.tax, total: +j.total, plan: S.plan, region: S.region || 'US' }, couponMsg: 'Coupon applied.', couponOk: true });
+    } catch (e) { this.setState({ couponBusy: false, couponMsg: 'Could not check the code. Please try again.', couponOk: false }); }
+  };
+  placeOrder = async () => {
+    if (this.state.busy) return;
+    const e = this.validate();
+    if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
+    this.setState({ busy: true, submitError: '' });
+    const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
+    const slug = await this.uniqueSlug(autoSlug(d));
+    const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
+      customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
+      card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
+    if (!this.orderKey) { try { this.orderKey = crypto.randomUUID(); } catch (e) { this.orderKey = ''; } }
+    order.idem = this.orderKey;
+    if (S.d.photo && !order.card.photo_url) { this.setState({ busy: false, submitError: 'Please add your photo again (Step 2), then place your order.' }); return; }
+    const shareSrc = S.d.photoData || S.d.photo || '';
+    order.card.photo_url = await this.storePhoto(order.card.photo_url || '', slug);
+    if (order.card.photo_url && !String(order.card.photo_url).startsWith('data:')) { const og = await this.storeShare(shareSrc, S.d); if (og) order.card.extras = { ...(order.card.extras || {}), og_image: og }; }
+    if (String(order.card.photo_url).startsWith('data:') && VIA_WORKER()) { this.setState({ busy: false, submitError: 'Your photo could not be uploaded. Please try again, or remove the photo and add it later with your edit link.' + (window.__nbrUpErr ? ' (' + window.__nbrUpErr + ')' : '') }); return; }
+    let remote = false;
+    try {
+      const r = VIA_WORKER() ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
+      if (r.ok) { const j = await r.json(); if (j && j.slug) { this.orderKey = ''; order.order_no = j.order_no || order.order_no; order.card.slug = j.slug; order.card.public_id = j.public_id || ''; order.edit_token = j.edit_token || ''; if (j.total != null) { order.total = j.total; order.discount = j.discount; } order.pay = j.pay || null; order.pay_status = j.pay_status || 'unpaid'; remote = true; } }
+      else { const j = await r.json().catch(() => ({})); if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
+    } catch (err) {}
+    this.resetTs();
+    if (!remote) {
+      this.setState({ busy: false, submitError: "We couldn't place your order just now. Please try again in a minute, or message us on WhatsApp and we'll set it up for you." });
+      return;
+    }
+    const base = { orderNo: order.order_no, slug: order.card.slug, pid: order.card.public_id || '', tok: order.edit_token || '', remote, mode: S.mode, idem: order.idem || '', total: order.total, region: S.region || 'US' };
+    this.orderKey = '';
+    if (order.pay_status === 'paid' || order.pay_status === 'waived') { this.showDone({ ...base, paid: true }); return; }
+    this.startPayment(order.pay, base);
+  };
+  showDone = (done) => { this.setState({ busy: false, done }, () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); }); };
+  /* Payment: Stripe (US) redirects to a hosted checkout page; Razorpay (India) opens its checkout on this page.
+     If payment isn't set up on the server (pay = null) the order is saved and we email a payment link. */
+  startPayment = (pay, base) => {
+    if (pay && pay.provider === 'stripe' && pay.url) {
+      try { localStorage.setItem('nbr-pay', JSON.stringify(base)); } catch (e) {}
+      location.href = pay.url; return;
+    }
+    if (pay && pay.provider === 'razorpay' && pay.order_id) { this.openRazorpay(pay, base); return; }
+    this.showDone({ ...base, unpaid: true, online: false });
+  };
+  openRazorpay = (pay, base) => {
+    const go = () => {
+      let settled = false;
+      const rz = new window.Razorpay({ key: pay.key, order_id: pay.order_id, amount: pay.amount, currency: pay.currency, name: 'Linkcardly', description: pay.description || 'Digital card · 1 year',
+        prefill: { email: pay.email || '', contact: pay.contact || '' }, theme: { color: '#101820' },
+        handler: async (resp) => { settled = true; this.showDone({ ...base, verifying: true }); await this.verifyRazorpay(resp, base); },
+        modal: { ondismiss: () => { if (!settled) this.showDone({ ...base, unpaid: true, online: true }); } } });
+      rz.on('payment.failed', () => {});
+      rz.open();
+    };
+    if (window.Razorpay) { go(); return; }
+    const s = document.createElement('script'); s.src = 'https://checkout.razorpay.com/v1/checkout.js'; s.async = true;
+    s.onload = go; s.onerror = () => this.showDone({ ...base, unpaid: true, online: true, payError: "The payment window couldn't load. Check your connection and tap Pay again." });
+    document.head.appendChild(s);
+  };
+  verifyRazorpay = async (resp, base) => {
+    try {
+      const r = await fetch('/api/pay/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(resp) });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok) { this.showDone({ ...base, paid: true }); return; }
+    } catch (e) {}
+    this.showDone({ ...base, unpaid: true, online: true, payError: "We couldn't confirm your payment yet. If money left your account, don't pay again. We'll confirm by email within a few minutes." });
+  };
+  retryPay = async () => {
+    const done = this.state.done; if (!done || this.state.payBusy) return;
+    this.setState({ payBusy: true });
+    try {
+      const r = await fetch('/api/pay/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_no: done.orderNo, idem: done.idem }) });
+      const j = await r.json().catch(() => ({}));
+      this.setState({ payBusy: false });
+      if (r.ok && j.paid) { this.showDone({ ...done, unpaid: false, paid: true }); return; }
+      if (r.ok && j.pay) { this.startPayment(j.pay, { ...done, unpaid: false, payError: '' }); return; }
+    } catch (e) { this.setState({ payBusy: false }); }
+    this.setState({ done: { ...done, payError: "Payment couldn't start. Please try again, or reply to your order email and we'll send a payment link." } });
+  };
+  checkPayReturn = async (q) => {
+    const sid = q.get('paid'), un = q.get('unpaid');
+    if (!sid && !un) return false;
+    let base = null; try { base = JSON.parse(localStorage.getItem('nbr-pay') || 'null'); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+    if (un) { if (base && base.orderNo === un) this.showDone({ ...base, unpaid: true, online: true }); return !!base; }
+    this.showDone({ ...(base || { orderNo: '', slug: '', pid: '', mode: 'builder' }), verifying: true });
+    for (let i = 0; i < 6; i++) {
+      try {
+        const r = await fetch('/api/pay/status?sid=' + encodeURIComponent(sid)); const j = await r.json().catch(() => ({}));
+        if (r.ok && j.paid) { try { localStorage.removeItem('nbr-pay'); } catch (e) {} this.showDone({ ...(base || {}), orderNo: j.order_no, slug: j.slug, pid: j.public_id || '', mode: j.mode || (base && base.mode) || 'builder', paid: true }); return true; }
+      } catch (e) {}
+      await new Promise(res => setTimeout(res, 1500));
+    }
+    this.showDone({ ...(base || { orderNo: '', slug: '', pid: '', mode: 'builder' }), unpaid: true, online: true, payError: "We're still confirming your payment. If you paid, you'll get an email shortly. Don't pay twice." });
+    return true;
+  };
+
+  async storeShare(src, d) {
+    try { const b = await nbrShareJpg(src, d.photoX, d.photoY, d.photoZoom); if (!b || b.size < 2000) return ''; const u = await nbrUpload(b); return /\.jpg(\?|$)/.test(u || '') ? u : ''; } catch (e) { return ''; }
+  }
+  async storePhoto(pd, slug) {
+    if (!String(pd || '').startsWith('data:')) return pd || '';
+    try {
+      const blob = await (await fetch(pd)).blob(), ext = blob.type === 'image/gif' ? 'gif' : blob.type === 'image/webp' ? 'webp' : blob.type === 'video/mp4' ? 'mp4' : blob.type === 'video/webm' ? 'webm' : 'jpg';
+      const r2 = await nbrUpload(blob);
+      if (r2) return r2;
+    } catch (e) {}
+    return pd;
+  }
+  editTokenFromUrl() {
+    try { const m = location.pathname.match(/^\/e\/([a-f0-9]{40})\/?$/); if (m) return m[1]; const q = new URLSearchParams(location.search).get('edit') || ''; if (q === 'demo' && /\.dc\.html$/.test(decodeURIComponent(location.pathname))) return 'demo'; return /^[a-f0-9]{40}$/.test(q) ? q : ''; } catch (e) { return ''; }
+  }
+  async loadEdit(tok) {
+    if (tok === 'demo') { this.setState({ d: { ...EMPTY, firstName: 'Sandeep', lastName: 'Koppisetty', title: 'Founder', company: 'Linkcardly', phone: '+91 98765 43210', whatsapp: '+91 98765 43210', email: 'hello@linkcardly.com', city: 'Hyderabad', website: 'https://linkcardly.com', bio: 'Your business card, in a link.' }, region: 'IN', regionTouched: true, editLoading: false, editInfo: { slug: 'sandeep3649', pid: 'nbr_284803' } }); return; }
+    try {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_card_for_edit', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: tok }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { this.setState({ editLoading: false, editError: /invalid link/i.test(j.message || '') ? 'invalid' : /card expired/i.test(j.message || '') ? 'expired' : /too many/i.test(j.message || '') ? 'busy' : 'error' }); return; }
+      const x = j.extras || {}, s = v => v == null ? '' : String(v);
+      const d = { ...EMPTY, profession: PROFESSIONS.includes(j.profession) ? j.profession : (j.profession ? 'Other' : EMPTY.profession), colour: j.colour || 'forest', layout: j.layout || 'original',
+        photo: s(j.photo_url), photoX: j.photo_x ?? 50, photoY: j.photo_y ?? 50, photoZoom: Number(j.photo_zoom || 1),
+        firstName: s(j.first_name), lastName: s(j.last_name), title: s(j.title), company: s(j.company), phone: s(j.phone), whatsapp: j.whatsapp ? '+' + String(j.whatsapp).replace(/\D/g, '') : '',
+        email: s(j.email), city: s(j.city), website: s(j.website), instagram: s(j.instagram).replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/+$/, ''), linkedin: s(j.linkedin).replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, '').replace(/\/+$/, ''), xHandle: s((j.extras || {}).x_url).replace(/^https?:\/\/(www\.)?(x|twitter)\.com\//i, '').replace(/\/+$/, ''), bio: s(j.bio),
+        seasonal: x.seasonal !== false, greeting: s(x.greeting), brokerage: s(x.brokerage), licenseNo: s(x.license_no), licenseState: s(x.license_state), facebook: s(x.facebook),
+        listingsUrl: s(x.listings_url), bookingUrl: s(x.booking_url), officeAddress: s(x.office_address), iabsUrl: s(x.iabs_url), meetingUrl: s(x.meeting_url), regNo: s(x.reg_no), quals: s(x.quals), hours: s(x.hours), services: s(x.services), practice: s(x.practice), serviceArea: s(x.service_area), insured: s(x.insured), emergency: s(x.emergency) };
+      this.setState({ d, plan: j.plan === 'motion' ? 'motion' : 'basic', region: j.region === 'IN' ? 'IN' : 'US', regionTouched: true, editLoading: false, editError: '', editInfo: { slug: j.slug, pid: j.public_id || '', active: j.active !== false, orig: { colour: j.colour || '', category: j.category, tagline: j.tagline, preset: j.preset, profession: j.profession || '', mapped: d.profession } } });
+    } catch (e) { this.setState({ editLoading: false, editError: 'error' }); }
+  }
+  saveEdit = async () => {
+    const S = this.state; if (S.busy) return;
+    const e = this.validate();
+    if (Object.keys(e).length) { this.setState({ errors: e }); if (S.step !== 2) this.goStep(2); return; }
+    if (S.editToken === 'demo') { this.setState({ done: { edit: true, slug: 'sandeep3649', pid: 'nbr_284803', mode: 'builder' } }, () => window.scrollTo(0, 0)); return; }
+    this.setState({ busy: true, submitError: '' });
+    const info = S.editInfo || {}, card = this.row(info.slug || '', true, true);
+    card.photo_url = S.d.photoData ? await this.storePhoto(S.d.photoData, info.slug) : (/^https:\/\//.test(S.d.photo || '') ? S.d.photo : '');
+    if (S.d.photoData && card.photo_url && !String(card.photo_url).startsWith('data:')) { const og = await this.storeShare(S.d.photoData, S.d); if (og) card.extras = { ...(card.extras || {}), og_image: og }; }
+    if (String(card.photo_url).startsWith('data:')) { this.setState({ busy: false, submitError: 'Your new photo could not be uploaded. Please try again.' + (window.__nbrUpErr ? ' (' + window.__nbrUpErr + ')' : '') }); return; }
+    const o = info.orig || {};
+    if (o.colour && collOf(o.colour) === collOf(S.d.colour) && o.mapped === S.d.profession) { if (o.category != null) card.category = o.category; if (o.tagline != null) card.tagline = o.tagline; if (o.preset) card.preset = o.preset; }
+    if (o.profession && !PROFESSIONS.includes(o.profession) && S.d.profession === 'Other') card.profession = o.profession;
+    try {
+      const eb = { p_token: S.editToken, p_card: card };
+      const r = VIA_WORKER() ? await fetch('/api/edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: eb }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/update_card_by_token', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(eb) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { const m = j.message || ''; this.setState({ busy: false, submitError: /too many/i.test(m) ? 'Too many saves in the last hour. Please try again later.' : /invalid link/i.test(m) ? 'This edit link is no longer valid. Message us for a new one.' : /card expired/i.test(m) ? 'Your card plan has ended. Renew it to make changes.' : /missing fields/i.test(m) ? 'Your first name and a valid mobile number are required.' : "We couldn't save your changes. Please try again." }); return; }
+      this.setState(s => ({ busy: false, d: { ...s.d, photo: card.photo_url, photoData: '' }, done: { edit: true, slug: info.slug, pid: info.pid, mode: 'builder' }, copied: false }), () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); });
+    } catch (err) { this.setState({ busy: false, submitError: "We couldn't save your changes. Please try again." }); }
+  };
+  keepEditing = () => this.setState({ done: null, step: 2, copied: false }, () => window.scrollTo(0, 0));
+  editUrlOf(tok) { return CARD_BASE + '/e/' + tok; }
+  copyEditLink = async () => { const t = this.state.done && this.state.done.tok; if (!t) return; try { await navigator.clipboard.writeText(this.editUrlOf(t)); this.setState({ editCopied: true }); } catch (e) {} };
+  urlOf(d) { return CARD_BASE + '/' + (d.pid ? 'c/' + d.pid : d.slug); }
+  qrSvg(url) { if (!window.qrcode) return ''; const q = window.qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true, title: 'QR code for ' + url }); }
+  copyLink = async () => { try { await navigator.clipboard.writeText(this.urlOf(this.state.done)); this.setState({ copied: true }); } catch (e) {} };
+  downloadQR = () => {
+    const s = this.state.done.slug, blob = new Blob([this.qrSvg(this.urlOf(this.state.done))], { type: 'image/svg+xml' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = s + '-qr.svg';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  };
+  reset = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} this.setState({ mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, done: null, copied: false, coupon: null, couponInput: '', couponMsg: '' }); window.scrollTo(0, 0); };
+
+  renderVals() {
+    const _d = this.state.d || {}, thumbPh = _d.photo && !NBR_VID.test(_d.photo) && !/^data:video\//.test(_d.photoData || '') ? 'url("' + _d.photo + '") ' + (_d.photoX ?? 50) + '% ' + (_d.photoY ?? 50) + '% / cover' : '';
+    this.saveDraft();
+    const S = this.state, d = S.d, dfm = S.mode === 'dfm', err = S.errors || {};
+    if (d !== this.__pvD || S.plan !== this.__pvPlan) { this.__pvD = d; this.__pvPlan = S.plan; clearTimeout(this.pvT2); this.pvT2 = setTimeout(() => this.postPreview(), 120); }
+    const col = COLOURS.find(c => c.id === d.colour) || STYLE_BY_ID[d.colour] || COLOURS[0];
+    const COLLS = bizOf(d.profession).colls.map(id => COLLECTIONS.find(c => c.id === id)).filter(Boolean);
+    const collId = collOf(d.colour), ci = Math.max(0, COLLS.findIndex(c => c.id === collId));
+    const listFor = id => id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS;
+    const goColl = step => { const n = COLLS[(ci + step + COLLS.length) % COLLS.length]; this.set('colour', listFor(n.id)[0].id); };
+    const plan = PLANS.find(p => p.id === S.plan) || PLANS[0];
+    const layout = LAYOUTS[0];
+    const on = (x, a, b) => (x ? a : b);
+    const done = S.done;
+    const url = done ? this.urlOf(done) : '';
+    return {
+      orderHref: /\.dc\.html$/.test(decodeURIComponent(location.pathname)) ? './Order%20Card.dc.html' : 'https://linkcardly.com/order',
+      ...(() => { const mob = S.vw < 960, imm = mob && S.step === 3 && !S.done && !(S.editToken && (S.editLoading || S.editError));
+        if (imm !== this.__imm || !!S.hdrHidden !== this.__hh) { this.__imm = imm; this.__hh = !!S.hdrHidden; setTimeout(() => { try { window.dispatchEvent(new CustomEvent('nbr-order-ui', { detail: { immersive: imm, hideHeader: !!S.hdrHidden && mob } })); } catch (e) {} }, 0); }
+        return { showSaHeader: !!S.standalone && !imm, hdrH: mob ? '60px' : '66px', hdrY: mob && S.hdrHidden ? 'translateY(-100%)' : 'none', hdrLogo: mob ? '28px' : '34px', hdrLogoH: mob ? '32px' : '38px', hdrLogoN: mob ? 32 : 38, hdrFontN: mob ? 30 : 32, hdrFont: mob ? '18px' : '20px', hdrWide: !mob, hdrNarrow: mob }; })(),
+      ...(() => { const r = S.ref || '', local = /\.dc\.html$/.test(decodeURIComponent(location.pathname));
+        const path = /^nbr_[a-f0-9]{6}$/.test(r) ? '/c/' + r : /^[a-z0-9]+(-[a-z0-9]+)*$/.test(r) ? '/' + r : '';
+        if (!path) return { closeHref: local ? '/' : '/', closeLabel: 'Leave and go to the Linkcardly home page' };
+        return { closeHref: local ? '/app/card.html' : (/^card\./.test(location.hostname) ? '' : 'https://linkcardly.com') + path, closeLabel: 'Close and go back to the card' }; })(),
+      standalone: !!S.standalone, homeHref: (() => { const local = /\.dc\.html$/.test(decodeURIComponent(location.pathname)); const slug = S.ref && /^[a-z0-9-]+$/.test(S.ref) ? S.ref : '';
+        return local ? '/' : '/'; })(),
+      showIntro: S.vw >= 960 && !S.editToken,
+      headerChip: S.editToken ? 'Edit your card' : 'Create your card', showSteps: !S.editToken && !(S.step === 3 && S.vw < 960),
+      showForm: !(S.editToken && (S.editLoading || S.editError)), editMsgShow: !!(S.editToken && (S.editLoading || S.editError)),
+      editMsgTitle: S.editLoading ? 'Loading your card…' : S.editError === 'invalid' ? 'This edit link isn’t valid' : S.editError === 'expired' ? 'Your card plan has ended' : 'Couldn’t load your card',
+      editMsgText: S.editLoading ? 'One moment.' : S.editError === 'invalid' ? 'It may have been reset. Message us and we’ll send you a new one.' : S.editError === 'expired' ? 'Renew your card to make changes. Message us and we’ll help.' : S.editError === 'busy' ? 'Too many tries from this connection. Please wait an hour and try again.' : 'Check your connection and refresh the page.',
+      hasEditLink: false, changesNote: 'Need a change? Send us what you want changed and we’ll update your card.', changeHref: done ? changeLink('Hi Linkcardly, I’d like a change to my card ' + this.urlOf(done) + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '#', editLinkLabel: done && done.tok ? BASE_HOST + '/e/' + done.tok : '', copyEditLink: this.copyEditLink, copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy edit link',
+      notEditDone: !(done && done.edit), isEditDone: !!(done && done.edit), keepEditing: this.keepEditing,
+      rootPad: S.vw < 960 ? '2px 16px 40px' : 'clamp(32px,5vw,56px) 24px clamp(64px,8vw,104px)',
+      modesGap: S.vw < 960 ? '12px' : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
+      pv: (() => {
+        const mobile = S.vw < 960;
+        if (!mobile) return { barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
+        const docH = S.pvDocH || 806, w = Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
+        const fx = S.step === 3;
+        return { barPos: fx ? 'fixed' : 'sticky', barW: fx ? '100%' : w + 'px', barPad: fx ? '14px 16px calc(14px + env(safe-area-inset-bottom))' : '16px', barRadius: fx ? '18px 18px 0 0' : '16px 16px 0 0', barShadow: fx ? '0 -10px 24px -12px rgba(16,24,32,0.28)' : 'none', fixedBar: fx, barSpace: (S.barH || 240) + 'px',
+          display: S.step === 3 ? 'flex' : 'none', scrolling: 'no', ih: docH + 'px', showNext: true, nextText: S.editToken ? (S.busy ? 'Saving…' : 'Save changes') : 'Continue', showBack: true, mobile: false, desktop: false, flex: '1 1 100%', order: '-1', top: 'auto', pad: '0', bg: 'transparent', w: w + 'px', h: full + 'px', scale: sc.toFixed(4),
+          expanded: S.pvOpen ? 'true' : 'false', toggleLabel: S.pvOpen ? 'Collapse preview' : 'See full card', icon: S.pvOpen ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6',
+          toggle: () => this.setState(s => ({ pvOpen: !s.pvOpen })) };
+      })(),
+      barRef: this.barRef, formBarRef: this.formBarRef,
+      handleLabel: S.swOpen !== false ? 'Hide styles' : 'Show styles',
+      handleTouchStart: e => { this._hy = e.touches && e.touches[0] ? e.touches[0].clientY : null; },
+      handleTouchEnd: e => { const y = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : null; if (this._hy == null || y == null) return; const dy = y - this._hy; this._hy = null; if (Math.abs(dy) < 24) return; e.preventDefault(); this.setState({ swOpen: dy < 0, swEnd: false }); },
+      fb: (() => { const fx = S.vw < 960 && (S.step === 1 || S.step === 4); return fx
+        ? { fixed: true, pos: 'fixed', margin: '0', pad: '12px 16px calc(12px + env(safe-area-inset-bottom))', radius: '18px 18px 0 0', space: (S.fbH || 80) + 'px' }
+        : { fixed: false, pos: 'sticky', margin: '0 -4px -4px', pad: '12px 4px 4px', radius: '0', space: '0px' }; })(),
+      notDone: !done, isDone: !!done,
+      modes: [['builder', 'Build it myself', 'Pick a design, fill in your details and see your card as you go.'], ['dfm', 'Design it for me', 'Send your details and a photo. Our designer builds the card for you.']].map(([id, title, sub]) => {
+        const c = S.mode === id, sm = S.vw < 960; return { title: sm ? (id === 'dfm' ? 'Design for me' : 'Build myself') : title, sub, showSub: !sm, gap: sm ? '10px' : '14px', pad: sm ? '12px 14px' : '18px 20px', titleSize: sm ? '15px' : '17px', checked: c ? 'true' : 'false', pick: () => this.setState({ mode: id, errors: {} }), border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.12)', bg: c ? 'rgba(var(--acc-rgb),0.07)' : 'var(--surface)', dot: c ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.3)', fill: c ? 'var(--btn)' : 'transparent' };
+      }),
+      ...(() => { const nV = S.vw >= 960 ? 3 : 4, cur = S.vw >= 960 && S.step >= 3 ? S.step - 1 : S.step; return { stepCols: 'repeat(' + nV + ',minmax(0,1fr))', stepW: 'calc((100% - 8px) / ' + nV + ')', stepX: ((cur - 1) * 100) + '%' }; })(),
+      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? '#0B6F78' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      isStep1: S.step === 1, isStep2: S.step === 2, isStep3: S.step === 2, isStep5: S.step === 4,
+      reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
+      changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
+      plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '2px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', radioDot: c ? '1' : '0', thumb: S.vw < 960, motion: p.id === 'motion', img: p.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '18px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '28px' : '32px') : '36px', featFs: S.vw < 960 ? '13.5px' : '14px' }; }),
+      addPhotoTitle: S.plan === 'motion' ? 'Add your moving portrait' : 'Add your photo', uploadLabel: S.vidBusy ? 'Preparing video…' : S.plan === 'motion' ? 'Upload video or GIF' : 'Upload photo',
+      addPhotoHint: S.vidBusy ? 'Preparing your video… ' + (S.vidPct || 0) + '%. Keep this page open.' : S.plan === 'motion' ? 'Record a short selfie video (3 to 10 seconds), or upload a video or GIF. We keep the first 10 seconds. A still photo also works.' : 'A clear, front-facing photo works best.',
+      photoAccept: S.plan === 'motion' ? 'video/*,image/png,image/jpeg,image/webp,image/gif' : 'image/png,image/jpeg,image/webp',
+      teamHref: 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent('Custom order for my team (20+)'), teamPad: S.vw < 960 ? '18px' : '22px',
+      thumbName: [d.firstName, d.lastName].filter(Boolean).join(' ') || 'Your Name', thumbTitle: d.title || 'Your title',
+      designSub: dfm ? 'Tell us what you like. Our designer uses this as the starting point.' : (S.vw < 960 ? "Pick your colours. You'll see the full card after your details." : 'The preview updates as you choose.'),
+      bizHint: bizOf(d.profession).sub + '.',
+      ...(() => { const cur = BUSINESSES.find(b => b.prof === d.profession), open = !!S.bizOpen, ic = cur ? BIZ_ICON[cur.prof] || [cur.name, ''] : null; return { bizPicked: !!cur, bizNeedPick: !cur && !S.editToken, showBizForm: !!cur || !!S.editToken, bizLabel: cur ? cur.name : 'Pick the category that fits you best', bizIcon: ic ? ic[1] : '', bizFs: cur ? '16px' : '15px', bizFw: cur ? '700' : '500', bizInk: cur ? 'var(--ink)' : 'var(--faint)', bizBorder: err.profession ? '1.5px solid var(--danger)' : open ? '1.5px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.15)', hasBizErr: !!err.profession, bizErr: err.profession || '', bizOpen: open, bizOpenStr: open ? 'true' : 'false', bizChevron: open ? 'rotate(180deg)' : 'none', toggleBiz: () => this.setState(s => ({ bizOpen: !s.bizOpen })), closeBiz: () => this.setState({ bizOpen: false }),
+        bizItems: VISIBLE_BIZ.map(b => { const on = b === cur; return { short: b.name, sub: b.sub, icon: (BIZ_ICON[b.prof] || [])[1] || '', tileBg: on ? 'var(--btn)' : 'var(--bg-2)', tileInk: on ? 'var(--btn-ink)' : 'var(--ink)', rowBg: on ? 'var(--bg-2)' : 'transparent', selected: on ? 'true' : 'false', checkOp: on ? '1' : '0', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ bizOpen: false, swEnd: false, errors: { ...(s.errors || {}), profession: undefined }, d: { ...s.d, profession: b.prof, colour: first } })); } }; }) }; })(),
+      bizValue: bizOf(d.profession).prof, bizOptions: BUSINESSES.map(b => ({ value: b.prof, label: b.name + ' · ' + b.sub })),
+      onBiz: e => { const b = BUSINESSES.find(x => x.prof === e.target.value) || BUSINESSES[0]; const first = listFor(b.colls[0])[0].id; this.setState(s => ({ d: { ...s.d, profession: b.prof, colour: first } })); },
+      bizTiles: BUSINESSES.map(b => { const on = b.prof === d.profession || (b === BUSINESSES[0] && !BUSINESSES.some(x => x.prof === d.profession)); return { name: b.name, sub: b.sub, pressed: on ? 'true' : 'false', border: on ? 'rgba(16,24,32,0.9)' : 'rgba(255,255,255,0.85)', bg: on ? 'linear-gradient(180deg,#1b2632,#0f1822)' : 'rgba(255,255,255,0.55)', ink: on ? '#FFFFFF' : 'var(--ink)', shadow: on ? '0 8px 18px -8px rgba(16,24,32,0.55), inset 0 1px 0 rgba(255,255,255,0.18)' : 'inset 0 1px 0 rgba(255,255,255,0.95), 0 2px 6px -3px rgba(16,24,32,0.18)', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ d: { ...s.d, profession: b.prof, colour: first } })); } }; }),
+      profession: d.profession, professionOptions: PROFESSIONS, onProfession: e => this.set('profession', e.target.value),
+      layouts: LAYOUTS.map(l => { const c = l.id === d.layout; return { ...l, checked: c ? 'true' : 'false', border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.10)', pick: () => this.set('layout', l.id) }; }),
+      colourName: col.name, pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
+      swShow: S.vw >= 960 || S.swOpen !== false, swGap: listFor(collId).some(isTh) ? '12px' : '16px', swOpenStr: S.swOpen !== false ? 'true' : 'false', swChevron: S.swOpen !== false ? 'rotate(180deg)' : 'none', swPillBd: S.swOpen !== false ? '1.5px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.15)', swToggle: () => this.setState(s => ({ swOpen: s.swOpen === false, swEnd: false })),
+      showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },
+      collName: COLLS[ci].name, collPrev: () => goColl(-1), collNext: () => goColl(1), collPos: (ci + 1) + ' of ' + COLLS.length, collDots: COLLS.map((_, i) => ({ w: i === ci ? '16px' : '4px', bg: i === ci ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.18)' })),
+      colours: listFor(collId).map((c, ci) => { const s = c.id === d.colour, th = isTh(c); return { ...c, isDot: !th, isThumb: th, rec: th && ci === 0, blocks: th ? thumbBlocks(c, 58, 80, thumbPh) : [], labelInk: s ? 'var(--ink)' : 'var(--muted)', checked: s ? 'true' : 'false', ring: s ? '0 0 0 3px var(--bg), 0 0 0 5px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.12)', ring2: s ? '0 0 0 2px var(--bg), 0 0 0 4px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.14)', pick: () => this.set('colour', c.id) }; }),
+      pillThumb: isTh(col), pillDot: !isTh(col), pillName: 'Style', pillBg: col.bg, pillBlocks: isTh(col) ? thumbBlocks(col, 26, 36, thumbPh) : [],
+      hasDetailsSub: !!(S.editToken || dfm), detailsTitle: S.editToken ? 'Edit your card' : 'Your details', detailsSub: S.editToken ? 'Update anything below, then save. Changes go live straight away.' : dfm ? 'Only name, mobile and email are required. Add anything else you want on the card.' : (S.vw < 960 ? "Fields marked * are required. You'll preview your card next." : 'Fields marked * are required. Everything shows on your card as you type.'),
+      avatarBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : col.bg, accent: col.accent, initials: d.photo ? '' : (((d.firstName || '')[0] || '') + ((d.lastName || '')[0] || '')).toUpperCase() || '+',
+      adjDown: this.adjDown, adjBgColor: col.bg, adjBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),
+      zoomLabel: Math.round((d.photoZoom || 1) * 100) + '%', onZoom: e => this.set('photoZoom', Number(e.target.value)),
+      noPhotoAdj: !d.photo, focusPresets: [['Top', 50, 15, null], ['Centre', 50, 50, null], ['Bottom', 50, 85, null], ['Reset', 50, 50, 1]].map(([label, x, y, z]) => ({ label, icon: { Top: 'M12 19V5M5 12l7-7 7 7', Centre: 'M12 3v18M3 12h18', Bottom: 'M12 5v14M5 12l7 7 7-7', Reset: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5' }[label], bg: z == null && Math.round(d.photoY ?? 50) === y ? 'var(--bg-2)' : 'var(--surface)', bd: z == null && Math.round(d.photoY ?? 50) === y ? 'rgba(var(--fg-rgb),0.22)' : 'rgba(var(--fg-rgb),0.13)', pick: () => this.setState(s => ({ d: { ...s.d, photoX: x, photoY: y, photoZoom: z || s.d.photoZoom } })) })),
+      phPad: d.photo ? '16px' : '28px 16px 24px', phBorder: d.photo ? '1px solid rgba(var(--fg-rgb),0.10)' : '1px dashed rgba(var(--fg-rgb),0.18)', hasPhoto: !!d.photo, photoLabel: d.photo ? 'Change photo' : 'Upload photo', hasPhotoMsg: !!S.photoMsg, noPhotoMsg: !S.photoMsg, editOpen: !!S.editOpen,
+      photoMain: () => { const s = this.state.d; this.photoSnap = { photo: s.photo, photoData: s.photoData, photoX: s.photoX, photoY: s.photoY, photoZoom: s.photoZoom }; if (s.photo) this.setState({ editOpen: true }); else this.pickPhoto(); },
+      cancelEdit: () => { const p = this.photoSnap; this.setState(s => ({ editOpen: false, d: p ? { ...s.d, ...p } : s.d })); },
+      saveEdit: () => { this.photoSnap = null; this.setState({ editOpen: false }); },
+      resetPhoto: () => this.setState(s => ({ d: { ...s.d, photoX: 50, photoY: 50, photoZoom: 1 } })),
+      removeEdit: () => { this.photoSnap = null; this.setState(s => ({ editOpen: false, d: { ...s.d, photo: '', photoData: '', photoX: 50, photoY: 50, photoZoom: 1 } })); }, removePhoto: () => this.setState(s => ({ d: { ...s.d, photo: '', photoData: '', photoX: 50, photoY: 50, photoZoom: 1 } })), pickPhoto: this.pickPhoto, fileRef: this.fileRef,
+      onPhoto: e => this.readPhoto(e.target.files && e.target.files[0]), onDragOver: e => e.preventDefault(), onDrop: e => { e.preventDefault(); this.readPhoto(e.dataTransfer.files && e.dataTransfer.files[0]); },
+      photoNote: S.photoMsg || (S.plan === 'motion' ? 'Front-facing video or GIF, up to 10 seconds.' : 'Front-facing photo, square works best.'),
+      fields: FIELDS.filter(f => (!f.dfmOnly || dfm) && (!f.re || d.profession === 'Real Estate' || (f.alsoBiz || []).includes(d.profession)) && !(f.notBiz || []).includes(d.profession) && (!f.biz || f.biz.includes(d.profession)) && (!f.usOnly || S.region !== 'IN') && (!f.tx || String(d.licenseState || '').trim().toUpperCase() === 'TX')).map(f => { const req = (f.req === 'all' || (f.req === 'builder' && !dfm)) && !(S.editToken && f.k === 'email') && !(f.inOptional && S.region === 'IN'); const bl = (BIZ_LABEL[d.profession] || {})[f.k]; const rr0 = (bl ? (Array.isArray(bl) ? bl : bl[S.region] || bl.US) : null), rr1 = rr0 && rr0[1] && typeof rr0[1] === 'object' ? [rr0[0], rr0[1][S.region] || rr0[1].US] : rr0, rrB = rr1 && f.k === 'services' && S.region === 'IN' && d.profession === 'Beauty & Wellness' ? [rr1[0], 'Haircut from ₹500, Colour from ₹2,000, Facial from ₹1,200'] : rr1; const rr = rrB || (d.profession === 'Real Estate' ? ((RE_REGION[S.region] || {})[f.k]) : null) || []; return { id: 'o-' + f.k, label: (rr[0] || f.label) + (req ? ' *' : ''), ph: f.ph, ac: f.ac || 'on', type: f.type || 'text', value: d[f.k] || '', onChange: e => this.set(f.k, f.live ? fmtLive(e.target.value, S.region) : f.handle ? e.target.value.replace(/^https?:\/\/(www\.)?(instagram\.com|linkedin\.com\/in|x\.com|twitter\.com)\//i, '').replace(/\/+$/, '').replace(/^@/, '') : e.target.value), hasPrefix: !!f.handle, prefix: f.handle === 'in/' ? 'linkedin.com/in/' : '@', ph: f.k === 'phone' ? '' : f.k === 'city' ? '' : (rr[1] || (S.region !== 'IN' && f.phUS) || f.ph),
+        isInput: !f.area && !f.yn, isPlainInput: !f.area && !f.yn && !f.handle, prefixPad: f.handle === 'in/' ? '132px' : '30px', isArea: !!f.area, isYn: !!f.yn, yn: f.yn ? ['Yes', 'No'].map(v => { const on = d[f.k] === v; return { label: v, checked: on ? 'true' : 'false', pick: () => this.set(f.k, on ? '' : v), bd: on ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.15)', bg: on ? 'var(--btn)' : 'var(--surface)', fg: on ? 'var(--btn-ink)' : 'var(--ink-2)' }; }) : [], span0: f.span, span: f.span === 2 ? '1 / -1' : 'span 1', hasError: !!err[f.k], error: err[f.k] || '', invalid: err[f.k] ? 'true' : 'false', border: err[f.k] ? 'var(--danger)' : 'rgba(var(--fg-rgb),0.15)' }; }).reduce((acc, f, i, a) => { acc.col = acc.col || 0; if (f.span0 === 2) { acc.col = 0; } else if (acc.col === 0) { const nx = a[i + 1]; if (S.vw >= 600 && (!nx || nx.span0 === 2)) f.span = '1 / -1'; acc.col = f.span === '1 / -1' ? 0 : 1; } else acc.col = 0; acc.list.push(f); return acc; }, { list: [] }).list,
+      reviewName: [d.firstName, d.lastName].filter(Boolean).join(' ') || 'Your name',
+      reviewRole: [d.title, d.company].filter(Boolean).join(' · ') || (d.photo ? '' : 'No photo. Your initials show instead.'),
+      review: [
+        { k: 'Plan', v: plan.name + ' · ' + money(S.region, (PRICING[S.region] || PRICING.US)[plan.id]) + ' / year', step: 1 },
+        { k: 'Made by', v: dfm ? 'Our designer' : 'You', step: 1 },
+        { k: 'Style', v: col.name, step: 2 },
+        { k: 'Mobile', v: d.phone || '—', step: 3 },
+        { k: 'Email', v: d.email || '—', step: 3 },
+      ].concat(d.city ? [{ k: 'City', v: d.city, step: 3 }] : [], dfm && d.notes ? [{ k: 'Notes', v: d.notes, step: 3 }] : [])
+        .map(r => ({ ...r, aria: 'Edit ' + r.k.toLowerCase(), edit: () => this.goStep(r.step) })),
+      ...(() => { const cp = this.couponFor(S), pr = priceOf(S.region, plan.id); return {
+        total: money(S.region, cp ? cp.total : pr.total), subtotal: money(S.region, pr.base), gst: money(S.region, cp ? cp.tax : pr.tax),
+        hasCoupon: !!cp, noCoupon: !cp, couponCode: cp ? cp.code : '', couponOff: cp ? money(S.region, cp.discount) : '',
+        couponInput: cp ? cp.code : (S.couponInput || ''), onCouponInput: e => this.setState({ couponInput: e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 32), couponMsg: '' }),
+        couponKey: e => { if (e.key === 'Enter') { e.preventDefault(); this.applyCoupon(); } }, applyCoupon: this.applyCoupon, couponBusy: !!S.couponBusy, couponBtn: S.couponBusy ? 'Checking…' : 'Apply',
+        removeCoupon: () => this.setState({ coupon: null, couponInput: '', couponMsg: '' }),
+        hasCouponMsg: !!S.couponMsg && !(S.couponOk && !cp), couponMsg: S.couponMsg || '', couponMsgColor: S.couponOk ? 'var(--accent)' : 'var(--danger)' }; })(), hasGst: S.region === 'IN',
+      perYear: S.region === 'IN' ? (S.vw < 960 ? '/ yr + GST' : '/ year + GST') : '/ year',
+      fieldCols: S.vw < 600 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      cardHeading: S.plan === 'motion' ? 'Your Motion Card' : 'Your Digital Card',
+      regions: ['IN', 'US'].map(k => { const on = (S.region || 'US') === k; return { label: PRICING[k].label, checked: on ? 'true' : 'false', pick: () => this.setState({ region: k, regionTouched: true }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)' }; }),
+      panelDisplay: S.step === 3 && S.vw < 960 ? 'none' : 'flex', hasBack: !(S.editToken && S.step === 2) && S.step > 1 && !(S.step === 3 && S.vw < 960), noBack: false, back: () => { if (S.step <= 2 && S.standalone) { this.backToCard(); return; } this.goStep(S.step - 1); }, backLabel: S.step === 3 ? 'Make changes' : 'Back',
+      next: this.next, busy: S.busy, nextLabel: S.editToken ? (S.busy ? 'Saving…' : S.step === 2 && S.vw < 960 ? 'Continue' : 'Save changes') : S.step < 3 ? 'Continue' : S.step === 3 ? (S.vw < 400 ? 'Looks good' : 'Looks good · Continue') : (S.busy ? 'Starting payment…' : 'Pay ' + money(S.region, this.couponFor(S) ? this.couponFor(S).total : priceOf(S.region, plan.id).total)),
+      hasSubmitError: !!S.submitError, submitError: S.submitError, isPayStep: S.step > 3,
+      previewRef: this.previewRef, onPreviewLoad: this.onPreviewLoad, tsRef: this.tsRef,
+      previewNote: dfm ? 'Rough preview. Our designer will finish the details.' : 'Live preview. Tap around inside the phone.',
+
+      doneRef: this.doneRef, orderNo: done ? done.orderNo : '',
+      showChangeBox: !!(done && !done.edit && !done.unpaid && !done.verifying), isUnpaid: !!(done && done.unpaid), isVerifying: !!(done && done.verifying), showCardBox: !!(done && !done.unpaid && !done.verifying), payOnline: !!(done && done.unpaid && done.online !== false), payOffline: !!(done && done.unpaid && done.online === false),
+      payBtn: S.payBusy ? 'Opening payment…' : 'Pay ' + (done && done.total != null ? money(done.region || S.region, done.total) : 'now'), retryPay: this.retryPay, hasPayError: !!(done && done.payError), payError: (done && done.payError) || '',
+      doneTitle: done && done.verifying ? 'Confirming your payment…' : done && done.unpaid ? 'Complete your payment' : done && done.edit ? 'Changes saved' : done && done.mode === 'dfm' ? 'Order received' : 'Your card is ready',
+      doneText: done && done.verifying ? 'This usually takes a few seconds. Please keep this page open.' : done && done.unpaid ? (done.online === false ? "Your order is saved. We'll email a secure payment link to " + (d.email || 'you') + ' shortly. Your card goes live as soon as payment is confirmed.' : 'Your order is saved but not paid yet. Your card goes live as soon as payment is confirmed.') : done && done.edit ? 'Your card is updated. It can take up to 5 minutes to show on every phone.' : done && done.mode === 'dfm' ? "We have your details and we'll start on your design. We'll message you when your card is live. Your link and QR code below are already reserved." : 'Your card is live at the link below. Share it by message, or print the QR code on anything.',
+      linkLabel: BASE_HOST + '/' + (done ? (done.pid ? 'c/' + done.pid : done.slug) : ''),
+      linkNote: done && done.edit ? 'Same link and QR code as before.' : done && done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Keep this. Changes you ask for later use the same link.',
+      openHref: done ? (/\.dc\.html$/.test(decodeURIComponent(location.pathname)) ? '/app/card.html?c=' + done.slug : (location.hostname.startsWith('card.') ? '/' + done.slug : '/app/card.html?c=' + done.slug)) : '#',
+      seaStr: d.seasonal !== false ? 'true' : 'false', toggleSea: () => this.set('seasonal', d.seasonal === false),
+      seaBg: d.seasonal !== false ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.2)', seaKnob: d.seasonal !== false ? '21px' : '3px',
+      seaSub: 'Included with Motion. Your card gets a Holidays, New Year and Thanksgiving look with snowfall and your own greeting, then switches back.',
+      showGreeting: S.plan === 'motion' && d.seasonal !== false, greetingVal: d.greeting || '', onGreeting: e => this.set('greeting', e.target.value), greetingName: d.firstName || 'you', greetingPh: 'Happy Holidays from the ' + (d.lastName || 'Moreno') + ' Team',
+      isMotionPlan: S.plan === 'motion', showSeaPv: S.plan === 'motion' && d.seasonal !== false,
+      seaPv: [['off', 'Normal card', 'M4 6h16v12H4zM4 10h16'], ['holidays', 'Holidays', 'M12 2v20M4.9 7l14.2 10M4.9 17 19.1 7M9 4l3 2 3-2M9 20l3-2 3 2'], ['newyear', 'New Year', 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z']].concat(S.plan === 'motion' ? [['thanksgiving', 'Thanksgiving', 'M5 19c0-8 6-14 14-14 0 8-6 14-14 14zM5 19l7-7']] : []).map(([id, label, icon]) => { const on = (S.pvSeason || 'off') === id; return { label, icon, checked: on ? 'true' : 'false', bg: on ? 'var(--btn)' : 'transparent', fg: on ? 'var(--btn-ink)' : 'rgba(255,255,255,0.9)', pick: () => this.setState({ pvSeason: id }, this.postPreview) }; }),
+      copyOrder: () => { try { navigator.clipboard.writeText(done ? done.orderNo : ''); } catch (e) {} this.setState({ orderCopied: true }); setTimeout(() => this.setState({ orderCopied: false }), 1600); }, copyOrderLabel: S.orderCopied ? 'Copied ✓' : 'Copy',
+      copyLink: this.copyLink, copyLabel: S.copied ? 'Copied ✓' : 'Copy link', downloadQR: this.downloadQR, reset: this.reset,
+      ...(() => { const pl = PLANS.find(p => p.id === S.plan) || PLANS[0], pr = PRICING[S.region] || PRICING.US, vid = /^data:video\//.test(d.photoData || '') || NBR_VID.test(d.photo || '');
+        return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payImg: d.photo && !vid ? d.photo : (pl.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg') }; })(),
+      panelBg: S.vw < 960 ? 'transparent' : 'var(--surface)', panelBd: S.vw < 960 ? '0' : '1px solid rgba(var(--fg-rgb),0.06)', panelSh: S.vw < 960 ? 'none' : '0 16px 40px -30px rgba(90,60,20,0.35)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
+      secureTitle: S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
+      stepEyebrow: 'STEP ' + Math.min(S.step, 4) + ' OF 4',
+      qrNode: done ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(url).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,
+    };
+  }
+}
+</script>
+</body>
+</html>

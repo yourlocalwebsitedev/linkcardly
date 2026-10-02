@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Save my contact, call, WhatsApp or email in one tap.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
+<link rel="canonical" href="https://linkcardly.com/">
+<meta name="theme-color" content="#F5F2EC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Linkcardly">
+<meta property="og:title" content="Digital business card | Linkcardly">
+<meta property="og:description" content="Save my contact, call, WhatsApp or email in one tap.">
+<meta property="og:url" content="https://linkcardly.com/">
+<meta property="og:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Digital business card | Linkcardly">
+<meta name="twitter:description" content="Save my contact, call, WhatsApp or email in one tap.">
+<meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<script src="/app/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Sandeep Koppisetty · Linkcardly</title>
+<meta name="theme-color" content="#06120d">
+<meta name="description" content="Digital business card. Save my contact or follow along.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="/app/qrcode.js"></script>
+<style>
+html,body{margin:0;background:#040c08;overscroll-behavior-y:none;}
+*{box-sizing:border-box;}
+body{-webkit-font-smoothing:antialiased;font-family:Figtree,system-ui,sans-serif;color:#f3efe6;}
+a{color:var(--accent,#f2c98a);text-decoration:none;}
+a:hover{color:#f3efe6;}
+:focus-visible{outline:2px solid var(--accent,#f2c98a);outline-offset:3px;}
+@keyframes nbrFall{0%{transform:translate3d(0,-10vh,0)}100%{transform:translate3d(var(--dx,20px),110vh,0)}}
+@keyframes nbrTwinkle{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
+</style>
+</helmet>
+
+<div style="min-height:100svh;display:flex;justify-content:center;background:var(--pageBg, radial-gradient(90% 60% at 50% 0%, var(--bgTop,#0b2a1d) 0%, var(--bg,#06120d) 55%, #040c08 100%));">
+  <main style="width:100%;max-width:440px;min-height:100svh;background:var(--mainBg, var(--bg,#06120d));position:relative;padding-bottom:calc(20px + env(safe-area-inset-bottom));box-shadow:0 0 0 1px rgba(243,239,230,0.06), 0 40px 120px -40px rgba(0,0,0,0.8);">
+    <sc-if value="{{ hasSeason }}" hint-placeholder-val="{{ false }}">
+      <div role="note" aria-label="{{ seasonText }}" style="position:relative;z-index:6;min-height:40px;padding:8px 16px 11px;display:flex;align-items:center;justify-content:center;gap:10px;background:{{ seasonBg }};color:{{ seasonInk }};font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;letter-spacing:0.04em;text-align:center;box-shadow:inset 0 -1px 0 {{ seasonLine }};">
+        <span aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:4px;background:{{ seasonStripe }};"></span>
+        <span aria-hidden="true" style="width:18px;height:1px;background:{{ seasonAccent }};flex:none;"></span>
+        <span style="text-wrap:balance;">{{ seasonText }}</span>
+        <span aria-hidden="true" style="width:18px;height:1px;background:{{ seasonAccent }};flex:none;"></span>
+      </div>
+    </sc-if>
+    {{ seasonFx }}
+    <sc-if value="{{ remoteLoading }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="position:fixed;inset:0;z-index:80;background:#06120d;display:grid;place-items:center;"><span style="font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:rgba(243,239,230,0.7);">Loading card…</span></div>
+    </sc-if>
+    <sc-if value="{{ remoteMissing }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;inset:0;z-index:80;background:#06120d;display:grid;place-items:center;padding:24px;">
+        <div style="max-width:320px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+          <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:400;font-size:34px;color:#f3efe6;">{{ missingTitle }}</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:rgba(243,239,230,0.75);">{{ missingText }}</p>
+          <a href="/" style="margin-top:8px;min-height:48px;padding:0 20px;border-radius:12px;background:#f2c98a;color:#15120a;font-size:15px;font-weight:700;display:flex;align-items:center;">Get your own card</a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isOriginal }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ fullBleed }}" hint-placeholder-val="{{ true }}">
+      <header style="position:relative;aspect-ratio:1 / 1;perspective:1600px;">
+        <div role="button" tabindex="0" aria-pressed="{{ flipped }}" aria-label="{{ flipLabel }}" onClick="{{ toggleFlip }}" onKeyDown="{{ flipKey }}" style="position:absolute;inset:0;transform-style:preserve-3d;cursor:pointer;transform:{{ flipTransform }};transition:{{ flipTransition }};-webkit-tap-highlight-color:transparent;">
+
+          <div aria-hidden="{{ flipped }}" style="position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(1px);visibility:{{ frontVis }};transition:{{ frontVisT }};">
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+              <div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div>
+            </sc-if>
+            <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 30%, var(--bgBack,#134a33) 0%, var(--bgTop,#0b2a1d) 55%, var(--bg,#06120d) 100%);display:flex;justify-content:center;align-items:flex-start;padding-top:9%;">
+                <div style="width:50%;aspect-ratio:1;border-radius:50%;border:1px solid color-mix(in srgb, var(--accent,#f2c98a) 35%, transparent);box-shadow:0 0 0 14px color-mix(in srgb, var(--accent,#f2c98a) 5%, transparent);display:grid;place-items:center;">
+                  <span style="font-family:Newsreader,Georgia,serif;font-weight:400;font-size:84px;line-height:1;letter-spacing:-0.03em;color:var(--accent,#f2c98a);">{{ initials }}</span>
+                </div>
+              </div>
+            </sc-if>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--bg,#06120d) 70%, transparent) 75%, var(--bg,#06120d) 100%);pointer-events:none;"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:0 24px 8px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;backface-visibility:hidden;-webkit-backface-visibility:hidden;">
+              <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+                <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent,#f2c98a);">{{ category }}</p>
+                <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:400;font-size:44px;line-height:1.02;letter-spacing:-0.015em;text-wrap:balance;">{{ displayName }}</h1>
+                <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:16px;line-height:1.45;color:rgba(243,239,230,0.78);text-wrap:pretty;"><strong style="font-weight:600;color:#f3efe6;">{{ title }}</strong>{{ companyPart }}</p></sc-if>
+                <sc-if value="{{ hasTagline }}" hint-placeholder-val="{{ true }}">
+                  <p style="margin:2px 0 0;font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent,#f2c98a);">{{ tagline }}</p>
+                </sc-if>
+              </div>
+              <span style="flex:none;min-height:36px;padding:0 12px;border-radius:999px;background:color-mix(in srgb, var(--bg,#06120d) 72%, transparent);border:1px solid rgba(243,239,230,0.18);display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#f3efe6;margin-bottom:4px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path><path d="M3 21v-5h5"></path><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                Tap
+              </span>
+            </div>
+          </div>
+
+          <div aria-hidden="{{ notFlipped }}" style="position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg) translateZ(1px);visibility:{{ backVis }};transition:{{ backVisT }};background:radial-gradient(120% 90% at 20% 0%, var(--bgBack,#134a33) 0%, var(--bgTop,#0b2a1d) 50%, var(--bg,#06120d) 100%);padding:32px 28px 24px;display:flex;flex-direction:column;justify-content:center;gap:20px;">
+            <sc-if value="{{ hasQuote }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:400;font-size:36px;line-height:1.1;letter-spacing:-0.01em;color:#f3efe6;text-wrap:balance;">{{ quote }}</p></sc-if>
+            <sc-if value="{{ hasBio }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:16px;line-height:1.6;color:rgba(243,239,230,0.78);text-wrap:pretty;">{{ bio }}</p></sc-if>
+            <div style="display:flex;flex-direction:column;gap:4px;padding-top:4px;">
+              <p style="margin:0;font-family:Newsreader,Georgia,serif;font-style:italic;font-size:20px;color:var(--accent,#f2c98a);">{{ signature }}</p>
+              <sc-if value="{{ hasTitles }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:13px;line-height:1.4;color:rgba(243,239,230,0.7);">{{ titles }}</p></sc-if>
+            </div>
+            <span style="position:absolute;right:20px;bottom:18px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(243,239,230,0.7);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path><path d="M3 21v-5h5"></path><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path><path d="M21 3v5h-5"></path></svg>
+              Tap to flip back
+            </span>
+          </div>
+        </div>
+      </header>
+    </sc-if>
+
+    <sc-if value="{{ framed }}" hint-placeholder-val="{{ false }}">
+      <header style="padding:40px 24px 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;">
+        <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+          <div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:132px;height:132px;flex:none;border-radius:50%;background-image:{{ photoBg }};background-size:{{ photoSizeFramed }};background-position:{{ photoPos }};box-shadow:0 0 0 1px color-mix(in srgb, var(--accent,#f2c98a) 35%, transparent), 0 0 0 6px var(--bg,#06120d), 0 0 0 7px color-mix(in srgb, var(--accent,#f2c98a) 14%, transparent);margin-bottom:12px;"></div>
+        </sc-if>
+        <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}">
+          <div aria-hidden="true" style="width:132px;height:132px;border-radius:50%;background:var(--bgBack,#134a33);display:grid;place-items:center;font-family:Newsreader,Georgia,serif;font-size:52px;color:var(--accent,#f2c98a);box-shadow:0 0 0 1px color-mix(in srgb, var(--accent,#f2c98a) 35%, transparent), 0 0 0 6px var(--bg,#06120d), 0 0 0 7px color-mix(in srgb, var(--accent,#f2c98a) 14%, transparent);margin-bottom:12px;">{{ initials }}</div>
+        </sc-if>
+        <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent,#f2c98a);">{{ category }}</p>
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-0.015em;text-wrap:balance;">{{ displayName }}</h1>
+        <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:16px;line-height:1.45;color:rgba(243,239,230,0.78);"><strong style="font-weight:600;color:#f3efe6;">{{ title }}</strong>{{ companyPart }}</p></sc-if>
+        <sc-if value="{{ hasTagline }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:2px 0 0;font-size:11px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent,#f2c98a);">{{ tagline }}</p>
+        </sc-if>
+      </header>
+    </sc-if>
+
+    <div style="padding:24px 20px 0;display:flex;flex-direction:column;gap:12px;">
+      <button type="button" onClick="{{ saveContact }}" style="height:56px;width:100%;border:0;border-radius:14px;background:var(--accent,#f2c98a);color:#15120a;font-family:Figtree,system-ui,sans-serif;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 12px 30px -14px color-mix(in srgb, var(--accent,#f2c98a) 60%, transparent);transition:background .15s ease, transform .1s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 82%, white);" style-active="transform:scale(0.99);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg>
+        <span>{{ saveLabel }}</span>
+      </button>
+
+      <sc-if value="{{ hasCta }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ ctaUrl }}" target="_blank" rel="noopener" style="height:52px;width:100%;border-radius:14px;border:1px solid color-mix(in srgb, var(--accent,#f2c98a) 55%, transparent);background:color-mix(in srgb, var(--accent,#f2c98a) 8%, transparent);color:var(--accent,#f2c98a);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 16%, transparent);color:var(--accent,#f2c98a);">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"></path></svg>
+          <span>{{ ctaLabel }}</span>
+        </a>
+      </sc-if>
+
+      <nav aria-label="Contact" style="display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px;">
+        <a href="{{ telHref }}" aria-label="{{ callAria }}" style="min-height:68px;border-radius:14px;background:rgba(243,239,230,0.05);border:1px solid rgba(243,239,230,0.08);color:#f3efe6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;transition:background .15s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 10%, transparent);color:#f3efe6;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path></svg>
+          <span>Call</span>
+        </a>
+        <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="min-height:68px;border-radius:14px;background:rgba(243,239,230,0.05);border:1px solid rgba(243,239,230,0.08);color:#f3efe6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;transition:background .15s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 10%, transparent);color:#f3efe6;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"></path><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"></path></svg>
+          <span>{{ msgLabel }}</span>
+        </a>
+        <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="min-height:68px;border-radius:14px;background:rgba(243,239,230,0.05);border:1px solid rgba(243,239,230,0.08);color:#f3efe6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;transition:background .15s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 10%, transparent);color:#f3efe6;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          <span>Email</span>
+        </a>
+      </nav>
+
+      <sc-if value="{{ hasReLinks }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
+          <sc-if value="{{ hasListingsUrl }}"><a href="{{ listingsHref }}" target="_blank" rel="noopener" style="grid-column:{{ listingsSpan }};min-height:48px;border-radius:12px;border:1px solid rgba(243,239,230,0.14);color:#f3efe6;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;" style-hover="background:rgba(243,239,230,0.06);color:#f3efe6;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-5h4v5"></path></svg>View my listings</a></sc-if>
+          <sc-if value="{{ hasDirections }}"><a href="{{ directionsHref }}" target="_blank" rel="noopener" style="grid-column:{{ dirSpan }};min-height:48px;border-radius:12px;border:1px solid rgba(243,239,230,0.14);color:#f3efe6;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;" style-hover="background:rgba(243,239,230,0.06);color:#f3efe6;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Get directions</a></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="height:52px;width:100%;border-radius:14px;border:1px solid color-mix(in srgb, var(--accent,#f2c98a) 55%, transparent);background:transparent;color:var(--accent,#f2c98a);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 10%, transparent);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg><span>{{ leadBtn }}</span></button>
+      </sc-if>
+
+      <sc-if value="{{ showShareRow }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
+          <button type="button" onClick="{{ share }}" style="height:48px;border-radius:12px;border:1px solid rgba(243,239,230,0.14);background:transparent;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .15s ease;" style-hover="background:rgba(243,239,230,0.06);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4M12 2v13"></path></svg>
+            <span>Share card</span>
+          </button>
+          <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="height:48px;border-radius:12px;border:1px solid rgba(243,239,230,0.14);background:transparent;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .15s ease;" style-hover="background:rgba(243,239,230,0.06);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"></path></svg>
+            <span>Show QR</span>
+          </button>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ hasSocials }}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="follow-h" style="padding:32px 20px 0;display:flex;flex-direction:column;gap:12px;">
+        <h2 id="follow-h" style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(243,239,230,0.66);">Follow along</h2>
+        <div style="display:flex;flex-direction:column;gap:1px;border-radius:14px;overflow:hidden;background:rgba(243,239,230,0.08);border:1px solid rgba(243,239,230,0.08);">
+          <sc-for list="{{ socials }}" as="s" hint-placeholder-count="2">
+            <a href="{{ s.url }}" target="_blank" rel="noopener" style="min-height:64px;padding:12px 16px;display:flex;align-items:center;gap:14px;color:#f3efe6;background:color-mix(in srgb, #f3efe6 4%, var(--bg,#06120d));transition:background .15s ease;" style-hover="background:color-mix(in srgb, var(--accent,#f2c98a) 9%, var(--bg,#06120d));color:#f3efe6;">
+              <span style="width:40px;height:40px;border-radius:10px;background:rgba(243,239,230,0.08);display:grid;place-items:center;flex:none;">
+                <sc-if value="{{ s.isLinkedin }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="#f3efe6" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 5.9V21h-4v-5.5c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9V9Z"></path></svg></sc-if>
+                <sc-if value="{{ s.isInstagram }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.4" cy="6.6" r="1.1" fill="#f3efe6" stroke="none"></circle></svg></sc-if>
+                <sc-if value="{{ s.isX }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="#f3efe6" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"></path></svg></sc-if><sc-if value="{{ s.isFacebook }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="#f3efe6" aria-hidden="true"><path d="M14 22v-8h2.7l.4-3.2H14V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.3H7.8V14h2.8v8H14Z"></path></svg></sc-if>
+                <sc-if value="{{ s.isYoutube }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="#f3efe6" aria-hidden="true"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.7-1.7C19.3 5.2 12 5.2 12 5.2s-7.3 0-8.9.4A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.7 1.7c1.6.4 8.9.4 8.9.4s7.3 0 8.9-.4a2.5 2.5 0 0 0 1.7-1.7C23 15.2 23 12 23 12Zm-13 3.2V8.8l5.5 3.2-5.5 3.2Z"></path></svg></sc-if>
+                <sc-if value="{{ s.isWebsite }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3efe6" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"></path></svg></sc-if>
+              </span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;"><span style="font-size:15px;font-weight:600;">{{ s.label }}</span><span style="font-size:13px;color:rgba(243,239,230,0.66);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ s.handle }}</span></span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(243,239,230,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <section aria-labelledby="details-h" style="padding:32px 20px 0;display:flex;flex-direction:column;gap:12px;">
+      <h2 id="details-h" style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(243,239,230,0.66);">Details</h2>
+      <dl style="margin:0;display:flex;flex-direction:column;gap:1px;border-radius:14px;overflow:hidden;background:rgba(243,239,230,0.08);border:1px solid rgba(243,239,230,0.08);">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
+          <div style="min-height:60px;padding:10px 8px 10px 16px;display:flex;align-items:center;gap:12px;background:color-mix(in srgb, #f3efe6 4%, var(--bg,#06120d));">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><dt style="font-size:12px;color:rgba(243,239,230,0.66);">{{ r.label }}</dt><dd style="margin:0;font-size:15px;font-weight:500;line-height:1.4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;">{{ r.value }}</dd></div>
+            <sc-if value="{{ r.hasCopy }}">
+              <button type="button" onClick="{{ r.onCopy }}" aria-label="{{ r.copyAria }}" style="width:44px;height:44px;flex:none;border:0;border-radius:10px;background:transparent;color:rgba(243,239,230,0.7);display:grid;place-items:center;cursor:pointer;" style-hover="background:rgba(243,239,230,0.06);color:var(--accent,#f2c98a);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+            </sc-if>
+            <sc-if value="{{ r.hasLink }}">
+              <a href="{{ r.href }}" target="_blank" rel="noopener" aria-label="{{ r.linkAria }}" style="width:44px;height:44px;flex:none;border-radius:10px;color:rgba(243,239,230,0.7);display:grid;place-items:center;" style-hover="background:rgba(243,239,230,0.06);color:var(--accent,#f2c98a);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></a>
+            </sc-if>
+          </div>
+        </sc-for>
+      </dl>
+    </section>
+
+    <footer style="padding:36px 24px 0;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;">
+      <p style="margin:0;font-family:Newsreader,Georgia,serif;font-style:italic;font-size:16px;color:rgba(243,239,230,0.66);text-wrap:balance;">{{ footerLine }}</p>
+      <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;line-height:1.5;color:rgba(243,239,230,0.66);"><span style="text-wrap:balance;">{{ complianceLine }}</span><sc-if value="{{ isTX }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if></div></sc-if>
+      <sc-if value="{{ showPlans }}"><button type="button" onClick="{{ openPlans }}" style="min-height:44px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:Figtree,system-ui,sans-serif;color:#f3efe6;">
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:color-mix(in srgb, #f3efe6 60%, #06120d);">Powered by Linkcardly</span>
+            <span style="font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;">Get a card like this<span aria-hidden="true">→</span></span>
+          </button></sc-if>
+    </footer>
+
+    </sc-if>
+
+    <sc-if value="{{ isLuxury }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100svh;background:var(--lxBg,#f4efe6);color:var(--lxInk,#1c1a17);padding:44px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+        <sc-if value="{{ hasLuxTop }}" hint-placeholder-val="{{ true }}"><div style="width:100%;display:flex;align-items:center;gap:12px;"><span style="flex:1;height:1px;background:color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));"></span><span style="font-size:11px;font-weight:700;letter-spacing:0.32em;text-transform:uppercase;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">{{ luxTop }}</span><span style="flex:1;height:1px;background:color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));"></span></div></sc-if>
+        <div style="width:var(--lxW,150px);height:var(--lxH,190px);border-radius:var(--lxR1,75px 75px 6px 6px);border:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));padding:5px;margin-top:10px;flex:none;">
+          <div style="width:100%;height:100%;border-radius:var(--lxR2,70px 70px 3px 3px);overflow:hidden;background:color-mix(in srgb, var(--lxInk,#1c1a17) 8%, var(--lxBg,#f4efe6));">
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if>
+              <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--lxFont,'Cormorant Garamond',serif);font-size:56px;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">{{ initials }}</div></sc-if>
+          </div>
+        </div>
+        <p style="margin:6px 0 0;font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">{{ category }}</p>
+        <h1 style="margin:0;font-family:var(--lxFont,'Cormorant Garamond',serif);font-weight:600;font-size:46px;line-height:1;text-wrap:balance;">{{ displayName }}</h1>
+        <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:15px;line-height:1.4;color:color-mix(in srgb, var(--lxInk,#1c1a17) 72%, var(--lxBg,#f4efe6));">{{ title }}</p></sc-if>
+        <sc-if value="{{ hasTagline }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-family:var(--lxFont,'Cormorant Garamond',serif);font-style:italic;font-size:19px;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">{{ tagline }}</p></sc-if>
+        <sc-if value="{{ hasBio }}"><p style="margin:4px 0 0;max-width:320px;font-size:14px;line-height:1.6;color:color-mix(in srgb, var(--lxInk,#1c1a17) 75%, var(--lxBg,#f4efe6));text-wrap:pretty;">{{ bio }}</p></sc-if>
+        <div style="width:100%;display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+          <button type="button" onClick="{{ saveContact }}" style="height:52px;border:0;border-radius:2px;background:var(--lxInk,#1c1a17);color:var(--lxBg,#f4efe6);font-family:Figtree,system-ui,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;">{{ saveLabel }}</button>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <a href="{{ telHref }}" aria-label="{{ callAria }}" style="height:48px;border-radius:2px;border:1px solid color-mix(in srgb, var(--lxInk,var(--lxInk,#1c1a17)) 25%, transparent);color:var(--lxInk,#1c1a17);font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;">Call</a>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="height:48px;border-radius:2px;border:1px solid color-mix(in srgb, var(--lxInk,var(--lxInk,#1c1a17)) 25%, transparent);color:var(--lxInk,#1c1a17);font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;">{{ msgLabel }}</a>
+            <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="height:48px;border-radius:2px;border:1px solid color-mix(in srgb, var(--lxInk,var(--lxInk,#1c1a17)) 25%, transparent);color:var(--lxInk,#1c1a17);font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;">Email</a>
+          </div>
+        <div style="display:flex;justify-content:center;gap:24px;">
+          <button type="button" onClick="{{ share }}" style="min-height:44px;border:0;background:transparent;color:color-mix(in srgb, var(--lxInk,#1c1a17) 72%, var(--lxBg,#f4efe6));font-family:Figtree,system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;">Share</button>
+          <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="min-height:44px;border:0;background:transparent;color:color-mix(in srgb, var(--lxInk,#1c1a17) 72%, var(--lxBg,#f4efe6));font-family:Figtree,system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;">Show QR</button>
+        </div>
+        </div>
+        <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="width:100%;height:48px;border-radius:2px;border:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));background:transparent;color:var(--lxInk,#1c1a17);font-family:Figtree,system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;">{{ leadBtn }}</button></sc-if>
+        <dl aria-label="Details" style="width:100%;margin:6px 0 4px;display:flex;flex-direction:column;text-align:left;border-top:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3"><div style="min-height:62px;padding:8px 0;display:flex;align-items:center;gap:10px;border-bottom:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;"><dt style="font-size:10px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">{{ r.label }}</dt><dd style="margin:0;font-family:var(--lxFont,'Cormorant Garamond',serif);font-size:19px;font-weight:600;line-height:1.3;color:var(--lxInk,#1c1a17);overflow-wrap:anywhere;font-variant-numeric:lining-nums;">{{ r.value }}</dd></div>
+            <sc-if value="{{ r.hasCopy }}"><button type="button" onClick="{{ r.onCopy }}" aria-label="{{ r.copyAria }}" style="width:44px;height:44px;flex:none;border:0;border-radius:2px;background:transparent;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));display:grid;place-items:center;cursor:pointer;" style-hover="background:color-mix(in srgb, var(--lxInk,#1c1a17) 6%, transparent);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button></sc-if>
+            <sc-if value="{{ r.hasLink }}"><a href="{{ r.href }}" target="_blank" rel="noopener" aria-label="{{ r.linkAria }}" style="width:44px;height:44px;flex:none;border-radius:2px;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));display:grid;place-items:center;" style-hover="background:color-mix(in srgb, var(--lxInk,#1c1a17) 6%, transparent);color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></a></sc-if>
+          </div></sc-for>
+        </dl>
+        <div style="width:100%;display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));">
+          <sc-if value="{{ hasListings }}"><a href="{{ listingsHref }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));color:var(--lxInk,#1c1a17);font-family:var(--lxFont,'Cormorant Garamond',serif);font-size:20px;font-weight:600;">{{ listingsLabel }}<span style="color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">→</span></a></sc-if>
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));color:var(--lxInk,#1c1a17);font-family:var(--lxFont,'Cormorant Garamond',serif);font-size:20px;font-weight:600;">{{ ctaText }}<span style="color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">→</span></a></sc-if>
+          <sc-for list="{{ socialsNoWeb }}" as="s"><a href="{{ s.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid color-mix(in srgb, var(--accent,#f2c98a) 75%, var(--lxInk,#6b5a44));color:var(--lxInk,#1c1a17);font-family:var(--lxFont,'Cormorant Garamond',serif);font-size:20px;font-weight:600;">{{ s.label }}<span style="color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lxInk,#3a2f22));">→</span></a></sc-for>
+        </div>
+        <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;line-height:1.5;color:color-mix(in srgb, var(--lxInk,#1c1a17) 72%, var(--lxBg,#f4efe6));"><span style="text-wrap:balance;">{{ complianceLine }}</span><sc-if value="{{ isTX }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if></div></sc-if>
+        <sc-if value="{{ showPlans }}">
+          <button type="button" onClick="{{ openPlans }}" style="min-height:44px;padding:0 12px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:Figtree,system-ui,sans-serif;">
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:color-mix(in srgb, var(--lxInk,#1c1a17) 62%, var(--lxBg,#f4efe6));">Powered by Linkcardly</span>
+            <span style="font-size:14px;font-weight:700;color:var(--lxInk,#1c1a17);display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;">Get a card like this<span aria-hidden="true">→</span></span>
+          </button>
+        </sc-if>
+      </div>
+    </sc-if>
+
+
+    <sc-if value="{{ isPro }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100svh;background:var(--pBg);color:var(--pInk);display:flex;flex-direction:column;font-family:Figtree,system-ui,sans-serif;padding-bottom:28px;">
+        <sc-if value="{{ proBanner }}"><div style="height:250px;flex:none;overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if></div></sc-if>
+        <sc-if value="{{ proHero }}"><div style="position:relative;height:440px;flex:none;overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if><div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg, transparent 45%, var(--pBg) 100%);"></div></div><div aria-hidden="true" style="height:0;margin-top:-110px;"></div></sc-if>
+        <sc-if value="{{ proBand }}"><div aria-hidden="true" style="height:150px;flex:none;background:var(--pAcc);"></div><div style="width:124px;height:124px;margin:-62px auto 0;border-radius:50%;overflow:hidden;border:5px solid var(--pBg);flex:none;position:relative;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if></div></sc-if>
+        <sc-if value="{{ proRing }}"><div style="width:156px;height:156px;margin:48px auto 0;border-radius:50%;padding:5px;border:1px solid var(--pAcc);flex:none;"><div style="width:100%;height:100%;border-radius:50%;overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if></div></div></sc-if>
+        <sc-if value="{{ proTile }}"><div style="width:168px;height:168px;margin:44px 0 0 24px;border-radius:22px;overflow:hidden;flex:none;box-shadow:12px 12px 0 var(--pAcc);"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if></div></sc-if>
+        <div style="position:relative;padding:22px 22px 0;display:flex;gap:16px;align-items:center;flex-direction:{{ proHeadDir }};text-align:var(--pTA);">
+          <sc-if value="{{ proSide }}"><div style="width:84px;height:84px;margin-top:26px;border-radius:50%;overflow:hidden;flex:none;align-self:flex-start;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:var(--pFont);font-size:48px;font-weight:600;color:var(--pAcc);background:var(--pCard);">{{ initials }}</div></sc-if></div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:var(--pAI);flex:1;min-width:0;padding-top:{{ proHeadPad }};">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;color:color-mix(in srgb, var(--pAcc) 70%, var(--pInk));">{{ category }}</span>
+            <h1 style="margin:0;font-family:var(--pFont);font-weight:700;font-size:38px;line-height:1.02;letter-spacing:-0.01em;text-wrap:balance;">{{ displayName }}</h1>
+            <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="font-size:15px;line-height:1.4;color:color-mix(in srgb, var(--pInk) 72%, var(--pBg));">{{ title }}{{ companyPart }}</span></sc-if>
+            <sc-if value="{{ hasTagline }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;font-style:italic;color:color-mix(in srgb, var(--pInk) 60%, var(--pBg));">{{ tagline }}</span></sc-if>
+          </div>
+        </div>
+        <div style="padding:20px 22px 0;display:flex;flex-direction:column;gap:10px;">
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="min-height:54px;border-radius:var(--pRad);background:var(--pAcc);color:var(--pOn);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">{{ ctaText }} <span aria-hidden="true">→</span></a></sc-if>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <a href="{{ telHref }}" aria-label="{{ callAria }}" style="min-height:48px;border-radius:var(--pRad);border:1px solid color-mix(in srgb, var(--pInk) 22%, transparent);color:var(--pInk);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">Call</a>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="min-height:48px;border-radius:var(--pRad);border:1px solid color-mix(in srgb, var(--pInk) 22%, transparent);color:var(--pInk);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">{{ msgLabel }}</a>
+            <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="min-height:48px;border-radius:var(--pRad);border:1px solid color-mix(in srgb, var(--pInk) 22%, transparent);color:var(--pInk);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">Email</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+            <button type="button" onClick="{{ share }}" style="min-height:46px;border-radius:var(--pRad);border:0;background:color-mix(in srgb, var(--pInk) 7%, transparent);color:var(--pInk);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Share card</button>
+            <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="min-height:46px;border-radius:var(--pRad);border:0;background:color-mix(in srgb, var(--pInk) 7%, transparent);color:var(--pInk);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Show QR</button>
+          </div>
+          <button type="button" onClick="{{ saveContact }}" style="min-height:52px;border:0;border-radius:var(--pRad);background:var(--pInk);color:var(--pBg);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ saveLabel }}</button>
+          <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="min-height:52px;border-radius:var(--pRad);border:1.5px solid var(--pAcc);background:transparent;color:var(--pInk);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg>{{ leadBtn }}</button></sc-if>
+          <dl aria-label="Details" style="margin:6px 0 0;display:flex;flex-direction:column;text-align:left;background:var(--pBoxBg);padding:var(--pBoxPad);border-radius:min(var(--pRad), 18px);">
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3"><div style="min-height:60px;padding:8px 0;display:flex;align-items:center;gap:10px;border-bottom:1px solid color-mix(in srgb, var(--pInk) 10%, transparent);">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><dt style="font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:color-mix(in srgb, var(--pInk) 58%, var(--pBg));">{{ r.label }}</dt><dd style="margin:0;font-family:var(--pFont);font-size:16px;font-weight:600;line-height:1.35;color:var(--pInk);overflow-wrap:anywhere;font-variant-numeric:tabular-nums;">{{ r.value }}</dd></div>
+              <sc-if value="{{ r.hasCopy }}"><button type="button" onClick="{{ r.onCopy }}" aria-label="{{ r.copyAria }}" style="width:44px;height:44px;flex:none;border:0;border-radius:min(var(--pRad), 12px);background:transparent;color:var(--pAcc);display:grid;place-items:center;cursor:pointer;" style-hover="background:color-mix(in srgb, var(--pInk) 7%, transparent);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button></sc-if>
+              <sc-if value="{{ r.hasLink }}"><a href="{{ r.href }}" target="_blank" rel="noopener" aria-label="{{ r.linkAria }}" style="width:44px;height:44px;flex:none;border-radius:min(var(--pRad), 12px);color:var(--pAcc);display:grid;place-items:center;" style-hover="background:color-mix(in srgb, var(--pInk) 7%, transparent);color:var(--pAcc);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></a></sc-if>
+            </div></sc-for>
+          </dl>
+          <sc-if value="{{ hasBio }}"><div style="margin-top:6px;display:flex;flex-direction:column;gap:6px;text-align:var(--pTA);background:var(--pBoxBg);padding:var(--pBoxPad);border-radius:min(var(--pRad), 18px);">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:color-mix(in srgb, var(--pInk) 55%, var(--pBg));">About</span>
+            <sc-if value="{{ hasBio }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:15px;line-height:1.55;color:color-mix(in srgb, var(--pInk) 85%, var(--pBg));text-wrap:pretty;">{{ bio }}</p></sc-if>
+          </div></sc-if>
+          <sc-if value="{{ hasLinks }}"><div style="display:flex;flex-direction:column;background:var(--pBoxBg);padding:var(--pBoxPad);border-radius:min(var(--pRad), 18px);">
+            <sc-if value="{{ hasListings }}"><a href="{{ listingsHref }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--pInk);font-size:15px;font-weight:600;border-bottom:1px solid color-mix(in srgb, var(--pInk) 10%, transparent);">{{ listingsLabel }}<span aria-hidden="true" style="color:var(--pAcc);">→</span></a></sc-if>
+            <sc-for list="{{ socialsNoWeb }}" as="s"><a href="{{ s.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--pInk);font-size:15px;font-weight:600;border-bottom:1px solid color-mix(in srgb, var(--pInk) 10%, transparent);">{{ s.label }}<span aria-hidden="true" style="color:var(--pAcc);">→</span></a></sc-for>
+          </div></sc-if>
+          <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;line-height:1.5;color:color-mix(in srgb, var(--pInk) 65%, var(--pBg));"><span style="text-wrap:balance;">{{ complianceLine }}</span><sc-if value="{{ isTX }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if></div></sc-if>
+          <sc-if value="{{ showPlans }}"><button type="button" onClick="{{ openPlans }}" style="margin-top:6px;min-height:44px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:Figtree,system-ui,sans-serif;color:var(--pInk);">
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:color-mix(in srgb, var(--pInk) 55%, var(--pBg));">Powered by Linkcardly</span>
+            <span style="font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;">Get a card like this<span aria-hidden="true">→</span></span>
+          </button></sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isEstate }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100svh;background:var(--eBg);color:var(--eInk);font-family:Figtree,system-ui,sans-serif;">
+
+      <sc-if value="{{ ePoster }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative;height:min(118vw,500px);overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;background:var(--eCard);color:var(--eInk);font-family:'DM Serif Display',Georgia,serif;font-size:56px;">{{ initials }}</div></sc-if>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,var(--eBg) 97%);pointer-events:none;"></div>
+          <div style="position:absolute;left:22px;right:22px;bottom:18px;display:flex;flex-direction:column;gap:8px;">
+            <sc-if value="{{ hasCompany }}"><span style="align-self:flex-start;padding:5px 10px;border-radius:999px;background:var(--eAcc);color:var(--eOn);font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">{{ company }}</span></sc-if>
+            <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:42px;line-height:0.98;text-transform:uppercase;color:#FFFFFF;">{{ displayName }}</h1>
+            <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="font-size:15px;color:rgba(255,255,255,0.85);">{{ title }}</span></sc-if>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+              <a href="{{ telHref }}" aria-label="{{ callAria }}" style="width:48px;height:48px;border-radius:50%;background:#FFFFFF;color:var(--eBg);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></a>
+              <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="width:48px;height:48px;border-radius:50%;background:#FFFFFF;color:var(--eBg);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"></path></svg></a>
+              <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="width:48px;height:48px;border-radius:50%;background:#FFFFFF;color:var(--eBg);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 7l9 6 9-6"></path></svg></a>
+              <sc-if value="{{ hasDirections }}"><a href="{{ directionsHref }}" target="_blank" rel="noopener" aria-label="Get directions" style="width:48px;height:48px;border-radius:50%;background:#FFFFFF;color:var(--eBg);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"></path></svg></a></sc-if>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 20px 28px;display:flex;flex-direction:column;gap:12px;">
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="height:54px;border-radius:14px;background:var(--eAcc);color:var(--eOn);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ ctaText }}</a></sc-if>
+          <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ eTags }}" as="tg"><span style="padding:6px 11px;border-radius:999px;border:1px solid currentColor;font-size:12.5px;font-weight:600;opacity:0.85;">{{ tg.t }}</span></sc-for></div></sc-if>
+          <div style="display:grid;grid-template-columns:48px 48px minmax(0,1fr);gap:8px;">
+            <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" aria-label="Show QR code" style="height:48px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2"></path></svg></button>
+            <button type="button" onClick="{{ share }}" aria-label="Share card" style="height:48px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg></button>
+            <button type="button" onClick="{{ saveContact }}" style="height:48px;border-radius:14px;border:0;background:#FFFFFF;color:var(--eBg);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{ saveLabel }}</button>
+          </div>
+          <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="min-height:50px;border-radius:14px;border:1.5px solid currentColor;background:transparent;color:inherit;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ leadBtn }}</button></sc-if>
+          <sc-if value="{{ hasListings }}"><a href="{{ listingsHref }}" target="_blank" rel="noopener" style="min-height:48px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.3);color:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ listingsLabel }}</a></sc-if>
+          <sc-if value="{{ xHas }}" hint-placeholder-val="{{ false }}"><div style="width:100%;align-self:stretch;display:flex;flex-direction:column;gap:14px;margin-top:6px;text-align:left;">
+              <sc-for list="{{ xRows }}" as="xr"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">{{ xr.label }}</span><span style="font-size:15px;line-height:1.45;font-weight:600;">{{ xr.value }}</span></div></sc-for>
+              <sc-if value="{{ hasBio }}"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">About</span><p style="margin:0;font-size:15px;line-height:1.55;text-wrap:pretty;">{{ bio }}</p></div></sc-if>
+              <sc-if value="{{ xHasLinks }}"><div style="display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><sc-for list="{{ xLinks }}" as="xl"><a href="{{ xl.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid color-mix(in srgb, currentColor 18%, transparent);color:inherit;font-size:15px;font-weight:700;">{{ xl.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a></sc-for></div></sc-if>
+            </div></sc-if>
+          <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><p style="margin:4px 0 0;font-size:12px;line-height:1.5;text-align:center;opacity:0.8;text-wrap:balance;">{{ complianceLine }}</p></sc-if><sc-if value="{{ isTX }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:12px;line-height:1.5;opacity:0.85;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ eList }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:34px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:480px;margin:0 auto;">
+          <div style="width:132px;height:132px;border-radius:50%;padding:4px;background:var(--eCard);"><div style="width:100%;height:100%;border-radius:50%;overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;background:var(--eCard);color:var(--eInk);font-family:'DM Serif Display',Georgia,serif;font-size:56px;">{{ initials }}</div></sc-if></div></div>
+          <h1 style="margin:0;font-size:28px;line-height:1.08;font-weight:800;text-align:center;">{{ displayName }}</h1>
+          <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="font-size:14.5px;opacity:0.8;text-align:center;">{{ title }}{{ companyPart }}</span></sc-if>
+          <button type="button" onClick="{{ saveContact }}" style="width:100%;height:52px;margin-top:4px;border:0;border-radius:12px;background:var(--eInk);color:var(--eBg);font-family:Figtree,system-ui,sans-serif;font-size:15.5px;font-weight:800;cursor:pointer;">{{ saveLabel }}</button>
+          <div style="width:100%;"><sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ eTags }}" as="tg"><span style="padding:6px 11px;border-radius:999px;border:1px solid currentColor;font-size:12.5px;font-weight:600;opacity:0.85;">{{ tg.t }}</span></sc-for></div></sc-if></div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
+            <sc-if value="{{ hasEPhone }}" hint-placeholder-val="{{ true }}"><a href="{{ telHref }}"  style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--eCard);color:var(--eInk);"><span style="width:40px;height:40px;border-radius:11px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;">Call me</span><span style="font-size:12.5px;opacity:0.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ ePhone }}</span></span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg></a></sc-if>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--eCard);color:var(--eInk);"><span style="width:40px;height:40px;border-radius:11px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;">{{ msgLabel }}</span><span style="font-size:12.5px;opacity:0.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Quick reply</span></span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg></a>
+            <sc-if value="{{ hasEEmail }}" hint-placeholder-val="{{ true }}"><a href="{{ mailHref }}"  style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--eCard);color:var(--eInk);"><span style="width:40px;height:40px;border-radius:11px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 7l9 6 9-6"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;">Email me</span><span style="font-size:12.5px;opacity:0.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ eEmail }}</span></span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg></a></sc-if>
+            <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--eCard);color:var(--eInk);"><span style="width:40px;height:40px;border-radius:11px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v16H3zM3 10h18M8 3v4M16 3v4"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:15px;font-weight:700;">{{ ctaText }}</span><span style="font-size:12.5px;opacity:0.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Pick a time that suits you</span></span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg></a></sc-if>
+            <sc-if value="{{ hasDirections }}"><a href="{{ directionsHref }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--eCard);color:var(--eInk);"><span style="width:40px;height:40px;border-radius:11px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"></path></svg></span><span style="flex:1;font-size:15px;font-weight:700;">Visit my office</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg></a></sc-if>
+          </div>
+          <div style="width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+            <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="height:48px;border-radius:12px;border:1.5px solid var(--eInk);background:transparent;color:var(--eInk);font-family:Figtree,system-ui,sans-serif;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2"></path></svg>Show QR</button>
+            <button type="button" onClick="{{ share }}" style="height:48px;border-radius:12px;border:1.5px solid var(--eInk);background:transparent;color:var(--eInk);font-family:Figtree,system-ui,sans-serif;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg>Share card</button>
+          </div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:8px;"><sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="min-height:50px;border-radius:14px;border:1.5px solid currentColor;background:transparent;color:inherit;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ leadBtn }}</button></sc-if></div>
+          <sc-if value="{{ xHas }}" hint-placeholder-val="{{ false }}"><div style="width:100%;align-self:stretch;display:flex;flex-direction:column;gap:14px;margin-top:6px;text-align:left;">
+              <sc-for list="{{ xRows }}" as="xr"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">{{ xr.label }}</span><span style="font-size:15px;line-height:1.45;font-weight:600;">{{ xr.value }}</span></div></sc-for>
+              <sc-if value="{{ hasBio }}"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">About</span><p style="margin:0;font-size:15px;line-height:1.55;text-wrap:pretty;">{{ bio }}</p></div></sc-if>
+              <sc-if value="{{ xHasLinks }}"><div style="display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><sc-for list="{{ xLinks }}" as="xl"><a href="{{ xl.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid color-mix(in srgb, currentColor 18%, transparent);color:inherit;font-size:15px;font-weight:700;">{{ xl.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a></sc-for></div></sc-if>
+            </div></sc-if>
+          <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><p style="margin:4px 0 0;font-size:12px;line-height:1.5;text-align:center;opacity:0.8;text-wrap:balance;">{{ complianceLine }}</p></sc-if><sc-if value="{{ isTX }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:12px;line-height:1.5;opacity:0.85;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ eBlue }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative;height:270px;background-color:var(--eAcc);background-image:linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:22px 22px;color:#FFFFFF;">
+          <sc-if value="{{ hasCompany }}"><span style="position:absolute;left:22px;top:24px;right:190px;font-size:11px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;opacity:0.75;">{{ company }}</span></sc-if>
+          <h1 style="position:absolute;left:22px;top:52px;right:186px;margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:34px;line-height:1.02;">{{ displayName }}</h1>
+          <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:22px;right:186px;bottom:28px;font-size:13.5px;line-height:1.4;opacity:0.85;">{{ title }}</span></sc-if>
+          <div style="position:absolute;right:20px;bottom:-56px;width:152px;height:194px;border-radius:14px;overflow:hidden;border:5px solid var(--eBg);box-shadow:0 14px 30px -14px rgba(0,0,0,0.5);"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;background:var(--eCard);color:var(--eInk);font-family:'DM Serif Display',Georgia,serif;font-size:52px;">{{ initials }}</div></sc-if></div>
+        </div>
+        <div style="padding:20px 20px 28px;display:flex;flex-direction:column;gap:12px;max-width:520px;margin:0 auto;">
+          <div style="min-height:44px;max-width:calc(100% - 170px);display:flex;flex-direction:column;gap:3px;"><sc-if value="{{ hasArea }}"><span style="font-size:11px;font-weight:700;letter-spacing:0.2em;opacity:0.6;">{{ eAreaLabel }}</span><span style="font-size:14px;font-weight:600;">{{ eAreaVal }}</span></sc-if></div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;">
+            <a href="{{ telHref }}" aria-label="{{ callAria }}" style="height:76px;border-radius:14px;background:var(--eCard);color:var(--eInk);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:0 14px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg><span style="font-size:14.5px;font-weight:700;">Call</span></a>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" style="height:76px;border-radius:14px;background:var(--eCard);color:var(--eInk);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:0 14px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"></path></svg><span style="font-size:14.5px;font-weight:700;">{{ msgLabel }}</span></a>
+            <sc-if value="{{ hasTile }}" hint-placeholder-val="{{ true }}"><a href="{{ eTileHref }}" target="_blank" rel="noopener" style="height:76px;border-radius:14px;background:var(--eCard);color:var(--eInk);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:0 14px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ eTileIcon }}"></path></svg><span style="font-size:14.5px;font-weight:700;">{{ eTileLabel }}</span></a></sc-if>
+            <a href="{{ mailHref }}"  style="grid-column:{{ mailSpan }};height:76px;border-radius:14px;background:var(--eCard);color:var(--eInk);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:0 14px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 7l9 6 9-6"></path></svg><span style="font-size:14.5px;font-weight:700;">Email</span></a>
+          </div>
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="height:54px;border-radius:14px;background:var(--eAcc);color:#FFFFFF;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ ctaText }}</a></sc-if>
+          <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ eTags }}" as="tg"><span style="padding:6px 11px;border-radius:999px;border:1px solid currentColor;font-size:12.5px;font-weight:600;opacity:0.85;">{{ tg.t }}</span></sc-for></div></sc-if>
+          <div style="display:grid;grid-template-columns:48px 48px minmax(0,1fr);gap:8px;color:var(--eInk);"><button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" aria-label="Show QR code" style="height:48px;border-radius:12px;border:1.5px solid var(--eInk);background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2"></path></svg></button><button type="button" onClick="{{ share }}"  aria-label="Share card" style="height:48px;border-radius:12px;border:1.5px solid var(--eInk);background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg></button><button type="button" onClick="{{ saveContact }}" style="height:48px;border-radius:12px;border:1.5px solid var(--eInk);background:transparent;color:var(--eInk);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ saveLabel }}</button></div>
+          <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="min-height:50px;border-radius:14px;border:1.5px solid currentColor;background:transparent;color:inherit;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ leadBtn }}</button></sc-if>
+          <sc-if value="{{ xHas }}" hint-placeholder-val="{{ false }}"><div style="width:100%;align-self:stretch;display:flex;flex-direction:column;gap:14px;margin-top:6px;text-align:left;">
+              <sc-for list="{{ xRows }}" as="xr"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">{{ xr.label }}</span><span style="font-size:15px;line-height:1.45;font-weight:600;">{{ xr.value }}</span></div></sc-for>
+              <sc-if value="{{ hasBio }}"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">About</span><p style="margin:0;font-size:15px;line-height:1.55;text-wrap:pretty;">{{ bio }}</p></div></sc-if>
+              <sc-if value="{{ xHasLinks }}"><div style="display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><sc-for list="{{ xLinks }}" as="xl"><a href="{{ xl.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid color-mix(in srgb, currentColor 18%, transparent);color:inherit;font-size:15px;font-weight:700;">{{ xl.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a></sc-for></div></sc-if>
+            </div></sc-if>
+          <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><p style="margin:4px 0 0;font-size:12px;line-height:1.5;text-align:center;opacity:0.8;text-wrap:balance;">{{ complianceLine }}</p></sc-if><sc-if value="{{ isTX }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:12px;line-height:1.5;opacity:0.85;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ eHome }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:100svh;background:linear-gradient(180deg,var(--eCard) 0%,var(--eBg) 55%);display:flex;flex-direction:column;align-items:center;padding:34px 20px 0;">
+          <div style="width:176px;height:176px;border-radius:50%;padding:7px;background:#FFFFFF;box-shadow:0 12px 30px -14px rgba(0,0,0,0.4);box-sizing:border-box;"><div style="width:100%;height:100%;border-radius:50%;overflow:hidden;"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};"></div></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;background:var(--eCard);color:var(--eInk);font-family:'DM Serif Display',Georgia,serif;font-size:52px;">{{ initials }}</div></sc-if></div></div>
+          <h1 style="margin:16px 0 0;font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;text-align:center;">{{ displayName }}</h1>
+          <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="margin-top:4px;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;opacity:0.8;text-align:center;">{{ title }}</span></sc-if>
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="width:100%;max-width:420px;box-sizing:border-box;margin-top:18px;height:52px;border-radius:12px;background:var(--eAcc);color:var(--eOn);font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 22px -14px rgba(0,0,0,0.45);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{{ ctaText }}</a></sc-if>
+          <div style="width:100%;max-width:420px;margin-top:20px;background:#FFFFFF;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 14px 30px -18px rgba(0,0,0,0.35);box-sizing:border-box;">
+            <sc-if value="{{ hasCompany }}"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><sc-if value="{{ eRoof }}"><svg width="92" height="34" viewBox="0 0 92 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 32 34 4l18 17M40 32 64 8l24 24"></path></svg></sc-if><span style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;text-transform:uppercase;text-align:center;">{{ company }}</span><span style="width:170px;height:1.5px;background:currentColor;"></span></div></sc-if>
+            <div style="display:flex;flex-direction:column;gap:11px;font-size:14px;">
+              <sc-if value="{{ hasEPhone }}" hint-placeholder-val="{{ true }}"><a href="{{ telHref }}" style="display:flex;align-items:center;gap:12px;color:inherit;"><span style="width:28px;height:28px;border-radius:50%;background:var(--eInk);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></span>{{ ePhone }}</a></sc-if>
+              <sc-if value="{{ hasEEmail }}" hint-placeholder-val="{{ true }}"><a href="{{ mailHref }}" style="display:flex;align-items:center;gap:12px;color:inherit;min-width:0;"><span style="width:28px;height:28px;border-radius:50%;background:var(--eInk);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 7l9 6 9-6"></path></svg></span><span style="overflow:hidden;text-overflow:ellipsis;">{{ eEmail }}</span></a></sc-if>
+              <sc-if value="{{ hasCity }}"><a href="{{ directionsHref }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;color:inherit;"><span style="width:28px;height:28px;border-radius:50%;background:var(--eInk);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"></path></svg></span>{{ eCity }}</a></sc-if>
+            </div>
+          <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ eTags }}" as="tg"><span style="padding:6px 11px;border-radius:999px;border:1px solid currentColor;font-size:12.5px;font-weight:600;opacity:0.85;">{{ tg.t }}</span></sc-for></div></sc-if>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+              <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" style="height:54px;border-radius:10px;background:#F3F0EB;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"></path></svg>{{ msgLabel }}</a>
+              <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="height:54px;border:0;border-radius:10px;background:#F3F0EB;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:Figtree,system-ui,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2"></path></svg>SHOW QR</button>
+              <button type="button" onClick="{{ share }}" style="height:54px;border:0;border-radius:10px;background:#F3F0EB;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:Figtree,system-ui,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg>SHARE</button>
+            </div>
+            <button type="button" onClick="{{ saveContact }}" style="height:50px;border:0;border-radius:10px;background:var(--eInk);color:#FFFFFF;font-family:Figtree,system-ui,sans-serif;font-size:13.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{ saveLabel }}</button>
+            <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="min-height:50px;border-radius:14px;border:1.5px solid currentColor;background:transparent;color:inherit;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ leadBtn }}</button></sc-if>
+            <sc-if value="{{ xHas }}" hint-placeholder-val="{{ false }}"><div style="width:100%;align-self:stretch;display:flex;flex-direction:column;gap:14px;margin-top:6px;text-align:left;">
+              <sc-for list="{{ xRows }}" as="xr"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">{{ xr.label }}</span><span style="font-size:15px;line-height:1.45;font-weight:600;">{{ xr.value }}</span></div></sc-for>
+              <sc-if value="{{ hasBio }}"><div style="display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;opacity:0.7;">About</span><p style="margin:0;font-size:15px;line-height:1.55;text-wrap:pretty;">{{ bio }}</p></div></sc-if>
+              <sc-if value="{{ xHasLinks }}"><div style="display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb, currentColor 18%, transparent);"><sc-for list="{{ xLinks }}" as="xl"><a href="{{ xl.url }}" target="_blank" rel="noopener" style="min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid color-mix(in srgb, currentColor 18%, transparent);color:inherit;font-size:15px;font-weight:700;">{{ xl.label }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a></sc-for></div></sc-if>
+            </div></sc-if>
+            <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><p style="margin:4px 0 0;font-size:12px;line-height:1.5;text-align:center;opacity:0.8;text-wrap:balance;">{{ complianceLine }}</p></sc-if><sc-if value="{{ isTX }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:12px;line-height:1.5;opacity:0.85;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if>
+          </div>
+          <sc-if value="{{ hasCompany }}"><div style="width:calc(100% + 40px);margin-top:28px;height:56px;background:var(--eAcc);color:var(--eOn);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;">{{ company }}</div></sc-if>
+        </div>
+      </sc-if>
+        <div style="display:flex;justify-content:center;padding:4px 20px 28px;"><sc-if value="{{ showPlans }}"><button type="button" onClick="{{ openPlans }}" style="min-height:44px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:Figtree,system-ui,sans-serif;color:var(--eInk);">
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:color-mix(in srgb, var(--eInk) 55%, var(--eBg));">Powered by Linkcardly</span>
+            <span style="font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;">Get a card like this<span aria-hidden="true">→</span></span>
+          </button></sc-if></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100svh;background:var(--lsBg,#f6f4f0);color:var(--lsInk,#13233f);display:flex;flex-direction:column;">
+        <div style="position:relative;height:280px;flex:none;overflow:hidden;background:color-mix(in srgb, var(--lsInk,#13233f) 18%, var(--lsBg,#f6f4f0));">
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:100%;height:100%;background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};transform:scale({{ photoZoom }});transform-origin:{{ photoPos }};"></div></sc-if>
+              <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:100%;height:100%;display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-size:96px;color:var(--lsInk,#13233f);">{{ initials }}</div></sc-if>
+        </div>
+        <div style="margin:-44px 16px 0;position:relative;background:var(--lsCard,#fff);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:4px;box-shadow:0 16px 30px -18px color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 50%, transparent);">
+          <span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:color-mix(in srgb, var(--accent,#f2c98a) 50%, var(--lsInk,#3a2f22));">{{ category }}</span>
+          <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;line-height:1.05;letter-spacing:-0.02em;">{{ displayName }}</h1>
+          <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;color:color-mix(in srgb, var(--lsInk,#13233f) 72%, var(--lsBg,#f6f4f0));">{{ title }}{{ companyPart }}</span></sc-if>
+        </div>
+        <div style="padding:16px 16px 24px;display:flex;flex-direction:column;gap:9px;flex:1;">
+          <sc-if value="{{ hasTagline }}" hint-placeholder-val="{{ true }}"><p style="margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:color-mix(in srgb, var(--lsInk,#13233f) 72%, var(--lsBg,#f6f4f0));text-align:center;">{{ tagline }}</p></sc-if>
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ true }}"><a href="{{ ctaHref }}" target="_blank" rel="noopener" style="height:54px;border-radius:14px;background:var(--accent,#f2c98a);color:#15120a;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ ctaText }}</a></sc-if>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <a href="{{ telHref }}" aria-label="{{ callAria }}" style="height:50px;border-radius:12px;background:var(--lsCard,#fff);border:1px solid color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 12%, transparent);color:var(--lsInk,#13233f);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">Call</a>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="height:50px;border-radius:12px;background:var(--lsCard,#fff);border:1px solid color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 12%, transparent);color:var(--lsInk,#13233f);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">{{ msgLabel }}</a>
+            <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="height:50px;border-radius:12px;background:var(--lsCard,#fff);border:1px solid color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 12%, transparent);color:var(--lsInk,#13233f);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;">Email</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+            <button type="button" onClick="{{ share }}" style="height:46px;border-radius:12px;border:0;background:color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 6%, transparent);color:var(--lsInk,#13233f);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Share card</button>
+            <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="height:46px;border-radius:12px;border:0;background:color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 6%, transparent);color:var(--lsInk,#13233f);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Show QR</button>
+          </div>
+          <button type="button" onClick="{{ saveContact }}" style="height:52px;border:0;border-radius:14px;background:var(--lsInk,#13233f);color:var(--lsBg,#fff);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ saveLabel }}</button>
+          <sc-if value="{{ leadOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ openLead }}" aria-haspopup="dialog" style="height:52px;border-radius:14px;border:1.5px solid var(--accent,#f2c98a);background:color-mix(in srgb, var(--accent,#f2c98a) 12%, var(--lsCard,#fff));color:var(--lsInk,#13233f);font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 9h8M8 13h5"></path></svg>{{ leadBtn }}</button></sc-if>
+          <sc-if value="{{ hasListings }}"><a href="{{ listingsHref }}" target="_blank" rel="noopener" style="height:50px;border-radius:14px;border:1.5px solid var(--lsInk,#13233f);color:var(--lsInk,#13233f);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;">{{ listingsLabel }}</a></sc-if>
+          <sc-if value="{{ hasDirections }}"><a href="{{ directionsHref }}" target="_blank" rel="noopener" style="height:50px;border-radius:14px;border:1.5px solid color-mix(in srgb, var(--lsInk,#13233f) 20%, transparent);color:var(--lsInk,#13233f);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Get directions</a></sc-if>
+          <sc-for list="{{ socialsNoWeb }}" as="s"><a href="{{ s.url }}" target="_blank" rel="noopener" style="height:50px;border-radius:14px;border:1.5px solid color-mix(in srgb, var(--lsInk,var(--lsInk,#13233f)) 20%, transparent);color:var(--lsInk,#13233f);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;">{{ s.label }}</a></sc-for>
+          <sc-if value="{{ hasCompliance }}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;line-height:1.5;color:color-mix(in srgb, var(--lsInk,#13233f) 72%, var(--lsBg,#f6f4f0));"><span style="text-wrap:balance;">{{ complianceLine }}</span><sc-if value="{{ isTX }}"><span style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;"><sc-if value="{{ hasIabs }}"><a href="{{ iabsUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Information About Brokerage Services</a></sc-if><a href="{{ cpnUrl }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">TREC Consumer Protection Notice</a></span></sc-if></div></sc-if>
+          <div style="margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:color-mix(in srgb, var(--lsInk,#13233f) 72%, var(--lsBg,#f6f4f0));">
+            <sc-if value="{{ hasCityLine }}" hint-placeholder-val="{{ true }}"><span>{{ cityLine }}</span></sc-if>
+            </div>
+          <div style="display:flex;justify-content:center;"><sc-if value="{{ showPlans }}"><button type="button" onClick="{{ openPlans }}" style="min-height:44px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:Figtree,system-ui,sans-serif;color:var(--lsInk,#13233f);">
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:color-mix(in srgb, var(--lsInk,#13233f) 55%, var(--lsBg,#f6f4f0));">Powered by Linkcardly</span>
+            <span style="font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;">Get a card like this<span aria-hidden="true">→</span></span>
+          </button></sc-if></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <div role="status" aria-live="polite" style="position:fixed;left:50%;bottom:max(24px, env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;pointer-events:none;">
+      <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#f3efe6;color:#10231a;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 16px 40px -12px rgba(0,0,0,0.6);white-space:nowrap;">{{ toast }}</div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ qrOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeQR }}" style="position:fixed;inset:0;z-index:60;background:rgba(3,10,7,0.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;">
+        <div role="dialog" aria-modal="true" aria-labelledby="qr-h" onClick="{{ stop }}" style="width:100%;max-width:320px;background:#f3efe6;color:#10231a;border-radius:20px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,0.8);">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <h3 id="qr-h" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;">Scan to connect</h3>
+            <p style="margin:0;font-size:13px;color:#4a5c52;">Point a phone camera at the code</p>
+          </div>
+          <div style="width:100%;aspect-ratio:1;">{{ qrNode }}</div>
+          <button type="button" ref="{{ closeRef }}" onClick="{{ closeQR }}" style="height:48px;width:100%;border:0;border-radius:12px;background:#10231a;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;" style-hover="background:#1b3a2b;">Done</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ leadOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeLead }}" style="position:fixed;inset:0;z-index:60;background:rgba(3,10,7,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;">
+        <div role="dialog" aria-modal="true" aria-labelledby="lead-h" onClick="{{ stop }}" style="width:100%;max-width:440px;max-height:92svh;overflow-y:auto;box-sizing:border-box;background:#f3efe6;color:#10231a;border-radius:24px 24px 0 0;padding:12px 24px max(24px, env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;font-family:Figtree,system-ui,sans-serif;box-shadow:0 -20px 60px -20px rgba(0,0,0,0.7);">
+          <div aria-hidden="true" style="width:40px;height:5px;border-radius:3px;background:rgba(16,35,26,0.18);align-self:center;"></div>
+          <sc-if value="{{ leadDone }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:12px 0 4px;">
+              <span aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:#10231a;color:#f3efe6;display:grid;place-items:center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"></path></svg></span>
+              <h3 id="lead-h" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:26px;line-height:1.15;">Thanks, {{ leadFirst }}.</h3>
+              <p style="margin:0;font-size:15px;line-height:1.5;color:#4a5c52;text-wrap:pretty;">{{ leadDoneMsg }}</p>
+              <button type="button" onClick="{{ closeLead }}" style="margin-top:8px;height:50px;width:100%;border:0;border-radius:12px;background:#10231a;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;">Done</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ leadForm }}" hint-placeholder-val="{{ false }}">
+            <form onSubmit="{{ submitLead }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <h3 id="lead-h" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:26px;line-height:1.15;">{{ leadTitle }}</h3>
+                <p style="margin:0;font-size:14px;line-height:1.45;color:#4a5c52;">{{ leadSub }}</p>
+              </div>
+              <sc-if value="{{ hasLeadTopics }}" hint-placeholder-val="{{ false }}">
+                <div role="radiogroup" aria-label="I'm interested in" style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <sc-for list="{{ leadTopics }}" as="tp"><button type="button" role="radio" aria-checked="{{ tp.checked }}" onClick="{{ tp.pick }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:{{ tp.border }};background:{{ tp.bg }};color:{{ tp.fg }};font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ tp.label }}</button></sc-for>
+                </div>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;gap:6px;"><label for="lead-name" style="font-size:14px;font-weight:600;color:#10231a;">Your name *</label><input id="lead-name" name="name" type="text" autoComplete="name" value="{{ leadName }}" onChange="{{ onLeadName }}" style="height:50px;width:100%;box-sizing:border-box;padding:0 14px;border-radius:12px;border:1px solid rgba(16,35,26,0.22);background:#fff;color:#10231a;font-family:Figtree,system-ui,sans-serif;font-size:16px;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;"><label for="lead-phone" style="font-size:14px;font-weight:600;color:#10231a;">Mobile *</label><input id="lead-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" value="{{ leadPhone }}" onChange="{{ onLeadPhone }}" style="height:50px;width:100%;box-sizing:border-box;padding:0 14px;border-radius:12px;border:1px solid rgba(16,35,26,0.22);background:#fff;color:#10231a;font-family:Figtree,system-ui,sans-serif;font-size:16px;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;"><label for="lead-email" style="font-size:14px;font-weight:600;color:#10231a;">Email</label><input id="lead-email" name="email" type="email" inputMode="email" autoComplete="email" value="{{ leadEmail }}" onChange="{{ onLeadEmail }}" style="height:50px;width:100%;box-sizing:border-box;padding:0 14px;border-radius:12px;border:1px solid rgba(16,35,26,0.22);background:#fff;color:#10231a;font-family:Figtree,system-ui,sans-serif;font-size:16px;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;"><label for="lead-msg" style="font-size:14px;font-weight:600;color:#10231a;">Message</label><textarea id="lead-msg" name="message" rows="3" value="{{ leadMsg }}" onChange="{{ onLeadMsg }}" placeholder="{{ leadMsgPh }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid rgba(16,35,26,0.22);background:#fff;color:#10231a;font-family:Figtree,system-ui,sans-serif;font-size:16px;resize:vertical;"></textarea></div>
+              <div ref="{{ tsRef }}"></div>
+              <p aria-live="polite" style="margin:0;font-size:14px;font-weight:600;color:#b3261e;">{{ leadErr }}</p>
+              <button type="submit" disabled="{{ leadBusy }}" style="height:54px;width:100%;border:0;border-radius:14px;background:#10231a;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:16px;font-weight:700;cursor:pointer;">{{ leadSubmitLabel }}</button>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#4a5c52;">{{ leadConsent }}</p>
+            </form>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ guideOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeGuide }}" style="position:fixed;inset:0;z-index:60;background:rgba(3,10,7,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;">
+        <div role="dialog" aria-modal="true" aria-labelledby="guide-h" onClick="{{ stop }}" style="width:100%;max-width:440px;background:#f3efe6;color:#10231a;border-radius:24px 24px 0 0;padding:12px 24px max(24px, env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:20px;box-shadow:0 -20px 60px -20px rgba(0,0,0,0.7);">
+          <div aria-hidden="true" style="width:40px;height:5px;border-radius:3px;background:rgba(16,35,26,0.18);align-self:center;"></div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <sc-if value="{{ hasContactPhoto }}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="width:52px;height:52px;border-radius:50%;background-image:{{ contactPhotoBg }};background-size:cover;background-position:50% 18%;flex:none;"></div>
+            </sc-if>
+            <sc-if value="{{ noContactPhoto }}">
+              <div aria-hidden="true" style="width:52px;height:52px;border-radius:50%;background:#10231a;color:var(--accent,#f2c98a);display:grid;place-items:center;font-family:Newsreader,Georgia,serif;font-size:22px;flex:none;">{{ initials }}</div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <h3 id="guide-h" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.1;">Save to Contacts</h3>
+              <p style="margin:0;font-size:14px;color:#4a5c52;">Two taps on iPhone</p>
+            </div>
+          </div>
+          <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;">
+            <li style="display:flex;align-items:center;gap:14px;">
+              <span style="width:32px;height:32px;border-radius:50%;background:#10231a;color:var(--accent,#f2c98a);font-size:14px;font-weight:700;display:grid;place-items:center;flex:none;">1</span>
+              <span style="font-size:15px;line-height:1.4;">Tap <strong style="font-weight:600;">Open contact</strong> below</span>
+            </li>
+            <li style="display:flex;align-items:center;gap:14px;">
+              <span style="width:32px;height:32px;border-radius:50%;background:#10231a;color:var(--accent,#f2c98a);font-size:14px;font-weight:700;display:grid;place-items:center;flex:none;">2</span>
+              <span style="font-size:15px;line-height:1.4;">Scroll to the bottom and tap <strong style="font-weight:600;color:#0a6cff;">Create New Contact</strong></span>
+            </li>
+          </ol>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button type="button" ref="{{ guideRef }}" onClick="{{ confirmSave }}" style="height:54px;width:100%;border:0;border-radius:14px;background:#10231a;color:#f3efe6;font-family:Figtree,system-ui,sans-serif;font-size:16px;font-weight:700;cursor:pointer;" style-hover="background:#1b3a2b;">Open contact</button>
+            <button type="button" onClick="{{ closeGuide }}" style="height:44px;width:100%;border:0;border-radius:12px;background:transparent;color:#4a5c52;font-family:Figtree,system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;">Not now</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:420,&quot;height&quot;:900},&quot;demo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Live card&quot;,&quot;US Realtor demo&quot;,&quot;Real Estate demo&quot;,&quot;Services demo&quot;,&quot;Healthcare demo&quot;],&quot;default&quot;:&quot;Live card&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;(from data)&quot;,&quot;Original&quot;,&quot;Luxury Estate&quot;,&quot;Listing Showcase&quot;],&quot;default&quot;:&quot;(from data)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;colour&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;Forest Green&quot;,&quot;Burgundy Rose&quot;,&quot;Deep Teal&quot;,&quot;Royal Plum&quot;,&quot;Espresso&quot;,&quot;Blush Pink&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;portraitStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;full-bleed&quot;,&quot;framed&quot;],&quot;default&quot;:&quot;full-bleed&quot;,&quot;tsType&quot;:&quot;'full-bleed'|'framed'&quot;},&quot;showShareRow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showPlans&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;season&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Auto (by date)&quot;,&quot;Off&quot;,&quot;Holidays&quot;,&quot;New Year&quot;,&quot;Thanksgiving&quot;],&quot;default&quot;:&quot;Auto (by date)&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Seasonal&quot;},&quot;seasonFx&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Seasonal&quot;},&quot;iosGuide&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;iPhone only&quot;,&quot;Always&quot;],&quot;default&quot;:&quot;Always&quot;,&quot;tsType&quot;:&quot;'iPhone only'|'Always'&quot;}}">
+/* ================================================================
+   EDIT THIS BLOCK FOR EACH CUSTOMER
+   preset: 'entrepreneur' | 'realEstate' | 'services' | 'healthcare'
+   Any field left out falls back to the preset (tagline, colours, quote…).
+   ================================================================ */
+const CARD = {
+  preset: 'entrepreneur',
+  layout: 'original',                         // original | luxuryEstate | listingShowcase
+  colour: '',                                // optional: forest | burgundy | teal | plum | espresso | blush
+  url: 'https://linkcardly.com/',   // live address (QR + Share)
+  prefix: '', firstName: 'Sandeep', lastName: 'Koppisetty',
+  title: 'Founder',
+  company: 'Linkcardly',
+  category: "Let's connect",                 // small line above the name
+  tagline: 'Connect · Share · Grow',
+  photo: '/portrait.gif', photoAlt: 'Animated portrait of Sandeep Koppisetty seated on a chair, surrounded by floating data and web icons',
+  contactPhoto: '/assets/img/samples/portrait.jpg',            // still photo saved into the phone contact ('' = none)
+  quote: '“Creating is a form of connecting.”',
+  bio: 'I build digital experiences and intelligent automation that connect businesses with the people they serve.',
+  signature: 'Sandeep K',
+  titles: 'Founder · Digital Strategist · Automation',
+  phone: '+18167723649', phoneDisplay: '+1 (816) 772-3649',
+  whatsapp: '',                              // digits only, e.g. '919876543210' — replaces Text with WhatsApp
+  email: 'sandeepkoppisetty@gmail.com',
+  cta: null,                                 // e.g. { label: 'Book appointment', url: 'https://…' }
+  socials: [
+    { type: 'linkedin', handle: 'sandeep-koppi', url: 'https://www.linkedin.com/in/sandeep-koppi' },
+    { type: 'instagram', handle: '@sandykoppi', url: 'https://www.instagram.com/sandykoppi/' },
+  ],
+  details: [],                               // e.g. { label: 'Clinic', value: 'Address…', maps: true }
+  footerLine: 'Great to meet you — let’s stay in touch.',
+  poweredBy: false,                          // show "Digital card by Linkcardly"
+  plan: 'motion',
+};
+
+/* Client cards are loaded from Supabase by link: /rahul-sharma or /?c=rahul-sharma
+   The home page (no link) loads DEFAULT_SLUG from Supabase; the CARD block above is the offline fallback. */
+const DEFAULT_SLUG = 'sandeep3649';
+/* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
+const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
+const VIA_WORKER = () => /(^|\.)nexbizrise\.com$|(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
+const SUPABASE_URL = 'https://hyaqvmrtqafqhbhcdecd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV';
+/* Video portraits: photo divs (data-ph) get a muted looping <video> layered inside. */
+const NBR_VID = /\.(mp4|webm)(\?|#|$)|#video$|^data:video\//i;
+const nbrSyncVids = (src, root) => {
+  const isV = NBR_VID.test(src || '');
+  (root || document).querySelectorAll('[data-ph]').forEach(el => {
+    let v = el.querySelector('video[data-nbrv]');
+    if (!isV) { if (v) v.remove(); return; }
+    if (!v) {
+      v = document.createElement('video'); v.setAttribute('data-nbrv', ''); v.setAttribute('aria-hidden', 'true');
+      v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.preload = 'auto';
+      v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;border-radius:inherit;';
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      el.appendChild(v);
+    }
+    if (v.getAttribute('src') !== src) { v.setAttribute('src', src); }
+    v.style.objectPosition = el.style.backgroundPosition || '50% 50%';
+    if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  });
+};
+const POWERED_URL = 'https://linkcardly.com/order';
+/* Order form submissions go to this WhatsApp number (digits only, with country code) */
+const SALES_WHATSAPP = '18167723649';
+const SALES_SMS = '+18167723649';
+const SALES_EMAIL = 'sandeepkoppisetty@gmail.com';
+/* Prices per region — edit here only */
+const PRICING = {
+  IN: { label: '🇮🇳 India', cur: '₹', locale: 'en-IN', basic: { now: 799, was: 999 }, motion: { now: 1799, was: 2499 }, phone: '+91 98765 43210' },
+  US: { label: '🇺🇸 USA', cur: '$', locale: 'en-US', basic: { now: 49, was: 69 }, motion: { now: 79, was: 99 }, phone: '(816) 555-0123' },
+};
+const money = (r, n) => r.cur + Number(n).toLocaleString(r.locale);
+const planText = (reg, plan) => { const r = PRICING[reg] || PRICING.IN, p = r[plan]; return (plan === 'motion' ? 'Motion Card' : 'Digital Card') + ' — ' + money(r, p.now) + ' / year (launch offer, was ' + money(r, p.was) + ')'; };
+/* Card colour palettes — used by the order form and by CARD.colour */
+const COLOURS = [
+  { id: 'forest',   name: 'Forest Green',        bg: '#06120d', accent: '#f2c98a', bgTop: '#0b2a1d', bgBack: '#134a33' },
+  { id: 'burgundy', name: 'Burgundy Rose',       bg: '#1a0a0e', accent: '#f2a3a8' },
+  { id: 'teal',     name: 'Deep Teal',           bg: '#061618', accent: '#74d3c6' },
+  { id: 'plum',     name: 'Royal Plum',          bg: '#140a1c', accent: '#d6b4ee' },
+  { id: 'espresso', name: 'Espresso',           bg: '#160d09', accent: '#e8a57f' },
+  { id: 'blush',    name: 'Blush Pink',          bg: '#1c0a14', accent: '#ff9ecb' },
+];
+const PROFESSIONS = ['Entrepreneur / Business owner', 'Real Estate', 'Healthcare', 'Interior / Design services', 'Consultant / Coach', 'Legal / Finance', 'Retail / Shop', 'Other'];
+const FORM_FIELDS = [
+  { id: 'name', label: 'Full name *', autocomplete: 'name', placeholder: 'e.g. Rahul Sharma', required: 'Please enter your name' },
+  { id: 'profession', label: 'Profession *', select: true, required: 'Please choose your profession' },
+  { id: 'professionOther', label: 'Your profession *', onlyIfOther: true, required: 'Please enter your profession' },
+  { id: 'title', label: 'Job title', autocomplete: 'organization-title', placeholder: 'e.g. Senior Property Consultant' },
+  { id: 'company', label: 'Business name', autocomplete: 'organization', placeholder: 'e.g. Skyline Realty' },
+  { id: 'phone', label: 'Mobile number *', type: 'tel', inputMode: 'tel', autocomplete: 'tel', placeholder: '+91 98765 43210', required: 'Please enter your mobile number', pattern: /^[+\d][\d\s\-()]{7,}$/, patternMsg: 'Please enter a valid mobile number' },
+  { id: 'whatsapp', label: 'WhatsApp number', type: 'tel', inputMode: 'tel', autocomplete: 'tel', placeholder: 'Leave blank if same as mobile' },
+  { id: 'email', label: 'Email', type: 'email', inputMode: 'email', autocomplete: 'email', placeholder: 'you@business.com', pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, patternMsg: 'Please enter a valid email' },
+  { id: 'city', label: 'City', autocomplete: 'address-level2', placeholder: 'e.g. Hyderabad' },
+  { id: 'links', label: 'Website / social links', type: 'url', inputMode: 'url', placeholder: 'Instagram, LinkedIn, website…', help: 'Separate several links with commas' },
+  { id: 'notes', label: 'Anything else?', area: true, placeholder: 'Tagline, services, colours you like…' },
+];
+
+const PRESETS = {
+  entrepreneur: { category: "Let's connect", tagline: 'Connect · Share · Grow', theme: { accent: '#f2c98a', bg: '#06120d', bgTop: '#0b2a1d', bgBack: '#134a33' } },
+  realEstate:   { category: 'Real Estate', tagline: 'Buy · Sell · Rent', footerLine: 'Looking to buy, sell or rent? Let’s talk.', theme: { accent: '#e2bd72', bg: '#0a0e18', bgTop: '#152038', bgBack: '#1f2f54' } },
+  services:     { category: 'Services', tagline: 'Design · Style · Transform', footerLine: 'Have a space in mind? Let’s create it together.', theme: { accent: '#e8a57f', bg: '#130c0a', bgTop: '#2a1812', bgBack: '#40241a' } },
+  healthcare:   { category: 'Healthcare', tagline: 'Care · Treat · Smile', footerLine: 'Your health is in caring hands.', theme: { accent: '#74d3c6', bg: '#061318', bgTop: '#0b2a33', bgBack: '#0f3d48' } },
+};
+
+/* Sample customers — preview with the "demo" tweak, or on the live site with ?demo=realestate | services | healthcare */
+const DEMOS = {
+  services_us: {
+    preset: 'services', region: 'US', firstName: 'Emily', lastName: 'Carter', title: 'Interior Designer', company: 'Carter & Co. Interiors',
+    photo: '', contactPhoto: '',
+    quote: '“Good design feels like home.”',
+    bio: 'I design calm, livable homes and offices across Kansas City, from first sketch to final styling.',
+    signature: 'Emily Carter', titles: 'Residential · Offices · Styling',
+    phone: '+18165550187', whatsapp: '', email: 'emily@carterinteriors.com',
+    cta: { label: 'Book a consultation', url: 'https://calendly.com/' },
+    socials: [
+      { type: 'instagram', handle: '@carterinteriors', url: 'https://www.instagram.com/' },
+      { type: 'linkedin', handle: 'emily-carter', url: 'https://www.linkedin.com/' },
+      { type: 'website', handle: 'carterinteriors.com', url: 'https://example.com' },
+    ],
+    details: [{ label: 'Studio', value: '1800 Baltimore Ave, Kansas City, MO', maps: true }],
+    poweredBy: true,
+  },
+  healthcare_us: {
+    preset: 'healthcare', region: 'US', prefix: 'Dr.', firstName: 'Michael', lastName: 'Bennett', title: 'Family Dentist', company: 'Bright Smile Dental',
+    photo: '', contactPhoto: '',
+    quote: '“Healthy smiles, gentle care.”',
+    bio: 'Preventive, restorative and cosmetic dentistry for the whole family, with clear plans and no surprises.',
+    signature: 'Dr. Michael Bennett', titles: 'DDS · Implants · Invisalign',
+    phone: '+19135550164', whatsapp: '', email: 'care@brightsmiledental.com',
+    cta: { label: 'Book appointment', url: 'https://calendly.com/' },
+    socials: [
+      { type: 'instagram', handle: '@brightsmiledental', url: 'https://www.instagram.com/' },
+      { type: 'website', handle: 'brightsmiledental.com', url: 'https://example.com' },
+    ],
+    details: [
+      { label: 'Clinic', value: '4800 W 119th St, Overland Park, KS', maps: true },
+      { label: 'Hours', value: 'Mon–Fri · 8 am – 5 pm' },
+    ],
+    poweredBy: true,
+  },
+  realtor: {
+    preset: 'realEstate', region: 'US', firstName: 'Jessica', lastName: 'Moreno', title: 'REALTOR®', company: 'Lone Star Realty Group',
+    photo: '', contactPhoto: '',
+    quote: '“Finding the right home should feel exciting, not stressful.”',
+    bio: 'I help Austin buyers and sellers price right, move fast and close with confidence.',
+    signature: 'Jessica Moreno', titles: 'Buyers · Sellers · Relocation',
+    phone: '+15125550142', phoneDisplay: '(512) 555-0142', whatsapp: '', email: 'jessica@lonestarrealty.com',
+    cta: { label: 'Schedule a showing', url: 'https://calendly.com/' },
+    socials: [
+      { type: 'instagram', handle: '@jessicasellsaustin', url: 'https://www.instagram.com/' },
+      { type: 'facebook', handle: 'Jessica Moreno Realtor', url: 'https://www.facebook.com/' },
+      { type: 'website', handle: 'lonestarrealty.com', url: 'https://example.com' },
+    ],
+    listingsUrl: 'https://www.zillow.com/', officeAddress: '401 Congress Ave, Austin, TX 78701',
+    details: [{ label: 'Office', value: '401 Congress Ave, Austin, TX 78701', maps: true }],
+    brokerage: 'Lone Star Realty Group', licenseNo: '0712345', licenseState: 'TX', iabsUrl: 'https://example.com/iabs.pdf',
+    poweredBy: true,
+  },
+  realestate: {
+    preset: 'realEstate', firstName: 'Arjun', lastName: 'Mehta', title: 'Senior Property Consultant', company: 'Skyline Realty',
+    photo: '', contactPhoto: '',
+    quote: '“The right home changes everything.”',
+    bio: 'I help families and investors find, value and close on property with clear advice and no pressure.',
+    signature: 'Arjun Mehta', titles: 'Residential · Commercial · Investment',
+    phone: '+919876543210', phoneDisplay: '+91 98765 43210', whatsapp: '919876543210', email: 'rahul@skylinerealty.in',
+    cta: { label: 'View listings', url: 'https://example.com' },
+    socials: [
+      { type: 'instagram', handle: '@skylinerealty', url: 'https://www.instagram.com/' },
+      { type: 'facebook', handle: 'Skyline Realty', url: 'https://www.facebook.com/' },
+      { type: 'website', handle: 'skylinerealty.in', url: 'https://example.com' },
+    ],
+    details: [{ label: 'Office', value: 'Road No. 36, Jubilee Hills, Hyderabad', maps: true }],
+    poweredBy: true,
+  },
+  services: {
+    preset: 'services', firstName: 'Ananya', lastName: 'Iyer', title: 'Interior Designer', company: 'Studio Aangan',
+    photo: '', contactPhoto: '',
+    quote: '“Good design feels like home.”',
+    bio: 'I design homes and workspaces that are calm, practical and personal, from the first sketch to the final styling.',
+    signature: 'Ananya Iyer', titles: 'Residential · Workspaces · Styling',
+    phone: '+919123456780', phoneDisplay: '+91 91234 56780', whatsapp: '919123456780', email: 'priya@studioaangan.in',
+    cta: { label: 'View portfolio', url: 'https://example.com' },
+    socials: [
+      { type: 'instagram', handle: '@studioaangan', url: 'https://www.instagram.com/' },
+      { type: 'linkedin', handle: 'ananya-iyer', url: 'https://www.linkedin.com/' },
+      { type: 'website', handle: 'studioaangan.in', url: 'https://example.com' },
+    ],
+    details: [{ label: 'Studio', value: 'Banjara Hills, Hyderabad', maps: true }],
+    poweredBy: true,
+  },
+  healthcare: {
+    preset: 'healthcare', prefix: 'Dr.', firstName: 'Kavya', lastName: 'Menon', title: 'Dental Surgeon', company: 'SmileCare Dental Clinic',
+    photo: '', contactPhoto: '',
+    quote: '“Healthy smiles, gentle care.”',
+    bio: 'I provide preventive, restorative and cosmetic dental care, with clear treatment plans and no surprises.',
+    signature: 'Dr. Kavya Menon', titles: 'BDS, MDS · Implants · Aligners',
+    phone: '+919988776655', phoneDisplay: '+91 99887 76655', whatsapp: '919988776655', email: 'care@smilecaredental.in',
+    cta: { label: 'Book appointment', url: 'https://wa.me/919988776655?text=Hello%2C%20I%27d%20like%20to%20book%20an%20appointment.' },
+    socials: [
+      { type: 'instagram', handle: '@smilecaredental', url: 'https://www.instagram.com/' },
+      { type: 'website', handle: 'smilecaredental.in', url: 'https://example.com' },
+    ],
+    details: [
+      { label: 'Clinic', value: '2nd Floor, Madhapur Main Road, Hyderabad', maps: true },
+      { label: 'Hours', value: 'Mon–Sat · 10 am – 8 pm' },
+    ],
+    poweredBy: true,
+  },
+};
+
+const LAYOUT_TWEAK = { 'Original': 'original', 'Luxury Estate': 'luxuryEstate', 'Listing Showcase': 'listingShowcase', 'Professional': 'professional', 'Real Estate': 'estate' };
+const PRO_STYLES = [
+  { id: 'pro-executive', name: 'Executive', layout: 'professional', mode: 'banner', bg: '#0f1a2e', ink: '#f1ece2', card: '#17243d', accent: '#d8b36a', on: '#15120a', font: "'Cormorant Garamond',Georgia,serif", rad: '12px', align: 'left', boxed: true },
+  { id: 'pro-minimal', name: 'Minimal', layout: 'professional', mode: 'side', bg: '#ffffff', ink: '#111418', card: '#f3f4f6', accent: '#111418', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '10px', align: 'left', boxed: false },
+  { id: 'pro-classic', name: 'Classic', layout: 'professional', mode: 'ring', bg: '#f4efe6', ink: '#1c1a17', card: '#fbf8f2', accent: '#b08a45', on: '#ffffff', font: "'Cormorant Garamond',Georgia,serif", rad: '2px', align: 'center', boxed: false },
+  { id: 'pro-modern', name: 'Modern', layout: 'professional', mode: 'tile', bg: '#1f2124', ink: '#f2f0ec', card: '#2a2d31', accent: '#c7ccd4', on: '#15171a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '999px', align: 'left', boxed: true },
+  { id: 'pro-corporate', name: 'Corporate', layout: 'professional', mode: 'band', bg: '#eef2f7', ink: '#14243b', card: '#ffffff', accent: '#2f5d9a', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '12px', align: 'center', boxed: true },
+  { id: 'pro-studio', name: 'Studio', layout: 'professional', mode: 'hero', bg: '#0b0b0c', ink: '#f5f3ee', card: '#161618', accent: '#e6d3a3', on: '#15120a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '14px', align: 'left', boxed: true },
+];
+const LUX_STYLES = [
+  { id: 'lux-champagne', name: 'Champagne', layout: 'luxuryEstate', bg: '#f4efe6', ink: '#1c1a17', accent: '#c9a45c', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-onyx', name: 'Onyx & Gold', layout: 'luxuryEstate', bg: '#0c0b0a', ink: '#f3ead8', accent: '#d4af37', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-emerald', name: 'Emerald', layout: 'luxuryEstate', bg: '#0b2a20', ink: '#f1e9d6', accent: '#d9b56a', frame: 'circle', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-marble', name: 'Marble', layout: 'luxuryEstate', bg: '#f7f6f3', ink: '#22201d', accent: '#9c8a6e', frame: 'square', font: "Newsreader,Georgia,serif" },
+  { id: 'lux-velvet', name: 'Burgundy Velvet', layout: 'luxuryEstate', bg: '#2a0d14', ink: '#f5e6e0', accent: '#e0b28a', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-sapphire', name: 'Sapphire', layout: 'luxuryEstate', bg: '#0e1633', ink: '#eef0f7', accent: '#b8c4e6', frame: 'circle', font: "Newsreader,Georgia,serif" },
+];
+const RE_STYLES = [
+  { id: 're-poster', name: 'Poster', layout: 'estate', mode: 'poster', bg: '#14213D', ink: '#FFFFFF', accent: '#F2E8D5', on: '#14213D', card: 'rgba(255,255,255,0.08)' },
+  { id: 're-list', name: 'List', layout: 'estate', mode: 'list', bg: '#FFFFFF', ink: '#14213D', accent: '#E6ECF4', on: '#14213D', card: '#F4EFE6' },
+  { id: 're-blueprint', name: 'Blueprint', layout: 'estate', mode: 'blueprint', bg: '#F3F1EC', ink: '#1F3A5F', accent: '#1F3A5F', on: '#FFFFFF', card: '#FFFFFF' },
+  { id: 're-home', name: 'Home Photo', layout: 'estate', mode: 'home', bg: '#EFE9E1', ink: '#3A3A3A', accent: '#E9A866', on: '#3A2A1A', card: '#FBF8F4' },
+];
+/* Same four layouts for every business: [bg, ink, accent, on (text on accent), card] per mode */
+const BIZ_PAL = {
+  hc: [['#0B3B37', '#FFFFFF', '#D8F3EE', '#0B3B37', 'rgba(255,255,255,0.08)'], ['#FFFFFF', '#0B2B28', '#D8F3EE', '#0F766E', '#F3F8F7'], ['#F1F6F5', '#0B2B28', '#0F766E', '#FFFFFF', '#FFFFFF'], ['#EAF4F2', '#0B2B28', '#0F766E', '#FFFFFF', '#F7FBFA']],
+  bw: [['#3E2A22', '#FFFFFF', '#F3D9C9', '#3E2A22', 'rgba(255,255,255,0.08)'], ['#FBF7F2', '#5B3A2E', '#F1DDD0', '#5B3A2E', '#F4EAE2'], ['#F6EFE8', '#5B3A2E', '#7A4A3A', '#FFFFFF', '#FFFFFF'], ['#F6EFE8', '#5B3A2E', '#A8664E', '#FFFFFF', '#FBF7F2']],
+  lf: [['#0B1733', '#FFFFFF', '#E9C46A', '#0B1733', 'rgba(255,255,255,0.08)'], ['#FFFFFF', '#0B1733', '#E8ECF5', '#0B1733', '#F2F2F0'], ['#F2F2F0', '#0B1733', '#0B1733', '#FFFFFF', '#FFFFFF'], ['#ECEBE6', '#0B1733', '#E9C46A', '#0B1733', '#F7F6F2']],
+  hs: [['#1C1C1C', '#FFFFFF', '#FFC400', '#1C1C1C', 'rgba(255,255,255,0.08)'], ['#FFFFFF', '#1C1C1C', '#FFE58A', '#1C1C1C', '#F5F3EE'], ['#F5F3EE', '#1C1C1C', '#1C1C1C', '#FFFFFF', '#FFFFFF'], ['#F5F3EE', '#1C1C1C', '#FFC400', '#1C1C1C', '#FFFFFF']],
+  cc: [['#0E1620', '#FFFFFF', '#DCE6F5', '#0E1620', 'rgba(255,255,255,0.08)'], ['#FFFFFF', '#0E1620', '#E3EBF8', '#2563EB', '#EEF2F7'], ['#EEF2F7', '#0E1620', '#1E3A8A', '#FFFFFF', '#FFFFFF'], ['#EEF2F7', '#0E1620', '#2563EB', '#FFFFFF', '#F7F9FC']],
+};
+const BIZ_STYLES = Object.entries(BIZ_PAL).flatMap(([p, v]) => ['poster', 'list', 'blueprint', 'home'].map((mode, i) => ({ id: p + '-' + mode, name: mode, layout: 'estate', mode, bg: v[i][0], ink: v[i][1], accent: v[i][2], on: v[i][3], card: v[i][4], biz: p })));
+/* What each business shows in the shared layouts */
+const BIZ_CFG = {
+  'Real Estate': { cta: null, area: 'AREA', tile: 'Listings' },
+  'Healthcare': { cta: 'Book appointment', area: 'CLINIC HOURS', tile: 'Clinic', lead: ['Appointment', 'Follow-up', 'Question', 'Just connecting'] },
+  'Beauty & Wellness': { cta: 'Book now', area: 'HOURS', tile: 'Instagram', lead: ['Booking', 'Price enquiry', 'Bridal / event', 'Just connecting'] },
+  'Legal / Finance': { cta: 'Book a consultation', area: 'PRACTICE', tile: 'Website', lead: ['Consultation', 'Documents', 'Tax / finance', 'Just connecting'] },
+  'Home Services': { cta: 'Get a free quote', area: 'SERVING', tile: 'Services', lead: ['Quote', 'Emergency', 'Repair', 'Just connecting'] },
+  'Consultant / Coach': { cta: 'Book a meeting', area: 'BASED IN', tile: 'LinkedIn', lead: ['Project', 'Partnership', 'Hiring', 'Just connecting'] },
+};
+const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES).map(s => [s.id, s]));
+const LIGHT_LAYOUTS = { luxuryEstate: '#f4efe6', listingShowcase: '#f6f4f0' };
+const DESIGNS = [
+  { id: 'original', name: 'Original', tag: 'Flip card · all professions', demo: '', thumb: 'linear-gradient(180deg, #134a33 0%, #06120d 55%, #06120d 70%, #f2c98a 70% 78%, #06120d 78%)' },
+  { id: 'luxuryEstate', name: 'Luxury Estate', tag: 'Real estate · premium', demo: 'realestate', thumb: 'radial-gradient(28% 22% at 50% 30%, #cfc3ad 98%, transparent 100%), linear-gradient(180deg, #f4efe6 0 64%, #1c1a17 64% 72%, #f4efe6 72%)' },
+  { id: 'listingShowcase', name: 'Listing Showcase', tag: 'Real estate · big photo', demo: 'realestate', thumb: 'linear-gradient(180deg, #b9bdc7 0 42%, #f6f4f0 42% 56%, #f2c98a 56% 66%, #f6f4f0 66% 72%, #13233f 72% 82%, #f6f4f0 82%)' },
+];
+const TREC_CPN = 'https://www.trec.texas.gov/forms/consumer-protection-notice';
+const LEAD_TOPICS = { realEstate: ['Buying', 'Selling', 'Renting', 'Just connecting'] };
+const CTA_BY_PRESET = { realEstate: 'Book a site visit', healthcare: 'Book appointment', services: 'Book a consultation', entrepreneur: 'Book a call' };
+const DEMO_TWEAK = { 'US Realtor demo': 'realtor', 'Real Estate demo': 'realestate', 'Services demo': 'services', 'Healthcare demo': 'healthcare' };
+const SOCIAL_LABEL = { linkedin: 'LinkedIn', instagram: 'Instagram', x: 'X', facebook: 'Facebook', youtube: 'YouTube', website: 'Website' };
+const toE164 = (raw, region) => { let s = String(raw || '').trim(); const plus = s.startsWith('+'); let n = s.replace(/\D/g, ''); if (!n) return ''; if (plus) return '+' + n; if (region === 'IN') { if (n.length === 11 && n[0] === '0') n = n.slice(1); if (n.length === 10) return '+91' + n; if (n.length === 12 && n.startsWith('91')) return '+' + n; } else { if (n.length === 10) return '+1' + n; if (n.length === 11 && n[0] === '1') return '+' + n; } return '+' + n; };
+const fmtPhone = (raw, region) => { const e = toE164(raw, region), n = e.replace(/\D/g, ''); if (n.length === 11 && n[0] === '1') return '+1 (' + n.slice(1, 4) + ') ' + n.slice(4, 7) + '-' + n.slice(7); if (n.length === 12 && n.startsWith('91')) return '+91 ' + n.slice(2, 7) + ' ' + n.slice(7); return String(raw || '').trim() || e; };
+const safeUrl = u => { const s = String(u || '').trim(); return /^(https?:\/\/|tel:|sms:|mailto:)/i.test(s) ? s : ''; };
+const SEASONS = {
+  holidays: { label: 'Happy Holidays', bg: '#a3162a', ink: '#ffffff', accent: '#ffffff', fx: 'snow', stripe: 'repeating-linear-gradient(135deg, #ffffff 0 6px, #c8102e 6px 12px)' },
+  newyear: { label: 'Happy New Year', bg: '#0d0d12', ink: '#f7efdc', accent: '#e6c36a', fx: 'sparkle' },
+  thanksgiving: { label: 'Happy Thanksgiving', bg: '#6b3410', ink: '#fff1e2', accent: '#f4a259', fx: '', premium: true },
+};
+const SEASON_TWEAK = { 'Off': 'off', 'Holidays': 'holidays', 'New Year': 'newyear', 'Thanksgiving': 'thanksgiving' };
+const seasonFor = dt => {
+  const m = dt.getMonth(), d = dt.getDate();
+  if (m === 11 && d <= 26) return 'holidays';
+  if ((m === 11 && d >= 27) || (m === 0 && d <= 3)) return 'newyear';
+  if (m === 10) { const first = new Date(dt.getFullYear(), 10, 1).getDay(), thu4 = 1 + ((4 - first + 7) % 7) + 21; if (d >= thu4 - 6 && d <= thu4 + 1) return 'thanksgiving'; }
+  return '';
+};
+const vesc = s => String(s || '').replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;');
+
+class Component extends DCLogic {
+  state = { qrOpen: false, toast: '', saved: false, leadOpen: false, leadDone: false, leadBusy: false, leadErr: '', lead: { name: '', phone: '', email: '', topic: '', message: '' } };
+  closeRef = React.createRef();
+  guideRef = React.createRef();
+  plansRef = React.createRef();
+  plansSheetRef = React.createRef();
+  /* "Get a card like this" goes straight to the order form's Choose a plan step (one plan picker everywhere). */
+  openPlans = () => { if (this.isPreview || /[?&]preview=/.test(location.search)) return; this.pickPlan(''); };
+  pickPlan = plan => {
+    /* Opens the card builder (same database). On the live site: linkcardly.com/order */
+    const from = (this.state.remote && this.state.remote.url ? String(this.state.remote.url).split('/').pop() : '') || '';
+    const local = /\.dc\.html$/.test(location.pathname) || /\.dc\.html$/.test(decodeURIComponent(location.pathname));
+    const url = (local ? './Order%20Card.dc.html' : '/order') + '?' + (plan ? 'plan=' + plan + '&' : '') + 'region=' + (this.state.region || 'IN') + (() => { try { const el = document.querySelector('[style*="--accent"]') || document.documentElement; const v = (getComputedStyle(el).getPropertyValue('--accent') || getComputedStyle(document.documentElement).getPropertyValue('--accent') || '').trim(); return /^#[0-9a-f]{6}$/i.test(v) ? '&accent=' + v.slice(1) : ''; } catch (e) { return ''; } })() + (from ? '&from=' + encodeURIComponent(from) : '');
+    try { if (window.top !== window && !/Mobile Preview/.test(decodeURIComponent(window.top.location.pathname))) { window.top.location.href = local ? url : 'https://linkcardly.com' + url; return; } } catch (e) {}
+    location.href = url;
+  };
+  setField = (id, v) => this.setState(s => ({ form: { ...(s.form || {}), [id]: v }, errors: { ...(s.errors || {}), [id]: '' } }));
+  submitForm = (e, channel) => {
+    e && e.preventDefault && e.preventDefault();
+    const f = {};
+    FORM_FIELDS.forEach(d => { const el = document.getElementById(d.id); f[d.id] = el ? el.value : ((this.state.form || {})[d.id] || ''); });
+    const errors = {};
+    FORM_FIELDS.forEach(d => {
+      if (d.onlyIfOther && f.profession !== 'Other') return;
+      const v = (f[d.id] || '').trim();
+      if (d.required && !v) errors[d.id] = d.required;
+      else if (v && d.pattern && !d.pattern.test(v)) errors[d.id] = d.patternMsg;
+    });
+    if (Object.keys(errors).length) {
+      this.setState({ errors, form: f });
+      const first = FORM_FIELDS.find(d => errors[d.id]); const el = first && document.getElementById(first.id); el && el.focus();
+      return;
+    }
+    const col = COLOURS.find(c => c.id === (this.state.colour || 'forest')) || COLOURS[0];
+    const L = [ 'Hi Linkcardly, I’d like a digital card.', '', '*Region:* ' + (this.state.region === 'US' ? 'USA' : 'India'), '*Plan:* ' + planText(this.state.region || 'IN', this.state.plan || 'basic'), '*Card colour:* ' + col.name, '*Card design:* ' + (DESIGNS.find(x => x.id === (this.state.design || 'original')) || DESIGNS[0]).name ];
+    FORM_FIELDS.forEach(d => {
+      if (d.onlyIfOther) return;
+      let v = (f[d.id] || '').trim();
+      if (d.id === 'profession' && v === 'Other' && (f.professionOther || '').trim()) v = 'Other — ' + f.professionOther.trim();
+      if (v) L.push('*' + d.label.replace(' *', '') + ':* ' + v);
+    });
+    const ch = channel || 'wa';
+    L.push('', ch === 'email' ? 'I’ll reply with 2 face photos and my logo.' : 'I’ll send 2 face photos and my logo in this chat.');
+    const plain = L.join('\n').replace(/\*/g, '');
+    if (ch === 'sms') { location.href = 'sms:' + SALES_SMS + '?&body=' + encodeURIComponent(plain); this.showToast('Opening Messages…'); }
+    else if (ch === 'email') { location.href = 'mailto:' + SALES_EMAIL + '?subject=' + encodeURIComponent('New digital card order') + '&body=' + encodeURIComponent(plain); this.showToast('Opening email…'); }
+    else { window.open('https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(L.join('\n')), '_blank'); this.showToast('Opening WhatsApp…'); }
+  };
+  closePlans = () => { this.setState({ plansOpen: false }); this.plansOpener && this.plansOpener.focus && this.plansOpener.focus(); };
+
+  demoKey() {
+    const t = DEMO_TWEAK[this.props.demo];
+    if (t) return t;
+    try { const q = (new URLSearchParams(location.search).get('demo') || '').toLowerCase().replace(/[^a-z]/g, ''); if (DEMOS[q]) return q; } catch (e) {}
+    return null;
+  }
+  data() {
+    const k = this.demoKey();
+    const kr = k && this.state.region !== 'IN' ? ({ realestate: 'realtor', services: 'services_us', healthcare: 'healthcare_us' })[k] || k : k;
+    const src = this.state.remote ? this.state.remote : (kr ? { ...CARD, ...DEMOS[kr] } : CARD);
+    const pre = PRESETS[src.preset] || PRESETS.entrepreneur;
+    const d = { ...pre, ...src, theme: { ...pre.theme, ...(src.theme || {}) } };
+    d.socials = (d.socials || []).map(s => ({ ...s, url: safeUrl(s.url) })).filter(s => s.url);
+    if (d.cta) d.cta = safeUrl(d.cta.url) ? { ...d.cta, url: safeUrl(d.cta.url) } : null;
+    d.listingsUrl = safeUrl(d.listingsUrl); d.iabsUrl = safeUrl(d.iabsUrl);
+    if (d.phone) d.phoneDisplay = fmtPhone(d.phone, d.region || (String(d.phone).startsWith('+91') ? 'IN' : 'US'));
+    const cc = COLOURS.find(c => c.id === (this.props.colour ? (COLOURS.find(x => x.name === this.props.colour) || {}).id : src.colour));
+    if (cc) d.theme = { accent: cc.accent, bg: cc.bg, bgTop: cc.bgTop || ('color-mix(in srgb, ' + cc.bg + ' 82%, ' + cc.accent + ')'), bgBack: cc.bgBack || ('color-mix(in srgb, ' + cc.bg + ' 70%, ' + cc.accent + ')') };
+    const st = STYLE_BY_ID[src.colour];
+    if (st) { d.st = st; d.layout = st.layout; d.theme = { ...d.theme, accent: st.accent }; }
+    if (kr) { d.category = DEMOS[kr].category || pre.category; d.tagline = DEMOS[kr].tagline || pre.tagline; d.footerLine = DEMOS[kr].footerLine || pre.footerLine; }
+    d.displayName = [d.prefix, d.firstName, d.lastName].filter(Boolean).join(' ');
+    d.initials = ((d.firstName || '')[0] || '') + ((d.lastName || '')[0] || '');
+    d.shareUrl = (d.url || (location.origin + location.pathname.replace(/index\.html$/, ''))) + (k ? '?demo=' + k : '');
+    return d;
+  }
+  layoutOf(d) {
+    if (LAYOUT_TWEAK[this.props.layout]) return LAYOUT_TWEAK[this.props.layout];
+    try { const q = new URLSearchParams(location.search).get('layout'); if (q && Object.values(LAYOUT_TWEAK).includes(q)) return q; } catch (e) {}
+    return d.layout || 'original';
+  }
+  applyTheme() {
+    const d = this.data(), r = document.documentElement.style, t = d.theme;
+    const light = LIGHT_LAYOUTS[this.layoutOf(d)];
+    if (light) { r.setProperty('--pageBg', light); r.setProperty('--mainBg', light); document.body.style.background = light; }
+    else { r.removeProperty('--pageBg'); r.removeProperty('--mainBg'); document.body.style.background = ''; }
+    const st = d.st;
+    ['--lxBg', '--lxInk', '--lxFont', '--lxW', '--lxH', '--lxR1', '--lxR2', '--lsBg', '--lsInk', '--lsCard', '--eBg', '--eInk', '--eAcc', '--eOn', '--eCard'].forEach(v => r.removeProperty(v));
+    if (st && this.layoutOf(d) === st.layout) {
+      if (st.layout === 'professional') {
+        const P = { '--pBg': st.bg, '--pInk': st.ink, '--pCard': st.card, '--pAcc': st.accent, '--pOn': st.on, '--pFont': st.font, '--pRad': st.rad, '--pTA': st.align, '--pAI': st.align === 'center' ? 'center' : 'flex-start', '--pBoxBg': st.boxed ? st.card : 'transparent', '--pBoxPad': st.boxed ? '16px 18px' : '4px 0' };
+        Object.entries(P).forEach(([k, v]) => r.setProperty(k, v));
+      }
+      else if (st.layout === 'luxuryEstate') {
+        const F = { arch: ['150px', '190px', '75px 75px 6px 6px', '70px 70px 3px 3px'], circle: ['170px', '170px', '50%', '50%'], square: ['160px', '190px', '4px', '2px'] }[st.frame || 'arch'];
+        r.setProperty('--lxBg', st.bg); r.setProperty('--lxInk', st.ink); r.setProperty('--lxFont', st.font || "'Cormorant Garamond',serif");
+        r.setProperty('--lxW', F[0]); r.setProperty('--lxH', F[1]); r.setProperty('--lxR1', F[2]); r.setProperty('--lxR2', F[3]);
+      }
+      else if (st.layout === 'estate') { r.setProperty('--eBg', st.bg); r.setProperty('--eInk', st.ink); r.setProperty('--eAcc', st.accent); r.setProperty('--eOn', st.on); r.setProperty('--eCard', st.card); }
+      else { r.setProperty('--lsBg', st.bg); r.setProperty('--lsInk', st.ink); r.setProperty('--lsCard', st.card); }
+      r.setProperty('--pageBg', st.bg); r.setProperty('--mainBg', st.bg); document.body.style.background = st.bg;
+    }
+    r.setProperty('--accent', t.accent); r.setProperty('--bg', t.bg); r.setProperty('--bgTop', t.bgTop); r.setProperty('--bgBack', t.bgBack);
+    document.title = d.displayName + (d.company ? ' · ' + d.company : '');
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', t.bg);
+  }
+
+  mapRow(row, slug, viaQuery) {
+    slug = row.slug || slug;
+    const name = [row.prefix, row.first_name, row.last_name].filter(Boolean).join(' ');
+    const h = u => { try { const x = new URL(u); const s = x.pathname.replace(/\/+$/, '').split('/').pop(); return s ? (x.hostname.includes('instagram') ? '@' + s : s) : x.hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+    const nu = (v, base) => { v = String(v || '').trim(); if (!v) return ''; if (/^https?:\/\//i.test(v)) return v; if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(v)) return 'https://' + v.replace(/^\/+/, ''); return base ? base + v.replace(/^@/, '').replace(/^\/+/, '') : ''; };
+    row = { ...row, linkedin: nu(row.linkedin, 'https://www.linkedin.com/in/'), instagram: nu(row.instagram, 'https://www.instagram.com/'), website: nu(row.website, '') };
+    if (row.extras && row.extras.facebook) row = { ...row, extras: { ...row.extras, facebook: nu(row.extras.facebook, 'https://www.facebook.com/') } };
+    const socials = [];
+    if (row.linkedin) socials.push({ type: 'linkedin', handle: h(row.linkedin), url: row.linkedin });
+    if (row.instagram) socials.push({ type: 'instagram', handle: h(row.instagram), url: row.instagram });
+    const x = row.extras || {};
+    if (row.website) socials.push({ type: 'website', handle: h(row.website), url: row.website });
+    if (x.facebook) socials.push({ type: 'facebook', handle: h(x.facebook), url: x.facebook });
+    if (x.x_url && /^https:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]{1,30}\/?$/.test(x.x_url)) socials.push({ type: 'x', handle: '@' + x.x_url.replace(/\/+$/, '').split('/').pop(), url: x.x_url });
+    if (String(row.photo_url || '').startsWith('data:')) { try { const [mm, b64] = row.photo_url.split(','); const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); row = { ...row, photo_url: URL.createObjectURL(new Blob([u], { type: mm.slice(5).split(';')[0] })) + (/video/.test(mm) ? '#video' : '') }; } catch (e) {} }
+    const m = { layout: row.layout || 'original', preset: row.preset, colour: row.colour, prefix: row.prefix, firstName: row.first_name, lastName: row.last_name,
+      title: row.title, company: row.company, photoX: row.photo_x ?? 50, photoY: row.photo_y ?? 50, photoZoom: row.photo_zoom || 1, photo: row.photo_url, photoAlt: 'Portrait of ' + name, contactPhoto: row.contact_photo_url || row.photo_url,
+      quote: row.quote, bio: row.bio, signature: row.signature || name, titles: row.titles || [row.title, row.company].filter(Boolean).join(' · '),
+      phone: toE164(row.phone, row.region), phoneDisplay: fmtPhone(row.phone || row.phone_display, row.region), whatsapp: row.whatsapp ? toE164(row.whatsapp, row.region).replace(/\D/g, '') : '', email: row.email, socials, details: x.office_address ? [{ label: 'Office', value: x.office_address, maps: true }] : (row.city ? [{ label: 'City', value: row.city, maps: true }] : []), cta: x.booking_url ? { label: row.region === 'IN' ? 'Book a site visit' : 'Schedule a showing', url: x.booking_url } : null,
+      previewSeason: row.preview_season || '', namePlaceholder: !!row.name_placeholder, seasonal: x.seasonal !== false, greeting: String(x.greeting || '').slice(0, 60), premium: x.motion === true || row.plan === 'motion' || x.seasonal_addon === true,
+      slug, region: row.region, city: row.city || '', listingsUrl: x.listings_url || '', officeAddress: x.office_address || '', brokerage: x.brokerage || '', licenseNo: x.license_no || '', licenseState: String(x.license_state || '').toUpperCase(), iabsUrl: x.iabs_url || '', profession: row.profession || '', bookingUrl: x.booking_url || '', meetingUrl: x.meeting_url || '', regNo: x.reg_no || '', quals: x.quals || '', hours: x.hours || '', services: x.services || '', practice: x.practice || '', serviceArea: x.service_area || '', insured: x.insured || '', emergency: x.emergency || '', leadCapture: x.lead_capture !== false, poweredBy: row.show_powered_by !== false, showPlans: row.show_powered_by !== false,
+      url: location.origin + (viaQuery ? '/?c=' + (row.public_id || slug) : row.public_id ? '/c/' + row.public_id : '/' + slug) };
+    m.pid = row.public_id || '';
+    if (row.category) m.category = row.category;
+    if (row.tagline) m.tagline = row.tagline;
+    if (row.preset === 'entrepreneur') m.footerLine = 'Great to meet you — let’s stay in touch.';
+    return m;
+  }
+
+  async loadRemote() {
+    try {
+      if (new URLSearchParams(location.search).get('preview')) {
+        try { document.documentElement.style.overscrollBehaviorY = 'auto'; document.body.style.overscrollBehaviorY = 'auto'; } catch (e) {}
+        this.onPreviewMsg = ev => {
+          const d = ev.data;
+          if (!d || d.type !== 'nbr-preview' || !d.row) return;
+          const row = d.row, slug = row.slug || 'preview'; this.isPreview = true;
+          this.setState({ remote: this.mapRow(row, slug, false), remoteStatus: 'ok' });
+        };
+        window.addEventListener('message', this.onPreviewMsg);
+        try { window.parent.postMessage({ type: 'nbr-preview-ready' }, '*'); } catch (e) {}
+        return;
+      }
+    } catch (e) {}
+    let slug = '', viaQuery = false;
+    try {
+      const q = new URLSearchParams(location.search).get('c');
+      const p = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\/index\.html$/, '');
+      if (q) { slug = q.toLowerCase(); viaQuery = true; }
+      else if (/^c\/nbr_[a-f0-9]{6}$/.test(p)) slug = p.slice(2);
+      else if (/^[a-z0-9]+(-[a-z0-9]+)*$/.test(p)) slug = p;
+    } catch (e) {}
+    const isDefault = !slug;
+    if (isDefault && this.demoKey()) return;
+    if (isDefault) slug = DEFAULT_SLUG;
+    if (!slug) return;
+    const col = /^nbr_[a-f0-9]{6}$/.test(slug) ? 'public_id' : 'slug';
+    if (!isDefault) this.setState({ remoteStatus: 'loading' });
+    try {
+      let row = null, viaEdge = false;
+      if (/(^|\.)(nexbizrise|linkcardly)\.com$/.test(location.hostname)) {
+        try { const er = await fetch('/api/card/' + encodeURIComponent(slug)); if (er.ok) { const ej = await er.json(); row = ej.row || null; viaEdge = true; } } catch (e) {}
+      }
+      if (!viaEdge) {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=*&' + col + '=eq.' + encodeURIComponent(slug), { headers: { apikey: SUPABASE_KEY } });
+        const rows = await r.json();
+        row = Array.isArray(rows) ? rows[0] : null;
+      }
+      if (!row) { const lo = this.localCard(slug); if (lo) { this.setState({ remote: this.mapRow(lo, slug, viaQuery), remoteStatus: 'ok' }); return; } if (!isDefault) this.setState({ remoteStatus: 'notfound' }); return; }
+      if (!viaEdge) try { const xr = await fetch(SUPABASE_URL + '/rest/v1/public_card_extras?select=extras&' + col + '=eq.' + encodeURIComponent(slug), { headers: { apikey: SUPABASE_KEY } }); const xj = await xr.json(); if (Array.isArray(xj) && xj[0] && xj[0].extras) row.extras = xj[0].extras; } catch (e) {}
+      const m = this.mapRow(row, slug, viaQuery);
+      if (isDefault) m.url = CARD.url;
+      this.setState({ remote: await this.readyPhoto(m), remoteStatus: 'ok' });
+      this.track('view', m);
+    } catch (e) { const lo = this.localCard(slug); if (lo) { this.setState({ remote: this.mapRow(lo, slug, viaQuery), remoteStatus: 'ok' }); return; } if (!isDefault) this.setState({ remoteStatus: 'error' }); }
+  }
+  /* Show the card in one go: wait for the photo (max ~1.8s). Big animations that aren't ready show the still photo first, then swap in. */
+  async readyPhoto(m) {
+    const load = (u, ms) => new Promise(res => { if (!u) return res(true); const i = new Image(), t = setTimeout(() => res(false), ms); i.onload = () => { clearTimeout(t); (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => res(true)); }; i.onerror = () => { clearTimeout(t); res(true); }; i.src = u; });
+    try {
+      if (!m || !m.photo || await load(m.photo, 1800)) return m;
+      if (m.contactPhoto && m.contactPhoto !== m.photo && await load(m.contactPhoto, 1200)) {
+        const full = m.photo, still = m.contactPhoto, i = new Image();
+        i.onload = () => this.setState(s => s.remote && s.remote.photo === still ? { remote: { ...s.remote, photo: full } } : null);
+        i.src = full;
+        return { ...m, photo: still };
+      }
+    } catch (e) {}
+    return m;
+  }
+  /* Prototype fallback: orders placed on the website before the Supabase place_order function is set up */
+  localCard(slug) { try { const o = JSON.parse(localStorage.getItem('nbr-orders') || '[]').find(x => x.card && x.card.slug === slug); if (!o) return null; const c = { ...o.card }; const p = c.photo_url || ''; if (p.startsWith('data:')) { const [m, b64] = p.split(','); const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); c.photo_url = URL.createObjectURL(new Blob([u], { type: m.slice(5).split(';')[0] })); } return c; } catch (e) { return null; } }
+
+  async detectRegion() {
+    let reg = '';
+    try { const q = (new URLSearchParams(location.search).get('region') || '').toUpperCase(); if (q === 'IN' || q === 'US') { this.setState({ region: q }); return; } } catch (e) {}
+    try { const r = await fetch('/cdn-cgi/trace', { cache: 'no-store' }); if (r.ok) { const m = (await r.text()).match(/loc=([A-Z]{2})/); if (m) reg = m[1] === 'IN' ? 'IN' : (m[1] === 'US' ? 'US' : ''); } } catch (e) {}
+    if (!reg) { try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; const lang = navigator.language || ''; reg = /Kolkata|Calcutta/.test(tz) || /-IN$/i.test(lang) ? 'IN' : (/^America\//.test(tz) || /-US$/i.test(lang) ? 'US' : 'IN'); } catch (e) { reg = 'IN'; } }
+    this.setState({ region: reg });
+  }
+  setRegion = reg => { this.setState({ region: reg }); try { localStorage.setItem('nbr-region', reg); } catch (e) {} };
+
+  componentDidMount() {
+    setTimeout(() => { try { nbrSyncVids(this.data().photo); } catch (e) {} }, 0);
+    this.onTrackClick = ev => { try { const a = ev.target.closest && ev.target.closest('a[href]'); if (!a) return; const h = a.getAttribute('href') || ''; const e = /^tel:/i.test(h) ? 'call' : /^sms:/i.test(h) ? 'text' : /^mailto:/i.test(h) ? 'email' : /wa\.me|whatsapp/i.test(h) ? 'whatsapp' : (/^https?:/i.test(h) && !/(nexbizrise|linkcardly)\.com/i.test(h)) ? 'link' : ''; if (e) this.track(e); } catch (e) {} };
+    document.addEventListener('click', this.onTrackClick, true);
+    try { if (new URLSearchParams(location.search).get('plans') === '1' && !this.isPreview) setTimeout(() => this.pickPlan(''), 300); } catch (e) {}
+    this.detectRegion();
+    this.loadRemote();
+    this.applyTheme();
+    this.onVV = () => {
+      const v = window.visualViewport; if (!v) return;
+      const kb = window.innerHeight - v.height > 120;
+      this.setState({ vvTop: Math.round(v.offsetTop), vvH: Math.round(v.height), kb });
+    };
+    if (window.visualViewport) { window.visualViewport.addEventListener('resize', this.onVV); window.visualViewport.addEventListener('scroll', this.onVV); }
+    this.onFocusIn = e => {
+      const s = this.plansSheetRef.current;
+      if (!s || !s.contains(e.target) || !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      setTimeout(() => {
+        const r = e.target.getBoundingClientRect(), sr = s.getBoundingClientRect();
+        s.scrollTo({ top: Math.max(0, s.scrollTop + (r.top - sr.top) - 96), behavior: 'smooth' });
+      }, 320);
+    };
+    document.addEventListener('focusin', this.onFocusIn);
+    this.onKey = e => { if (e.key === 'Escape' && this.state.qrOpen) this.closeQR(); if (e.key === 'Escape' && this.state.guideOpen) this.closeGuide(); if (e.key === 'Escape' && this.state.plansOpen) this.closePlans(); };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentDidUpdate() {
+    this.applyTheme();
+    try { nbrSyncVids(this.data().photo); } catch (e) {}
+    const lock = !!(this.state.plansOpen || this.state.guideOpen || this.state.qrOpen);
+    if (this.locked !== lock) { this.locked = lock; document.documentElement.style.overflow = lock ? 'hidden' : ''; document.body.style.overflow = lock ? 'hidden' : ''; }
+  }
+  componentWillUnmount() { document.removeEventListener('focusin', this.onFocusIn); if (window.visualViewport) { window.visualViewport.removeEventListener('resize', this.onVV); window.visualViewport.removeEventListener('scroll', this.onVV); } document.documentElement.style.overflow = ''; document.body.style.overflow = ''; window.removeEventListener('keydown', this.onKey); clearTimeout(this.tt); }
+
+  showToast(msg, ms) {
+    clearTimeout(this.tt);
+    this.setState({ toast: msg });
+    this.tt = setTimeout(() => this.setState({ toast: '' }), ms || 2600);
+  }
+
+  async photoB64(src) {
+    if (!src) return '';
+    if (NBR_VID.test(src)) { try { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.crossOrigin = 'anonymous'; v.preload = 'auto'; v.src = src;
+      await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = no; setTimeout(no, 4000); }); v.currentTime = Math.min(0.5, (v.duration || 1) / 2); await new Promise(ok => { v.onseeked = ok; setTimeout(ok, 1500); });
+      const s = 320, c = document.createElement('canvas'); c.width = c.height = s; const sw = Math.min(v.videoWidth, v.videoHeight);
+      c.getContext('2d').drawImage(v, (v.videoWidth - sw) / 2, Math.min(v.videoHeight * 0.08, v.videoHeight - sw), sw, sw, 0, 0, s, s); return c.toDataURL('image/jpeg', 0.8).split(',')[1]; } catch (e) { return ''; } }
+    try {
+      const img = new Image(); img.crossOrigin = 'anonymous'; img.src = src;
+      await img.decode();
+      const s = 320, c = document.createElement('canvas'); c.width = c.height = s;
+      const sw = Math.min(img.naturalWidth, img.naturalHeight);
+      c.getContext('2d').drawImage(img, (img.naturalWidth - sw) / 2, Math.min(img.naturalHeight * 0.08, img.naturalHeight - sw), sw, sw, 0, 0, s, s);
+      return c.toDataURL('image/jpeg', 0.8).split(',')[1];
+    } catch (e) { return ''; }
+  }
+
+  isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+  tsRef = React.createRef();
+  renderTs = () => {
+    if (!TURNSTILE_SITE_KEY) return;
+    const go = () => { const el = this.tsRef.current; if (!el || !window.turnstile || el.childElementCount) return; this.tsToken = ''; this.tsWidget = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, size: 'flexible', callback: t => { this.tsToken = t; }, 'expired-callback': () => { this.tsToken = ''; } }); };
+    if (window.turnstile) { setTimeout(go, 50); return; }
+    if (!document.getElementById('cf-ts')) { const s = document.createElement('script'); s.id = 'cf-ts'; s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = () => setTimeout(go, 50); document.head.appendChild(s); } else setTimeout(go, 800);
+  };
+  resetTs = () => { try { if (window.turnstile && this.tsWidget != null) window.turnstile.reset(this.tsWidget); } catch (e) {} this.tsToken = ''; };
+  /* Visit and tap counts. Sent to the site worker (Cloudflare Analytics Engine), never to the database. */
+  track(e, m) {
+    try {
+      if (this.isPreview || !VIA_WORKER()) return;
+      const c = m || (this.state && this.state.remote) || {}, k = c.pid || c.slug; if (!k) return;
+      if (e === 'view') { const sk = 'nbr-v-' + k; if (sessionStorage.getItem(sk)) return; sessionStorage.setItem(sk, '1'); }
+      const b = JSON.stringify({ k, e });
+      if (!(navigator.sendBeacon && navigator.sendBeacon('/api/hit', b))) fetch('/api/hit', { method: 'POST', body: b, keepalive: true }).catch(() => {});
+    } catch (err) {}
+  }
+  saveContact = (e) => {
+    const force = (this.props.iosGuide ?? 'iPhone only') === 'Always';
+    if (this.isIOS() || force) {
+      this.guideOpener = e && e.currentTarget;
+      this.setState({ guideOpen: true }, () => this.guideRef.current && this.guideRef.current.focus());
+    } else this.doSave();
+  };
+  closeGuide = () => { this.setState({ guideOpen: false }); this.guideOpener && this.guideOpener.focus && this.guideOpener.focus(); };
+  confirmSave = () => { this.setState({ guideOpen: false }); this.doSave(); };
+  doSave = async () => {
+    this.track('save');
+    const d = this.data();
+    const photo = await this.photoB64(d.contactPhoto);
+    const lines = [
+      'BEGIN:VCARD', 'VERSION:3.0',
+      `N:${vesc(d.lastName)};${vesc(d.firstName)};;${vesc(d.prefix)};`, `FN:${vesc(d.displayName)}`,
+      d.company ? `ORG:${vesc(d.company)}` : '', d.title ? `TITLE:${vesc(d.title)}` : '',
+      d.phone ? `TEL;TYPE=CELL,VOICE:${d.phone}` : '',
+      d.whatsapp && ('+' + d.whatsapp) !== d.phone ? `TEL;TYPE=CELL:+${d.whatsapp}` : '',
+      d.email ? `EMAIL;TYPE=INTERNET:${d.email}` : '',
+      d.city && !(d.details || []).some(r => r.maps) ? `ADR;TYPE=WORK:;;;${vesc(d.city)};;;` : '',
+      d.shareUrl ? `URL:${String(d.shareUrl).split('?')[0]}` : '',
+      d.bio ? `NOTE:${vesc(String(d.bio).slice(0, 300))}` : '',
+      ...(d.details || []).filter(r => r.maps).map(r => `ADR;TYPE=WORK:;;${vesc(r.value)};;;;`),
+      d.cta ? `URL:${d.cta.url}` : '',
+      ...(d.socials || []).map(s => `URL:${s.url}`),
+      photo ? ('PHOTO;ENCODING=b;TYPE=JPEG:' + photo).match(/.{1,74}/g).join('\r\n ') : '',
+      'END:VCARD'
+    ].filter(Boolean);
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = d.displayName + '.vcf';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+    this.setState({ saved: true });
+    if (!this.isIOS()) this.showToast('Contact card downloaded');
+  };
+
+  share = async () => {
+    this.track('share');
+    const d = this.data();
+    const data = { title: d.displayName, text: [d.title, d.company].filter(Boolean).join(', '), url: d.shareUrl };
+    if (navigator.share) { try { await navigator.share(data); } catch (e) {} return; }
+    this.copy(d.shareUrl, 'Link copied');
+  };
+
+  copy = async (text, msg) => {
+    try { await navigator.clipboard.writeText(text); this.showToast(msg); }
+    catch (e) { this.showToast('Copy not available'); }
+  };
+
+  openQR = e => {
+    this.track('qr');
+    this.opener = e && e.currentTarget;
+    this.setState({ qrOpen: true }, () => this.closeRef.current && this.closeRef.current.focus());
+  };
+  openLead = e => { this.leadOpener = e && e.currentTarget; this.setState({ leadOpen: true, leadDone: false, leadErr: '' }, () => { this.renderTs(); const el = document.getElementById('lead-name'); el && el.focus(); }); };
+  closeLead = () => { this.setState({ leadOpen: false }); this.leadOpener && this.leadOpener.focus && this.leadOpener.focus(); };
+  setLead = (k, v) => this.setState(s => ({ lead: { ...s.lead, [k]: v }, leadErr: '' }));
+  submitLead = async e => {
+    e && e.preventDefault();
+    const L = this.state.lead, d = this.cardData || {};
+    if (!L.name.trim()) return this.setState({ leadErr: 'Please enter your name.' });
+    if (L.phone.replace(/\D/g, '').length < 7) return this.setState({ leadErr: 'Please enter a valid mobile number.' });
+    if (L.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(L.email.trim())) return this.setState({ leadErr: 'Please enter a valid email.' });
+    if (this.isPreview || !d.slug) return this.setState({ leadErr: 'This form works on the live card.' });
+    this.setState({ leadBusy: true, leadErr: '' });
+    try {
+      const lb = { p_slug: d.slug, p_name: L.name.trim(), p_phone: L.phone.trim(), p_email: L.email.trim(), p_topic: L.topic, p_message: L.message.trim(), p_source: new URLSearchParams(location.search).get('src') || 'card' };
+      const r = VIA_WORKER() ? await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: lb }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/submit_lead', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(lb) });
+      this.resetTs();
+      if (!r.ok) { const j = await r.json().catch(() => ({})); if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ leadBusy: false, leadErr: 'Please complete the security check, then send.' }); return; } throw new Error('lead'); }
+      this.track('lead');
+      this.setState({ leadBusy: false, leadDone: true, lead: { name: L.name, phone: '', email: '', topic: '', message: '' } });
+    } catch (err) { this.setState({ leadBusy: false, leadErr: 'Could not send. Please call or text instead.' }); }
+  };
+  closeQR = () => { this.setState({ qrOpen: false }); this.opener && this.opener.focus && this.opener.focus(); };
+
+  qrSvg(url) {
+    if (!window.qrcode) return '';
+    const q = window.qrcode(0, 'M'); q.addData(url); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 8, scalable: true, title: 'QR code linking to this card' })
+      .replace('fill="white"', 'fill="#f3efe6"').replace('fill="black"', 'fill="#10231a"');
+  }
+
+  renderVals() {
+    const d = this.data();
+    const style = this.props.portraitStyle ?? 'full-bleed';
+    const flipped = !!this.state.flipped;
+    const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const toggleFlip = () => this.setState(s => ({ flipped: !s.flipped }));
+    const maps = v => 'https://maps.google.com/?q=' + encodeURIComponent(v);
+    const rows = [];
+    if (d.phone) rows.push({ label: 'Mobile', value: d.phoneDisplay || d.phone, copy: d.phone, msg: 'Phone number copied' });
+    if (d.email) rows.push({ label: 'Email', value: d.email, copy: d.email, msg: 'Email copied' });
+    (d.details || []).forEach(r => rows.push({ label: r.label, value: r.value, href: r.maps ? maps(r.value) : r.url }));
+    const wa = d.whatsapp ? String(d.whatsapp).replace(/\D/g, '') : '';
+    return {
+      category: d.category, displayName: d.displayName, initials: d.initials, title: d.title,
+      companyPart: d.company ? ' · ' + d.company : '',
+      tagline: d.tagline, hasTagline: !!d.tagline,
+      photoPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', photoZoom: String(d.photoZoom || 1), photoSizeFramed: d.photoZoom && d.photoZoom > 1 ? (d.photoZoom * 100) + '%' : 'cover',
+      photo: d.photo, photoBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : 'none', photoAlt: d.photoAlt || ('Portrait of ' + d.displayName), hasPhoto: !!d.photo, noPhoto: !d.photo,
+      tsRef: this.tsRef, contactPhoto: d.contactPhoto, contactPhotoBg: d.contactPhoto ? 'url("' + d.contactPhoto + '")' : 'none', hasContactPhoto: !!d.contactPhoto, noContactPhoto: !d.contactPhoto,
+      quote: d.quote, hasQuote: !!d.quote, bio: d.bio, signature: d.signature || d.displayName, titles: d.titles,
+      hasCta: !!((d.cta && d.cta.url) || d.bookingUrl || d.meetingUrl), ctaLabel: d.cta && d.cta.url ? d.cta.label : (BIZ_CFG[d.profession] || {}).cta || (d.meetingUrl ? 'Book a meeting' : 'Book a call'), ctaUrl: (d.cta && d.cta.url) || d.bookingUrl || d.meetingUrl || '',
+      telHref: 'tel:' + d.phone, callAria: 'Call ' + d.firstName,
+      msgHref: wa ? 'https://wa.me/' + wa : 'sms:' + d.phone, msgTarget: wa ? '_blank' : '_self',
+      msgLabel: wa ? 'WhatsApp' : 'Text', msgAria: (wa ? 'WhatsApp ' : 'Text ') + d.firstName,
+      mailHref: 'mailto:' + d.email, mailAria: 'Email ' + d.firstName,
+      socials: (d.socials || []).map(s => ({ ...s, label: s.label || SOCIAL_LABEL[s.type] || s.type,
+        isLinkedin: s.type === 'linkedin', isInstagram: s.type === 'instagram', isFacebook: s.type === 'facebook', isX: s.type === 'x', isYoutube: s.type === 'youtube', isWebsite: !SOCIAL_LABEL[s.type] || s.type === 'website' })),
+      hasSocials: !!(d.socials && d.socials.length),
+      rows: rows.map(r => ({ ...r, hasCopy: !!r.copy, onCopy: () => this.copy(r.copy, r.msg), copyAria: 'Copy ' + r.label.toLowerCase(),
+        hasLink: !!r.href, linkAria: 'Open ' + r.label.toLowerCase() + ' in Maps' })),
+      footerLine: d.footerLine,
+      ...(() => {
+        const lay = this.layoutOf(d);
+        const web = (d.socials || []).find(s => s.type === 'website');
+        const bcfg = BIZ_CFG[d.profession] || {}, bookU = d.bookingUrl || d.meetingUrl || '';
+        const ctaText = bcfg.cta ? bcfg.cta : d.cta && d.cta.label ? d.cta.label : ( (d.region === 'US' && d.preset === 'realEstate' ? 'Schedule a showing' : CTA_BY_PRESET[d.preset]) || 'Book a call');
+        const msg = encodeURIComponent('Hi ' + (d.firstName || '') + ', I found your digital card and would like to ' + ctaText.toLowerCase() + '.');
+        const ctaHref = bookU || (d.cta && d.cta.url) || '';
+        const city = ((d.details || []).find(r => r.maps) || {}).value || '';
+        return {
+          isOriginal: lay === 'original', isEstate: lay === 'estate', ePoster: lay === 'estate' && (d.st || {}).mode === 'poster', eList: lay === 'estate' && (d.st || {}).mode === 'list', eBlue: lay === 'estate' && (d.st || {}).mode === 'blueprint', eHome: lay === 'estate' && (d.st || {}).mode === 'home', company: d.company || '', hasCompany: !!d.company, ePhone: d.phoneDisplay || d.phone || '', eEmail: d.email || '', eCity: city || d.city || '', hasCity: !!(city || d.city),
+          ...(() => { const c = BIZ_CFG[d.profession] || BIZ_CFG['Real Estate'], p = d.profession; const areaVal = p === 'Healthcare' || p === 'Beauty & Wellness' ? d.hours : p === 'Legal / Finance' ? d.practice : p === 'Home Services' ? d.serviceArea : (city || d.city || '');
+            const ig = (d.socials || []).find(s => s.type === 'instagram'), li = (d.socials || []).find(s => s.type === 'linkedin'), wb = (d.socials || []).find(s => s.type === 'website');
+            const tileHref = p === 'Beauty & Wellness' ? (ig && ig.url) : p === 'Consultant / Coach' ? (li && li.url) : p === 'Healthcare' ? (d.officeAddress ? maps(d.officeAddress) : (wb && wb.url)) : p === 'Real Estate' || !p ? (d.listingsUrl || (wb && wb.url)) : (wb && wb.url);
+            const tags = String((p === 'Home Services' || p === 'Beauty & Wellness') ? d.services : p === 'Healthcare' ? d.quals : '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 6);
+            if (p === 'Home Services' && /^y/i.test(d.emergency || '')) tags.unshift('24×7 emergency');
+            return { eRoof: !p || p === 'Real Estate' || p === 'Home Services', eAreaLabel: c.area, eAreaVal: areaVal || '', hasArea: !!areaVal, eTileLabel: (p === 'Healthcare' && !d.officeAddress) || ((p === 'Real Estate' || !p) && !d.listingsUrl) ? 'Website' : c.tile, eTileHref: tileHref || '#', ...(() => { const md = (d.st || {}).mode || '', xr = [], xl = [];
+              if (areaVal && md !== 'blueprint') xr.push({ label: c.area === 'AREA' ? 'Area' : c.area.charAt(0) + c.area.slice(1).toLowerCase(), value: areaVal });
+              { const cv = d.city || ''; const shown = (md === 'home' && (city || d.city) === cv) || (areaVal === cv); if (cv && !shown) xr.push({ label: 'City', value: cv }); }
+              (d.socials || []).forEach(s => { if (md === 'poster' && s.type === 'website' && !d.listingsUrl) return; if (md === 'blueprint' && s.url === tileHref) return; xl.push({ label: s.label || SOCIAL_LABEL[s.type] || 'Website', url: s.url }); });
+              if (d.listingsUrl && md !== 'poster' && !(md === 'blueprint' && tileHref === d.listingsUrl)) xl.unshift({ label: 'View my listings', url: d.listingsUrl });
+              if (d.officeAddress && md !== 'poster' && md !== 'list' && !(md === 'blueprint' && p === 'Healthcare')) xl.push({ label: 'Get directions', url: maps(d.officeAddress) });
+              return { xRows: xr, xLinks: xl, xHasLinks: xl.length > 0, xHas: xr.length > 0 || !!d.bio || xl.length > 0 }; })(),
+            eTileIcon: ({ Instagram: 'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zM12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7M17.5 6.5h.01', LinkedIn: 'M4 9h4v12H4zM6 3a2 2 0 1 0 0 4a2 2 0 1 0 0-4M10 9h4v2c.6-1.2 2-2.2 4-2.2 3 0 4 2 4 5V21h-4v-6c0-1.5-.5-2.5-2-2.5S14 13.5 14 15v6h-4z', Website: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3' }[(p === 'Healthcare' && !d.officeAddress) || ((p === 'Real Estate' || !p) && !d.listingsUrl) ? 'Website' : c.tile]) || 'M3 10.5 12 3l9 7.5V21H3z', hasTile: !!tileHref, mailSpan: tileHref ? 'auto' : '1 / -1', eTags: tags.map(t => ({ t })), hasTags: tags.length > 0 }; })(), isLuxury: lay === 'luxuryEstate', isListing: lay === 'listingShowcase', isPro: lay === 'professional',
+          ...(() => { const m = (d.st && d.st.mode) || ''; return { proBanner: m === 'banner', proHero: m === 'hero', proBand: m === 'band', proRing: m === 'ring', proTile: m === 'tile', proSide: m === 'side', proHeadDir: m === 'side' ? 'row' : 'column', proHeadPad: m === 'side' ? '26px' : (m === 'banner' || m === 'hero' || m === 'band' ? '0' : '6px') }; })(),
+          hasBio: !!d.bio, hasLinks: (d.socials || []).length > 0 || !!d.listingsUrl,
+          hasListingsUrl: !!d.listingsUrl, hasDirections: !!d.officeAddress, directionsHref: d.officeAddress ? maps(d.officeAddress) : '', hasReLinks: !!(d.listingsUrl || d.officeAddress), listingsSpan: d.officeAddress ? 'span 1' : '1 / -1', dirSpan: d.listingsUrl ? 'span 1' : '1 / -1',
+          hasCompliance: !!(d.brokerage || d.licenseNo || d.regNo || (d.profession === 'Legal / Finance' && d.region !== 'IN') || /^y/i.test(d.insured || '')), complianceLine: d.profession && d.profession !== 'Real Estate' && BIZ_CFG[d.profession] ? [d.regNo ? ({ 'Healthcare': d.region === 'IN' ? 'Reg. No. ' : 'NPI / Lic. ', 'Legal / Finance': d.region === 'IN' ? 'Enrolment / Reg. No. ' : 'Bar / Lic. #', 'Home Services': d.region === 'IN' ? 'GSTIN ' : 'Contractor Lic. #' }[d.profession] || '') + d.regNo : '', d.profession === 'Home Services' && /^y/i.test(d.insured) ? 'Licensed & insured' : '', d.profession === 'Legal / Finance' && d.region !== 'IN' ? 'Attorney advertising' : ''].filter(Boolean).join(' · ') : [d.brokerage, d.licenseNo ? (d.region === 'IN' ? 'RERA ' + d.licenseNo : 'License #' + d.licenseNo + (d.licenseState ? ' (' + d.licenseState + ')' : '')) : '', d.region !== 'IN' && d.preset === 'realEstate' && d.licenseNo ? 'Equal Housing Opportunity' : ''].filter(Boolean).join(' · '), isTX: d.licenseState === 'TX' && d.region !== 'IN', hasIabs: !!d.iabsUrl, iabsUrl: d.iabsUrl || '', cpnUrl: TREC_CPN,
+          luxTop: d.company || d.category || '', hasLuxTop: !!(d.company || d.category), ctaText, ctaHref, hasBook: !!(bookU || (d.cta && d.cta.url)), hasTitle: !!d.title, hasTitles: !!d.titles, hasEPhone: !!(d.phoneDisplay || d.phone), hasEEmail: !!d.email, hasCityLine: !!city,
+          hasListings: !!(d.listingsUrl || web), listingsHref: d.listingsUrl || (web ? web.url : ''), listingsLabel: d.listingsUrl || d.preset === 'realEstate' ? 'View my listings' : 'Visit website',
+          socialsNoWeb: (d.socials || []).filter(s => s.type !== 'website' || !!d.listingsUrl).map(s => ({ ...s, label: s.label || SOCIAL_LABEL[s.type] || s.type })),
+          hasCity: !!city, cityLine: city,
+        };
+      })(),
+      showPlans: (this.props.showPlans ?? true) && d.showPlans !== false,
+      vvTop: (this.state.vvTop || 0) + 'px', vvH: this.state.vvH ? this.state.vvH + 'px' : '100%',
+      sheetMax: this.state.kb ? '100%' : 'calc(100% - 5svh)', plansSheetRef: this.plansSheetRef,
+      perYear: (this.state.region || 'IN') === 'IN' ? '/ year + GST' : '/ year',
+      plansOpen: !!this.state.plansOpen, openPlans: this.openPlans, closePlans: this.closePlans, plansRef: this.plansRef,
+      onPlans: (this.state.planStep || 'plans') === 'plans', onForm: this.state.planStep === 'form',
+      pickBasic: () => this.pickPlan('basic'), pickMotion: () => this.pickPlan('motion'),
+      backToPlans: () => this.setState({ planStep: 'plans' }),
+      ...(() => {
+        const reg = this.state.region === 'US' ? 'US' : 'IN', r = PRICING[reg];
+        return {
+          isIN: reg === 'IN', isUS: reg === 'US',
+          fromPrice: money(r, r.basic.now),
+          basicNow: money(r, r.basic.now), basicWas: money(r, r.basic.was), basicSave: money(r, r.basic.was - r.basic.now),
+          motionNow: money(r, r.motion.now), motionWas: money(r, r.motion.was), motionSave: money(r, r.motion.was - r.motion.now),
+          phonePlaceholder: r.phone,
+          sendNote: reg === 'US' ? 'Send these to Linkcardly by text, WhatsApp or email.' : 'We’ll send these to Linkcardly on WhatsApp.',
+          regionOptions: ['IN', 'US'].map(k => { const on = k === reg; return { label: PRICING[k].label, selected: on ? 'true' : 'false', bg: on ? '#ffffff' : 'transparent', weight: on ? '700' : '500', shadow: on ? '0 1px 3px rgba(0,0,0,0.12)' : 'none', pick: () => this.setRegion(k) }; }),
+          submitWA: () => this.submitForm(null, 'wa'), submitSMS: () => this.submitForm(null, 'sms'), submitEmail: () => this.submitForm(null, 'email'),
+        };
+      })(),
+      designName: (DESIGNS.find(x => x.id === (this.state.design || 'original')) || DESIGNS[0]).name,
+      designOptions: (() => {
+        const re = (this.state.form || {}).profession === 'Real Estate';
+        const list = re ? [DESIGNS[1], DESIGNS[2], DESIGNS[0]] : DESIGNS;
+        const base = location.origin + location.pathname.replace(/index\.html$/, '');
+        return list.map(x => { const on = (this.state.design || 'original') === x.id; return { ...x,
+          tag: re && x.demo === 'realestate' ? x.tag + ' · recommended' : x.tag,
+          selected: on ? 'true' : 'false', border: on ? '2px solid #10231a' : '1px solid rgba(16,35,26,0.15)', bg: on ? '#ffffff' : 'transparent',
+          pick: () => this.setState({ design: x.id }),
+          previewHref: base + '?' + (x.demo ? 'demo=' + x.demo + '&' : '') + 'layout=' + x.id, previewAria: 'Preview ' + x.name + ' in a new tab' }; });
+      })(),
+      colourName: (COLOURS.find(c => c.id === (this.state.colour || 'forest')) || COLOURS[0]).name,
+      colourOptions: COLOURS.map(c => { const sel = (this.state.colour || 'forest') === c.id; return { ...c, selected: sel ? 'true' : 'false', ring: sel ? '0 0 0 2px #f3efe6, 0 0 0 4px #10231a' : '0 1px 2px rgba(0,0,0,0.15)', lift: sel ? 'translateY(-2px)' : 'none', isSel: sel, weight: sel ? '700' : '500', pick: () => this.setState({ colour: c.id }) }; }),
+      isBasic: (this.state.plan || 'basic') === 'basic', isMotion: this.state.plan === 'motion',
+      setBasic: () => this.setState({ plan: 'basic' }), setMotion: () => this.setState({ plan: 'motion' }),
+      basicBorder: (this.state.plan || 'basic') === 'basic' ? '2px solid #101820' : '1px solid rgba(16,24,32,0.2)',
+      basicBg: (this.state.plan || 'basic') === 'basic' ? '#ffffff' : 'transparent',
+      motionBorder: this.state.plan === 'motion' ? '2px solid #101820' : '1px solid rgba(16,24,32,0.2)',
+      motionBg: this.state.plan === 'motion' ? '#ffffff' : 'transparent',
+      submitForm: this.submitForm,
+      showOtherProf: (this.state.form || {}).profession === 'Other',
+      professionOptions: [{ value: '', label: 'Select…' }].concat(PROFESSIONS.map(p => ({ value: p, label: p }))),
+      ...Object.fromEntries(FORM_FIELDS.flatMap(d => {
+        const err = (this.state.errors || {})[d.id] || '';
+        const p = 'ff_' + d.id + '_';
+        return [[p + 'value', (this.state.form || {})[d.id] || ''], [p + 'onChange', ev => this.setField(d.id, ev.target.value)],
+          [p + 'invalid', err ? 'true' : 'false'], [p + 'error', err], [p + 'border', err ? '#b3261e' : 'rgba(16,35,26,0.22)']];
+      })),
+      flipped, notFlipped: !flipped,
+      flipLabel: flipped ? 'Flip card to front' : 'Flip card to read more about ' + d.firstName,
+      flipTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+      flipTransition: reduce ? 'none' : 'transform .7s cubic-bezier(.3,.7,.2,1)',
+      frontVis: flipped ? 'hidden' : 'visible',
+      frontVisT: reduce ? 'none' : (flipped ? 'visibility 0s linear .35s' : 'visibility 0s linear .3s'),
+      backVis: flipped ? 'visible' : 'hidden',
+      backVisT: reduce ? 'none' : (flipped ? 'visibility 0s linear .3s' : 'visibility 0s linear .35s'),
+      toggleFlip,
+      flipKey: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFlip(); } },
+      fullBleed: style === 'full-bleed', framed: style === 'framed',
+      showShareRow: this.props.showShareRow ?? true,
+      guideOpen: !!this.state.guideOpen, closeGuide: this.closeGuide, confirmSave: this.confirmSave, guideRef: this.guideRef,
+      saveLabel: this.state.saved ? 'Saved — tap to save again' : 'Save contact',
+      saveContact: this.saveContact, share: this.share,
+      openQR: this.openQR, closeQR: this.closeQR, closeRef: this.closeRef,
+      ...(() => {
+        let q = ''; try { q = (new URLSearchParams(location.search).get('season') || '').toLowerCase(); } catch (e) {}
+        const tw = SEASON_TWEAK[this.props.season];
+        const premium = d.premium === true || d.plan === 'motion' || this.props.seasonFx === true;
+        let key = tw || d.previewSeason || ((SEASONS[q] || q === 'off') ? q : '') || (d.seasonal === false ? '' : seasonFor(new Date()));
+        if (!SEASONS[key]) key = '';
+        if (key && !premium && !tw && !q && !d.previewSeason) key = '';
+        const S1 = key ? SEASONS[key] : null;
+        const now = new Date(), yr = key === 'newyear' ? (now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear()) : '';
+        const text = !S1 ? '' : (premium && d.greeting ? d.greeting : S1.label + (yr ? ' ' + yr : '') + (d.firstName && !d.namePlaceholder ? ' from ' + d.firstName : ''));
+        const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let fx = null;
+        if (S1 && premium && S1.fx && !reduce) {
+          const n = S1.fx === 'snow' ? 44 : 16, kids = [];
+          for (let i = 0; i < n; i++) {
+            const r = ((i * 37 + (i > 21 ? 13 : 0)) % 100) / 100, r2 = ((i * 53 + (i > 21 ? 29 : 0)) % 100) / 100, size = S1.fx === 'snow' ? 4 + Math.round(r2 * 5) : 2 + Math.round(r2 * 3);
+            kids.push(React.createElement('span', { key: i, style: S1.fx === 'snow'
+              ? { position: 'absolute', top: 0, left: (r * 100) + '%', width: size, height: size, borderRadius: '50%', background: i % 4 === 0 ? '#e0283c' : '#ffffff', opacity: i % 4 === 0 ? 0.9 : 0.6 + r2 * 0.4, boxShadow: i % 4 === 0 ? '0 0 4px rgba(224,40,60,0.55)' : '0 0 3px rgba(120,20,30,0.35)', willChange: 'transform', '--dx': ((r2 - 0.5) * 70) + 'px', animation: 'nbrFall ' + (8 + r2 * 8) + 's linear ' + (-r * 16) + 's infinite' }
+              : { position: 'absolute', top: (r2 * 100) + '%', left: (r * 100) + '%', width: size, height: size, borderRadius: '50%', background: S1.accent, boxShadow: '0 0 6px ' + S1.accent, animation: 'nbrTwinkle ' + (2.4 + r * 2.6) + 's ease-in-out ' + (-r2 * 4) + 's infinite' } }));
+          }
+          fx = React.createElement('div', { 'aria-hidden': 'true', style: { position: 'fixed', inset: 0, zIndex: 40, pointerEvents: 'none', overflow: 'hidden', maxWidth: 440, margin: '0 auto' } }, kids);
+        }
+        const lay = this.layoutOf(d), cBg = lay === 'professional' ? 'var(--pBg)' : lay === 'luxuryEstate' ? 'var(--lxBg,#f4efe6)' : lay === 'listingShowcase' ? 'var(--lsBg,#f6f4f0)' : 'var(--bg,#06120d)', cAcc = lay === 'professional' ? 'var(--pAcc)' : 'var(--accent,#f2c98a)';
+        const light = !!LIGHT_LAYOUTS[lay] || (lay === 'professional' && d.st && /^#(f|e)/i.test(d.st.bg || ''));
+        const sBg = S1 && S1.solid ? S1.bg : S1 ? (light ? 'color-mix(in srgb, ' + S1.bg + ' 88%, black)' : 'color-mix(in srgb, ' + S1.bg + ' 62%, ' + cBg + ')') : 'transparent', sAcc = S1 && S1.solid ? S1.accent : S1 ? 'color-mix(in srgb, ' + cAcc + ' 60%, ' + S1.accent + ')' : 'transparent';
+        return { hasSeason: !!S1, seasonText: text, seasonBg: sBg, seasonInk: S1 ? S1.ink : 'inherit', seasonAccent: sAcc, seasonLine: S1 && !S1.solid ? 'color-mix(in srgb, ' + cAcc + ' 45%, transparent)' : 'transparent', seasonStripe: S1 && S1.stripe ? S1.stripe : 'transparent', seasonFx: fx };
+      })(),
+      ...(() => { this.cardData = d; const L = this.state.lead, S = this.state, topics = (BIZ_CFG[d.profession] || {}).lead || LEAD_TOPICS[d.preset] || [], fn = d.firstName || 'me'; return {
+        leadOn: false, /* "Share your contact" is off for now (needs email/SMS alerts) */ leadBtn: 'Share your contact with ' + (d.firstName || 'me'), openLead: this.openLead, closeLead: this.closeLead, submitLead: this.submitLead,
+        leadOpen: S.leadOpen, leadDone: S.leadDone, leadForm: !S.leadDone, leadBusy: S.leadBusy, leadErr: S.leadErr, leadSubmitLabel: S.leadBusy ? 'Sending…' : 'Send my details',
+        leadTitle: 'Share your details with ' + fn, leadSub: fn + ' will get your details and reach out to you.', leadFirst: (L.name || '').trim().split(' ')[0] || 'you',
+        leadDoneMsg: fn + ' has your details and will be in touch soon.', leadConsent: 'By sending, you agree that ' + (d.displayName || fn) + ' may contact you by call, text or email. Message and data rates may apply.',
+        leadName: L.name, leadPhone: L.phone, leadEmail: L.email, leadMsg: L.message, leadMsgPh: d.preset === 'realEstate' ? 'Area, budget or the property you saw' : 'How can I help?',
+        onLeadName: e => this.setLead('name', e.target.value), onLeadPhone: e => this.setLead('phone', e.target.value), onLeadEmail: e => this.setLead('email', e.target.value), onLeadMsg: e => this.setLead('message', e.target.value),
+        hasLeadTopics: topics.length > 0, leadTopics: topics.map(tp => { const on = L.topic === tp; return { label: tp, checked: on ? 'true' : 'false', pick: () => this.setLead('topic', on ? '' : tp), border: on ? '1.5px solid #10231a' : '1px solid rgba(16,35,26,0.22)', bg: on ? '#10231a' : '#fff', fg: on ? '#f3efe6' : '#10231a' }; }) }; })(),
+      stop: e => e.stopPropagation(),
+      qrOpen: this.state.qrOpen,
+      qrNode: this.state.qrOpen ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(d.shareUrl).replace('<svg', '<svg style="width:100%;height:100%;display:block;border-radius:8px"') } }) : null,
+      toast: this.state.toast,
+      remoteLoading: this.state.remoteStatus === 'loading',
+      remoteMissing: this.state.remoteStatus === 'notfound' || this.state.remoteStatus === 'error',
+      missingTitle: this.state.remoteStatus === 'error' ? 'Can’t load this card' : 'Card not found',
+      missingText: this.state.remoteStatus === 'error' ? 'Check your connection and try again.' : 'This card link isn’t active. Check the link or ask the person who shared it.',
+    };
+  }
+}
+</script>
+</body>
+</html>
