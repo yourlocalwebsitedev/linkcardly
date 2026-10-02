@@ -259,6 +259,38 @@ test('order app: Personal colours are one family; the phone preview shows the co
   assert.match(html, /aria-label="Preview seasonal theme" style="position:absolute;top:\{\{ pv\.seaTop \}\};left:\{\{ pv\.seaLeft \}\}/);
 });
 
+test('estate styles: one shared list, readable text, design families for the picker', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const read = f => readFile(new URL('../public/app/' + f, import.meta.url), 'utf8');
+  const win = {};
+  runInNewContext(await read('estate-styles.js'), { window: win });
+  const { rows, families } = win.LC_ESTATE;
+  // Both app pages load the shared list instead of keeping their own copy.
+  for (const page of ['order.html', 'card.html']) {
+    const html = await read(page);
+    assert.match(html, /<script src="\/app\/estate-styles\.js"><\/script>/, page);
+    assert.match(html, /const ESTATE_ROWS = window\.LC_ESTATE\.rows;/, page);
+    assert.ok(!/\['re-poster', 'Skyline'/.test(html), page + ' has no copy of the rows');
+  }
+  const L = h => { const n = parseInt(h.slice(1, 7), 16), f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * f(n >> 16 & 255) + 0.7152 * f(n >> 8 & 255) + 0.0722 * f(n & 255); };
+  const ratio = (a, b) => { const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const ids = new Set();
+  for (const [k, list] of Object.entries(rows)) for (const [id, , mode, bg, ink, accent, on] of list) {
+    assert.ok(!ids.has(id), 'unique id ' + id); ids.add(id);
+    assert.ok(ratio(ink, bg) >= 4.5, id + ': text on background');
+    // Categories split into designs and colours keep every button readable too.
+    if (families[k]) assert.ok(ratio(on, accent) >= 4.5, id + ': button text');
+  }
+  // Ids already stored on customers' cards keep working.
+  for (const id of ['re-poster', 're-sign', 're-list', 're-home', 're-poster-sage', 're-list-stone', 're-home-coast', 'hs-poster', 'hs-ticket', 'hs-list', 'hs-home-red', 'hs-poster-orange', 'hs-poster-blue', 'hs-list-green']) assert.ok(ids.has(id), id);
+  // Every family design has 2 to 4 colours.
+  for (const [k, fam] of Object.entries(families)) for (const mode of Object.keys(fam)) {
+    const n = rows[k].filter(r => r[2] === mode).length;
+    assert.ok(n >= 2 && n <= 4, k + ' ' + mode + ': ' + n + ' colours');
+  }
+});
+
 test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and reduced motion', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('../public/app/components/card-style-controls.css', import.meta.url), 'utf8');

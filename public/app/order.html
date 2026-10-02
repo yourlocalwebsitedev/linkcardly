@@ -24,6 +24,7 @@
 <script src="/app/vendor/resources.js"></script>
 <script src="/assets/js/rules.js"></script>
 <script src="/app/support.js"></script>
+<script src="/app/estate-styles.js"></script>
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/app/skin.css">
 </head>
@@ -462,16 +463,9 @@ const LUX_STYLES = [
   { id: 'lux-pearl', name: 'Pearl', layout: 'luxuryEstate', bg: '#faf8f5', ink: '#1e1c1a', accent: '#a08355', frame: 'square', font: "Newsreader,Georgia,serif" },
   { id: 'lux-midnight', name: 'Midnight Gold', layout: 'luxuryEstate', bg: '#0d1424', ink: '#f1ebdd', accent: '#d4b26a', frame: 'arch', font: "Newsreader,Georgia,serif" },
 ];
-/* Estate-layout designs per category: [id, name, mode, bg, ink, accent, on, card]. Each category has 7, incl. one layout unique to it. */
-const G = 'rgba(255,255,255,0.08)';
-const ESTATE_ROWS = {
-  re: [['re-poster', 'Skyline', 'poster', '#14213D', '#FFFFFF', '#F2E8D5', '#14213D', G], ['re-sign', 'Yard Sign', 'sign', '#F4F1EC', '#1B1B1B', '#C8102E', '#FFFFFF', '#FFFFFF'], ['re-list', 'Crisp', 'list', '#FFFFFF', '#14213D', '#E6ECF4', '#14213D', '#F4EFE6'], ['re-home', 'Hearth', 'home', '#EFE9E1', '#3A3A3A', '#E9A866', '#3A2A1A', '#FBF8F4'], ['re-poster-sage', 'Sage', 'poster', '#23332B', '#FFFFFF', '#E7DCC4', '#23332B', G], ['re-list-stone', 'Stone', 'list', '#F6F3EE', '#2B2A28', '#ECE5D8', '#2B2A28', '#EEE8DE'], ['re-home-coast', 'Coastal', 'home', '#E8EEF1', '#1F3440', '#3E7C92', '#FFFFFF', '#F6F9FA']],
-  hc: [['hc-poster', 'Clinic', 'poster', '#0B3B37', '#FFFFFF', '#D8F3EE', '#0B3B37', G], ['hc-clinic', 'Appointment', 'clinic', '#F1F6F5', '#0B2B28', '#0F766E', '#FFFFFF', '#FFFFFF'], ['hc-list', 'Pure', 'list', '#FFFFFF', '#0B2B28', '#D8F3EE', '#0F766E', '#F3F8F7'], ['hc-home', 'Calm', 'home', '#EAF4F2', '#0B2B28', '#0F766E', '#FFFFFF', '#F7FBFA'], ['hc-poster-ocean', 'Ocean', 'poster', '#0E2A47', '#FFFFFF', '#CFE6FF', '#0E2A47', G], ['hc-list-mint', 'Mint', 'list', '#F4FBF8', '#0F2F28', '#D5F0E6', '#0F6B55', '#E6F4EE'], ['hc-home-sky', 'Sky', 'home', '#EAF2FB', '#12324F', '#2F7DD1', '#FFFFFF', '#F6FAFE']],
-  bw: [['bw-poster', 'Mocha', 'poster', '#3E2A22', '#FFFFFF', '#F3D9C9', '#3E2A22', G], ['bw-menu', 'Price Menu', 'menu', '#F7F1EA', '#3B2A22', '#A8664E', '#FFFFFF', '#FFFFFF'], ['bw-list', 'Petal', 'list', '#FBF7F2', '#5B3A2E', '#F1DDD0', '#5B3A2E', '#F4EAE2'], ['bw-home', 'Silk', 'home', '#F6EFE8', '#5B3A2E', '#A8664E', '#FFFFFF', '#FBF7F2'], ['bw-poster-rose', 'Rosewood', 'poster', '#4A1F2A', '#FFFFFF', '#F4C7CF', '#4A1F2A', G], ['bw-list-lilac', 'Lilac', 'list', '#FAF6FB', '#3D2A45', '#EBDDF0', '#6B4A78', '#F2EAF5'], ['bw-home-blush', 'Blush', 'home', '#FBEFEF', '#4A2C2C', '#B5646A', '#FFFFFF', '#FFF8F7']],
-  lf: [['lf-poster', 'Chambers', 'poster', '#0B1733', '#FFFFFF', '#E9C46A', '#0B1733', G], ['lf-letter', 'Letterhead', 'letter', '#FBFAF7', '#14213D', '#8C6D3F', '#FFFFFF', '#FFFFFF'], ['lf-list', 'Counsel', 'list', '#FFFFFF', '#0B1733', '#E8ECF5', '#0B1733', '#F2F2F0'], ['lf-home', 'Heritage', 'home', '#ECEBE6', '#0B1733', '#E9C46A', '#0B1733', '#F7F6F2'], ['lf-poster-oxblood', 'Oxblood', 'poster', '#3A1418', '#FFFFFF', '#D9B77E', '#3A1418', G], ['lf-list-slate', 'Slate', 'list', '#F5F6F7', '#1F2933', '#E3E7EB', '#1F2933', '#ECEFF2'], ['lf-home-green', 'Ledger Green', 'home', '#E9EEEA', '#17322A', '#2F5D4A', '#FFFFFF', '#F6F8F6']],
-  hs: [['hs-poster', 'Hi-Vis', 'poster', '#1C1C1C', '#FFFFFF', '#FFC400', '#1C1C1C', G], ['hs-ticket', 'Job Ticket', 'ticket', '#FFC400', '#1C1C1C', '#1C1C1C', '#FFC400', '#FFFFFF'], ['hs-list', 'Toolbox', 'list', '#FFFFFF', '#1C1C1C', '#FFE58A', '#1C1C1C', '#F5F3EE'], ['hs-home-red', 'Spark', 'home', '#F6F2EE', '#1E1E1E', '#D7262B', '#FFFFFF', '#FFFFFF'], ['hs-poster-orange', 'Safety Orange', 'poster', '#1F2328', '#FFFFFF', '#FF7A1A', '#1F2328', G], ['hs-poster-blue', 'Pipeline', 'poster', '#0D2B4E', '#FFFFFF', '#48C1F0', '#0D2B4E', G], ['hs-list-green', 'Green Clean', 'list', '#FFFFFF', '#12301F', '#DDF2E4', '#1E7A46', '#F1F8F3']],
-  cc: [['cc-deck', 'Business Card', 'deck', '#EEF1F5', '#0E1620', '#2563EB', '#FFFFFF', '#FFFFFF'], ['cc-list', 'Memo', 'list', '#FFFFFF', '#0E1620', '#E3EBF8', '#2563EB', '#EEF2F7'], ['cc-home', 'Summit', 'home', '#EEF2F7', '#0E1620', '#2563EB', '#FFFFFF', '#F7F9FC'], ['cc-poster-navy', 'Midnight', 'poster', '#0B1B3A', '#FFFFFF', '#9FC3FF', '#0B1B3A', G], ['cc-poster-charcoal', 'Charcoal', 'poster', '#1E1E22', '#FFFFFF', '#F2C94C', '#1E1E22', G], ['cc-list-ink', 'Ink', 'list', '#FFFFFF', '#111827', '#E5E7EB', '#111827', '#F3F4F6'], ['cc-home-teal', 'Harbor', 'home', '#E8F1F2', '#10303A', '#1F6F7A', '#FFFFFF', '#F7FAFB']],
-};
+/* Estate-layout styles live in /app/estate-styles.js (shared with the other app page). */
+const G = window.LC_ESTATE.G;
+const ESTATE_ROWS = window.LC_ESTATE.rows;
 const estateOf = (k, biz) => ESTATE_ROWS[k].map(([id, name, mode, bg, ink, accent, on, card]) => ({ id, name, layout: 'estate', mode, bg, ink, accent, on, card, ...(biz ? { biz: k } : {}) }));
 const RE_STYLES = estateOf('re', false);
 const BIZ_PAL = { hc: 1, bw: 1, lf: 1, hs: 1, cc: 1 };
@@ -492,6 +486,14 @@ const collOf = id => STYLE_BY_ID[id] ? (STYLE_BY_ID[id].layout === 'professional
 // Personal's colours are variants of one design: the phone style picker shows them as one tile and lists
 // the colours in a strip on the card (CardColourRail).
 const PERSONAL_FAMILY = { id: 'personal', name: 'Classic' };
+// A colour strip swatch for an estate style: its most colourful colour, with its background as the dot
+// (near-neutral styles use their darkest colour instead).
+const swatchOf = c => { const hex = x => parseInt(String(x).slice(1, 7), 16), ch = x => { const n = hex(x), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return Math.max(r, g, b) - Math.min(r, g, b); }, lum = x => { const n = hex(x); return (n >> 16 & 255) * .3 + (n >> 8 & 255) * .59 + (n & 255) * .11; };
+  const cs = [c.bg, c.accent, c.on].filter(x => /^#[0-9a-f]{6}$/i.test(x)); let key = cs.reduce((a, b) => ch(b) > ch(a) ? b : a, cs[0]);
+  if (ch(key) < 40) key = cs.reduce((a, b) => lum(b) < lum(a) ? b : a, cs[0]);
+  return { bg: key, dot: key === c.bg ? c.accent : c.bg }; };
+// Estate styles that share a design (window.LC_ESTATE.families) are colours of that design.
+const familyOf = c => { if (c.layout !== 'estate') return null; const k = c.biz || 're', name = ((window.LC_ESTATE.families || {})[k] || {})[c.mode]; return name ? { id: k + '-' + c.mode, name } : null; };
 const COLOURS = [
   { id: 'forest', name: 'Forest', bg: '#06120d', accent: '#f2c98a' },
   { id: 'burgundy', name: 'Rosé', bg: '#1a0a0e', accent: '#f2a3a8' },
@@ -1219,7 +1221,7 @@ class Component extends DCLogic {
       pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
       swGap: listFor(collId).some(isTh) ? '12px' : '16px',
       // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
-      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(cl.id === 'personal' ? { family: PERSONAL_FAMILY } : {}), thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
+      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(cl.id === 'personal' ? { family: PERSONAL_FAMILY } : familyOf(c) ? { family: familyOf(c), swatch: swatchOf(c) } : {}), thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
         value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
         nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px' },
       showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },

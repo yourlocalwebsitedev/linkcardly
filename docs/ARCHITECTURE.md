@@ -21,6 +21,7 @@ linkcardly/
 │   └── lib/               Pure helpers: handles, icons, themes, vcard, sanitize, qr, supabase, turnstile
 ├── public/                Served as-is
 │   ├── app/               Vendored NexBizRise order and card app (see app/README.md)
+│   │   ├── estate-styles.js  Estate card styles shared by order.html and card.html (window.LC_ESTATE)
 │   │   └── components/    Linkcardly UI components for the app (e.g. card-style-controls.js + .css)
 │   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing), card.css (native card)
 │   ├── assets/js/         site.js (marketing behaviour), card.js (native card), config.js; generated: catalogue.js, icons.js, rules.js
@@ -47,6 +48,7 @@ linkcardly/
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. The Worker route and the handle reservation follow from the registry.
 
 ## Known debt
+- Button text on five estate styles outside Real Estate and Home Services is slightly under 4.5:1 (`hc-home-sky`, `bw-menu`, `bw-home`, `bw-home-blush`, `cc-list`, 4.2–4.49). The contrast test enforces 4.5:1 only for categories with colour families; fix these when those categories get families.
 - `site/pages/home.html`, `designs.html` and `teams.html` still use one-off inline styles (layout tweaks such as `--g` gaps). Move a pattern into `site.css` when it repeats.
 - The vendored app (`public/app/`) has its own markup and inline styles. `skin.css` aligns its colours and type with the tokens, but its components (buttons, inputs, cards) are not the `site.css` components. The real fix is native order, editor and card pages built on `site.css`, which is part of DEF-28 (native parity).
 - `public/app/card.html` and `order.html` are 270 KB and 180 KB single files, and the app compiles JSX in the browser (Babel, 3 MB). Fine to keep while it's vendored; a native rebuild should precompile.

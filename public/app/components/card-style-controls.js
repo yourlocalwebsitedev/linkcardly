@@ -29,6 +29,7 @@
  *              With several groups the sheet shows one tab per group and the row shows only that group.
  *              family: { id, name } marks colour variants of one design (e.g. Personal's colours): they
  *              collapse into one tile named family.name, and LcCardColourRail lists the colours.
+ *              swatch: { bg, dot } is how a colour looks in that strip (default: thumb.bg and thumb.dot).
  *   value      id of the selected option
  *   open       whether the selector is expanded
  *   onToggle   () => void, opens or closes the selector
@@ -110,7 +111,8 @@
       tabIndex: props.selected ? 0 : -1, 'data-id': o.id,
       className: 'lcs-option' + (props.selected ? ' is-selected' : ''),
       onClick: function () { props.onSelect(o.id); }
-    }, h(Thumb, { thumb: o.thumb, size: THUMB, className: 'lcs-option__thumb' }),
+    }, h('span', { className: 'lcs-option__art' }, h(Thumb, { thumb: o.thumb, size: THUMB, className: 'lcs-option__thumb' }),
+        props.count > 1 ? h('span', { className: 'lcs-option__count', 'aria-hidden': 'true' }, props.count) : null),
       h('span', { className: 'lcs-option__label' }, props.name || o.name));
   }
 
@@ -185,12 +187,11 @@
       var s = touch.current, t = e.changedTouches && e.changedTouches[0]; touch.current = null;
       if (s && t && t.clientY - s.y > 32 && Math.abs(t.clientY - s.y) > Math.abs(t.clientX - s.x)) props.onClose();
     }
-    var peers = options.filter(function (o) { return (o.group || '') === curGroup; });
     var rowId = props.id + '-row';
     var children = items.map(function (it) {
       var o = it.option, name = it.name || o.name;
       var label = name + (it.count > 1 ? ', ' + it.count + ' colours' : '') + (grouped && o.group ? ', ' + o.group : '');
-      return h(StyleOption, { key: it.name ? 'fam-' + o.family.id : o.id, option: o, name: name, selected: it.selected, onSelect: props.onSelect, label: label });
+      return h(StyleOption, { key: it.name ? 'fam-' + o.family.id : o.id, option: o, name: name, count: it.count, selected: it.selected, onSelect: props.onSelect, label: label });
     });
     if (hint) children.push(h('span', { key: 'hint', className: 'lcs-selector__hint' },
       h('b', null, famCount + ' colours'), h('span', null, 'Pick one from the strip at the top right of your card.')));
@@ -200,7 +201,7 @@
         ? h(GroupTabs, { groups: groups, tab: tab, currentGroup: curGroup, onTab: setTab, rowId: rowId })
         : h('div', { className: 'lcs-selector__head', 'aria-hidden': 'true' },
           h('span', { className: 'lcs-selector__title' }, cur.group ? cur.group + ' styles' : 'Styles'),
-          h('span', { className: 'lcs-selector__count' }, (peers.indexOf(cur) + 1) + ' of ' + peers.length)),
+          h('span', { className: 'lcs-selector__count' }, (items.findIndex(function (it) { return it.selected; }) + 1) + ' of ' + items.length)),
       h('div', { id: rowId, ref: rowRef, className: 'lcs-selector__row', role: 'radiogroup', 'aria-label': (grouped ? tab + ' ' : '') + 'card style', onKeyDown: move }, children));
   }
 
@@ -262,7 +263,7 @@
     return h('div', { className: 'lcr lcs--' + tone },
       h('div', { className: 'lcr__strip lcs-glass', role: 'radiogroup', 'aria-label': (current.family.name || 'Card') + ' colour', onKeyDown: move },
         colours.map(function (o) {
-          var on = o === current, t = o.thumb || {};
+          var on = o === current, t = o.swatch || { bg: (o.thumb || {}).bg, dot: (o.thumb || {}).dot };
           return h('button', { key: o.id, type: 'button', role: 'radio', 'aria-checked': on ? 'true' : 'false', 'aria-label': o.name, title: o.name,
             tabIndex: on ? 0 : -1, 'data-id': o.id, className: 'lcr__swatch' + (on ? ' is-selected' : ''), style: { background: t.bg },
             onClick: function () { if (props.onSelect) props.onSelect(o.id); } },
