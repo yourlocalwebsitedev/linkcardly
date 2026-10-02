@@ -1,4 +1,26 @@
-/* Linkcardly additions for the vendored order app (visual only, no behaviour).
-   The order flow keeps its original colours, type and shapes. Only the logo (app/brand.js) is Linkcardly. */
-/* NexBizRise breadcrumb (Services / Digital Business Card) has no Linkcardly destination */
+/* Linkcardly skin for the order app (/create). Visual only, no behaviour.
+   Maps the app's colour tokens and type onto the marketing site's brand (site.css):
+   cream #f5ead8, surface #ebddc5, ink #201e1d, terracotta #b2622d / #c67139, olive #3d472b,
+   Caprasimo for headings and Figtree for text. */
+@import url("https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&display=swap");
+
+/* The old breadcrumb (Services / Digital Business Card) has no destination on linkcardly.com */
 nav[aria-label="Breadcrumb"]{display:none!important}
+
+html[data-theme="light"],html[data-skin="card"],html[data-skin="card"][data-theme="light"]{
+  --gold:#8c491a!important;--mint:#f0fae1!important;--mint-2:#e1eecc!important;
+  --sand:#ebddc5!important;--sand-2:#dcd3c4!important;--sand-ink:#643312!important;
+  --bg:#f5ead8!important;--bg-2:#ebddc5!important;--surface:#f9f4ed!important;--surface-1:#f9f4ed!important;--surface-hi:#eee7db!important;
+  --ink:#201e1d!important;--ink-2:#2e2b25!important;--ink-3:#474238!important;--body:#474238!important;
+  --muted:#645c50!important;--faint:#6b6357!important;
+  --accent:#b2622d!important;--accent-hover:#8c491a!important;--accent-2:#b2622d!important;
+  --danger:#a1281c!important;--fg-rgb:32,30,29!important;
+  --btn:#201e1d!important;--btn-hover:#474238!important;--btn-ink:#f9f4ed!important;--acc-rgb:178,98,45!important;
+}
+html[data-theme="light"] body{background:#f5ead8!important}
+
+/* Type: Figtree everywhere, Caprasimo for headings and prices */
+[data-screen-label="Order Card"],[data-screen-label="Order Card"] *:not(svg):not(path){font-family:Figtree,system-ui,sans-serif!important}
+html body [data-screen-label="Order Card"] h1,html body [data-screen-label="Order Card"] h2{font-family:Caprasimo,Georgia,serif!important;font-weight:400!important;letter-spacing:-.01em!important}
+[data-screen-label="Order Card"] h3{font-weight:700!important;letter-spacing:-.01em!important}
+header[style*="position:sticky"]{font-family:Figtree,system-ui,sans-serif!important}

@@ -113,7 +113,7 @@ select option{background:var(--surface);color:var(--ink-2);}
                 <span style="display:flex;align-items:center;gap:10px;">
                   <span style="font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap;">{{ p.name }}</span>
                   <span style="flex:1;"></span>
-                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--mint-2);color:#0B6F78;font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
+                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--mint-2);color:#3D472B;font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
                   <span aria-hidden="true" style="width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid {{ p.radioRing }};display:grid;place-items:center;"><span style="width:12px;height:12px;border-radius:50%;background:var(--accent);opacity:{{ p.radioDot }};"></span></span>
                 </span>
                 <span style="display:flex;gap:12px;align-items:flex-start;">
@@ -281,10 +281,10 @@ select option{background:var(--surface);color:var(--ink-2);}
             </div>
             <sc-if value="{{ hasCoupon }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2);">Coupon <span style="padding:2px 8px;border-radius:6px;background:rgba(var(--acc-rgb),0.1);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:0.04em;">{{ couponCode }}</span></span><span style="font-size:15px;font-weight:700;color:var(--accent);">− {{ couponOff }}</span></div></sc-if>
             <sc-if value="{{ hasGst }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="font-size:15px;color:var(--ink-2);">GST (18%)</span><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ gst }}</span></div></sc-if>
-            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--mint);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#0B6F78;">{{ total }}</span></div>
+            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--mint);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#3D472B;">{{ total }}</span></div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--mint);">
-            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint-2);color:#0B6F78;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
+            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint-2);color:#3D472B;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
             <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:800;color:var(--ink);">{{ secureTitle }}</span><span style="font-size:13.5px;color:var(--ink-3);">{{ secureSub }}</span></span>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;">
@@ -409,7 +409,7 @@ select option{background:var(--surface);color:var(--ink-2);}
 
     <sc-if value="{{ showChangeBox }}" hint-placeholder-val="{{ false }}">
       <div style="position:relative;z-index:1;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:18px 20px;border-radius:20px;background:linear-gradient(120deg,var(--mint) 0%,var(--bg) 100%);text-align:left;">
-        <span aria-hidden="true" style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--mint-2);color:#0B6F78;display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></span>
+        <span aria-hidden="true" style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--mint-2);color:#3D472B;display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></span>
         <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px;">
           <span style="font-size:16px;font-weight:800;color:var(--ink);">Restyle anytime, free</span>
           <span style="font-size:14px;line-height:1.5;color:var(--ink-3);">{{ changesNote }}</span>
@@ -441,7 +441,7 @@ const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
 const LOCAL_KEY = 'nbr-orders';
 /* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
 const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
-const VIA_WORKER = () => /(^|\.)nexbizrise\.com$|(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
+const VIA_WORKER = () => /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
 
 const PRICING = {
   IN: { label: 'India · ₹', cur: '₹', code: 'INR', locale: 'en-IN', basic: 799, basicWas: 999, motion: 1799, motionWas: 2499, phone: '+91 98765 43210', city: 'Hyderabad' },
@@ -455,37 +455,31 @@ const PLANS = [
   { id: 'motion', name: 'Motion Card', price: 79, features: ['Everything in Digital Card', 'Moving portrait at the top of your card', 'Selfie video or GIF, up to 10 s'] },
 ];
 const PRO_STYLES = [
-  { id: 'pro-executive', name: 'Midnight', layout: 'professional', mode: 'banner', bg: '#0f1a2e', ink: '#f1ece2', card: '#17243d', accent: '#d8b36a', on: '#15120a', font: "'Cormorant Garamond',Georgia,serif", rad: '12px', align: 'left', boxed: true },
-  { id: 'pro-minimal', name: 'Paper', layout: 'professional', mode: 'side', bg: '#ffffff', ink: '#111418', card: '#f3f4f6', accent: '#111418', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '10px', align: 'left', boxed: false },
-  { id: 'pro-classic', name: 'Ivory', layout: 'professional', mode: 'ring', bg: '#f4efe6', ink: '#1c1a17', card: '#fbf8f2', accent: '#b08a45', on: '#ffffff', font: "'Cormorant Garamond',Georgia,serif", rad: '2px', align: 'center', boxed: false },
-  { id: 'pro-modern', name: 'Graphite', layout: 'professional', mode: 'tile', bg: '#1f2124', ink: '#f2f0ec', card: '#2a2d31', accent: '#c7ccd4', on: '#15171a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '999px', align: 'left', boxed: true },
   { id: 'pro-corporate', name: 'Harbor', layout: 'professional', mode: 'band', bg: '#eef2f7', ink: '#14243b', card: '#ffffff', accent: '#2f5d9a', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '12px', align: 'center', boxed: true },
   { id: 'pro-studio', name: 'Noir', layout: 'professional', mode: 'hero', bg: '#0b0b0c', ink: '#f5f3ee', card: '#161618', accent: '#e6d3a3', on: '#15120a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '14px', align: 'left', boxed: true },
+  { id: 'pro-sage', name: 'Sage', layout: 'professional', mode: 'band', bg: '#eef3ef', ink: '#16301f', card: '#ffffff', accent: '#2f6b4a', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '12px', align: 'center', boxed: true },
+  { id: 'pro-navy', name: 'Navy', layout: 'professional', mode: 'hero', bg: '#0b1426', ink: '#f2f4f8', card: '#141f36', accent: '#c9d6ee', on: '#0b1426', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '14px', align: 'left', boxed: true },
 ];
 const LUX_STYLES = [
-  { id: 'lux-champagne', name: 'Champagne', layout: 'luxuryEstate', bg: '#f4efe6', ink: '#1c1a17', accent: '#c9a45c', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
   { id: 'lux-onyx', name: 'Onyx', layout: 'luxuryEstate', bg: '#0c0b0a', ink: '#f3ead8', accent: '#d4af37', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
-  { id: 'lux-emerald', name: 'Emerald', layout: 'luxuryEstate', bg: '#0b2a20', ink: '#f1e9d6', accent: '#d9b56a', frame: 'circle', font: "'Cormorant Garamond',Georgia,serif" },
   { id: 'lux-marble', name: 'Marble', layout: 'luxuryEstate', bg: '#f7f6f3', ink: '#22201d', accent: '#9c8a6e', frame: 'square', font: "Newsreader,Georgia,serif" },
-  { id: 'lux-velvet', name: 'Velvet', layout: 'luxuryEstate', bg: '#2a0d14', ink: '#f5e6e0', accent: '#e0b28a', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
-  { id: 'lux-sapphire', name: 'Sapphire', layout: 'luxuryEstate', bg: '#0e1633', ink: '#eef0f7', accent: '#b8c4e6', frame: 'circle', font: "Newsreader,Georgia,serif" },
+  { id: 'lux-pearl', name: 'Pearl', layout: 'luxuryEstate', bg: '#faf8f5', ink: '#1e1c1a', accent: '#a08355', frame: 'square', font: "Newsreader,Georgia,serif" },
+  { id: 'lux-midnight', name: 'Midnight Gold', layout: 'luxuryEstate', bg: '#0d1424', ink: '#f1ebdd', accent: '#d4b26a', frame: 'arch', font: "Newsreader,Georgia,serif" },
 ];
-const RE_STYLES = [
-  { id: 're-poster', name: 'Skyline', layout: 'estate', mode: 'poster', bg: '#14213D', ink: '#FFFFFF', accent: '#F2E8D5' },
-  { id: 're-list', name: 'Crisp', layout: 'estate', mode: 'list', bg: '#FFFFFF', ink: '#14213D', accent: '#14213D' },
-  { id: 're-blueprint', name: 'Blueprint', layout: 'estate', mode: 'blueprint', bg: '#F3F1EC', ink: '#1F3A5F', accent: '#1F3A5F' },
-  { id: 're-home', name: 'Hearth', layout: 'estate', mode: 'home', bg: '#EFE9E1', ink: '#3A3A3A', accent: '#E9A866' },
-];
-/* Same four layouts for every business, each with its own colours: [prefix, poster, list, blueprint, home] as [bg, ink, accent] */
-const BIZ_PAL = {
-  hc: [['#0B3B37', '#FFFFFF', '#D8F3EE'], ['#FFFFFF', '#0B2B28', '#0F766E'], ['#F1F6F5', '#0B2B28', '#0F766E'], ['#EAF4F2', '#0B2B28', '#0F766E']],
-  bw: [['#3E2A22', '#FFFFFF', '#F3D9C9'], ['#FBF7F2', '#5B3A2E', '#C98E74'], ['#F6EFE8', '#5B3A2E', '#7A4A3A'], ['#F6EFE8', '#5B3A2E', '#C98E74']],
-  lf: [['#0B1733', '#FFFFFF', '#E9C46A'], ['#FFFFFF', '#0B1733', '#0B1733'], ['#F2F2F0', '#0B1733', '#0B1733'], ['#ECEBE6', '#0B1733', '#E9C46A']],
-  hs: [['#1C1C1C', '#FFFFFF', '#FFC400'], ['#FFFFFF', '#1C1C1C', '#FFC400'], ['#F5F3EE', '#1C1C1C', '#1C1C1C'], ['#F5F3EE', '#1C1C1C', '#FFC400']],
-  cc: [['#0E1620', '#FFFFFF', '#DCE6F5'], ['#FFFFFF', '#0E1620', '#2563EB'], ['#EEF2F7', '#0E1620', '#1E3A8A'], ['#EEF2F7', '#0E1620', '#2563EB']],
+/* Estate-layout designs per category: [id, name, mode, bg, ink, accent, on, card]. Each category has 7, incl. one layout unique to it. */
+const G = 'rgba(255,255,255,0.08)';
+const ESTATE_ROWS = {
+  re: [['re-poster', 'Skyline', 'poster', '#14213D', '#FFFFFF', '#F2E8D5', '#14213D', G], ['re-sign', 'Yard Sign', 'sign', '#F4F1EC', '#1B1B1B', '#C8102E', '#FFFFFF', '#FFFFFF'], ['re-list', 'Crisp', 'list', '#FFFFFF', '#14213D', '#E6ECF4', '#14213D', '#F4EFE6'], ['re-home', 'Hearth', 'home', '#EFE9E1', '#3A3A3A', '#E9A866', '#3A2A1A', '#FBF8F4'], ['re-poster-sage', 'Sage', 'poster', '#23332B', '#FFFFFF', '#E7DCC4', '#23332B', G], ['re-list-stone', 'Stone', 'list', '#F6F3EE', '#2B2A28', '#ECE5D8', '#2B2A28', '#EEE8DE'], ['re-home-coast', 'Coastal', 'home', '#E8EEF1', '#1F3440', '#3E7C92', '#FFFFFF', '#F6F9FA']],
+  hc: [['hc-poster', 'Clinic', 'poster', '#0B3B37', '#FFFFFF', '#D8F3EE', '#0B3B37', G], ['hc-clinic', 'Appointment', 'clinic', '#F1F6F5', '#0B2B28', '#0F766E', '#FFFFFF', '#FFFFFF'], ['hc-list', 'Pure', 'list', '#FFFFFF', '#0B2B28', '#D8F3EE', '#0F766E', '#F3F8F7'], ['hc-home', 'Calm', 'home', '#EAF4F2', '#0B2B28', '#0F766E', '#FFFFFF', '#F7FBFA'], ['hc-poster-ocean', 'Ocean', 'poster', '#0E2A47', '#FFFFFF', '#CFE6FF', '#0E2A47', G], ['hc-list-mint', 'Mint', 'list', '#F4FBF8', '#0F2F28', '#D5F0E6', '#0F6B55', '#E6F4EE'], ['hc-home-sky', 'Sky', 'home', '#EAF2FB', '#12324F', '#2F7DD1', '#FFFFFF', '#F6FAFE']],
+  bw: [['bw-poster', 'Mocha', 'poster', '#3E2A22', '#FFFFFF', '#F3D9C9', '#3E2A22', G], ['bw-menu', 'Price Menu', 'menu', '#F7F1EA', '#3B2A22', '#A8664E', '#FFFFFF', '#FFFFFF'], ['bw-list', 'Petal', 'list', '#FBF7F2', '#5B3A2E', '#F1DDD0', '#5B3A2E', '#F4EAE2'], ['bw-home', 'Silk', 'home', '#F6EFE8', '#5B3A2E', '#A8664E', '#FFFFFF', '#FBF7F2'], ['bw-poster-rose', 'Rosewood', 'poster', '#4A1F2A', '#FFFFFF', '#F4C7CF', '#4A1F2A', G], ['bw-list-lilac', 'Lilac', 'list', '#FAF6FB', '#3D2A45', '#EBDDF0', '#6B4A78', '#F2EAF5'], ['bw-home-blush', 'Blush', 'home', '#FBEFEF', '#4A2C2C', '#B5646A', '#FFFFFF', '#FFF8F7']],
+  lf: [['lf-poster', 'Chambers', 'poster', '#0B1733', '#FFFFFF', '#E9C46A', '#0B1733', G], ['lf-letter', 'Letterhead', 'letter', '#FBFAF7', '#14213D', '#8C6D3F', '#FFFFFF', '#FFFFFF'], ['lf-list', 'Counsel', 'list', '#FFFFFF', '#0B1733', '#E8ECF5', '#0B1733', '#F2F2F0'], ['lf-home', 'Heritage', 'home', '#ECEBE6', '#0B1733', '#E9C46A', '#0B1733', '#F7F6F2'], ['lf-poster-oxblood', 'Oxblood', 'poster', '#3A1418', '#FFFFFF', '#D9B77E', '#3A1418', G], ['lf-list-slate', 'Slate', 'list', '#F5F6F7', '#1F2933', '#E3E7EB', '#1F2933', '#ECEFF2'], ['lf-home-green', 'Ledger Green', 'home', '#E9EEEA', '#17322A', '#2F5D4A', '#FFFFFF', '#F6F8F6']],
+  hs: [['hs-poster', 'Hi-Vis', 'poster', '#1C1C1C', '#FFFFFF', '#FFC400', '#1C1C1C', G], ['hs-ticket', 'Job Ticket', 'ticket', '#FFC400', '#1C1C1C', '#1C1C1C', '#FFC400', '#FFFFFF'], ['hs-list', 'Toolbox', 'list', '#FFFFFF', '#1C1C1C', '#FFE58A', '#1C1C1C', '#F5F3EE'], ['hs-home-red', 'Spark', 'home', '#F6F2EE', '#1E1E1E', '#D7262B', '#FFFFFF', '#FFFFFF'], ['hs-poster-orange', 'Safety Orange', 'poster', '#1F2328', '#FFFFFF', '#FF7A1A', '#1F2328', G], ['hs-poster-blue', 'Pipeline', 'poster', '#0D2B4E', '#FFFFFF', '#48C1F0', '#0D2B4E', G], ['hs-list-green', 'Green Clean', 'list', '#FFFFFF', '#12301F', '#DDF2E4', '#1E7A46', '#F1F8F3']],
+  cc: [['cc-deck', 'Business Card', 'deck', '#EEF1F5', '#0E1620', '#2563EB', '#FFFFFF', '#FFFFFF'], ['cc-list', 'Memo', 'list', '#FFFFFF', '#0E1620', '#E3EBF8', '#2563EB', '#EEF2F7'], ['cc-home', 'Summit', 'home', '#EEF2F7', '#0E1620', '#2563EB', '#FFFFFF', '#F7F9FC'], ['cc-poster-navy', 'Midnight', 'poster', '#0B1B3A', '#FFFFFF', '#9FC3FF', '#0B1B3A', G], ['cc-poster-charcoal', 'Charcoal', 'poster', '#1E1E22', '#FFFFFF', '#F2C94C', '#1E1E22', G], ['cc-list-ink', 'Ink', 'list', '#FFFFFF', '#111827', '#E5E7EB', '#111827', '#F3F4F6'], ['cc-home-teal', 'Harbor', 'home', '#E8F1F2', '#10303A', '#1F6F7A', '#FFFFFF', '#F7FAFB']],
 };
-const BIZ_STYLE_NAMES = { hc: ['Clinic', 'Pure', 'Chart', 'Calm'], bw: ['Mocha', 'Petal', 'Linen', 'Silk'], lf: ['Chambers', 'Counsel', 'Ledger', 'Heritage'], hs: ['Hi-Vis', 'Toolbox', 'Draft', 'Workshop'], cc: ['Boardroom', 'Memo', 'Metric', 'Summit'] };
-const BIZ_STYLES = Object.entries(BIZ_PAL).flatMap(([p, v]) => ['poster', 'list', 'blueprint', 'home'].map((mode, i) => ({ id: p + '-' + mode, name: (BIZ_STYLE_NAMES[p] || ['Poster', 'List', 'Grid', 'Classic'])[i], layout: 'estate', mode, bg: v[i][0], ink: v[i][1], accent: v[i][2], biz: p })));
+const estateOf = (k, biz) => ESTATE_ROWS[k].map(([id, name, mode, bg, ink, accent, on, card]) => ({ id, name, layout: 'estate', mode, bg, ink, accent, on, card, ...(biz ? { biz: k } : {}) }));
+const RE_STYLES = estateOf('re', false);
+const BIZ_PAL = { hc: 1, bw: 1, lf: 1, hs: 1, cc: 1 };
+const BIZ_STYLES = Object.keys(BIZ_PAL).flatMap(k => estateOf(k, true));
 const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES).map(s => [s.id, s]));
 const COLLECTIONS = [
   { id: 'personal', name: 'Personal', preset: null },
@@ -534,6 +528,12 @@ const thumbBlocks = (c, w, h, ph) => { const s = w / 58, px = n => (n * s).toFix
     return [B(0, 0, 58, 42, 0, ph || ('color-mix(in srgb, ' + acc + ' 30%, ' + bg + ')')), B(0, 26, 58, 16, 0, 'linear-gradient(180deg, transparent, ' + bg + ')'), B(6, 45, 32, 5, 2, fg), B(6, 53, 20, 3, 2, acc), B(6, 60, 14, 7, 2, soft), B(22, 60, 14, 7, 2, soft), B(38, 60, 14, 7, 2, soft), B(6, 70, 46, 6, 3, acc)]; }
   if (c.mode === 'poster') return [B(0, 0, 58, 44, 0, ph || mix(18)), B(6, 56, 34, 5, 2, ink), B(6, 65, 22, 3, 2, acc)];
   if (c.mode === 'list') return [B(18, 9, 22, 22, 11, ph || mix(22))].concat([37, 47, 57, 67].map(y => B(7, y, 44, 6, 2, mix(12))));
+  if (c.mode === 'sign') return [B(0, 0, 58, 34, 0, ph || mix(18)), B(8, 28, 42, 36, 3, '#FFFFFF', '0 0 0 ' + px(1.5) + ' ' + ink), B(8, 28, 42, 7, 0, acc), B(14, 41, 30, 4, 2, ink), B(17, 50, 24, 4, 2, ink), B(6, 69, 46, 6, 3, acc)];
+  if (c.mode === 'clinic') return [B(5, 7, 48, 20, 5, '#FFFFFF'), B(8, 10, 14, 14, 7, ph || mix(22)), B(25, 13, 22, 3, 2, ink), B(25, 19, 15, 3, 2, acc), B(5, 32, 48, 7, 3, acc), B(5, 43, 48, 22, 5, '#FFFFFF', '0 0 0 ' + px(1) + ' ' + acc), B(9, 48, 26, 3, 2, ink), B(9, 56, 40, 5, 3, acc)];
+  if (c.mode === 'menu') return [B(19, 5, 20, 26, 10, ph || mix(22)), B(15, 35, 28, 4, 2, ink), B(6, 43, 46, 6, 3, acc), B(6, 53, 46, 22, 4, '#FFFFFF')].concat([57, 63, 69].map(y => B(10, y, 38, 2, 1, mix(30))));
+  if (c.mode === 'letter') return [B(24, 6, 10, 10, 5, 'transparent', '0 0 0 ' + px(1) + ' ' + acc), B(14, 19, 30, 3, 1, ink), B(6, 25, 46, 1, 0, ink), B(6, 30, 14, 18, 1, ph || mix(22)), B(23, 34, 24, 4, 2, ink), B(23, 41, 16, 3, 2, acc), B(6, 53, 46, 6, 1, ink)].concat([63, 69].map(y => B(6, y, 46, 1, 0, mix(25))));
+  if (c.mode === 'ticket') return [B(0, 0, 58, 4, 0, 'repeating-linear-gradient(-45deg,' + ink + ' 0 3px,' + bg + ' 3px 6px)'), B(5, 9, 48, 40, 4, '#FFFFFF'), B(9, 13, 14, 14, 3, ph || mix(22)), B(26, 16, 22, 4, 2, ink), B(9, 34, 40, 11, 3, ink), B(5, 54, 48, 7, 3, '#FFFFFF'), B(5, 65, 22, 5, 3, ink), B(30, 65, 18, 5, 3, ink)];
+  if (c.mode === 'deck') return [B(5, 8, 48, 28, 3, '#FFFFFF', '0 ' + px(2) + ' ' + px(4) + ' rgba(0,0,0,0.18)'), B(5, 8, 2, 28, 0, acc), B(10, 13, 22, 4, 2, ink), B(10, 20, 15, 3, 2, mix(45)), B(39, 12, 10, 10, 5, ph || mix(22)), B(5, 42, 48, 7, 3, acc), B(5, 53, 23, 9, 3, '#FFFFFF'), B(30, 53, 23, 9, 3, '#FFFFFF'), B(5, 65, 23, 9, 3, '#FFFFFF'), B(30, 65, 23, 9, 3, '#FFFFFF')];
   if (c.mode === 'blueprint') return [B(0, 0, 58, 32, 0, acc)].concat([[5, 38], [31, 38], [5, 58], [31, 58]].map(([x, y]) => B(x, y, 22, 16, 3, mix(12))));
   return [B(14, 7, 30, 30, 15, ph || mix(22), '0 0 0 ' + px(2) + ' #FFFFFF'), B(6, 42, 46, 31, 4, '#FFFFFF'), B(11, 48, 26, 4, 2, acc)]; };
 const firstStyleOf = id => (id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS)[0].id;
@@ -551,7 +551,7 @@ const RE_REGION = {
 const BIZ_LABEL = {
   'Entrepreneur / Business owner': { title: [null, 'Founder · Designer · Coach'], company: [null, 'Your business (optional)'] },
   'Real Estate': { title: [null, 'Property Consultant'], company: [null, 'Skyline Realty'] },
-  'Consultant / Coach': { title: [null, 'Sales Director · Consultant'], company: [null, 'Northstar Advisory'] },
+  'Consultant / Coach': { meetingUrl: ['Meeting booking link', 'Calendly or booking page (optional)'], title: [null, 'Sales Director · Consultant'], company: [null, 'Northstar Advisory'] },
   'Healthcare': { title: [null, 'Dentist · Orthodontist'], company: ['Clinic / hospital name', { IN: 'Smile Dental Clinic', US: 'Bright Smile Dental' }], officeAddress: ['Clinic address', { IN: 'Indiranagar 100 Ft Rd, Bengaluru 560038', US: '1200 Main St, Suite 4, Omaha, NE 68102' }],  regNo: { IN: ['Medical Council reg. no.', 'KMC 12345'], US: ['NPI or state license no.', '1234567890'] }, bookingUrl: ['Appointment booking link', 'Practo, Calendly or clinic site'] },
   'Legal / Finance': { title: [null, { IN: 'Advocate · Chartered Accountant', US: 'Attorney · CPA' }], company: ['Firm name', { IN: 'Mehta & Associates', US: 'Carter & Reed LLP' }], officeAddress: ['Office address', { IN: 'Nariman Point, Mumbai 400021', US: '200 S 10th St, Suite 300, Omaha, NE 68102' }],  regNo: { IN: ['Bar / CA / ARN no.', 'K/1234/2008'], US: ['State Bar / license no.', 'NE Bar #24561'] }, bookingUrl: ['Consultation booking link', 'Calendly or booking page'] },
   'Home Services': { title: [null, { IN: 'Plumber · Electrician', US: 'Licensed Plumber' }], company: [null, 'Rapid Fix Plumbing'], hours: [null, 'Mon–Sat · 8 am – 8 pm'], services: [null, 'Leak repair, drain cleaning, water heaters'],  regNo: { IN: ['GST no. (optional)', '29ABCDE1234F1Z5'], US: ['Contractor license no.', 'NE #54321'] }, bookingUrl: ['Quote request link', 'Form or booking page (optional)'] },
@@ -561,21 +561,23 @@ const FIELDS = [
   { k: 'firstName', label: 'First name', req: 'all', ph: '', ac: 'given-name', span: 1 },
   { k: 'lastName', label: 'Last name', ph: '', ac: 'family-name', span: 1 },
   { k: 'title', label: 'Job title', req: 'builder', ph: 'Property Consultant', ac: 'organization-title', span: 1 },
-  { k: 'company', label: 'Business name', ph: 'Skyline Realty', ac: 'organization', span: 1 },
+  { k: 'company', label: 'Business name', notBiz: ['Real Estate'], ph: 'Skyline Realty', ac: 'organization', span: 1, max: 60 },
   { k: 'phone', label: 'Mobile', req: 'all', ph: '', type: 'tel', ac: 'tel', span: 1, live: 'phone' },
   { k: 'whatsapp', label: 'WhatsApp', ph: '', type: 'tel', ac: 'off', span: 1, live: 'phone' },
   { k: 'email', label: 'Email', req: 'all', ph: '', type: 'email', ac: 'email', span: 1 },
   { k: 'city', label: 'City', ph: '', ac: 'address-level2', span: 1 },
-  { k: 'website', label: 'Website', ph: '', type: 'text', ac: 'url', span: 2 },
+  { k: 'website', url: true, label: 'Website', ph: '', type: 'text', ac: 'url', span: 2 },
   { k: 'instagram', notBiz: ['Consultant / Coach', 'Legal / Finance'], label: 'Instagram username', ph: 'yourname', type: 'text', ac: 'off', span: 1, handle: '@' },
   { k: 'linkedin', notBiz: ['Beauty & Wellness', 'Healthcare', 'Home Services'], label: 'LinkedIn ID', ph: 'your-name', type: 'text', ac: 'off', span: 1, handle: 'in/' },
+  { k: 'facebook', url: true, fbish: true, label: 'Facebook', ph: 'facebook.com/yourpage', type: 'text', ac: 'off', span: 1 },
   { k: 'xHandle', notBiz: ['Beauty & Wellness', 'Healthcare', 'Home Services'], label: 'X username', ph: 'yourname', type: 'text', ac: 'off', span: 1, handle: '@' },
   { k: 'brokerage', label: 'Brokerage', req: 'all', inOptional: true, re: true, ph: 'Lone Star Realty Group', ac: 'organization', span: 1 },
   { k: 'licenseNo', label: 'License number', req: 'all', re: true, ph: '0712345', ac: 'off', span: 1 },
   { k: 'licenseState', label: 'License state', re: true, usOnly: true, ph: 'TX', ac: 'off', span: 1 },
-  { k: 'facebook', label: 'Facebook', re: true, ph: 'facebook.com/yourpage', type: 'text', ac: 'off', span: 1 },
-  { k: 'listingsUrl', label: 'Listings page', re: true, ph: 'Zillow, Realtor.com or your site', type: 'text', ac: 'url', span: 2 },
-  { k: 'bookingUrl', label: 'Showing booking link', biz: ['Real Estate', 'Healthcare', 'Beauty & Wellness', 'Legal / Finance', 'Home Services'], ph: 'Calendly or booking page (optional)', type: 'text', ac: 'url', span: 2 },
+  
+  { k: 'listingsUrl', url: true, label: 'Listings page', re: true, ph: 'Zillow, Realtor.com or your site', type: 'text', ac: 'url', span: 2 },
+  { k: 'bookingUrl', url: true, label: 'Showing booking link', biz: ['Real Estate', 'Healthcare', 'Beauty & Wellness', 'Legal / Finance', 'Home Services'], ph: 'Calendly or booking page (optional)', type: 'text', ac: 'url', span: 2 },
+  { k: 'meetingUrl', label: 'Meeting booking link', biz: ['Entrepreneur / Business owner', 'Consultant / Coach'], ph: 'Calendly or booking page (optional)', type: 'text', ac: 'url', span: 2, url: true },
   { k: 'regNo', label: 'Registration number', biz: ['Healthcare', 'Legal / Finance', 'Home Services'], ph: '', ac: 'off', span: 1 },
   { k: 'quals', label: 'Qualifications', biz: ['Healthcare'], ph: 'BDS, MDS', phUS: 'DDS, MS', ac: 'off', span: 1 },
   { k: 'practice', label: 'Practice areas', biz: ['Legal / Finance'], ph: 'Property, GST, tax filing', phUS: 'Real estate, contracts, family law', ac: 'off', span: 2 },
@@ -585,7 +587,7 @@ const FIELDS = [
   { k: 'emergency', label: '24×7 emergency?', biz: ['Home Services'], yn: true, ac: 'off', span: 1 },
   { k: 'hours', label: 'Opening hours', biz: ['Healthcare', 'Beauty & Wellness', 'Home Services'], ph: 'Mon–Sat · 10 am – 7 pm', ac: 'off', span: 2 },
   { k: 'officeAddress', label: 'Office address', re: true, alsoBiz: ['Healthcare', 'Legal / Finance'], ph: '401 Congress Ave, Austin, TX 78701', ac: 'street-address', span: 2 },
-  { k: 'iabsUrl', label: 'Texas IABS form link', re: true, tx: true, usOnly: true, ph: 'Link to your IABS PDF', type: 'text', ac: 'off', span: 2 },
+  { k: 'iabsUrl', url: true, label: 'Texas IABS form link', re: true, tx: true, usOnly: true, ph: 'Link to your IABS PDF', type: 'text', ac: 'off', span: 2 },
   { k: 'bio', label: 'Short bio', ph: 'One or two sentences about what you do.', area: true, span: 2 },
   { k: 'notes', label: 'Notes for our designer', ph: 'Colours you like, services to list, tagline ideas…', area: true, span: 2, dfmOnly: true },
 ];
@@ -609,6 +611,19 @@ const normLink = (k, raw) => {
   if (!/^https?:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
   return v;
 };
+const DEMO_D = (() => {
+  const P = new URL('/assets/img/samples/portrait.jpg', location.href).href;
+  const base = { facebook: 'facebook.com/mycard', photo: P, photoX: 50, photoY: 50, photoZoom: 1, city: 'Omaha', seasonal: true };
+  return {
+    personal: { ...base, profession: 'Entrepreneur / Business owner', colour: 'forest', firstName: 'Ryan', lastName: 'Collins', title: 'Brand Strategist · Founder', company: 'Northlight Studio', phone: '(816) 555-0142', whatsapp: '(816) 555-0142', email: 'ryan@northlightstudio.co', city: 'Kansas City', website: 'northlightstudio.co', instagram: 'ryan.collins', linkedin: 'ryan-collins', xHandle: 'ryancollins', bio: 'I help small businesses find a clear voice and a brand people remember.' },
+    realestate: { ...base, profession: 'Real Estate', colour: 're-poster', firstName: 'Daniel', lastName: 'Reyes', title: 'Realtor®', company: 'Lone Star Realty Group', phone: '(512) 555-0187', whatsapp: '(512) 555-0187', email: 'daniel@lonestarrealty.com', city: 'Austin', website: 'danielreyeshomes.com', instagram: 'danielreyeshomes', linkedin: 'daniel-reyes', xHandle: 'danielreyes', bio: 'Helping Austin families buy and sell with confidence for over 12 years.', brokerage: 'Lone Star Realty Group', licenseNo: '0712345', licenseState: 'TX', facebook: 'facebook.com/danielreyeshomes', listingsUrl: 'danielreyeshomes.com/listings', bookingUrl: 'calendly.com/danielreyes', officeAddress: '401 Congress Ave, Austin, TX 78701', iabsUrl: 'danielreyeshomes.com/iabs.pdf' },
+    hc: { ...base, profession: 'Healthcare', colour: 'hc-poster', firstName: 'Arun', lastName: 'Raman', title: 'Dentist · Orthodontist', company: 'Bright Smile Dental', phone: '(402) 555-0163', whatsapp: '(402) 555-0163', email: 'hello@brightsmiledental.com', website: 'brightsmiledental.com', instagram: 'brightsmileomaha', bio: 'Gentle family and cosmetic dentistry, with clear aligners for teens and adults.', bookingUrl: 'brightsmiledental.com/book', regNo: '1234567890', quals: 'DDS, MS', hours: 'Mon–Sat · 9 am – 6 pm', officeAddress: '1200 Main St, Suite 4, Omaha, NE 68102' },
+    bw: { ...base, profession: 'Beauty & Wellness', colour: 'bw-poster', firstName: 'Marco', lastName: 'Silva', title: 'Hair Stylist · Salon Owner', company: 'Glow Studio', phone: '(720) 555-0119', whatsapp: '(720) 555-0119', email: 'book@glowstudio.co', city: 'Denver', website: 'glowstudio.co', instagram: 'glowstudio.denver', bio: 'Colour, cuts and bridal styling in a calm, light-filled studio.', bookingUrl: 'fresha.com/glowstudio', hours: 'Tue–Sun · 10 am – 8 pm', services: 'Haircut from $30, Colour from $80, Facial from $60' },
+    lf: { ...base, profession: 'Legal / Finance', colour: 'lf-poster', firstName: 'James', lastName: 'Carter', title: 'Attorney · CPA', company: 'Carter & Reed LLP', phone: '(402) 555-0178', email: 'jcarter@carterreed.com', website: 'carterreed.com', linkedin: 'james-carter-law', xHandle: 'carterreedlaw', bio: 'Practical legal and tax advice for families and small businesses.', bookingUrl: 'calendly.com/carterreed', regNo: 'NE Bar #24561', practice: 'Real estate, contracts, family law', officeAddress: '200 S 10th St, Suite 300, Omaha, NE 68102' },
+    hs: { ...base, profession: 'Home Services', colour: 'hs-poster', firstName: 'Mike', lastName: 'Brennan', title: 'Licensed Plumber', company: 'Rapid Fix Plumbing', phone: '(402) 555-0134', whatsapp: '(402) 555-0134', email: 'mike@rapidfixplumbing.com', website: 'rapidfixplumbing.com', instagram: 'rapidfixomaha', bio: 'Fast, honest plumbing for homes and small businesses. Upfront quotes, no surprises.', bookingUrl: 'rapidfixplumbing.com/quote', regNo: 'NE #54321', hours: 'Mon–Sat · 8 am – 8 pm', services: 'Leak repair, drain cleaning, water heaters', serviceArea: 'Omaha and 20 miles around', insured: 'Yes', emergency: 'Yes' },
+    cc: { ...base, profession: 'Consultant / Coach', colour: 'cc-poster', firstName: 'Alex', lastName: 'Morgan', title: 'Sales Director · Consultant', company: 'Northstar Advisory', phone: '(312) 555-0156', whatsapp: '(312) 555-0156', email: 'alex@northstaradvisory.com', city: 'Chicago', website: 'northstaradvisory.com', linkedin: 'alex-morgan', xHandle: 'alexmorgan', bio: 'I help B2B teams build repeatable pipelines and close bigger deals.', meetingUrl: 'calendly.com/alexmorgan' },
+  };
+})();
 const STEP_LABELS = ['Plan', 'Your card', 'Preview', 'Payment'];
 const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40) || 'card';
@@ -704,7 +719,7 @@ const nbrShareJpg = (src, px, py, zoom) => new Promise(res => {
 /* Upload to Cloudflare R2 via the site's /api/upload. Returns '' when R2 isn't available (caller falls back to Supabase storage). */
 const nbrUpload = async blob => {
   window.__nbrUpErr = '';
-  if (!/(^|\.)nexbizrise\.com$|(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname)) { window.__nbrUpErr = 'preview'; return ''; }
+  if (!/(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname)) { window.__nbrUpErr = 'preview'; return ''; }
   try {
     const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type || 'application/octet-stream' }, body: blob });
     const j = await r.json().catch(() => ({}));
@@ -749,10 +764,15 @@ class Component extends DCLogic {
     window.addEventListener('message', this.onMsg);
     this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     try { if (/[?&]qa=1/.test(location.search)) window.__nbrOrder = this; } catch (e) {}
+    if (new URLSearchParams(location.search).get('demo')) { this.isDemo = true; const dq = new URLSearchParams(location.search).get('demo'), dd = DEMO_D[dq] || DEMO_D.personal; try { window.__nbrOrder = this; } catch (e) {}
+      document.documentElement.setAttribute('data-skin', 'card');
+      const qc = new URLSearchParams(location.search).get('colour');
+      this.setState({ standalone: true, region: 'US', regionTouched: true, plan: 'basic', step: 3, maxStep: 3, d: { ...EMPTY, ...dd, ...(qc && (STYLE_BY_ID[qc] || COLOURS.some(c => c.id === qc)) ? { colour: qc } : {}) } });
+      this.onResize(); window.addEventListener('resize', this.onResize); return; }
     const tok = this.editTokenFromUrl();
     if (tok) { document.documentElement.setAttribute('data-skin', 'card'); this.setState({ standalone: true, editToken: tok, editLoading: true, step: 2, maxStep: 3 }); this.loadEdit(tok); }
     else try {
-      const sa = !/NexBizRise%20Website|NexBizRise Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)\/?$/.test(location.pathname));
+      const sa = !/Linkcardly%20Website|Linkcardly Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)\/?$/.test(location.pathname));
       const q = new URLSearchParams(location.search), plan = q.get('plan');
       const dd = !VIA_WORKER() && q.get('demoDone');
       if (dd) { const ireg = q.get('region') === 'IN' ? 'IN' : 'US'; document.documentElement.setAttribute('data-skin', 'card');
@@ -765,7 +785,7 @@ class Component extends DCLogic {
         document.documentElement.setAttribute('data-skin', 'card');
       }
       const rq = (q.get('region') || '').toUpperCase(); if (rq === 'IN' || rq === 'US') upd.region = rq; else this.detectRegion();
-      if (q.get('fresh') !== '1' && !/^\/create\/?$/.test(location.pathname)) try { const dr = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); if (dr && dr.d && (dr.d.firstName || dr.d.phone || dr.d.email || dr.d.photo)) Object.assign(upd, { d: (x => { const pd = String(x.photoData || ''); x.photo = pd.startsWith('data:image/') ? pd : /^https:\/\//.test(x.photo || '') ? x.photo : ''; if (!x.photo) x.photoData = ''; return x; })({ ...EMPTY, ...dr.d }), plan: dr.plan || 'basic', step: dr.step || 1, maxStep: dr.maxStep || dr.step || 1 }); } catch (e) {}
+      if (q.get('fresh') !== '1' && !/^\/create\/?$/.test(location.pathname)) try { const dr0 = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'), dr = dr0 && dr0.d && Object.values(DEMO_D).some(x => x.email && x.email === dr0.d.email && x.firstName === dr0.d.firstName) ? null : dr0; if (dr && dr.d && (dr.d.firstName || dr.d.phone || dr.d.email || dr.d.photo)) Object.assign(upd, { d: (x => { const pd = String(x.photoData || ''); x.photo = pd.startsWith('data:image/') ? pd : /^https:\/\//.test(x.photo || '') ? x.photo : ''; if (!x.photo) x.photoData = ''; return x; })({ ...EMPTY, ...dr.d }), plan: dr.plan || 'basic', step: dr.step || 1, maxStep: dr.maxStep || dr.step || 1 }); } catch (e) {}
       if (plan === 'basic' || plan === 'motion') Object.assign(upd, { plan, step: Math.max(2, upd.step || 1), maxStep: Math.max(2, upd.maxStep || 1) });
       else if (q.get('from') || q.get('region')) Object.assign(upd, { step: 1 });
       { const qc = q.get('colour'); if (qc && STYLE_BY_ID[qc]) upd.d = { ...EMPTY, ...(upd.d || {}), colour: qc, profession: STYLE_BY_ID[qc].layout === 'estate' ? 'Real Estate' : ((upd.d || {}).profession || EMPTY.profession) }; }
@@ -795,15 +815,15 @@ class Component extends DCLogic {
 
   row(slug, active, forSave) {
     const d0 = this.state.d, prof0 = d0.profession, d = { ...d0 };
-    FIELDS.forEach(f => { if ((f.re && prof0 !== 'Real Estate') || (f.biz && !f.biz.includes(prof0)) || (f.usOnly && this.state.region === 'IN') || (f.tx && String(d0.licenseState || '').trim().toUpperCase() !== 'TX')) d[f.k] = ''; });
+    FIELDS.forEach(f => { if ((f.re && prof0 !== 'Real Estate' && !(f.alsoBiz || []).includes(prof0)) || (f.notBiz || []).includes(prof0) || (f.biz && !f.biz.includes(prof0)) || (f.usOnly && this.state.region === 'IN') || (f.tx && String(d0.licenseState || '').trim().toUpperCase() !== 'TX')) d[f.k] = ''; });
     const preset = PROF_PRESET[d.profession] || 'entrepreneur', pre = PRESETS[preset];
     const reg = this.state.region || 'US', p = toE164(d.phone, reg);
     const stl = STYLE_BY_ID[d.colour], cl = COLLECTIONS.find(c => c.id === collOf(d.colour));
     const preset2 = cl.preset || preset, pre2 = PRESETS[preset2] || pre;
     return { slug, region: this.state.region || 'US', layout: stl ? stl.layout : 'original', photo_x: Math.round(d.photoX ?? 50), photo_y: Math.round(d.photoY ?? 50), photo_zoom: Number(d.photoZoom || 1), phone_display: fmtPhone(d.phone, reg), signature: '', titles: '', contact_photo_url: '', show_powered_by: true,
-      profession: d.profession, profession_other: '', city: d.city || '', notes: d.notes || '', prefix: '', first_name: d.firstName, last_name: d.lastName || '', title: d.title || '', company: d.company || '',
+      profession: d.profession, profession_other: '', city: d.city || '', notes: d.notes || '', prefix: '', first_name: d.firstName, last_name: d.lastName || '', title: d.title || '', company: (d.profession === 'Real Estate' ? (d.brokerage || d.company) : d.company) || '',
       preset: preset2, colour: d.colour, category: cl.category || pre2.category, tagline: cl.tagline || pre2.tagline, phone: p, whatsapp: d.whatsapp ? toE164(d.whatsapp, reg).replace(/\D/g, '') : '', email: d.email || '', linkedin: normLink('linkedin', d.linkedin), instagram: normLink('instagram', d.instagram), website: d.website || '',
-      extras: { x_url: normLink('x', d.xHandle), meeting_url: normLink('booking', d.meetingUrl), booking_url: normLink('booking', d.bookingUrl), reg_no: (d.regNo || '').trim(), quals: (d.quals || '').trim(), hours: (d.hours || '').trim(), services: (d.services || '').trim(), practice: (d.practice || '').trim(), service_area: (d.serviceArea || '').trim(), insured: (d.insured || '').trim(), emergency: (d.emergency || '').trim(), ...((d.profession === 'Healthcare' || d.profession === 'Legal / Finance') && d.officeAddress ? { office_address: d.officeAddress.trim() } : {}), ...(d.profession === 'Real Estate' ? { brokerage: (d.brokerage || '').trim(), license_no: (d.licenseNo || '').trim(), license_state: this.state.region === 'IN' ? '' : (d.licenseState || '').trim().toUpperCase().slice(0, 2), facebook: normLink('facebook', d.facebook), listings_url: normLink('listings', d.listingsUrl), booking_url: normLink('booking', d.bookingUrl), office_address: (d.officeAddress || '').trim(), iabs_url: normLink('iabs', d.iabsUrl), lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' } : { lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' }) },
+      extras: { x_url: normLink('x', d.xHandle), meeting_url: normLink('booking', d.meetingUrl), booking_url: normLink('booking', d.bookingUrl), reg_no: (d.regNo || '').trim(), quals: (d.quals || '').trim(), hours: (d.hours || '').trim(), services: (d.services || '').trim(), practice: (d.practice || '').trim(), service_area: (d.serviceArea || '').trim(), insured: (d.insured || '').trim(), emergency: (d.emergency || '').trim(), ...((d.profession === 'Healthcare' || d.profession === 'Legal / Finance') && d.officeAddress ? { office_address: d.officeAddress.trim() } : {}), ...(d.profession === 'Real Estate' ? { brokerage: (d.brokerage || '').trim(), license_no: (d.licenseNo || '').trim(), license_state: this.state.region === 'IN' ? '' : (d.licenseState || '').trim().toUpperCase().slice(0, 2), facebook: normLink('facebook', d.facebook), listings_url: normLink('listings', d.listingsUrl), booking_url: normLink('booking', d.bookingUrl), office_address: (d.officeAddress || '').trim(), iabs_url: normLink('iabs', d.iabsUrl), lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' } : { facebook: normLink('facebook', d.facebook), lead_capture: true, seasonal: this.state.plan === 'motion' && d.seasonal !== false, greeting: this.state.plan === 'motion' ? String(d.greeting || '').trim().slice(0, 60) : '' }) },
       quote: '', bio: d.bio || '', photo_url: (forSave ? d.photoData : d.photo) || '', plan: this.state.plan, renewal: addYear(), active: !!active };
   }
   postPreview = () => {
@@ -838,7 +858,7 @@ class Component extends DCLogic {
     if (this.lastDraftD === S.d && this.lastDraftStep === S.step && this.lastDraftPlan === S.plan) return;
     this.lastDraftD = S.d; this.lastDraftStep = S.step; this.lastDraftPlan = S.plan;
     clearTimeout(this.draftT);
-    this.draftT = setTimeout(() => { const S2 = this.state; if (S2.done) return; const dd = { ...S2.d, photo: String(S2.d.photo || '').startsWith('blob:') ? '' : S2.d.photo }; const v = { d: dd, plan: S2.plan, step: S2.step, maxStep: S2.maxStep }; try { localStorage.setItem(DRAFT_KEY, JSON.stringify(v)); } catch (e) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...v, d: { ...dd, photo: '', photoData: '' } })); } catch (e2) {} } }, 400);
+    this.draftT = setTimeout(() => { const S2 = this.state; if (S2.done || this.isDemo) return; const dd = { ...S2.d, photo: String(S2.d.photo || '').startsWith('blob:') ? '' : S2.d.photo }; const v = { d: dd, plan: S2.plan, step: S2.step, maxStep: S2.maxStep }; try { localStorage.setItem(DRAFT_KEY, JSON.stringify(v)); } catch (e) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...v, d: { ...dd, photo: '', photoData: '' } })); } catch (e2) {} } }, 400);
   };
   set = (k, v) => this.setState(s => ({ d: { ...s.d, [k]: v }, errors: { ...s.errors, [k]: '' } }));
   pickPhoto = () => { const i = this.fileRef.current; if (i) { i.value = ''; i.click(); } };
@@ -882,19 +902,44 @@ class Component extends DCLogic {
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
     e.preventDefault();
   };
+  visibleFieldKeys() {
+    const S = this.state, d = S.d, dfm = S.mode === 'dfm';
+    return FIELDS.filter(f => (!f.dfmOnly || dfm) && (!f.re || d.profession === 'Real Estate' || (f.alsoBiz || []).includes(d.profession)) && !(f.notBiz || []).includes(d.profession) && (!f.biz || f.biz.includes(d.profession)) && (!f.usOnly || S.region !== 'IN') && (!f.tx || String(d.licenseState || '').trim().toUpperCase() === 'TX')).map(f => f.k);
+  }
   validate() {
     const d = this.state.d, dfm = this.state.mode === 'dfm', e = {};
     const isRE = d.profession === 'Real Estate';
     if (!this.state.editToken && !BUSINESSES.some(b => b.prof === d.profession)) e.profession = 'Pick your card category';
     if (e.profession) return e;
-    FIELDS.forEach(f => { if (f.re && !isRE) return; if (f.biz && !f.biz.includes(d.profession)) return; if (f.inOptional && this.state.region === 'IN') return; if ((f.req === 'all' || (f.req === 'builder' && !dfm)) && !(this.state.editToken && f.k === 'email') && !String(d[f.k] || '').trim()) e[f.k] = 'Enter your ' + f.label.toLowerCase(); });
+    const vis = new Set(this.visibleFieldKeys()); FIELDS.forEach(f => { if (!vis.has(f.k)) return; if (f.inOptional && this.state.region === 'IN') return; if ((f.req === 'all' || (f.req === 'builder' && !dfm)) && !(this.state.editToken && f.k === 'email') && !String(d[f.k] || '').trim()) e[f.k] = 'Enter your ' + f.label.toLowerCase(); });
     if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim())) e.email = 'Enter a valid email';
     if (d.phone) { const dg = String(d.phone).replace(/\D/g, ''), IN = this.state.region === 'IN'; const ok = IN ? /^(91|0)?[6-9]\d{9}$/.test(dg) : /^1?[2-9]\d{9}$/.test(dg); if (!ok && !this.state.editToken) e.phone = IN ? 'Enter a 10-digit Indian mobile number' : 'Enter a 10-digit US phone number'; else if (dg.length < 7) e.phone = 'Enter a valid mobile number'; }
-    ['website'].forEach(k => { const v = normLink(k, d[k]); if (v !== (d[k] || '')) d[k] = v; if (v && !/^https?:\/\/[^\s.]+\.[^\s]+/.test(v)) e[k] = 'Enter a web address, like yourbusiness.com'; });
-    [['instagram', 'Instagram username'], ['linkedin', 'LinkedIn ID'], ['xHandle', 'X username']].forEach(([k, n]) => { const v = String(d[k] || '').trim(); if (v && !/^[A-Za-z0-9._-]{2,100}$/.test(v)) e[k] = 'Enter just your ' + n + ', no spaces'; });
+    const shown = new Set(this.visibleFieldKeys()), V = (k, ok, msg) => { if (shown.has(k) && !e[k] && String(d[k] || '').trim() && !ok(String(d[k]).trim())) e[k] = msg; };
+    FIELDS.filter(f => f.url && f.k !== 'facebook').forEach(f => V(f.k, v => /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(v.replace(/\s+/g, '')), 'Enter a web address, like ' + (f.k === 'facebook' ? 'facebook.com/yourpage' : 'yourbusiness.com')));
+    V('facebook', v => !/^https?:\/\//i.test(v) && !/\./.test(v) ? /^[A-Za-z0-9.]{5,50}$/.test(v) : /facebook\.com|fb\.com|fb\.me/i.test(v), 'Enter your Facebook page link or username');
+    V('firstName', v => /^[\p{L}][\p{L}' .-]{0,39}$/u.test(v), 'Use letters only (max 40)');
+    V('lastName', v => /^[\p{L}][\p{L}' .-]{0,39}$/u.test(v), 'Use letters only (max 40)');
+    V('title', v => v.length >= 2 && v.length <= 60, 'Keep it between 2 and 60 characters');
+    V('company', v => v.length <= 60, 'Keep it under 60 characters');
+    V('brokerage', v => v.length >= 2 && v.length <= 60, 'Keep it between 2 and 60 characters');
+    V('city', v => /^[\p{L}][\p{L}' .,-]{1,49}$/u.test(v), 'Enter a city name');
+    V('whatsapp', v => { const dg = v.replace(/\D/g, ''); return this.state.region === 'IN' ? /^(91|0)?[6-9]\d{9}$/.test(dg) : /^1?[2-9]\d{9}$/.test(dg); }, this.state.region === 'IN' ? 'Enter a 10-digit Indian WhatsApp number' : 'Enter a 10-digit WhatsApp number');
+    V('licenseNo', v => /^[A-Za-z0-9 -]{4,20}$/.test(v), 'Enter your license number (4–20 letters or digits)');
+    V('licenseState', v => /^[A-Za-z]{2}$/.test(v), 'Use the 2-letter state code, like TX');
+    V('regNo', v => /^[A-Za-z0-9 #./-]{3,30}$/.test(v), 'Enter a valid registration number');
+    V('quals', v => v.length <= 60, 'Keep it under 60 characters');
+    V('practice', v => v.length <= 120, 'Keep it under 120 characters');
+    V('services', v => v.length <= 200 && v.split(',').filter(s => s.trim()).length <= 8, 'Up to 8 services, separated by commas');
+    V('serviceArea', v => v.length >= 2 && v.length <= 60, 'Keep it between 2 and 60 characters');
+    V('hours', v => v.length >= 3 && v.length <= 60, 'Keep it under 60 characters, like Mon–Sat · 9 am – 6 pm');
+    V('officeAddress', v => v.length >= 8 && v.length <= 120 && /\d/.test(v), 'Enter a full street address with a number');
+    V('bio', v => v.length <= 240, 'Keep your bio under 240 characters (' + String(d.bio || '').trim().length + ' now)');
+    V('iabsUrl', v => /\.pdf($|\?)/i.test(v) || /trec|iabs/i.test(v), 'Link to your IABS PDF');
+    ['website', 'listingsUrl', 'bookingUrl', 'meetingUrl', 'iabsUrl'].forEach(k => { if (!e[k] && d[k]) { const v = normLink(k, d[k]); if (v !== d[k]) d[k] = v; } });
+    [['instagram', 'Instagram username', /^[A-Za-z0-9._]{1,30}$/], ['linkedin', 'LinkedIn ID', /^[A-Za-z0-9-]{3,100}$/], ['xHandle', 'X username', /^[A-Za-z0-9_]{1,15}$/]].forEach(([k, n, re]) => { const v = String(d[k] || '').trim(); if (v && shown.has(k) && !re.test(v)) e[k] = 'Enter just your ' + n + ', no spaces or symbols'; });
     return e;
   }
-  goStep = n => { if (n > 2 && !this.state.editToken && !VISIBLE_BIZ.some(b => b.prof === this.state.d.profession)) { this.setState(s => ({ errors: { ...(s.errors || {}), profession: 'Pick your card category' } })); n = 2; } if (n === 3 && this.state.vw >= 960) n = this.state.step > 3 ? 2 : 4; this.setState(s => ({ step: n, maxStep: Math.max(s.maxStep, n), submitError: '' }), () => { [80, 400, 1200].forEach(ms => setTimeout(this.measurePreview, ms)); if (this.state.step === 4) this.renderTs(); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  goStep = n => { if (n > 2 && !this.state.editToken && !VISIBLE_BIZ.some(b => b.prof === this.state.d.profession)) { this.setState(s => ({ errors: { ...(s.errors || {}), profession: 'Pick your card category' } })); n = 2; } if (n > 2 && this.state.step === 2) { const ve = this.validate(); if (Object.keys(ve).length) { this.setState({ errors: ve }); return; } } if (n === 3 && this.state.vw >= 960) n = this.state.step > 3 ? 2 : 4; this.setState(s => ({ step: n, maxStep: Math.max(s.maxStep, n), submitError: '' }), () => { [80, 400, 1200].forEach(ms => setTimeout(this.measurePreview, ms)); if (this.state.step === 4) this.renderTs(); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   next = () => {
     const { step } = this.state;
     if (step === 2) {
@@ -1143,13 +1188,13 @@ class Component extends DCLogic {
       handleTouchEnd: e => { const y = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : null; if (this._hy == null || y == null) return; const dy = y - this._hy; this._hy = null; if (Math.abs(dy) < 24) return; e.preventDefault(); this.setState({ swOpen: dy < 0, swEnd: false }); },
       fb: (() => { const fx = S.vw < 960 && (S.step === 1 || S.step === 4); return fx
         ? { fixed: true, pos: 'fixed', margin: '0', pad: '12px 16px calc(12px + env(safe-area-inset-bottom))', radius: '18px 18px 0 0', space: (S.fbH || 80) + 'px' }
-        : { fixed: false, pos: 'sticky', margin: '0 -4px -4px', pad: '12px 4px 4px', radius: '0', space: '0px' }; })(),
+        : { fixed: false, pos: 'relative', margin: '0 -4px -4px', pad: '16px 4px 4px', radius: '0', space: '0px' }; })(),
       notDone: !done, isDone: !!done,
       modes: [['builder', 'Build it myself', 'Pick a design, fill in your details and see your card as you go.'], ['dfm', 'Design it for me', 'Send your details and a photo. Our designer builds the card for you.']].map(([id, title, sub]) => {
         const c = S.mode === id, sm = S.vw < 960; return { title: sm ? (id === 'dfm' ? 'Design for me' : 'Build myself') : title, sub, showSub: !sm, gap: sm ? '10px' : '14px', pad: sm ? '12px 14px' : '18px 20px', titleSize: sm ? '15px' : '17px', checked: c ? 'true' : 'false', pick: () => this.setState({ mode: id, errors: {} }), border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.12)', bg: c ? 'rgba(var(--acc-rgb),0.07)' : 'var(--surface)', dot: c ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.3)', fill: c ? 'var(--btn)' : 'transparent' };
       }),
       ...(() => { const nV = S.vw >= 960 ? 3 : 4, cur = S.vw >= 960 && S.step >= 3 ? S.step - 1 : S.step; return { stepCols: 'repeat(' + nV + ',minmax(0,1fr))', stepW: 'calc((100% - 8px) / ' + nV + ')', stepX: ((cur - 1) * 100) + '%' }; })(),
-      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? '#0B6F78' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? '#56633F' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
       isStep1: S.step === 1, isStep2: S.step === 2, isStep3: S.step === 2, isStep5: S.step === 4,
       reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
       changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
@@ -1236,7 +1281,7 @@ class Component extends DCLogic {
         return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payImg: d.photo && !vid ? d.photo : (pl.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg') }; })(),
       panelBg: S.vw < 960 ? 'transparent' : 'var(--surface)', panelBd: S.vw < 960 ? '0' : '1px solid rgba(var(--fg-rgb),0.06)', panelSh: S.vw < 960 ? 'none' : '0 16px 40px -30px rgba(90,60,20,0.35)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
       secureTitle: S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
-      stepEyebrow: 'STEP ' + Math.min(S.step, 4) + ' OF 4',
+      stepEyebrow: S.vw >= 960 ? 'STEP ' + Math.min(S.step >= 3 ? S.step - 1 : S.step, 3) + ' OF 3' : 'STEP ' + Math.min(S.step, 4) + ' OF 4',
       qrNode: done ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(url).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,
     };
   }

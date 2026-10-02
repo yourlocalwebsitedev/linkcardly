@@ -7,6 +7,8 @@ export const THEMES = {
   folio: { family: 'cover', bg: '#FAF7F2', ink: '#14213D', btn: '#14213D', btnInk: '#FFFFFF' },
   spark: { family: 'cover', bg: '#17181B', ink: '#FFFFFF', btn: '#FFC400', btnInk: '#17181B' },
   evergreen: { family: 'cover', bg: '#102A22', ink: '#F4EBD9', btn: '#F4EBD9', btnInk: '#102A22' },
+  estate: { family: 'cover', bg: '#1C1712', ink: '#F2E6D0', btn: '#C9A15B', btnInk: '#1C1712' },
+  hivis: { family: 'cover', bg: '#1B1D21', ink: '#FFFFFF', btn: '#FF8A1F', btnInk: '#1B1D21' },
   original: { family: 'personal', bg: '#06120d', ink: '#F4EBD9', btn: '#f2c98a', btnInk: '#06120d' }
 };
 export const theme = key => THEMES[key] || THEMES.folio;

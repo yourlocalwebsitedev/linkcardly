@@ -6,9 +6,10 @@
     "build": "node scripts/build.mjs",
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
-    "test": "node --test test/"
+    "test": "npm run build && node --test test/*.test.js"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "wrangler": "^4.0.0"
   }
 }

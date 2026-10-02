@@ -2,10 +2,19 @@ name = "linkcardly"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 
+# Builds site/ → public/ and generated helpers before every `wrangler dev` / `wrangler deploy`.
+[build]
+command = "node scripts/build.mjs"
+
+# Workers Logs: the Worker writes one JSON line per request and per error (see src/index.js).
+[observability]
+enabled = true
+
 [assets]
 directory = "./public"
 binding = "ASSETS"
-html_handling = "auto-trailing-slash"
+# /designs is served directly (matching canonical URLs and the sitemap); /designs/ redirects to it.
+html_handling = "drop-trailing-slash"
 not_found_handling = "none"
 run_worker_first = true
 
@@ -24,9 +33,18 @@ LEGACY_ORIGIN = "https://card.nexbizrise.com"
 # PHASE 2 — native mode. Set MODE = "native", fill these, run the migration,
 # then set LEGACY_HOSTS so old card.nexbizrise.com links 301 to linkcardly.com.
 SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
-TURNSTILE_SITE_KEY = "YOUR_TURNSTILE_SITE_KEY"
+# Public site key for the native lead form. Must match TURNSTILE_SECRET. Proxy mode uses the
+# NexBizRise widget (site/site.config.js), whose secret lives in the NexBizRise worker.
+TURNSTILE_SITE_KEY = "0x4AAAAAAFIAJl64rp47Hazn"
 LEGACY_HOSTS = ""
 
 # Secrets for native mode (wrangler secret put …):
 # SUPABASE_SERVICE_KEY
 # TURNSTILE_SECRET
+# SUPABASE_ANON_KEY   (optional: public card reads then go through RLS instead of the service key)
+
+# Per-IP rate limit on /api/* writes and handle checks (src/index.js). 30 requests / 60 s per IP and route.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
