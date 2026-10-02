@@ -34,6 +34,7 @@ The Turnstile site key lives in one place: `site/site.config.js` (marketing page
 - **Rate limits:** 30 requests per minute per IP and route on `/api/handle, order, contact, lead, edit, upload, pay, csp-report` (binding `RATE_LIMITER`).
 - **CSP:** enforced on pages this repo renders; report-only on the vendored app (`APP_CSP` in `src/http.js`). Violations are logged as `t: "csp"`. Once they're quiet, tighten the policy and enforce it.
 - **Staging:** `npx wrangler deploy --env staging` (see `[env.staging]` in `wrangler.toml`). CI deploys `main` to staging when the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets exist; production deploys are manual (Actions → CI → Run workflow → deploy).
+- **PR previews:** Cloudflare Workers Builds runs `npx wrangler preview` for every pull request, using `[previews]` in `wrangler.toml` (proxy mode, own rate-limit namespace). Absolute links in a preview point at production.
 - **Rollback:** `npx wrangler deployments list`, then `npx wrangler rollback <version-id>`. Database changes are forward-only; take a Supabase backup before running a migration.
 
 ## Modes
