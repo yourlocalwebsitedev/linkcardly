@@ -162,3 +162,18 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   assert.equal(run('?h=ab'), '');
   assert.equal(run(''), '');
 });
+
+test('order app, phone Preview step: floating controls instead of a footer bar; desktop unchanged', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  const phone = html.slice(html.indexOf('const docH = S.pvDocH'), html.indexOf("toggle: () => this.setState(s => ({ pvOpen"));
+  assert.match(phone, /barBg: fx \? 'transparent'/);
+  assert.match(phone, /barPe: fx \? 'none'/);
+  assert.match(html, /barBg: 'var\(--bg\)', barPe: 'auto'/, 'desktop keeps its panel');
+  // Picker closed by default on phones, always shown on desktop.
+  assert.match(html, /swShow: S\.vw >= 960 \|\| S\.swOpen === true/);
+  // Next is an icon-only terracotta button with an accessible name.
+  assert.match(html, /onClick="\{\{ next \}\}" disabled="\{\{ busy \}\}" aria-label="\{\{ pv\.nextText \}\}"[^>]*background:var\(--accent\)/);
+  assert.match(html, /aria-controls="lc-styles"/);
+  assert.ok(!/handleTouchStart/.test(html), 'drag handle removed');
+});

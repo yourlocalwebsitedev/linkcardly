@@ -25,3 +25,7 @@ html[data-theme="light"] body{background:var(--lc-bg)!important}
 html body [data-screen-label="Order Card"] h1,html body [data-screen-label="Order Card"] h2{font-family:var(--font-h)!important;font-weight:400!important;letter-spacing:-.01em!important}
 [data-screen-label="Order Card"] h3{font-weight:700!important;letter-spacing:-.01em!important}
 header[style*="position:sticky"]{font-family:var(--font-b)!important}
+
+/* Phone preview: the style picker rises over the card (animation set inline as lc-rise). */
+@keyframes lc-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){[data-lc-float]{animation:none!important}}
