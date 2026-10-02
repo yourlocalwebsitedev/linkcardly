@@ -1,11 +1,7 @@
 @property --g{syntax:'*';inherits:false}
 :root{
-  --bg:#f5ead8;--surface:#ebddc5;--text:#201e1d;--accent:#c67139;--accent-2:#7a8a5e;--divider:color-mix(in srgb,#201e1d 16%,transparent);
-  --n100:#f9f4ed;--n200:#eee7db;--n300:#dcd3c4;--n400:#c0b6a5;--n500:#a19786;--n600:#82796a;--n700:#645c50;--n800:#474238;--n900:#2e2b25;
-  --a100:#fff2eb;--a200:#ffe1d0;--a300:#ffc6a5;--a400:#f6a06b;--a600:#b2622d;--a700:#8c491a;--a800:#643312;
-  --s100:#f0fae1;--s200:#e1eecc;--s300:#ccdbb2;--s500:#8fa073;--s700:#56633f;--s800:#3d472b;
-  --font-h:"Caprasimo",Georgia,serif;--font-b:"Figtree",system-ui,sans-serif;
-  --shadow-sm:0 1px 2px rgba(46,43,37,.14);--shadow-md:0 3px 10px rgba(46,43,37,.16);--shadow-lg:0 12px 32px rgba(46,43,37,.22);
+  /* Brand tokens come from tokens.css; these are the marketing site's roles for them. */
+  --bg:var(--lc-bg);--surface:var(--lc-surface);--text:var(--lc-text);--accent:var(--lc-accent);--accent-2:var(--lc-olive);--divider:color-mix(in srgb,var(--lc-text) 16%,transparent);
   --pad:20px;--sec:64px;--max:1240px
 }
 @media (min-width:641px){:root{--pad:32px;--sec:112px}}
@@ -158,8 +154,9 @@ select.input{appearance:none;cursor:pointer}
 .foot{background:var(--s800);color:var(--s200);border-radius:32px 32px 0 0;padding:var(--sec) 0 110px}
 @media (min-width:641px){.foot{border-radius:48px 48px 0 0;padding-bottom:48px}}
 .foot .logo{color:var(--n100)}.foot .logo span{color:var(--a300)}
-.foot nav{display:flex;flex-wrap:wrap;gap:20px 24px;align-items:center;font-size:14px;margin-top:80px}
-.foot nav a{color:inherit;text-decoration:none}.foot nav .logo{margin-right:auto;font-size:24px}
+.foot nav{display:flex;flex-wrap:wrap;gap:0 24px;align-items:center;font-size:14px;margin-top:80px}
+/* 44px-tall rows: comfortable thumb targets on phones without changing the visual rhythm */
+.foot nav a{color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}.foot nav .logo{margin-right:auto;font-size:24px}
 .sticky{position:fixed;left:12px;right:12px;bottom:12px;z-index:25;display:none;align-items:center;gap:12px;background:var(--text);color:var(--n100);border-radius:999px;padding:8px 8px 8px 20px;box-shadow:var(--shadow-lg)}
 .sticky.show{display:flex}.sticky span{flex:1;font-size:14px;font-weight:700;line-height:1.2}
 @media (min-width:641px){.sticky{display:none!important}}
@@ -448,7 +445,7 @@ select.input{appearance:none;cursor:pointer}
 .h2c-facts div{padding:0 8px;display:grid;gap:6px;align-content:start}
 .h2c-facts div+div{border-left:1px solid rgba(245,234,216,.2)}
 .h2c-facts b{font:400 clamp(28px,3.4vw,44px) var(--font-h);color:#f2c98a}
-.h2c-facts span{color:#f5ead8;font-size:clamp(14px,1.4vw,17px);line-height:1.35}
+.h2c-facts span{color:var(--lc-bg);font-size:clamp(14px,1.4vw,17px);line-height:1.35}
 @media (min-width:960px){
   .h2c-hero{grid-template-columns:minmax(0,600px) minmax(0,1fr);grid-template-areas:"copy art" "panel art";padding-top:56px;column-gap:40px}
   .h2c-copy{grid-area:copy}.h2c-panel{grid-area:panel;align-self:start}.h2c-art{grid-area:art;height:720px}
@@ -459,6 +456,11 @@ select.input{appearance:none;cursor:pointer}
   .h2c-bg .band{height:380px}
 }
 @media (prefers-reduced-motion:reduce){.h2c-slide,.h2c-dots i{transition:none}}
+
+/* Page header for text pages (contact, legal, 404): kicker, title, optional lead */
+.page{max-width:760px;padding-top:clamp(24px,5vw,64px);padding-bottom:var(--sec)}
+.page-head{display:flex;flex-direction:column;gap:14px;max-width:760px}
+.page-head .h1{font-size:clamp(40px,5.6vw,72px)}
 
 /* Legal pages (privacy, terms, refunds) */
 .legal{margin-top:20px;color:var(--n800);font-size:17px;line-height:1.65}

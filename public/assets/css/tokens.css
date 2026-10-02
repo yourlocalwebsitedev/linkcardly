@@ -1,0 +1,18 @@
+/* Linkcardly design tokens: the single source for brand colour, type and elevation.
+   Loaded first by every surface: marketing pages (site.css), the order and card app (app/skin.css).
+   Base colours use an --lc- prefix because the vendored app has its own --bg, --accent, … with
+   different meanings; the ramps and fonts have no such clash. */
+:root{
+  /* Base */
+  --lc-bg:#f5ead8;--lc-surface:#ebddc5;--lc-text:#201e1d;--lc-accent:#c67139;--lc-olive:#7a8a5e;--lc-danger:#a1281c;
+  /* Neutral ramp */
+  --n100:#f9f4ed;--n200:#eee7db;--n300:#dcd3c4;--n400:#c0b6a5;--n500:#a19786;--n600:#82796a;--n700:#645c50;--n800:#474238;--n900:#2e2b25;
+  /* Accent (terracotta) ramp */
+  --a100:#fff2eb;--a200:#ffe1d0;--a300:#ffc6a5;--a400:#f6a06b;--a600:#b2622d;--a700:#8c491a;--a800:#643312;
+  /* Sage (olive) ramp */
+  --s100:#f0fae1;--s200:#e1eecc;--s300:#ccdbb2;--s500:#8fa073;--s700:#56633f;--s800:#3d472b;
+  /* Type */
+  --font-h:"Caprasimo",Georgia,serif;--font-b:"Figtree",system-ui,sans-serif;
+  /* Elevation */
+  --shadow-sm:0 1px 2px rgba(46,43,37,.14);--shadow-md:0 3px 10px rgba(46,43,37,.16);--shadow-lg:0 12px 32px rgba(46,43,37,.22);
+}

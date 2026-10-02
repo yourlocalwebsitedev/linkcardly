@@ -13,3 +13,4 @@ dist/
 dist-staging/
 public/assets/js/rules.js
 src/lib/qrcode.gen.js
+public/assets/js/catalogue.js

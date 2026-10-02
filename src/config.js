@@ -1,7 +1,10 @@
 export const VERSION = 'v3';
 
-// Paths served as static files from /public.
-export const STATIC_PAGES = new Set(['', 'designs', 'teams', 'contact', 'privacy', 'terms', 'refunds']);
+import { pages } from '../site/pages.js';
+
+// Marketing pages served as static files from /public: derived from the page registry, so a new
+// page is one entry in site/pages.js. The 404 page is a file, not a route.
+export const STATIC_PAGES = new Set(pages.filter(p => p.path !== '/404').map(p => p.path.slice(1)));
 export const STATIC_PREFIXES = new Set(['assets', 'app']);
 
 // /create serves the vendored order app (opens on Plan). Old paths redirect there.
