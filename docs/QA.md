@@ -25,7 +25,6 @@ Tested: Home, Designs, Teams, Contact, Order flow (Plan, Your card, Preview, Pay
 | A | Order numbers made by the server, and public card IDs, start with `NBR-` and `nbr_` (shown on the done screen and in `/c/nbr_xxxxxx` links) | Change the prefix in the worker and SQL, or accept the existing IDs |
 | B | Order confirmation and admin emails are sent as the previous brand | Change the sender name and address, and the templates, in the worker |
 | C | Stripe and Razorpay statement name and checkout branding say the previous brand | Update in the Stripe and Razorpay dashboards |
-| D | Per-card share previews (OG title and photo per slug) were added by the legacy backend worker | Port the OG rewrite into the Linkcardly worker |
 | E | The legacy backend must accept requests from linkcardly.com (CORS, Turnstile hostnames, Supabase allowed URLs, upload host) | Add linkcardly.com in each |
 
 ## Redesign (Oct 2026): fixed
@@ -40,11 +39,12 @@ Tested: Home, Designs, Teams, Contact, Order flow (Plan, Your card, Preview, Pay
 | M | Designs page and home showed placeholder skeleton cards with names not sold in checkout | Real renders of Original, Luxury Estate and Listing Showcase (`site/cards.js`), each with a live demo link |
 | N | Desktop order bar floated over the plan cards; label said "Step 1 of 4" over 3 tabs | Bar sits in the flow; desktop label counts 3 steps |
 | O | Original card: monogram overlapped the name; Listing Showcase had two primary buttons | Smaller monogram ring; Save contact is the one primary, booking is secondary |
+| D | Per-card share previews (OG title and photo per slug) only existed in the legacy worker | The Linkcardly worker now sets the card's name, role, tagline and photo for link-preview bots (`src/routes/og.js`) |
 
 ## Still open
 | # | Defect |
 |---|---|
-| J | Privacy, Terms and Refunds pages say "Policy text goes here" |
+| J | Privacy, Terms and Refunds now have draft text (Oct 2026). Needs business and legal sign-off before launch |
 | P | Testimonials have no names or photos. Add real customer names and photos with permission |
 
 ## Not defects

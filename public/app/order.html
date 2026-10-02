@@ -21,6 +21,8 @@
 <meta name="twitter:description" content="Build your digital business card in minutes: photo, one-tap save contact, call, WhatsApp and a permanent QR code.">
 <meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/app/vendor/resources.js"></script>
+<script src="/assets/js/rules.js"></script>
 <script src="/app/support.js"></script>
 <link rel="stylesheet" href="/app/skin.css">
 </head>
@@ -627,6 +629,9 @@ const DEMO_D = (() => {
 const STEP_LABELS = ['Plan', 'Your card', 'Preview', 'Payment'];
 const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40) || 'card';
+// Linkcardly: the handle claimed on the home page (/create?h=) wins over the generated one.
+// Legacy slugs are a-z0-9- only, so dots become dashes; reserved words fall back to autoSlug.
+const claimedSlug = () => { try { const h = slugify(new URLSearchParams(location.search).get('h') || '').slice(0, 30).replace(/-+$/, ''); const rs = (window.LC_RULES && window.LC_RULES.reserved) || []; return h.length >= 3 && !rs.includes(h) ? h : ''; } catch (e) { return ''; } };
 const addYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 const DRAFT_KEY = 'nbr-order-draft';
 /* Card changes are done by our team. Put your business WhatsApp number here (digits with country code, e.g. '919876543210'); empty = email. */
@@ -981,7 +986,7 @@ class Component extends DCLogic {
     if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
     this.setState({ busy: true, submitError: '' });
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
-    const slug = await this.uniqueSlug(autoSlug(d));
+    const slug = await this.uniqueSlug(claimedSlug() || autoSlug(d));
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
       card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };

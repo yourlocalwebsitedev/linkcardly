@@ -16,4 +16,4 @@ export const APP = { order: '/app/order', card: '/app/card' };
 export const FILE_EXT = /\.(html?|css|m?js|json|xml|txt|svg|png|jpe?g|gif|webp|avif|ico|webmanifest|map|woff2?|ttf|otf|pdf|mp4|webm|vcf)$/i;
 
 // Upstream and third-party timeouts (ms).
-export const TIMEOUTS = { db: 8000, turnstile: 5000, proxy: 60000, health: 4000 };
+export const TIMEOUTS = { db: 8000, turnstile: 5000, proxy: 60000, health: 4000, og: 2500 };

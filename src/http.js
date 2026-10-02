@@ -34,8 +34,28 @@ export const CSP = [
   "object-src 'none'"
 ].join('; ');
 
+// Report-only policy for the vendored app (/create, /app, proxy-mode card and edit links), DEF-42.
+// It needs inline scripts and eval (in-browser Babel), Turnstile, Razorpay and Supabase. Violations
+// are logged by /api/csp-report; once the logs are quiet, tighten it and switch to enforcing.
+export const APP_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://challenges.cloudflare.com https://checkout.razorpay.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' data: blob: https:",
+  "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://lumberjack.razorpay.com",
+  "frame-src https://challenges.cloudflare.com https://api.razorpay.com https://checkout.razorpay.com",
+  "worker-src 'self' blob:",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self' https://checkout.stripe.com https://api.razorpay.com",
+  "object-src 'none'",
+  "report-uri /api/csp-report"
+].join('; ');
+
 // Adds security headers. Responses from fetch/ASSETS have immutable headers, so copy first.
-export function secure(res, { csp = false, editLink = false } = {}) {
+export function secure(res, { csp = false, appCsp = false, editLink = false } = {}) {
   const out = new Response(res.body, res);
   const h = out.headers;
   h.set('X-Content-Type-Options', 'nosniff');
@@ -43,7 +63,9 @@ export function secure(res, { csp = false, editLink = false } = {}) {
   h.set('Referrer-Policy', editLink ? 'no-referrer' : 'strict-origin-when-cross-origin');
   h.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com")');
   if (!h.has('X-Frame-Options')) h.set('X-Frame-Options', 'SAMEORIGIN');
-  if (csp && /text\/html/.test(h.get('Content-Type') || '')) h.set('Content-Security-Policy', CSP);
+  const html = /text\/html/.test(h.get('Content-Type') || '');
+  if (csp && html) h.set('Content-Security-Policy', CSP);
+  if (appCsp && html) h.set('Content-Security-Policy-Report-Only', APP_CSP);
   if (editLink) h.set('Cache-Control', 'private, no-store');
   return out;
 }

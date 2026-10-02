@@ -59,7 +59,7 @@ test('production config: no placeholder Turnstile site key is shipped', async ()
   assert.ok(!toml.includes('YOUR_TURNSTILE_SITE_KEY'));
 });
 
-test('production content: legal pages have real policy text', { todo: 'DEF-10: "Policy text goes here"' }, async () => {
+test('production content: legal pages have real policy text', async () => {
   for (const p of ['privacy', 'terms', 'refunds']) assert.ok(!(await read(p + '/index.html')).includes('Policy text goes here'), p);
 });
 

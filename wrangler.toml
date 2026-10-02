@@ -48,3 +48,24 @@ LEGACY_HOSTS = ""
 name = "RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 30, period = 60 }
+
+# Staging (DEF-40): `npx wrangler deploy --env staging` → linkcardly-staging.<account>.workers.dev.
+# Vars and rate limits are not inherited by environments, so they are repeated here. Staging stays in
+# proxy mode against the same NexBizRise worker; test orders there use the payment providers' test mode
+# only if NexBizRise is pointed at test keys. Its workers.dev hostname must be in the Turnstile widget.
+[env.staging]
+name = "linkcardly-staging"
+
+[env.staging.vars]
+# Set to the real workers.dev URL printed by the first `wrangler deploy --env staging`.
+SITE_URL = "https://linkcardly-staging.YOUR-SUBDOMAIN.workers.dev"
+MODE = "proxy"
+LEGACY_ORIGIN = "https://card.nexbizrise.com"
+SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+TURNSTILE_SITE_KEY = "0x4AAAAAAFIAJl64rp47Hazn"
+LEGACY_HOSTS = ""
+
+[[env.staging.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 30, period = 60 }

@@ -15,7 +15,7 @@ linkcardly/
 │   ├── index.js           Routing, security headers, request logging, error handling, rate limit
 │   ├── config.js          Route tables, app paths, file extensions, timeouts, version
 │   ├── http.js            json(), serveAsset(), notFound(), errorPage(), secure() + CSP
-│   ├── routes/            proxy.js (to NexBizRise), api.js (native), cards.js (native), health.js
+│   ├── routes/            proxy.js (to NexBizRise), og.js (share previews), api.js (native), cards.js (native), health.js
 │   ├── views/card-page.js Server-rendered card (native)
 │   └── lib/               Pure helpers: handles, icons, themes, vcard, sanitize, qr, supabase, turnstile
 ├── public/                Served as-is
@@ -31,7 +31,7 @@ linkcardly/
 ```
 
 ## Modes
-- **proxy** (current): `/api/*` and unknown paths go to the NexBizRise worker. Card pages (`/<slug>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/app/` and fetch their data through `/api/*`.
+- **proxy** (current): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404; the NexBizRise admin stays on its own host. Card pages (`/<slug>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/app/` and fetch their data through `/api/*`. Link-preview bots get the card's name, role and photo in the meta tags (`routes/og.js`). The app loads React and Babel from `public/app/vendor/`, not unpkg.
 - **native** (later): `routes/api.js` and `routes/cards.js` with the Supabase schema in `supabase/`. Not yet at parity: the vendored app also calls `/api/card`, `/api/hit`, `/api/upload`, `/api/edit` and `/api/pay/*`, and native has no `/e/<token>`, `/c/<id>`, admin, e-mails or payments. Keep proxy mode until those exist.
 
 ## Rules

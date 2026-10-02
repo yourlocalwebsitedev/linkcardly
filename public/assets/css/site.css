@@ -459,3 +459,12 @@ select.input{appearance:none;cursor:pointer}
   .h2c-bg .band{height:380px}
 }
 @media (prefers-reduced-motion:reduce){.h2c-slide,.h2c-dots i{transition:none}}
+
+/* Legal pages (privacy, terms, refunds) */
+.legal{margin-top:20px;color:var(--n800);font-size:17px;line-height:1.65}
+.legal h2{font:400 clamp(24px,2.6vw,30px)/1.2 var(--font-h);color:var(--n900);margin:36px 0 10px}
+.legal p,.legal ul{margin:0 0 14px}
+.legal ul{padding-left:22px}
+.legal li{margin:0 0 6px}
+.legal a{color:inherit;text-decoration:underline}
+.legal .updated{font-size:14px;color:var(--n600)}

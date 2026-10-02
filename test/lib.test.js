@@ -120,3 +120,38 @@ test('sanitizeHtml / safeUrl', async () => {
   assert.equal(safeUrl('http://a.b', ['http:']), 'http://a.b');
   assert.equal(safeUrl('not a url'), '');
 });
+
+test('self-hosted React and Babel are byte-identical to the SRI-pinned unpkg files support.js expects', async () => {
+  const { createHash } = await import('node:crypto');
+  const { readFile } = await import('node:fs/promises');
+  const pub = new URL('../public/', import.meta.url);
+  const support = await readFile(new URL('app/support.js', pub), 'utf8');
+  const resources = await readFile(new URL('app/vendor/resources.js', pub), 'utf8');
+  const map = Object.fromEntries([...resources.matchAll(/'(https:\/\/unpkg\.com\/[^']+)': '([^']+)'/g)].map(m => [m[1], m[2]]));
+  for (const [name, sri] of [['REACT', 'REACT_SRI'], ['REACT_DOM', 'REACT_DOM_SRI'], ['BABEL', 'BABEL_SRI']]) {
+    const url = support.match(new RegExp(`var ${name}_URL = "([^"]+)"`))[1];
+    const want = support.match(new RegExp(`var ${sri} = "([^"]+)"`))[1];
+    assert.ok(map[url], `${url} is self-hosted`);
+    const got = 'sha384-' + createHash('sha384').update(await readFile(new URL('.' + map[url], pub))).digest('base64');
+    assert.equal(got, want, url);
+  }
+  for (const page of ['order', 'card']) {
+    const html = await readFile(new URL(`app/${page}.html`, pub), 'utf8');
+    assert.ok(html.indexOf('/app/vendor/resources.js') > 0 && html.indexOf('/app/vendor/resources.js') < html.indexOf('/app/support.js'), page);
+  }
+});
+
+test('order app uses the handle claimed on the home page (/create?h=) when it is allowed', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /<script src="\/assets\/js\/rules\.js"><\/script>/);
+  assert.match(html, /uniqueSlug\(claimedSlug\(\) \|\| autoSlug\(d\)\)/);
+  // Run the helper as the browser would.
+  const src = html.match(/const slugify = [^\n]+/)[0] + '\n' + html.match(/const claimedSlug = [^\n]+/)[0];
+  const run = (search, reserved = ['create']) => new Function('location', 'window', 'URLSearchParams', src + '\nreturn claimedSlug();')({ search }, { LC_RULES: { reserved } }, URLSearchParams);
+  assert.equal(run('?h=alex.co'), 'alex-co');
+  assert.equal(run('?h=Sandeep'), 'sandeep');
+  assert.equal(run('?h=create'), '');
+  assert.equal(run('?h=ab'), '');
+  assert.equal(run(''), '');
+});

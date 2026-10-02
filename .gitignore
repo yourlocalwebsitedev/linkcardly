@@ -9,3 +9,7 @@ public/404.html
 public/*/index.html
 public/sitemap.xml
 public/assets/js/icons.js
+dist/
+dist-staging/
+public/assets/js/rules.js
+src/lib/qrcode.gen.js
