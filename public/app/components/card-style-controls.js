@@ -1,10 +1,12 @@
 /* CardStyleControls: floating style picker and next button for a phone card preview.
  *
- *   CardStyleControls
+ *   CardStyleControls  one layer fixed to the bottom of the screen
+ *   ├── StyleSelector   handle + horizontal row of styles (shown when open)
+ *   │   └── StyleOption one style: thumbnail and label; the selected one sits on a cream card
  *   ├── StyleTrigger    [thumbnail  Name  ˄]  opens and closes the selector
- *   ├── NextButton      round next/save button
- *   ├── StyleSelector   panel that rises over the card, with a peek handle
- *   └── StyleOption     one style: thumbnail and label
+ *   └── NextButton      round next/save button
+ * Closed: only the trigger and the next button float over the card, with no background.
+ * Open: a navy panel slides up behind the selector and the controls; the controls never move.
  *
  * Screen-agnostic: it only knows about the props below, so it works for any card style list or
  * collection. Exposed as window.LcCardStyleControls (sub-components on .parts) and used through
@@ -38,6 +40,7 @@
 
   var THUMB = 56;
   var ICONS = { arrow: 'M5 12h14M13 6l6 6-6 6', check: 'M20 6 9 17l-5-5', chevron: 'm6 15 6-6 6 6' };
+  var ICON_SIZE = { arrow: 20, check: 20 };
 
   function h() { return window.React.createElement.apply(null, arguments); }
   function Icon(d, size) {
@@ -72,7 +75,7 @@
     return h('button', {
       type: 'button', className: 'lcs-next', 'aria-label': props.label || 'Next', title: props.label || 'Next',
       disabled: !!props.busy, 'aria-busy': props.busy ? 'true' : undefined, onClick: props.onNext
-    }, Icon(ICONS[props.icon] || ICONS.arrow, 22));
+    }, Icon(ICONS[props.icon] || ICONS.arrow, ICON_SIZE[props.icon] || 20));
   }
 
   function StyleOption(props) {
@@ -117,7 +120,7 @@
       prev = o.group || '';
       children.push(h(StyleOption, { key: o.id, option: o, selected: o.id === props.value, onSelect: props.onSelect, label: grouped && o.group ? o.name + ', ' + o.group : o.name }));
     });
-    return h('div', { id: props.id, className: 'lcs-selector' + (props.open ? ' is-open' : ''), onTouchStart: onTouchStart, onTouchEnd: onTouchEnd },
+    return h('div', { id: props.id, className: 'lcs-selector', 'aria-hidden': props.open ? undefined : 'true', onTouchStart: onTouchStart, onTouchEnd: onTouchEnd },
       h('span', { className: 'lcs-selector__handle', 'aria-hidden': 'true' }),
       h('div', { ref: rowRef, className: 'lcs-selector__row', role: 'radiogroup', 'aria-label': 'Card style', onKeyDown: move }, children));
   }
@@ -137,7 +140,8 @@
       e.stopPropagation(); close();
       if (triggerRef.current) triggerRef.current.focus();
     }
-    return h('div', { className: 'lcs', style: { maxWidth: props.maxWidth || '100%' }, onKeyDown: onKeyDown },
+    return h('div', { className: 'lcs' + (props.open ? ' is-open' : ''), style: { maxWidth: props.maxWidth || '100%' }, onKeyDown: onKeyDown },
+      h('span', { className: 'lcs__panel', 'aria-hidden': 'true' }),
       h(StyleSelector, { id: idRef.current, options: options, value: current && current.id, open: !!props.open, onSelect: function (id) { if (props.onSelect) props.onSelect(id); }, onClose: close }),
       h('div', { className: 'lcs__bar' },
         h(StyleTrigger, { option: current, open: !!props.open, controls: idRef.current, onToggle: toggle, buttonRef: triggerRef }),

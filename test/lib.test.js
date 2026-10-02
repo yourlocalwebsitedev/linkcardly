@@ -200,7 +200,8 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   assert.equal(trigger.props['aria-controls'], selector.props.id);
   assert.match(trigger.props['aria-label'], /Current style: Emerald/);
   assert.equal(next.props['aria-label'], 'Continue to payment');
-  assert.ok(!selector.props.className.includes('is-open'));
+  assert.equal(selector.props['aria-hidden'], 'true', 'closed selector is hidden from assistive tech');
+  assert.ok(!cls('lcs')[0].props.className.includes('is-open'));
   const opts = cls('lcs-option');
   assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true', 'false']);
   assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0, -1], 'roving tabindex');
@@ -208,18 +209,23 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   trigger.props.onClick(); next.props.onClick(); opts[2].props.onClick();
   assert.deepEqual(calls, ['toggle', 'next', 'select:c']);
   const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
-  assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs-selector ')).props.className.includes('is-open'));
+  assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('is-open'));
+  assert.equal(open.find(n => n.props.className === 'lcs-selector').props['aria-hidden'], undefined);
   assert.equal(open.find(n => n.props.className === 'lcs-next').props.disabled, true);
 });
 
 test('CardStyleControls CSS: spec sizes, safe area, tokens and reduced motion', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('../public/app/components/card-style-controls.css', import.meta.url), 'utf8');
-  assert.match(css, /bottom:max\(24px,calc\(16px \+ env\(safe-area-inset-bottom\)\)\)/);
-  assert.match(css, /\.lcs-trigger\{width:160px;height:56px;[^}]*border-radius:28px/);
-  assert.match(css, /\.lcs-next\{width:56px;height:56px;[^}]*border-radius:50%/);
-  assert.match(css, /\.lcs-selector\{[^}]*min-height:120px;padding:12px;[^}]*backdrop-filter:blur\(12px\)/);
-  assert.match(css, /--lcs-cream:var\(--lc-bg/);
-  assert.match(css, /--lcs-accent:var\(--a600/);
+  assert.match(css, /padding:12px 16px max\(24px,calc\(16px \+ env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(css, /\.lcs-trigger\{width:auto;min-width:160px;[^}]*height:56px;[^}]*border-radius:28px/);
+  assert.match(css, /\.lcs-next\{width:56px;height:56px;[^}]*border-radius:28px;background:var\(--lcs-accent\)/);
+  assert.match(css, /\.lcs-selector\{height:120px/);
+  assert.match(css, /\.lcs__panel\{[^}]*border-radius:16px 16px 0 0;background:var\(--lcs-panel\);[^}]*backdrop-filter:blur\(12px\)/);
+  assert.match(css, /--lcs-panel:rgba\(10,20,40,0\.85\)/);
+  // Palette comes from the card UI tokens, not hex values in the component.
+  assert.match(css, /--lcs-navy:var\(--lc-navy/);
+  assert.match(css, /--lcs-cream:var\(--lc-cream/);
+  assert.match(css, /--lcs-accent:var\(--lc-terracotta/);
   assert.match(css, /prefers-reduced-motion:reduce/);
 });

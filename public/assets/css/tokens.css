@@ -5,6 +5,8 @@
 :root{
   /* Base */
   --lc-bg:#f5ead8;--lc-surface:#ebddc5;--lc-text:#201e1d;--lc-accent:#c67139;--lc-olive:#7a8a5e;--lc-danger:#a1281c;
+  /* Card UI (order flow preview, editor and card controls) */
+  --lc-navy:#0B1B2B;--lc-cream:#F3E7D7;--lc-terracotta:#C8552D;
   /* Neutral ramp */
   --n100:#f9f4ed;--n200:#eee7db;--n300:#dcd3c4;--n400:#c0b6a5;--n500:#a19786;--n600:#82796a;--n700:#645c50;--n800:#474238;--n900:#2e2b25;
   /* Accent (terracotta) ramp */
