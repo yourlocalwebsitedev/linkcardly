@@ -1,4 +1,27 @@
-/* Linkcardly additions for the vendored order app (visual only, no behaviour).
-   The order flow keeps its original colours, type and shapes. Only the logo (app/brand.js) is Linkcardly. */
-/* NexBizRise breadcrumb (Services / Digital Business Card) has no Linkcardly destination */
+/* Linkcardly skin for the order app (/create). Visual only, no behaviour.
+   Maps the app's own colour tokens and type onto the brand tokens in /assets/css/tokens.css
+   (loaded just before this file), so the order flow and the marketing site share one palette. */
+@import url("https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&display=swap");
+
+/* The old breadcrumb (Services / Digital Business Card) has no destination on linkcardly.com */
 nav[aria-label="Breadcrumb"]{display:none!important}
+
+html[data-theme="light"],html[data-skin="card"],html[data-skin="card"][data-theme="light"]{
+  --gold:var(--a700)!important;--mint:var(--s100)!important;--mint-2:var(--s200)!important;
+  --sand:var(--lc-surface)!important;--sand-2:var(--n300)!important;--sand-ink:var(--a800)!important;
+  --bg:var(--lc-bg)!important;--bg-2:var(--lc-surface)!important;--surface:var(--n100)!important;--surface-1:var(--n100)!important;--surface-hi:var(--n200)!important;
+  --ink:var(--lc-text)!important;--ink-2:var(--n900)!important;--ink-3:var(--n800)!important;--body:var(--n800)!important;
+  --muted:var(--n700)!important;--faint:var(--n700)!important;
+  --accent:var(--a600)!important;--accent-hover:var(--a700)!important;--accent-2:var(--a600)!important;
+  --danger:var(--lc-danger)!important;
+  --btn:var(--lc-text)!important;--btn-hover:var(--n800)!important;--btn-ink:var(--n100)!important;
+  /* The app needs these as r,g,b triplets for rgba(); keep them equal to --lc-text and --a600. */
+  --fg-rgb:32,30,29!important;--acc-rgb:178,98,45!important;
+}
+html[data-theme="light"] body{background:var(--lc-bg)!important}
+
+/* Type: Figtree everywhere, Caprasimo for headings and prices */
+[data-screen-label="Order Card"],[data-screen-label="Order Card"] *:not(svg):not(path){font-family:var(--font-b)!important}
+html body [data-screen-label="Order Card"] h1,html body [data-screen-label="Order Card"] h2{font-family:var(--font-h)!important;font-weight:400!important;letter-spacing:-.01em!important}
+[data-screen-label="Order Card"] h3{font-weight:700!important;letter-spacing:-.01em!important}
+header[style*="position:sticky"]{font-family:var(--font-b)!important}

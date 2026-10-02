@@ -1,5 +1,22 @@
-<section class="wrap grid" style="--min:420px;--g:48px;align-items:start;padding-top:clamp(24px,5vw,64px);padding-bottom:var(--sec)">
-  <div class="stack" style="--g:16px"><div class="stack" style="--g:14px;max-width:760px"><span class="kicker">Contact</span><h1 class="h1" style="font-size:clamp(40px,5.6vw,72px)">Questions? We're happy to help.</h1><p class="lead">Ask about team cards, designs or anything else. We reply within one business day.</p></div><a href="mailto:hello@linkcardly.com" style="font-weight:700;font-size:17px">hello@linkcardly.com</a></div>
-  <div><div data-contact-done hidden class="panel stack" style="--g:10px"><strong style="font:400 28px var(--font-h)">Thanks, <span data-cname></span>. Message received.</strong><span>We'll reply within one business day.</span></div>
-  <form id="contact" class="panel stack" style="--g:14px" novalidate><label class="field">Name<input class="input" name="name" type="text" placeholder="Your name" required></label><label class="field">Email<input class="input" name="email" type="email" placeholder="you@company.com" required></label><label class="field">Phone (optional)<input class="input" name="phone" type="tel" placeholder="+1 402 555 0187"></label><label class="field">How can we help?<textarea class="input" name="message" rows="4" placeholder="Tell us a little about what you need" required></textarea></label><div class="cf-turnstile" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div><div class="row" style="--g:12px"><button class="btn btn-accent btn-lg" type="submit">Send message</button><span class="status bad" data-contact-msg style="padding:0"></span></div></form></div>
+<section class="wrap grid" style="--min:420px;--g:48px;align-items:start;padding-top:clamp(24px,5vw,56px);padding-bottom:var(--sec)">
+  <div class="stack" style="--g:20px">
+    <div class="page-head"><span class="kicker">Contact</span><h1 class="h1">Questions? We're happy to help.</h1><p class="lead">Ask about team cards, designs or anything else. A real person replies within one business day.</p></div>
+    <div class="routes">
+      <a href="mailto:hello@linkcardly.com"><span class="dot"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></span><span><b>hello@linkcardly.com</b><small>Email us directly</small></span></a>
+      <a href="/teams#quote"><span class="dot sage"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg></span><span><b>Ordering for 20+ people?</b><small>Use the team quote form</small></span></a>
+      <a href="mailto:hello@linkcardly.com?subject=Resend%20my%20edit%20link"><span class="dot"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2a2 2 0 0 0-.5.8L2 21.4a.5.5 0 0 0 .6.6l4.4-1.3a2 2 0 0 0 .8-.5z"/></svg></span><span><b>Lost your edit link?</b><small>Email us from the address on your card</small></span></a>
+    </div>
+  </div>
+  <div>
+    <div data-contact-done hidden class="panel stack" style="--g:10px"><strong style="font:400 28px var(--font-h)">Thanks, <span data-cname></span>. Message received.</strong><span>We'll reply within one business day.</span></div>
+    <form id="contact" class="form2" data-contact novalidate>
+      <label class="field">Name<input class="input" name="name" type="text" placeholder="Your name" required></label>
+      <label class="field">Email<input class="input" name="email" type="email" placeholder="you@company.com" required></label>
+      <div class="field full"><span>What's it about?</span><div class="topics" role="group" aria-label="Topic" data-topics><button class="chip" type="button" aria-pressed="true">My card</button><button class="chip" type="button" aria-pressed="false">Designs</button><button class="chip" type="button" aria-pressed="false">Teams</button><button class="chip" type="button" aria-pressed="false">Billing</button><button class="chip" type="button" aria-pressed="false">Something else</button></div></div>
+      <label class="field full">Phone (optional)<input class="input" name="phone" type="tel" placeholder="+1 402 555 0187"></label>
+      <label class="field full">How can we help?<textarea class="input" name="message" rows="4" placeholder="Tell us a little about what you need" required></textarea></label>
+      <div class="cf-turnstile full" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div>
+      <div class="full row" style="justify-content:space-between;gap:12px"><span class="status bad" data-contact-msg style="padding:0"></span><button class="btn btn-accent btn-lg" type="submit">Send message →</button></div>
+    </form>
+  </div>
 </section>

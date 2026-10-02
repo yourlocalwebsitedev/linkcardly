@@ -18,7 +18,7 @@ before(async () => {
     alter default privileges in schema public grant all on tables to anon, authenticated;
     alter default privileges in schema public grant all on functions to anon, authenticated;`);
   const files = (await readdir(dir)).filter(f => f.endsWith('.sql')).sort();
-  assert.deepEqual(files.slice(0, 2), ['0001_init.sql', '0002_hardening.sql']);
+  assert.deepEqual(files.slice(0, 3), ['0001_init.sql', '0002_hardening.sql', '0003_retention_schedule.sql']);
   await db.exec(await readFile(new URL(files[0], dir), 'utf8'));
   // A row created before 0002 must survive the edit_token type change.
   await db.exec(`insert into cards(handle, full_name, status) values ('early', 'Early', 'live')`);

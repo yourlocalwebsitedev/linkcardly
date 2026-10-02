@@ -59,7 +59,7 @@ test('production config: no placeholder Turnstile site key is shipped', async ()
   assert.ok(!toml.includes('YOUR_TURNSTILE_SITE_KEY'));
 });
 
-test('production content: legal pages have real policy text', { todo: 'DEF-10: "Policy text goes here"' }, async () => {
+test('production content: legal pages have real policy text', async () => {
   for (const p of ['privacy', 'terms', 'refunds']) assert.ok(!(await read(p + '/index.html')).includes('Policy text goes here'), p);
 });
 
@@ -82,4 +82,24 @@ test('skip link becomes visible on focus', async () => {
 test('vendored app README and legacy images are not published', async () => {
   assert.match(await read('.assetsignore'), /^app\/README\.md$/m);
   await assert.rejects(read('assets/img/legacy/nexbizrise-logo.png'));
+});
+
+test('design tokens: one source (tokens.css) loaded before site.css and the app skin; no brand hex in the skin', async () => {
+  const css = p => readFile(new URL('../public/' + p, import.meta.url), 'utf8');
+  const tokens = await css('assets/css/tokens.css');
+  for (const t of ['--lc-bg', '--lc-text', '--lc-accent', '--n100', '--a600', '--s800', '--font-h', '--font-b']) assert.match(tokens, new RegExp(t + ':'), t);
+  const site = await css('assets/css/site.css'), skin = await css('app/skin.css');
+  for (const t of ['--n100', '--a600', '--font-h']) assert.ok(!site.includes(t + ':') && !skin.includes(t + ':'), `${t} is redefined outside tokens.css`);
+  assert.ok(!/#[0-9a-f]{6}/i.test(skin), 'app/skin.css uses tokens, not hex colours');
+  const html = await read('index.html'), order = await css('app/order.html');
+  assert.ok(html.indexOf('tokens.css') < html.indexOf('site.css'));
+  assert.ok(order.indexOf('tokens.css') > 0 && order.indexOf('tokens.css') < order.indexOf('skin.css'));
+});
+
+test('text pages use the shared page header instead of inline styles', async () => {
+  for (const n of ['contact', 'privacy', 'terms', 'refunds']) {
+    const html = await read(n + '/index.html');
+    assert.match(html, /<div class="page-head">/, n);
+    assert.ok(!html.includes('clamp(40px,5.6vw,72px)'), n);
+  }
 });

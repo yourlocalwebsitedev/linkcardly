@@ -13,7 +13,7 @@ npx wrangler login
 npx wrangler secret put SUPABASE_SERVICE_KEY
 npx wrangler secret put TURNSTILE_SECRET
 npx wrangler secret put SUPABASE_ANON_KEY   # optional: public card reads go through RLS
-# native mode only: run supabase/migrations/*.sql in order (0001, then 0002)
+# native mode only: run supabase/migrations/*.sql in order (0001, 0002, 0003)
 npm test           # build + unit, integration and database tests
 npm run dev        # build + http://localhost:8787
 npm run deploy     # build + deploy
@@ -31,16 +31,18 @@ The Turnstile site key lives in one place: `site/site.config.js` (marketing page
 - **Health:** `/health` → `ok v3` (liveness). `/health?deep=1` → JSON with a Supabase check (native) or a NexBizRise check (proxy); 503 if a dependency is down. Point the uptime monitor at the deep check.
 - **Logs:** Workers Logs (`[observability]`). One JSON line per request (`t: "req"`: method, path, status, ms, mode, ray) and per failure (`t: "error"`, `t: "proxy"`, `t: "turnstile"`). Edit tokens are masked as `/e/:token`.
 - **Errors:** any unhandled failure returns a JSON 500/503 on `/api/*` and a "Something went wrong" page elsewhere, and is logged.
-- **Rate limits:** 30 requests per minute per IP and route on `/api/handle, order, contact, lead, edit, upload, pay` (binding `RATE_LIMITER`).
+- **Rate limits:** 30 requests per minute per IP and route on `/api/handle, order, contact, lead, edit, upload, pay, csp-report` (binding `RATE_LIMITER`).
+- **CSP:** enforced on pages this repo renders; report-only on the vendored app (`APP_CSP` in `src/http.js`). Violations are logged as `t: "csp"`. Once they're quiet, tighten the policy and enforce it.
+- **Staging:** `npx wrangler deploy --env staging` (see `[env.staging]` in `wrangler.toml`). CI deploys `main` to staging when the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets exist; production deploys are manual (Actions → CI → Run workflow → deploy).
 - **Rollback:** `npx wrangler deployments list`, then `npx wrangler rollback <version-id>`. Database changes are forward-only; take a Supabase backup before running a migration.
 
 ## Modes
-- **proxy (now):** `MODE = "proxy"`. Linkcardly serves its own marketing pages only. Every `/api/*` call and every card page is forwarded to the existing NexBizRise worker (`LEGACY_ORIGIN`), so existing credentials, Supabase, Turnstile, payments, admin and edit links work unchanged.
+- **proxy (now):** `MODE = "proxy"`. Linkcardly serves its marketing pages and the vendored card and order app. Every `/api/*` call is forwarded to the existing NexBizRise worker (`LEGACY_ORIGIN`), so the existing Supabase, Turnstile, payments and edit links work unchanged. Nothing else is forwarded: the NexBizRise admin is used on its own host.
 - **native (later):** `MODE = "native"` switches to the Linkcardly API and database in `src/` and `supabase/`.
 
 ## Ordering and pricing
 `/create` serves `public/app/order.html` (the NexBizRise order flow); `/order` and `/pricing` redirect to it. Its preview uses `public/app/card.html`, with `brand.js`, `qrcode.js` and `support.js` alongside. See `public/app/README.md`.
-- Only one change: the upload host check also allows `linkcardly.com`.
+- Linkcardly changes are listed in `public/app/README.md` (brand, hosts, the claimed handle `?h=`, self-hosted React and Babel).
 - Its `/api/*` calls (upload, order, pay/start, pay/verify, pay/status, edit) are forwarded in proxy mode to the existing NexBizRise worker, so the same Supabase, Stripe, Razorpay and admin are used.
 - Copy these files again whenever the NexBizRise order flow changes.
 
@@ -56,8 +58,9 @@ The Turnstile site key lives in one place: `site/site.config.js` (marketing page
 | `POST /api/contact` | Contact form (Turnstile) |
 | `POST /api/lead` | Lead form on a card (Turnstile) |
 | `GET /api/qr?u=` | QR code SVG for a linkcardly.com URL (generated in the Worker) |
+| `POST /api/csp-report` | CSP violation reports from the vendored app (logged only) |
 | `/health`, `/health?deep=1` | Liveness, readiness (see Operations) |
-| `card.nexbizrise.com/*` | 301 → `linkcardly.com/*` |
+| `card.nexbizrise.com/*` | 301 → `linkcardly.com/*` (only once `LEGACY_HOSTS` is set at cutover) |
 
 ## Handle rules
 Lowercase letters, numbers, `.` and `-`. 3–30 characters. Must start and end with a letter or number, with no repeated `.` or `-`, and may not end in a file extension such as `.png`. Reserved words are listed in `src/lib/handles.js`; the build generates the browser copy (`assets/js/rules.js`). The database enforces the same pattern.
@@ -83,6 +86,6 @@ These exist in the old product. Copy their logic in rather than rebuilding it:
 - Google Search Console: add linkcardly.com and submit a change of address.
 
 ## Notes
-- Prices live in the order app (`public/app/order.html`, `PRICING`). Legal pages need real text.
+- Prices live in the order app (`public/app/order.html`, `PRICING`). The legal pages (`site/pages/privacy.html`, `terms.html`, `refunds.html`) are drafts based on how the product works; they need business and legal sign-off.
 - Every animation is turned off under `prefers-reduced-motion`.
 - The design reference is `design_handoff_linkcardly_website/`.

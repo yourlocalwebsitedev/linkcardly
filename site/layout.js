@@ -10,14 +10,14 @@ const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=de
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#f5ead8">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="/assets/css/site.css">`;
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">`;
 
 const header = p => `<header class="top">
   <nav class="nav" aria-label="Main">
     ${logo}
     <div class="nav-links">${NAV.map(([label, href, key]) => `<a href="${href}"${key === p.active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</div>
-    <a class="btn btn-dark" href="/create">Create my card →</a>
+    <a class="btn btn-dark" href="/create">Create my card</a>
     <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
   </nav>
   <div class="menu">${NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}</div>
@@ -26,7 +26,7 @@ const header = p => `<header class="top">
 const claimCta = `<h2 style="font-size:clamp(38px,6vw,80px);line-height:1;max-width:820px">Next time someone asks for your card, send a link.</h2>
     <form class="claim" data-claim style="box-shadow:none"><span>linkcardly.com/</span><input name="h" placeholder="yourname" aria-label="Your link name" autocomplete="off"><button class="btn btn-accent" type="submit">Claim it →</button></form>`;
 
-const footer = p => `<footer class="foot">
+const footer = p => `<footer class="foot${p.cta ? '' : ' slim'}">
   <div class="wrap stack" style="--g:24px;align-items:flex-start">
     ${p.cta ? claimCta : ''}
     <nav aria-label="Footer" style="width:100%">${logo}${FOOTER_LINKS.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}</nav>
@@ -34,7 +34,7 @@ const footer = p => `<footer class="foot">
   </div>
 </footer>`;
 
-const stickyBar = '<div class="sticky"><span>Your business card, in a link</span><a class="btn btn-accent" href="/create" style="font-size:15px">Claim it →</a></div>';
+const stickyBar = '<div class="sticky"><span>From $49 a year</span><a class="btn btn-accent" href="/create" style="font-size:15px">Claim my link →</a></div>';
 
 export const layout = (p, body) => `<!doctype html>
 <html lang="en"><head>

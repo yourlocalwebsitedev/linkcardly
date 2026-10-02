@@ -100,9 +100,22 @@ test('proxy mode: card links and edit links are served in place, keeping the pat
   assert.equal(f.calls.length, 0);
 });
 
-test('proxy mode: other unknown paths (e.g. /admin) are forwarded to the legacy worker', async () => {
+test('proxy mode: only /api/* is forwarded; other unknown paths (e.g. /admin) are a local 404', async () => {
   f = stubFetch(() => new Response('legacy'));
-  assert.equal(await (await worker.fetch(request('/admin/x'), env({ MODE: 'proxy' }))).text(), 'legacy');
+  for (const p of ['/admin', '/admin/x', '/alex/contact.vcf', '/wp-login.php/x']) {
+    const r = await worker.fetch(request(p), env({ MODE: 'proxy' }));
+    assert.equal(r.status, 404, p);
+    assert.match(await r.text(), /couldn't find that page/, p);
+  }
+  assert.equal(f.calls.length, 0);
+});
+
+test('proxy mode: cookies and Authorization are not forwarded, and Set-Cookie is not passed back', async () => {
+  f = stubFetch(() => new Response('{}', { headers: { 'Content-Type': 'application/json', 'Set-Cookie': 'sid=1; Path=/' } }));
+  const r = await worker.fetch(request('/api/card/alex', { headers: { Cookie: 'a=1', Authorization: 'Bearer x' } }), env({ MODE: 'proxy' }));
+  assert.equal(f.calls[0].headers.cookie, undefined);
+  assert.equal(f.calls[0].headers.authorization, undefined);
+  assert.equal(r.headers.get('set-cookie'), null);
 });
 
 test('proxy mode: upstream network failure degrades to a JSON 502', async () => {
@@ -121,7 +134,7 @@ test('a valid handle containing a dot reaches the card route', async () => {
 
 test('security headers on every response; CSP only on pages this repo renders', async () => {
   f = stubFetch(() => new Response('legacy', { headers: { 'Content-Type': 'text/html' } }));
-  for (const [p, mode, csp] of [['/', 'proxy', true], ['/designs', 'proxy', true], ['/nope.css', 'proxy', true], ['/create', 'proxy', false], ['/alexmorgan', 'proxy', false], ['/admin', 'proxy', false]]) {
+  for (const [p, mode, csp] of [['/', 'proxy', true], ['/designs', 'proxy', true], ['/nope.css', 'proxy', true], ['/create', 'proxy', false], ['/alexmorgan', 'proxy', false], ['/e/' + 'a'.repeat(40), 'proxy', false], ['/admin', 'proxy', true]]) {
     const r = await worker.fetch(request(p), env({ MODE: mode }));
     for (const h of ['strict-transport-security', 'x-content-type-options', 'referrer-policy', 'x-frame-options']) assert.ok(r.headers.get(h), `${p}: ${h}`);
     assert.equal(!!r.headers.get('content-security-policy'), csp, `${p}: CSP`);
@@ -151,4 +164,53 @@ test('logs never contain edit tokens', async () => {
   try { await worker.fetch(request('/e/' + 'c'.repeat(40)), env({ MODE: 'proxy' })); } finally { console.log = orig; }
   assert.ok(lines.length);
   assert.ok(!lines.join('\n').includes('c'.repeat(40)));
+});
+
+test('vendored app pages get a report-only CSP; marketing pages keep the enforced one', async () => {
+  for (const [p, ro] of [['/create', true], ['/alexmorgan', true], ['/e/' + 'a'.repeat(40), true], ['/', false]]) {
+    const r = await worker.fetch(request(p), env({ MODE: 'proxy' }));
+    assert.equal(!!r.headers.get('content-security-policy-report-only'), ro, p);
+    if (ro) assert.match(r.headers.get('content-security-policy-report-only'), /report-uri \/api\/csp-report/, p);
+  }
+});
+
+test('/api/csp-report logs the violation without the edit token and is not proxied', async () => {
+  f = stubFetch(() => new Response('legacy'));
+  const lines = [], orig = console.warn;
+  console.warn = l => lines.push(l);
+  let r;
+  try {
+    r = await worker.fetch(request('/api/csp-report', { method: 'POST', body: JSON.stringify({ 'csp-report': { 'document-uri': 'https://linkcardly.com/e/' + 'd'.repeat(40) + '?x=1', 'violated-directive': 'script-src', 'blocked-uri': 'https://evil.test/x.js?q' } }) }), env({ MODE: 'proxy' }));
+  } finally { console.warn = orig; }
+  assert.equal(r.status, 204);
+  assert.equal(f.calls.length, 0);
+  const log = JSON.parse(lines[0]);
+  assert.deepEqual(log, { t: 'csp', page: 'https://linkcardly.com/e/:token', directive: 'script-src', blocked: 'https://evil.test/x.js' });
+});
+
+test('proxy mode: link-preview bots get the card owner in the share preview; people get the page untouched', async () => {
+  const row = { first_name: 'Alex', last_name: 'Morgan', title: 'Realtor', company: 'Skyline <Realty>', tagline: 'Homes in KC', photo_url: 'https://cdn.test/a.jpg', extras: { og_image: 'https://cdn.test/og.png' } };
+  f = stubFetch(url => /\/api\/card\/(alexmorgan|nbr_ab12cd)$/.test(url) ? json({ row }) : undefined);
+  const bot = { 'User-Agent': 'WhatsApp/2.23' };
+  let html = await (await worker.fetch(request('/alexmorgan', { headers: bot }), env({ MODE: 'proxy' }))).text();
+  assert.match(html, /<title>Alex Morgan · Realtor, Skyline &lt;Realty&gt; \| Linkcardly<\/title>/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/cdn\.test\/og\.png">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/linkcardly\.com\/alexmorgan">/);
+  assert.match(html, /<meta name="twitter:description" content="Homes in KC">/);
+  assert.equal(f.calls[0].url, 'https://card.nexbizrise.com/api/card/alexmorgan');
+  html = await (await worker.fetch(request('/c/nbr_ab12cd', { headers: bot }), env({ MODE: 'proxy' }))).text();
+  assert.match(html, /<link rel="canonical" href="https:\/\/linkcardly\.com\/c\/nbr_ab12cd">/);
+  assert.equal(f.calls[1].url, 'https://card.nexbizrise.com/api/card/nbr_ab12cd');
+  // A person: no extra request, default meta.
+  const n = f.calls.length;
+  html = await (await worker.fetch(request('/alexmorgan', { headers: { 'User-Agent': 'Mozilla/5.0 (iPhone)' } }), env({ MODE: 'proxy' }))).text();
+  assert.equal(f.calls.length, n);
+  assert.match(html, /<meta property="og:title" content="Digital business card \| Linkcardly">/);
+});
+
+test('proxy mode: share preview falls back to the default page when the card lookup fails', async () => {
+  f = stubFetch(() => { throw new TypeError('network'); });
+  const r = await worker.fetch(request('/alexmorgan', { headers: { 'User-Agent': 'facebookexternalhit/1.1' } }), env({ MODE: 'proxy' }));
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /<meta property="og:title" content="Digital business card \| Linkcardly">/);
 });

@@ -3,7 +3,7 @@
 (function () {
   var BRAND = {
     name: ['link', 'card', 'ly'],      // wordmark: "card" in accent
-    colors: { ink: '#201e1d', accent: '#c67139', gold: '#B7893E', cream: '#F7F3EC', mint: '#EEF6F4', sand: '#F3E9D8' }
+    colors: { ink: '#201e1d', accent: '#b2622d', gold: '#B7893E', cream: '#F7F3EC', mint: '#EEF6F4', sand: '#F3E9D8' }
   };
   window.NBR_BRAND = BRAND;
   try {

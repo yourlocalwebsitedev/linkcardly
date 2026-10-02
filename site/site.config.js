@@ -7,14 +7,14 @@ export const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
 
 // [label, href, key]
 export const NAV = [
-  ['Features', '/#features', 'features'],
+  ['How it works', '/#how', 'how'],
   ['Designs', '/designs', 'designs'],
-  ['Pricing', '/create', 'pricing'],
+  ['Pricing', '/#pricing', 'pricing'],
   ['Teams', '/teams', 'teams'],
   ['Contact', '/contact', 'contact']
 ];
 
 export const FOOTER_LINKS = [
-  ['Designs', '/designs'], ['Pricing', '/create'], ['Teams', '/teams'], ['Contact', '/contact'],
+  ['Designs', '/designs'], ['Pricing', '/#pricing'], ['Create', '/create'], ['Teams', '/teams'], ['Contact', '/contact'],
   ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refunds']
 ];

@@ -190,18 +190,43 @@
       } catch (_) { msg.textContent = 'Something went wrong. Please try again.'; msg.classList.add('bad'); }
     });
   }
-  const contact = $('#contact');
-  if (contact) contact.addEventListener('submit', async e => {
+  // contact + team quote forms → /api/contact (same fields the API already accepts)
+  $$('[data-topics]').forEach(g => g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$('button', g).forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+  $$('form[data-contact]').forEach(form => form.addEventListener('submit', async e => {
     e.preventDefault();
-    const msg = $('[data-contact-msg]'), body = Object.fromEntries(new FormData(contact)); body.turnstile = token(contact);
-    if (!body.name.trim() || !/.+@.+\..+/.test(body.email) || !body.message.trim()) { msg.textContent = 'Add your name, a valid email and a message.'; return; }
-    const btn = contact.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Sending…';
+    const msg = $('[data-contact-msg]', form), fd = Object.fromEntries(new FormData(form));
+    const topic = $('[data-topics] [aria-pressed="true"]', form);
+    const extra = [form.dataset.subject, topic && 'Topic: ' + topic.textContent, fd.company && 'Company: ' + String(fd.company).trim(), fd.size && 'Team size: ' + fd.size].filter(Boolean);
+    const body = { name: (fd.name || '').trim(), email: (fd.email || '').trim(), phone: (fd.phone || '').trim(), message: [extra.join(' · '), (fd.message || '').trim()].filter(Boolean).join('\n\n'), turnstile: token(form) };
+    const needMsg = !form.dataset.subject;
+    if (!body.name || !/.+@.+\..+/.test(body.email) || (needMsg && !(fd.message || '').trim())) { msg.textContent = needMsg ? 'Add your name, a valid email and a message.' : 'Add your name and a valid work email.'; return; }
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Sending…';
     try {
       const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (r.ok) { contact.hidden = true; const d = $('[data-contact-done]'); d.hidden = false; $('[data-cname]').textContent = body.name.trim().split(' ')[0]; return; }
+      if (r.ok) { form.hidden = true; const d = form.parentElement.querySelector('[data-contact-done]'); d.hidden = false; $('[data-cname]', d).textContent = body.name.split(' ')[0]; return; }
       const j = await r.json().catch(() => ({}));
       msg.textContent = j.error || 'Something went wrong. Please try again, or email hello@linkcardly.com.';
     } catch (_) { msg.textContent = 'Could not send. Check your connection and try again.'; }
     btn.disabled = false; window.turnstile && turnstile.reset();
+  }));
+
+  // designs filter
+  const flt = $('[data-filter]');
+  if (flt) flt.addEventListener('click', e => {
+    const b = e.target.closest('[data-f]'); if (!b) return;
+    $$('[data-f]', flt).forEach(x => x.setAttribute('aria-pressed', x === b));
+    $$('[data-trades]').forEach(c => { c.hidden = !c.dataset.trades.split(' ').includes(b.dataset.f); });
   });
+
+  // home hero: design rotator (3s, pausable, off under reduced motion)
+  const rot = $('[data-rotator]');
+  if (rot) {
+    const slides = $$('.h2c-slide', rot), dots = $('[data-rot-dots]'), nm = $('[data-rot-name]'), ct = $('[data-rot-count]'), tg = $('[data-rot-toggle]');
+    let cur = 0, on = !window.matchMedia('(prefers-reduced-motion: reduce)').matches, hold = 0;
+    const show = j => { cur = j; slides.forEach((s, k) => { s.classList.toggle('is-on', k === j); s.setAttribute('aria-hidden', k !== j); }); $$('button', dots).forEach((b, k) => b.setAttribute('aria-selected', k === j)); nm.textContent = slides[j].dataset.name; ct.textContent = (j + 1) + ' of ' + slides.length; };
+    slides.forEach((s, j) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-label', s.dataset.name); b.innerHTML = '<i></i>'; b.addEventListener('click', () => { hold = Date.now() + 8000; show(j); }); dots.appendChild(b); });
+    const label = () => { tg.textContent = on ? 'II' : '▶'; tg.setAttribute('aria-label', on ? 'Pause designs' : 'Play designs'); };
+    tg.addEventListener('click', () => { on = !on; label(); }); label(); show(0);
+    setInterval(() => { if (on && !document.hidden && Date.now() > hold) show((cur + 1) % slides.length); }, 3000);
+  }
 })();
