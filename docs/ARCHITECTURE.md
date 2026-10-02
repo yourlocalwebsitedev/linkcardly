@@ -22,6 +22,7 @@ linkcardly/
 ├── public/                Served as-is
 │   ├── app/               Vendored NexBizRise order and card app (see app/README.md)
 │   │   ├── estate-styles.js  Estate card styles shared by order.html and card.html (window.LC_ESTATE)
+│   │   ├── scene-styles.js   Personal scene styles (Summit, Tide) and their art, shared the same way (window.LC_SCENES)
 │   │   └── components/    Linkcardly UI components for the app (e.g. card-style-controls.js + .css)
 │   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing), card.css (native card)
 │   ├── assets/js/         site.js (marketing behaviour), card.js (native card), config.js; generated: catalogue.js, icons.js, rules.js

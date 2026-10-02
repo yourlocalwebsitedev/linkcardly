@@ -21,7 +21,8 @@
  * Plain React.createElement (React comes from the page runtime), so no build step or Babel.
  *
  * Props
- *   options    [{ id, name, group?, thumb: { bg, blocks?: [{ l, t, w, h, r, bg, sh }], dot?, size? } }]
+ *   options    [{ id, name, group?, thumb: { bg, image?, blocks?: [{ l, t, w, h, r, bg, sh }], dot?, size? } }]
+ *              thumb.image (a URL, e.g. an SVG data: URI) fills the thumbnail and wins over blocks and dot.
  *              thumb.blocks are absolutely positioned shapes drawn at thumb.size px (default 56).
  *              Options with different `group` values get a divider between groups. The sheet's header
  *              shows the selected option's group ("<group> styles") and its position in that group.
@@ -74,7 +75,9 @@
   // Draws a thumbnail descriptor at `size` px; blocks drawn for another size are scaled to fit.
   function Thumb(props) {
     var t = props.thumb || {}, native = t.size || THUMB, k = props.size / native;
-    var inner = t.dot
+    var inner = t.image
+      ? h('img', { className: 'lcs-thumb__img', src: t.image, alt: '' })
+      : t.dot
       ? h('span', { className: 'lcs-thumb__dot', style: { background: t.dot } })
       : h('span', { className: 'lcs-thumb__art', style: { width: native, height: native, transform: k === 1 ? undefined : 'scale(' + k + ')' } },
         (t.blocks || []).map(function (b, i) {
@@ -242,7 +245,8 @@
    * right of the card, with the selected colour's name beside it. Renders nothing when the selected style
    * has no family (or only one colour). Used through
    *   <x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" …>
-   * Props: options, value, onSelect (as CardStyleControls), tone (optional override). */
+   * Props: options, value, onSelect (as CardStyleControls), tone (optional override), offset (optional CSS
+   * top, to clear something the card shows at the top right, e.g. a scene card's QR code). */
   function CardColourRail(props) {
     ensureCss();
     var options = props.options || [];
@@ -260,7 +264,7 @@
       if (props.onSelect) props.onSelect(n.id);
       var b = e.currentTarget.querySelector('[data-id="' + String(n.id).replace(/"/g, '\\"') + '"]'); if (b) b.focus();
     }
-    return h('div', { className: 'lcr lcs--' + tone },
+    return h('div', { className: 'lcr lcs--' + tone, style: props.offset ? { top: props.offset } : undefined },
       h('div', { className: 'lcr__strip lcs-glass', role: 'radiogroup', 'aria-label': (current.family.name || 'Card') + ' colour', onKeyDown: move },
         colours.map(function (o) {
           var on = o === current, t = o.swatch || { bg: (o.thumb || {}).bg, dot: (o.thumb || {}).dot };

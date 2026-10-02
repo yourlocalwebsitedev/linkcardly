@@ -23,6 +23,7 @@
 <script src="/app/vendor/resources.js"></script>
 <script src="/app/support.js"></script>
 <script src="/app/estate-styles.js"></script>
+<script src="/app/scene-styles.js"></script>
 </head>
 <body>
 <x-dc>
@@ -235,6 +236,64 @@ a:hover{color:#f3efe6;}
           </button></sc-if>
     </footer>
 
+    </sc-if>
+
+    <sc-if value="{{ isScene }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;min-height:100svh;background:var(--scBg);color:var(--scInk);font-family:Figtree,system-ui,sans-serif;padding-bottom:max(32px, env(safe-area-inset-bottom));">
+        <div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;aspect-ratio:390/560;overflow:hidden;">{{ sceneArt }}</div>
+        <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" aria-label="Show a larger QR code for this card" style="position:absolute;top:calc(24px + env(safe-area-inset-top));right:22px;z-index:2;width:72px;height:72px;padding:4px;border:0;border-radius:10px;background:transparent;color:var(--scInk);cursor:pointer;">
+          <svg viewBox="{{ scQrBox }}" width="64" height="64" shape-rendering="crispEdges" aria-hidden="true" style="display:block;"><path d="{{ scQrPath }}" fill="currentColor"></path></svg>
+        </button>
+        <header style="position:relative;padding:calc(170px + env(safe-area-inset-top)) 28px 0;display:flex;flex-direction:column;gap:6px;">
+          <div style="width:168px;height:168px;border-radius:50%;padding:4px;box-sizing:border-box;background:var(--scRing);box-shadow:0 0 0 8px color-mix(in srgb, var(--scRing) 18%, transparent),0 20px 40px rgba(0,0,0,0.4);margin-bottom:18px;">
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><div role="img" data-ph="1" aria-label="{{ photoAlt }}" style="width:160px;height:160px;border-radius:50%;background-color:var(--scBg);background-image:{{ photoBg }};background-size:cover;background-position:{{ photoPos }};"></div></sc-if>
+            <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="width:160px;height:160px;border-radius:50%;background:var(--scBg);display:grid;place-items:center;font-family:Newsreader,Georgia,serif;font-size:56px;color:var(--scRing);">{{ initials }}</div></sc-if>
+          </div>
+          <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:42px;line-height:1.02;letter-spacing:-0.01em;text-wrap:balance;">{{ displayName }}</h1>
+          <sc-if value="{{ hasTitle }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:16px;line-height:1.4;">{{ title }}</p></sc-if>
+          <sc-if value="{{ hasCompany }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:16px;line-height:1.4;color:color-mix(in srgb, var(--scInk) 72%, transparent);">{{ company }}</p></sc-if>
+        </header>
+
+        <div style="position:relative;padding:28px 24px 0;display:flex;flex-direction:column;gap:12px;">
+          <button type="button" onClick="{{ saveContact }}" style="height:58px;width:100%;border:0;border-radius:18px;background:var(--scAcc);color:var(--scOn);font-family:Figtree,system-ui,sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,0.3);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg>
+            <span>{{ saveLabel }}</span>
+          </button>
+          <sc-if value="{{ hasCta }}" hint-placeholder-val="{{ false }}">
+            <a href="{{ ctaUrl }}" target="_blank" rel="noopener" style="height:52px;width:100%;border-radius:16px;border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);background:color-mix(in srgb, var(--scInk) 7%, transparent);color:var(--scInk);font-size:15px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">{{ ctaLabel }}</a>
+          </sc-if>
+          <nav aria-label="Contact" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+            <a href="{{ telHref }}" aria-label="{{ callAria }}" style="min-height:84px;border-radius:18px;background:color-mix(in srgb, var(--scInk) 7%, transparent);border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);color:var(--scInk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;text-decoration:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"></path></svg><span>Call</span></a>
+            <a href="{{ msgHref }}" target="{{ msgTarget }}" rel="noopener" aria-label="{{ msgAria }}" style="min-height:84px;border-radius:18px;background:color-mix(in srgb, var(--scInk) 7%, transparent);border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);color:var(--scInk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;text-decoration:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"></path></svg><span>{{ msgLabel }}</span></a>
+            <a href="{{ mailHref }}" aria-label="{{ mailAria }}" style="min-height:84px;border-radius:18px;background:color-mix(in srgb, var(--scInk) 7%, transparent);border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);color:var(--scInk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;text-decoration:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg><span>Email</span></a>
+          </nav>
+          <sc-if value="{{ hasSocials }}" hint-placeholder-val="{{ true }}">
+            <nav aria-label="Social profiles" style="display:flex;flex-wrap:wrap;justify-content:space-around;gap:4px;padding:6px 0;">
+              <sc-for list="{{ socials }}" as="s" hint-placeholder-count="3">
+                <a href="{{ s.url }}" target="_blank" rel="noopener" aria-label="{{ s.label }}" style="width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:var(--scInk);text-decoration:none;">
+                  <sc-if value="{{ s.isLinkedin }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 5.9V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9V9Z"></path></svg></sc-if>
+                  <sc-if value="{{ s.isInstagram }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg></sc-if>
+                  <sc-if value="{{ s.isX }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"></path></svg></sc-if>
+                  <sc-if value="{{ s.isFacebook }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 22v-8h2.7l.4-3.2H14V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.3H7.8V14h2.8v8H14Z"></path></svg></sc-if>
+                  <sc-if value="{{ s.isYoutube }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.7-1.7C19.3 5.2 12 5.2 12 5.2s-7.3 0-8.9.4A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.7 1.7c1.6.4 8.9.4 8.9.4s7.3 0 8.9-.4a2.5 2.5 0 0 0 1.7-1.7C23 15.2 23 12 23 12Zm-13 3.2V8.8l5.5 3.2-5.5 3.2Z"></path></svg></sc-if>
+                  <sc-if value="{{ s.isWebsite }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"></path></svg></sc-if>
+                </a>
+              </sc-for>
+            </nav>
+          </sc-if>
+          <sc-if value="{{ hasBio }}" hint-placeholder-val="{{ false }}"><p style="margin:6px 0 0;font-size:15px;line-height:1.6;color:color-mix(in srgb, var(--scInk) 72%, transparent);text-wrap:pretty;">{{ bio }}</p></sc-if>
+          <sc-if value="{{ showShareRow }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+              <button type="button" onClick="{{ share }}" style="height:48px;border-radius:14px;border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);background:transparent;color:var(--scInk);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v14"></path></svg><span>Share card</span></button>
+              <button type="button" onClick="{{ openQR }}" aria-haspopup="dialog" style="height:48px;border-radius:14px;border:1px solid color-mix(in srgb, var(--scInk) 14%, transparent);background:transparent;color:var(--scInk);font-family:Figtree,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4"></path></svg><span>Show QR</span></button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showPlans }}"><button type="button" onClick="{{ openPlans }}" style="min-height:44px;margin-top:12px;border:0;background:transparent;color:color-mix(in srgb, var(--scInk) 72%, transparent);font-family:Figtree,system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Powered by Linkcardly · Get a card like this →</button></sc-if>
+        </div>
+      </div>
     </sc-if>
 
     <sc-if value="{{ isLuxury }}" hint-placeholder-val="{{ false }}">
@@ -1042,7 +1101,7 @@ const BIZ_CFG = {
   'Home Services': { cta: 'Get a free quote', area: 'SERVING', tile: 'Services', lead: ['Quote', 'Emergency', 'Repair', 'Just connecting'] },
   'Consultant / Coach': { cta: 'Book a meeting', area: 'BASED IN', tile: 'LinkedIn', lead: ['Project', 'Partnership', 'Hiring', 'Just connecting'] },
 };
-const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES).map(s => [s.id, s]));
+const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES, window.LC_SCENES.styles).map(s => [s.id, s]));
 const LIGHT_LAYOUTS = { luxuryEstate: '#f4efe6', listingShowcase: '#f6f4f0' };
 const DESIGNS = [
   { id: 'original', name: 'Original', tag: 'Flip card · all professions', demo: '', thumb: 'linear-gradient(180deg, #134a33 0%, #06120d 55%, #06120d 70%, #f2c98a 70% 78%, #06120d 78%)' },
@@ -1159,7 +1218,7 @@ class Component extends DCLogic {
     if (light) { r.setProperty('--pageBg', light); r.setProperty('--mainBg', light); document.body.style.background = light; }
     else { r.removeProperty('--pageBg'); r.removeProperty('--mainBg'); document.body.style.background = ''; }
     const st = d.st;
-    ['--lxBg', '--lxInk', '--lxFont', '--lxW', '--lxH', '--lxR1', '--lxR2', '--lsBg', '--lsInk', '--lsCard', '--eBg', '--eInk', '--eAcc', '--eOn', '--eCard'].forEach(v => r.removeProperty(v));
+    ['--lxBg', '--lxInk', '--lxFont', '--lxW', '--lxH', '--lxR1', '--lxR2', '--lsBg', '--lsInk', '--lsCard', '--eBg', '--eInk', '--eAcc', '--eOn', '--eCard', '--scBg', '--scInk', '--scAcc', '--scOn', '--scRing'].forEach(v => r.removeProperty(v));
     if (st && this.layoutOf(d) === st.layout) {
       if (st.layout === 'professional') {
         const P = { '--pBg': st.bg, '--pInk': st.ink, '--pCard': st.card, '--pAcc': st.accent, '--pOn': st.on, '--pFont': st.font, '--pRad': st.rad, '--pTA': st.align, '--pAI': st.align === 'center' ? 'center' : 'flex-start', '--pBoxBg': st.boxed ? st.card : 'transparent', '--pBoxPad': st.boxed ? '16px 18px' : '4px 0' };
@@ -1171,6 +1230,7 @@ class Component extends DCLogic {
         r.setProperty('--lxBg', st.bg); r.setProperty('--lxInk', st.ink); r.setProperty('--lxFont', st.font || "'Cormorant Garamond',serif");
         r.setProperty('--lxW', F[0]); r.setProperty('--lxH', F[1]); r.setProperty('--lxR1', F[2]); r.setProperty('--lxR2', F[3]);
       }
+      else if (st.layout === 'scene') { r.setProperty('--scBg', st.bg); r.setProperty('--scInk', st.ink); r.setProperty('--scAcc', st.accent); r.setProperty('--scOn', st.on); r.setProperty('--scRing', st.ring); }
       else if (st.layout === 'estate') { r.setProperty('--eBg', st.bg); r.setProperty('--eInk', st.ink); r.setProperty('--eAcc', st.accent); r.setProperty('--eOn', st.on); r.setProperty('--eCard', st.card); }
       else { r.setProperty('--lsBg', st.bg); r.setProperty('--lsInk', st.ink); r.setProperty('--lsCard', st.card); }
       r.setProperty('--pageBg', st.bg); r.setProperty('--mainBg', st.bg); document.body.style.background = st.bg; document.documentElement.style.background = st.bg;
@@ -1451,6 +1511,19 @@ class Component extends DCLogic {
   };
   closeQR = () => { this.setState({ qrOpen: false }); this.opener && this.opener.focus && this.opener.focus(); };
 
+  // Scene layout (Personal: Summit, Tide): landscape art from /app/scene-styles.js and a QR code drawn in
+  // the card's own ink with no white box. Show QR still opens the regular dark-on-light code.
+  sceneVals(d, lay) {
+    if (lay !== 'scene' || !d.st || !window.LC_SCENES) return { sceneArt: null, scQrBox: '0 0 1 1', scQrPath: '' };
+    const key = d.st.id + '|' + d.shareUrl;
+    if (this._scKey !== key) {
+      this._scKey = key; let n = 1, path = '';
+      try { const q = window.qrcode(0, 'M'); q.addData(d.shareUrl); q.make(); n = q.getModuleCount(); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (q.isDark(y, x)) path += 'M' + x + ' ' + y + 'h1v1h-1z'; } catch (e) {}
+      this._sc = { sceneArt: React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: window.LC_SCENES.svg(d.st).replace('<svg ', '<svg style="width:100%;height:100%;display:block" ') } }), scQrBox: '0 0 ' + n + ' ' + n, scQrPath: path };
+    }
+    return this._sc;
+  }
+
   qrSvg(url) {
     if (!window.qrcode) return '';
     const q = window.qrcode(0, 'M'); q.addData(url); q.make();
@@ -1498,7 +1571,7 @@ class Component extends DCLogic {
         const ctaHref = bookU || (d.cta && d.cta.url) || '';
         const city = ((d.details || []).find(r => r.maps) || {}).value || '';
         return {
-          isOriginal: lay === 'original', isEstate: lay === 'estate', ePoster: lay === 'estate' && (d.st || {}).mode === 'poster', eList: lay === 'estate' && (d.st || {}).mode === 'list', eBlue: lay === 'estate' && (d.st || {}).mode === 'blueprint', eHome: lay === 'estate' && (d.st || {}).mode === 'home', ...this.uniqVals(d, lay, maps), company: d.company || '', hasCompany: !!d.company, ePhone: d.phoneDisplay || d.phone || '', eEmail: d.email || '', eCity: city || d.city || '', hasCity: !!(city || d.city),
+          isOriginal: lay === 'original', isScene: lay === 'scene', ...this.sceneVals(d, lay), isEstate: lay === 'estate', ePoster: lay === 'estate' && (d.st || {}).mode === 'poster', eList: lay === 'estate' && (d.st || {}).mode === 'list', eBlue: lay === 'estate' && (d.st || {}).mode === 'blueprint', eHome: lay === 'estate' && (d.st || {}).mode === 'home', ...this.uniqVals(d, lay, maps), company: d.company || '', hasCompany: !!d.company, ePhone: d.phoneDisplay || d.phone || '', eEmail: d.email || '', eCity: city || d.city || '', hasCity: !!(city || d.city),
           ...(() => { const c = BIZ_CFG[d.profession] || BIZ_CFG['Real Estate'], p = d.profession; const areaVal = p === 'Healthcare' || p === 'Beauty & Wellness' ? d.hours : p === 'Legal / Finance' ? d.practice : p === 'Home Services' ? d.serviceArea : (city || d.city || '');
             const ig = (d.socials || []).find(s => s.type === 'instagram'), li = (d.socials || []).find(s => s.type === 'linkedin'), wb = (d.socials || []).find(s => s.type === 'website');
             const tileHref = p === 'Beauty & Wellness' ? (ig && ig.url) : p === 'Consultant / Coach' ? (li && li.url) : p === 'Healthcare' ? (d.officeAddress ? maps(d.officeAddress) : (wb && wb.url)) : p === 'Real Estate' || !p ? (d.listingsUrl || (wb && wb.url)) : (wb && wb.url);

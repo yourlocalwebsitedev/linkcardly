@@ -291,6 +291,42 @@ test('estate styles: one shared list, readable text, design families for the pic
   }
 });
 
+test('scene styles (Personal: Summit, Tide): shared list, readable text, families, art and QR', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const read = f => readFile(new URL('../public/app/' + f, import.meta.url), 'utf8');
+  const win = {};
+  runInNewContext(await read('estate-styles.js'), { window: win });
+  runInNewContext(await read('scene-styles.js'), { window: win, encodeURIComponent });
+  const { styles, families, svg, thumb } = win.LC_SCENES;
+  const L = h => { const n = parseInt(h.slice(1, 7), 16), f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * f(n >> 16 & 255) + 0.7152 * f(n >> 8 & 255) + 0.0722 * f(n & 255); };
+  const ratio = (a, b) => { const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const estateIds = new Set(Object.values(win.LC_ESTATE.rows).flat().map(r => r[0]));
+  const ids = new Set();
+  for (const st of styles) {
+    assert.ok(!ids.has(st.id) && !estateIds.has(st.id), 'unique id ' + st.id); ids.add(st.id);
+    assert.equal(st.layout, 'scene');
+    assert.ok(families[st.scene] && st.family.name === families[st.scene], st.id + ' family');
+    assert.ok(ratio(st.ink, st.bg) >= 4.5, st.id + ': text on background');
+    assert.ok(ratio(st.on, st.accent) >= 4.5, st.id + ': Save contact text');
+    assert.match(svg(st), /^<svg [^>]*viewBox="0 0 390 560"/);
+    assert.match(svg(st), new RegExp('stop-color="' + st.bg + '" stop-opacity="0\\.92"'), st.id + ': fades into the card colour');
+    assert.match(thumb(st), /^data:image\/svg\+xml/);
+  }
+  for (const k of Object.keys(families)) { const n = styles.filter(s => s.scene === k).length; assert.ok(n >= 2 && n <= 4, k + ': ' + n + ' colours'); }
+  assert.ok(ids.has('tide-copper'), 'orange and black Tide option');
+  for (const page of ['order.html', 'card.html']) assert.match(await read(page), /<script src="\/app\/scene-styles\.js"><\/script>/, page);
+  const card = await read('card.html');
+  assert.match(card, /BIZ_STYLES, window\.LC_SCENES\.styles\)/, 'card page knows the scene ids');
+  assert.match(card, /<sc-if value="\{\{ isScene \}\}"/);
+  assert.match(card, /<path d="\{\{ scQrPath \}\}" fill="currentColor">/, 'QR drawn in the card ink, no white box');
+  assert.match(card, /q\.isDark\(y, x\)/);
+  const order = await read('order.html');
+  assert.match(order, /BIZ_STYLES, SCENE_STYLES\)/);
+  assert.match(order, /COLOURS\.concat\(SCENE_STYLES\)/, 'scenes listed under Personal');
+  assert.match(order, /thumb: c\.layout === 'scene' \? \{ bg: c\.bg, image: window\.LC_SCENES\.thumb\(c\) \}/);
+});
+
 test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and reduced motion', async () => {
   const { readFile } = await import('node:fs/promises');
   const css = await readFile(new URL('../public/app/components/card-style-controls.css', import.meta.url), 'utf8');

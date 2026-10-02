@@ -22,6 +22,7 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 | Nav, footer, Turnstile site key | `site/site.config.js` | none |
 | Prices | `public/app/order.html` (`PRICING`) | none |
 | Estate card styles (per category, incl. colours of one design) | `public/app/estate-styles.js` | none: `order.html` and `card.html` both load it |
+| Personal scene styles (Summit, Tide) and their landscape art | `public/app/scene-styles.js` | none: `order.html` and `card.html` both load it |
 
 ## Design system
 - One brand across the marketing pages, order flow, editor, preview, payment, dashboard and card pages: cream background, terracotta accent, olive secondary; Caprasimo headings and Figtree text. Use the tokens; never hard-code a brand hex value. Colours inside individual card designs belong to those designs, not the brand.

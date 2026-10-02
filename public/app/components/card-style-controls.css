@@ -139,6 +139,7 @@
 .lcs-thumb{position:relative;display:block;flex:none;overflow:hidden}
 .lcs-thumb__art{position:absolute;left:0;top:0;transform-origin:0 0}
 .lcs-thumb__art>span{position:absolute;display:block}
+.lcs-thumb__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
 .lcs-thumb__dot{position:absolute;left:50%;top:50%;width:32%;height:32%;border-radius:50%;transform:translate(-50%,-50%)}
 
 /* No backdrop blur: the same tones, nearly opaque, so text stays readable */
