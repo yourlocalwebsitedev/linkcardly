@@ -30,7 +30,7 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 ## Architecture rules
 - `src/` is the Worker: `index.js` routes, `routes/` handle requests, `lib/` holds pure helpers, `views/` renders HTML. Keep business logic out of `index.js`.
 - `site/` is build-time source for marketing pages; `public/` is served as-is. Edit generated files only through their source.
-- `public/app/` mirrors the NexBizRise app. Change it only when necessary, keep each change small, and list it in `public/app/README.md`.
+- `public/app/` mirrors the NexBizRise app. Change it only when necessary, keep each change small, and list it in `public/app/README.md`. New UI for it is a reusable component in `public/app/components/` (see ARCHITECTURE.md), not more inline markup.
 - Proxy mode forwards `/api/*` only, without credentials. Don't widen it.
 - Security: pages this repo renders get the enforced CSP; never log edit tokens or personal data; validate all input on the server.
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. Routing and handle reservation follow automatically.

@@ -163,19 +163,63 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   assert.equal(run(''), '');
 });
 
-test('order app, phone Preview step: floating controls instead of a footer bar; desktop unchanged', async () => {
+test('order app, phone Preview step: uses the CardStyleControls component; desktop keeps its panel', async () => {
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
-  const phone = html.slice(html.indexOf('const docH = S.pvDocH'), html.indexOf("toggle: () => this.setState(s => ({ pvOpen"));
-  // Closed: no background and taps pass through; open: the same box becomes the glass panel.
-  assert.match(phone, /barBg: open \? 'rgba\([^)]*\)' : 'transparent'/);
-  assert.match(phone, /barPe: open \? 'auto' : 'none'/);
-  assert.ok(!/barPad: open|barW: open|barBottom: open/.test(phone), 'controls keep one position whether the picker is open or closed');
-  assert.match(html, /barBg: 'var\(--bg\)', barPe: 'auto'/, 'desktop keeps its panel');
-  // Picker closed by default on phones, always shown on desktop.
-  assert.match(html, /swShow: S\.vw >= 960 \|\| S\.swOpen === true/);
-  // Next is an icon-only terracotta button with an accessible name.
-  assert.match(html, /onClick="\{\{ next \}\}" disabled="\{\{ busy \}\}" aria-label="\{\{ pv\.nextText \}\}"[^>]*background:var\(--accent\)/);
-  assert.match(html, /aria-controls="lc-styles"/);
-  assert.ok(!/handleTouchStart/.test(html), 'drag handle removed');
+  const use = html.match(/<x-import component-from-global-scope="LcCardStyleControls"[^>]*>/);
+  assert.ok(use, 'phone preview renders the component');
+  for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'open="{{ scs.open }}"', 'on-toggle="{{ scs.toggle }}"', 'on-select="{{ scs.select }}"', 'on-next="{{ next }}"', 'next-label="{{ pv.nextText }}"']) assert.ok(use[0].includes(a), a);
+  // Props must not collide with the runtime's host-style names or its style-* pseudo-class prefix.
+  for (const [, name] of use[0].matchAll(/\s([a-z-]+)="/g)) assert.ok(!/^(position|left|right|top|bottom|inset|width|height|z-index|transform|style-.*)$/.test(name), name);
+  assert.match(html, /<sc-if value="\{\{ pv\.desktop \}\}"[^>]*><div ref="\{\{ barRef \}\}"/, 'desktop bar only on desktop');
+  assert.ok(!/pillBlocks|swPillBd|handleTouchStart|lc-rise/.test(html), 'no phone-only leftovers in the shared bar');
+});
+
+test('CardStyleControls: renders trigger, next button, selector and options from props alone', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
+  // Minimal React stand-in: records the element tree; hooks return stable refs.
+  const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {} };
+  const doc = { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}), currentScript: { src: 'https://x.test/app/components/card-style-controls.js' } };
+  const win = { React };
+  runInNewContext(src, { window: win, document: doc, URL, Set });
+  const C = win.LcCardStyleControls;
+  assert.equal(typeof C, 'function');
+  for (const k of ['StyleTrigger', 'NextButton', 'StyleSelector', 'StyleOption']) assert.equal(typeof C.parts[k], 'function', k);
+  const calls = [];
+  const options = [{ id: 'a', name: 'Skyline', group: 'Personal', thumb: { bg: '#000', blocks: [{ l: '0px', t: '0px', w: '10px', h: '10px', r: '0', bg: '#fff' }] } },
+    { id: 'b', name: 'Emerald', group: 'Personal', thumb: { bg: '#030', dot: '#fff' } }, { id: 'c', name: 'Dusk', group: 'Luxury', thumb: { bg: '#123' } }];
+  const render = node => { if (!node || typeof node !== 'object') return node; if (typeof node.type === 'function') return render(node.type({ ...node.props, children: node.children })); return { ...node, children: node.children.map(render) }; };
+  const all = (n, out = []) => { if (n && typeof n === 'object') { out.push(n); n.children.forEach(c => all(c, out)); } return out; };
+  const tree = render(el(C, { options, value: 'b', open: false, onToggle: () => calls.push('toggle'), onSelect: id => calls.push('select:' + id), onNext: () => calls.push('next'), nextLabel: 'Continue to payment' }));
+  const nodes = all(tree), cls = c => nodes.filter(n => String(n.props.className || '').split(' ').includes(c));
+  const trigger = cls('lcs-trigger')[0], next = cls('lcs-next')[0], selector = cls('lcs-selector')[0];
+  assert.equal(trigger.props['aria-expanded'], 'false');
+  assert.equal(trigger.props['aria-controls'], selector.props.id);
+  assert.match(trigger.props['aria-label'], /Current style: Emerald/);
+  assert.equal(next.props['aria-label'], 'Continue to payment');
+  assert.ok(!selector.props.className.includes('is-open'));
+  const opts = cls('lcs-option');
+  assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true', 'false']);
+  assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0, -1], 'roving tabindex');
+  assert.equal(cls('lcs-selector__sep').length, 1, 'divider between collections');
+  trigger.props.onClick(); next.props.onClick(); opts[2].props.onClick();
+  assert.deepEqual(calls, ['toggle', 'next', 'select:c']);
+  const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
+  assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs-selector ')).props.className.includes('is-open'));
+  assert.equal(open.find(n => n.props.className === 'lcs-next').props.disabled, true);
+});
+
+test('CardStyleControls CSS: spec sizes, safe area, tokens and reduced motion', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('../public/app/components/card-style-controls.css', import.meta.url), 'utf8');
+  assert.match(css, /bottom:max\(24px,calc\(16px \+ env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(css, /\.lcs-trigger\{width:160px;height:56px;[^}]*border-radius:28px/);
+  assert.match(css, /\.lcs-next\{width:56px;height:56px;[^}]*border-radius:50%/);
+  assert.match(css, /\.lcs-selector\{[^}]*min-height:120px;padding:12px;[^}]*backdrop-filter:blur\(12px\)/);
+  assert.match(css, /--lcs-cream:var\(--lc-bg/);
+  assert.match(css, /--lcs-accent:var\(--a600/);
+  assert.match(css, /prefers-reduced-motion:reduce/);
 });

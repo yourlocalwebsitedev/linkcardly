@@ -21,6 +21,7 @@ linkcardly/
 │   └── lib/               Pure helpers: handles, icons, themes, vcard, sanitize, qr, supabase, turnstile
 ├── public/                Served as-is
 │   ├── app/               Vendored NexBizRise order and card app (see app/README.md)
+│   │   └── components/    Linkcardly UI components for the app (e.g. card-style-controls.js + .css)
 │   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing), card.css (native card)
 │   ├── assets/js/         site.js (marketing behaviour), card.js (native card), config.js; generated: catalogue.js, icons.js, rules.js
 │   ├── assets/img/brand/  favicon companions, OG image
@@ -42,10 +43,12 @@ linkcardly/
 - Every request and failure is logged as one JSON line. Never log edit tokens or personal data.
 - Brand tokens live only in `assets/css/tokens.css` (`--lc-*` base colours, `--n`/`--a`/`--s` ramps, fonts, shadows). `site.css` maps them to its roles (`--bg`, `--accent`, …) and adds components and utilities (`.stack`, `.row`, `.grid` with `--g` and `--min`, `.page`/`.page-head` for text pages). `app/skin.css` maps the vendored app's own variables to the same tokens. Mobile first: base styles target 390 px, `min-width` queries widen.
 - Don't refactor `public/app/`. It mirrors NexBizRise so updates can be copied over.
+- New UI for the app goes in `public/app/components/<name>.js` (+ `.css`), not inline in `order.html` or `card.html`: a React component exposed on `window` (no hyphen in the name, plain `React.createElement`, no JSX) with a props-only API documented in the file header, styled with classes that use the brand tokens. The app renders it with `<x-import component-from-global-scope="Name" from="/app/components/<name>.js" prop-name="{{ path }}">`. Props are kebab-case attributes (the runtime turns `on-select` into `onSelect`); a whole `{{ path }}` passes the raw value, so arrays and callbacks work; avoid the names `position`, `left`, `right`, `top`, `bottom`, `inset`, `width`, `height`, `z-index`, `transform` and the `style-` prefix.
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. The Worker route and the handle reservation follow from the registry.
 
 ## Known debt
 - `site/pages/home.html`, `designs.html` and `teams.html` still use one-off inline styles (layout tweaks such as `--g` gaps). Move a pattern into `site.css` when it repeats.
 - The vendored app (`public/app/`) has its own markup and inline styles. `skin.css` aligns its colours and type with the tokens, but its components (buttons, inputs, cards) are not the `site.css` components. The real fix is native order, editor and card pages built on `site.css`, which is part of DEF-28 (native parity).
 - `public/app/card.html` and `order.html` are 270 KB and 180 KB single files, and the app compiles JSX in the browser (Babel, 3 MB). Fine to keep while it's vendored; a native rebuild should precompile.
+- The Motion Card plan preview on the Plan step points at `/portrait.gif`, which isn't in the repo (inherited from NexBizRise), so that preview is an empty tile. Needs a licensed moving-portrait sample in `public/assets/img/samples/`.
 - Three Google Fonts requests (marketing layout, `skin.css` `@import`, the app's own link). Self-hosting the two brand fonts would remove a third-party dependency and the render-blocking `@import`.

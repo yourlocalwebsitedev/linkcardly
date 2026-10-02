@@ -45,7 +45,7 @@ export const APP_CSP = [
   "img-src 'self' data: blob: https:",
   "media-src 'self' data: blob: https:",
   "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://lumberjack.razorpay.com",
-  "frame-src https://challenges.cloudflare.com https://api.razorpay.com https://checkout.razorpay.com",
+  "frame-src 'self' https://challenges.cloudflare.com https://api.razorpay.com https://checkout.razorpay.com",
   "worker-src 'self' blob:",
   "frame-ancestors 'self'",
   "base-uri 'self'",
