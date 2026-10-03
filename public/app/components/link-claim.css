@@ -1,0 +1,31 @@
+/* LinkClaim (link-claim.js). The "Your link" field on the Your card step. Brand tokens from
+   /assets/css/tokens.css; no colours of its own except white for the input. */
+.lcl{display:flex;flex-direction:column;gap:8px;font-family:var(--font-b,Figtree,system-ui,sans-serif);color:var(--lc-text,#201e1d)}
+.lcl *{box-sizing:border-box}
+.lcl__note{align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:999px;background:var(--lc-surface);font-size:12.5px;font-weight:700;color:var(--n800)}
+.lcl__note-dot{width:18px;height:18px;border-radius:50%;background:var(--n100);color:var(--a700);display:grid;place-items:center}
+.lcl__label{font-size:14px;font-weight:600}
+.lcl__field{height:56px;padding:0 12px 0 14px;border-radius:16px;border:1px solid var(--n300);background:#fff;display:flex;align-items:center;gap:2px;font-size:16px;transition:border-color .15s,box-shadow .15s}
+.lcl__field:focus-within{border-color:var(--a600);box-shadow:0 0 0 4px rgba(200,85,45,.14)}
+.lcl__field.is-ok{border:2px solid var(--lc-terracotta);box-shadow:0 0 0 4px rgba(200,85,45,.14)}
+.lcl__field.is-bad{border:2px solid var(--lc-danger);box-shadow:0 0 0 4px rgba(161,40,28,.1)}
+.lcl__prefix{flex:none;color:var(--n700)}
+.lcl__input{flex:1;min-width:0;height:100%;border:0;outline:0;padding:0;background:transparent;color:var(--lc-text);font:700 16px var(--font-b,Figtree,system-ui,sans-serif)}
+.lcl__mark{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+.lcl__mark--ok{background:linear-gradient(160deg,var(--a400),var(--lc-terracotta) 55%,var(--a700));color:#fff}
+.lcl__mark--bad{background:rgba(161,40,28,.1);color:var(--lc-danger)}
+.lcl__spin{flex:none;width:20px;height:20px;border-radius:50%;border:2.5px solid var(--n300);border-top-color:var(--lc-text);animation:lclSpin .8s linear infinite}
+@keyframes lclSpin{to{transform:rotate(360deg)}}
+.lcl__status{display:flex;flex-direction:column;gap:10px}
+.lcl__status:empty{display:none}
+.lcl__line{margin:0;font-size:14px;line-height:1.45;color:var(--n800);overflow-wrap:anywhere}
+.lcl__line--muted{color:var(--n700)}
+.lcl__ok{color:var(--a700)}
+.lcl__bad{color:var(--lc-danger)}
+.lcl__alts{display:flex;flex-wrap:wrap;gap:8px}
+.lcl__alt{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--n300);background:var(--n100);color:var(--lc-text);font:700 14px var(--font-b,Figtree,system-ui,sans-serif);cursor:pointer}
+.lcl__alt:hover{border-color:var(--lc-text)}
+.lcl__alt:focus-visible,.lcl__input:focus-visible{outline:2px solid var(--lc-text);outline-offset:2px}
+.lcl__input:focus-visible{outline:0}
+.lcl__hint{margin:0;font-size:12.5px;color:var(--n700)}
+@media (prefers-reduced-motion:reduce){.lcl__spin{animation-duration:2.4s}}

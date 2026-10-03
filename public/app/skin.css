@@ -7,7 +7,7 @@
 nav[aria-label="Breadcrumb"]{display:none!important}
 
 html[data-theme="light"],html[data-skin="card"],html[data-skin="card"][data-theme="light"]{
-  --gold:var(--a700)!important;--mint:var(--s100)!important;--mint-2:var(--s200)!important;
+  --gold:var(--a700)!important;--mint:var(--a100)!important;--mint-2:var(--a200)!important;
   --sand:var(--lc-surface)!important;--sand-2:var(--n300)!important;--sand-ink:var(--a800)!important;
   --bg:var(--lc-bg)!important;--bg-2:var(--lc-surface)!important;--surface:var(--n100)!important;--surface-1:var(--n100)!important;--surface-hi:var(--n200)!important;
   --ink:var(--lc-text)!important;--ink-2:var(--n900)!important;--ink-3:var(--n800)!important;--body:var(--n800)!important;
@@ -25,3 +25,10 @@ html[data-theme="light"] body{background:var(--lc-bg)!important}
 html body [data-screen-label="Order Card"] h1,html body [data-screen-label="Order Card"] h2{font-family:var(--font-h)!important;font-weight:400!important;letter-spacing:-.01em!important}
 [data-screen-label="Order Card"] h3{font-weight:700!important;letter-spacing:-.01em!important}
 header[style*="position:sticky"]{font-family:var(--font-b)!important}
+
+/* Order dock (Plan, Your card, Payment): terracotta glass primary button and a glass back button,
+   the same button system as the card preview controls. order.html marks them .lc-cta and .lc-back. */
+[data-screen-label="Order Card"] .lc-cta{border:1px solid rgba(255,255,255,.45)!important;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 50%),linear-gradient(160deg,var(--a400) 0%,var(--lc-terracotta) 55%,var(--a700) 100%)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 6px rgba(120,40,10,.35),0 8px 22px rgba(200,85,45,.38)!important}
+[data-screen-label="Order Card"] .lc-cta:disabled{opacity:.7}
+[data-screen-label="Order Card"] .lc-back{border:1px solid rgba(255,255,255,.8)!important;background:linear-gradient(160deg,rgba(255,255,255,.82) 0%,rgba(255,255,255,.56) 60%,rgba(255,255,255,.7) 100%)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(46,43,37,.16)!important}
+[data-screen-label="Order Card"] :is(.lc-cta,.lc-back):focus-visible{outline:2px solid var(--lc-text);outline-offset:3px}

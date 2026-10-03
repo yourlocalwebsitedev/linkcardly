@@ -152,7 +152,9 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
   assert.match(html, /<script src="\/assets\/js\/rules\.js"><\/script>/);
-  assert.match(html, /uniqueSlug\(claimedSlug\(\) \|\| autoSlug\(d\)\)/);
+  // The claimed name feeds the "Your link" field (handleOf), which the order then uses.
+  assert.match(html, /claimedSlug\(\) \|\| nameSlug\(S\.d\)/);
+  assert.match(html, /let slug = this\.handleOf\(S\);/);
   // Run the helper as the browser would.
   const src = html.match(/const slugify = [^\n]+/)[0] + '\n' + html.match(/const claimedSlug = [^\n]+/)[0];
   const run = (search, reserved = ['create']) => new Function('location', 'window', 'URLSearchParams', src + '\nreturn claimedSlug();')({ search }, { LC_RULES: { reserved } }, URLSearchParams);
@@ -181,7 +183,7 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
   // Minimal React stand-in: records the element tree; hooks return stable refs.
   const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
-  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {} };
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {}, useState: v => [v, () => {}] };
   const doc = { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}), currentScript: { src: 'https://x.test/app/components/card-style-controls.js' } };
   const win = { React };
   runInNewContext(src, { window: win, document: doc, URL, Set });
@@ -203,22 +205,128 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   assert.equal(selector.props['aria-hidden'], 'true', 'closed selector is hidden from assistive tech');
   assert.ok(!cls('lcs')[0].props.className.includes('is-open'));
   const opts = cls('lcs-option');
-  assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true', 'false']);
-  assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0, -1], 'roving tabindex');
-  assert.equal(cls('lcs-selector__sep').length, 1, 'divider between collections');
-  trigger.props.onClick(); next.props.onClick(); opts[2].props.onClick();
-  assert.deepEqual(calls, ['toggle', 'next', 'select:c']);
+  assert.deepEqual(opts.map(o => o.props['aria-checked']), ['false', 'true']);
+  assert.deepEqual(opts.map(o => o.props.tabIndex), [-1, 0], 'roving tabindex');
+  // Several collections: one tab each, and the row shows only the current style's collection.
+  assert.deepEqual(cls('lcs-tab').map(t => t.props['data-group']), ['Personal', 'Luxury']);
+  assert.equal(cls('lcs-tab').find(t => t.props['aria-selected'] === 'true').props['data-group'], 'Personal');
+  assert.equal(cls('lcs-trigger__sub')[0].children[0], 'Personal', 'trigger names the collection');
+  trigger.props.onClick(); next.props.onClick(); opts[0].props.onClick();
+  assert.deepEqual(calls, ['toggle', 'next', 'select:a']);
   const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
   assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('is-open'));
-  assert.equal(open.find(n => n.props.className === 'lcs-selector').props['aria-hidden'], undefined);
+  assert.equal(open.find(n => String(n.props.className || '').split(' ').includes('lcs-selector')).props['aria-hidden'], undefined);
   assert.ok(open.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--dark'), '#000 card: dark glass');
-  assert.equal(open.find(n => n.props.className === 'lcs-selector__title').children[0], 'Personal styles');
-  assert.equal(open.find(n => n.props.className === 'lcs-selector__count').children[0], '1 of 2');
   assert.ok(open.find(n => n.props.className === 'lcs__dim'), 'dim layer behind the open sheet');
   assert.equal(C.toneOf('#F4F1EC'), 'light'); assert.equal(C.toneOf('#14213D'), 'dark'); assert.equal(C.toneOf('linear-gradient(red,blue)'), 'dark');
   const light = all(render(el(C, { options: [{ id: 'l', name: 'Yard Sign', thumb: { bg: '#fff' } }], value: 'l', onToggle() {}, onSelect() {}, onNext() {} })));
   assert.ok(light.find(n => String(n.props.className || '').startsWith('lcs ')).props.className.includes('lcs--light'));
   assert.equal(open.find(n => String(n.props.className || '').split(' ').includes('lcs-next')).props.disabled, true);
+});
+
+test('CardStyleControls: colour variants collapse into one tile; CardColourRail lists them', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
+  const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {}, useState: v => [v, () => {}] };
+  const win = { React };
+  runInNewContext(src, { window: win, document: { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}) }, URL, Set });
+  const render = node => { if (!node || typeof node !== 'object') return node; if (typeof node.type === 'function') return render(node.type({ ...node.props, children: node.children })); return { ...node, children: node.children.map(render) }; };
+  const all = (n, out = []) => { if (n && typeof n === 'object') { out.push(n); n.children.forEach(c => all(c, out)); } return out; };
+  const fam = { id: 'personal', name: 'Classic' };
+  const options = [
+    { id: 'forest', name: 'Forest', group: 'Personal', family: fam, thumb: { bg: '#06120d', dot: '#f2c98a' } },
+    { id: 'teal', name: 'Lagoon', group: 'Personal', family: fam, thumb: { bg: '#061618', dot: '#74d3c6' } },
+    { id: 'lux-marble', name: 'Marble', group: 'Luxury', thumb: { bg: '#f7f6f3', dot: '#9c8a6e' } }];
+  const nodes = all(render(el(win.LcCardStyleControls, { options, value: 'teal', open: true, onToggle() {}, onSelect() {}, onNext() {} })));
+  const cls = c => nodes.filter(n => String(n.props.className || '').split(' ').includes(c));
+  assert.equal(cls('lcs-option').length, 1, 'one tile for the family');
+  assert.equal(cls('lcs-option__label')[0].children[0], 'Classic');
+  assert.equal(cls('lcs-option')[0].props['data-id'], 'teal', 'the tile stands for the selected colour');
+  assert.ok(cls('lcs-selector__hint').length, 'hint points to the colour strip');
+  const rail = all(render(el(win.LcCardColourRail, { options, value: 'teal', onSelect() {} })));
+  const sw = rail.filter(n => String(n.props.className || '').includes('lcr__swatch'));
+  assert.deepEqual(sw.map(n => n.props['aria-label']), ['Forest', 'Lagoon']);
+  assert.deepEqual(sw.map(n => n.props['aria-checked']), ['false', 'true']);
+  assert.ok(rail[0].props.className.includes('lcs--dark'));
+  assert.equal(render(el(win.LcCardColourRail, { options, value: 'lux-marble' })), null, 'no strip for styles without colours');
+});
+
+test('order app: Personal colours are one family; the phone preview shows the colour strip', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /cl\.id === 'personal' \? \{ family: PERSONAL_FAMILY \}/);
+  assert.match(html, /<x-import component-from-global-scope="LcCardColourRail" from="\/app\/components\/card-style-controls\.js"/);
+  assert.match(html, /aria-label="Preview seasonal theme" style="position:absolute;top:\{\{ pv\.seaTop \}\};left:\{\{ pv\.seaLeft \}\}/);
+});
+
+test('estate styles: one shared list, readable text, design families for the picker', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const read = f => readFile(new URL('../public/app/' + f, import.meta.url), 'utf8');
+  const win = {};
+  runInNewContext(await read('estate-styles.js'), { window: win });
+  const { rows, families } = win.LC_ESTATE;
+  // Both app pages load the shared list instead of keeping their own copy.
+  for (const page of ['order.html', 'card.html']) {
+    const html = await read(page);
+    assert.match(html, /<script src="\/app\/estate-styles\.js"><\/script>/, page);
+    assert.match(html, /const ESTATE_ROWS = window\.LC_ESTATE\.rows;/, page);
+    assert.ok(!/\['re-poster', 'Skyline'/.test(html), page + ' has no copy of the rows');
+  }
+  const L = h => { const n = parseInt(h.slice(1, 7), 16), f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * f(n >> 16 & 255) + 0.7152 * f(n >> 8 & 255) + 0.0722 * f(n & 255); };
+  const ratio = (a, b) => { const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const ids = new Set();
+  for (const [k, list] of Object.entries(rows)) for (const [id, , mode, bg, ink, accent, on] of list) {
+    assert.ok(!ids.has(id), 'unique id ' + id); ids.add(id);
+    assert.ok(ratio(ink, bg) >= 4.5, id + ': text on background');
+    // Categories split into designs and colours keep every button readable too.
+    if (families[k]) assert.ok(ratio(on, accent) >= 4.5, id + ': button text');
+  }
+  // Ids already stored on customers' cards keep working.
+  for (const id of ['re-poster', 're-sign', 're-list', 're-home', 're-poster-sage', 're-list-stone', 're-home-coast', 'hs-poster', 'hs-ticket', 'hs-list', 'hs-home-red', 'hs-poster-orange', 'hs-poster-blue', 'hs-list-green']) assert.ok(ids.has(id), id);
+  // Every family design has 2 to 4 colours.
+  for (const [k, fam] of Object.entries(families)) for (const mode of Object.keys(fam)) {
+    const n = rows[k].filter(r => r[2] === mode).length;
+    assert.ok(n >= 2 && n <= 4, k + ' ' + mode + ': ' + n + ' colours');
+  }
+});
+
+test('scene styles (Personal: Summit, Tide): shared list, readable text, families, art and QR', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const read = f => readFile(new URL('../public/app/' + f, import.meta.url), 'utf8');
+  const win = {};
+  runInNewContext(await read('estate-styles.js'), { window: win });
+  runInNewContext(await read('scene-styles.js'), { window: win, encodeURIComponent });
+  const { styles, families, svg, thumb } = win.LC_SCENES;
+  const L = h => { const n = parseInt(h.slice(1, 7), 16), f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }; return 0.2126 * f(n >> 16 & 255) + 0.7152 * f(n >> 8 & 255) + 0.0722 * f(n & 255); };
+  const ratio = (a, b) => { const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const estateIds = new Set(Object.values(win.LC_ESTATE.rows).flat().map(r => r[0]));
+  const ids = new Set();
+  for (const st of styles) {
+    assert.ok(!ids.has(st.id) && !estateIds.has(st.id), 'unique id ' + st.id); ids.add(st.id);
+    assert.equal(st.layout, 'scene');
+    assert.ok(families[st.scene] && st.family.name === families[st.scene], st.id + ' family');
+    assert.ok(ratio(st.ink, st.bg) >= 4.5, st.id + ': text on background');
+    assert.ok(ratio(st.on, st.accent) >= 4.5, st.id + ': Save contact text');
+    assert.match(svg(st), /^<svg [^>]*viewBox="0 0 390 560"/);
+    assert.match(svg(st), new RegExp('stop-color="' + st.bg + '" stop-opacity="0\\.92"'), st.id + ': fades into the card colour');
+    assert.match(thumb(st), /^data:image\/svg\+xml/);
+  }
+  for (const k of Object.keys(families)) { const n = styles.filter(s => s.scene === k).length; assert.ok(n >= 2 && n <= 4, k + ': ' + n + ' colours'); }
+  assert.ok(ids.has('tide-copper'), 'orange and black Tide option');
+  for (const page of ['order.html', 'card.html']) assert.match(await read(page), /<script src="\/app\/scene-styles\.js"><\/script>/, page);
+  const card = await read('card.html');
+  assert.match(card, /BIZ_STYLES, window\.LC_SCENES\.styles\)/, 'card page knows the scene ids');
+  assert.match(card, /<sc-if value="\{\{ isScene \}\}"/);
+  assert.match(card, /<path d="\{\{ scQrPath \}\}" fill="currentColor">/, 'QR drawn in the card ink, no white box');
+  assert.match(card, /q\.isDark\(y, x\)/);
+  const order = await read('order.html');
+  assert.match(order, /BIZ_STYLES, SCENE_STYLES\)/);
+  assert.match(order, /COLOURS\.concat\(SCENE_STYLES\)/, 'scenes listed under Personal');
+  assert.match(order, /thumb: c\.layout === 'scene' \? \{ bg: c\.bg, image: window\.LC_SCENES\.thumb\(c\) \}/);
 });
 
 test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and reduced motion', async () => {
@@ -238,4 +346,60 @@ test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and red
   assert.match(css, /--lcs-accent:var\(--lc-terracotta/);
   assert.match(css, /@supports not/, 'opaque fallback without backdrop-filter');
   assert.match(css, /prefers-reduced-motion:reduce/);
+});
+
+test('order app "Your link": rules, name suggestion and free alternatives', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  const { HANDLE_RE } = await import('../src/lib/handles.js');
+  const line = name => html.match(new RegExp('const ' + name + ' = [^\\n]+'))[0];
+  const src = ['slugify', 'LC_RULE', 'handleIssue', 'nameSlug', 'handleAlts'].map(line).join('\n');
+  const lib = new Function('window', src + '\nreturn { handleIssue, nameSlug, handleAlts };')({ LC_RULES: { reserved: ['create', 'admin'], pattern: HANDLE_RE.source } });
+  assert.equal(lib.handleIssue('ryancollins'), '');
+  assert.equal(lib.handleIssue('ryan-collins'), '');
+  assert.match(lib.handleIssue(''), /Choose/);
+  assert.match(lib.handleIssue('ab'), /at least 3/);
+  assert.match(lib.handleIssue('-ryan'), /letters, numbers and dashes/);
+  assert.match(lib.handleIssue('ryan--c'), /letters, numbers and dashes/);
+  assert.match(lib.handleIssue('ryan.c'), /letters, numbers and dashes/, 'legacy links have no dots');
+  assert.match(lib.handleIssue('admin'), /reserved/);
+  const d = { firstName: 'Ryan', lastName: "O'Collins" };
+  assert.equal(lib.nameSlug(d), 'ryanocollins');
+  const alts = lib.handleAlts('ryanocollins', d);
+  assert.ok(alts.length >= 3 && !alts.includes('ryanocollins'));
+  assert.ok(alts.every(a => lib.handleIssue(a) === '' && a.length <= 30));
+  assert.ok(alts.includes('ryan-o-collins'));
+});
+
+test('order done screen and link field are components, and the share link uses the claimed name', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /component-from-global-scope="LcOrderDone" from="\/app\/components\/order-done\.js"/);
+  assert.match(html, /component-from-global-scope="LcLinkClaim" from="\/app\/components\/link-claim\.js"/);
+  assert.match(html, /urlOf\(d\) \{ return CARD_BASE \+ '\/' \+ \(d\.slug \|\|/);
+  assert.doesNotMatch(html, /#56633F|#3D472B.*POPULAR/, 'no olive in the step tabs or plan badge');
+  for (const f of ['order-done.js', 'order-done.css', 'link-claim.js', 'link-claim.css']) await readFile(new URL('../public/app/components/' + f, import.meta.url), 'utf8');
+});
+
+test('proxy keeps only intended database messages in error responses', async () => {
+  const { cleanError } = await import('../src/routes/proxy.js');
+  const mk = (b, s = 400) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } });
+  assert.deepEqual(await (await cleanError(mk({ code: 'P0001', details: null, hint: null, message: 'link taken' }))).json(), { message: 'link taken' });
+  const leak = await cleanError(mk({ code: '23505', details: 'Key (slug)=(x) already exists.', hint: null, message: 'duplicate key value violates unique constraint "cards_slug_key"' }, 409));
+  assert.equal(leak.status, 409);
+  assert.deepEqual(await leak.json(), { message: 'Something went wrong. Please try again.' });
+  assert.deepEqual(await (await cleanError(mk({ message: 'forbidden' }, 403))).json(), { message: 'forbidden' });
+  const html = await cleanError(new Response('<h1>x</h1>', { status: 502, headers: { 'Content-Type': 'text/html' } }));
+  assert.equal(await html.text(), '<h1>x</h1>');
+});
+
+test('card page preview only listens to its own order page', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const card = await readFile(new URL('../public/app/card.html', import.meta.url), 'utf8');
+  const order = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(card, /get\('preview'\) && window\.parent !== window/);
+  assert.match(card, /ev\.origin !== location\.origin \|\| ev\.source !== window\.parent/);
+  assert.match(card, /bookingUrl: safeUrl\(x\.booking_url\)/);
+  assert.doesNotMatch(order, /postMessage\(\{ type: 'nbr-preview', row: r \}, '\*'\)/);
+  assert.match(order, /localStorage\.setItem\('nbr-pay', JSON\.stringify\(\{ \.\.\.base, tok: '' \}\)\)/);
 });

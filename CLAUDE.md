@@ -21,6 +21,8 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 | QR generator | `public/app/qrcode.js` | `src/lib/qrcode.gen.js` |
 | Nav, footer, Turnstile site key | `site/site.config.js` | none |
 | Prices | `public/app/order.html` (`PRICING`) | none |
+| Estate card styles (per category, incl. colours of one design) | `public/app/estate-styles.js` | none: `order.html` and `card.html` both load it |
+| Personal scene styles (Summit, Tide) and their landscape art | `public/app/scene-styles.js` | none: `order.html` and `card.html` both load it |
 
 ## Design system
 - One brand across the marketing pages, order flow, editor, preview, payment, dashboard and card pages: cream background, terracotta accent, olive secondary; Caprasimo headings and Figtree text. Use the tokens; never hard-code a brand hex value. Colours inside individual card designs belong to those designs, not the brand.
@@ -36,4 +38,4 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. Routing and handle reservation follow automatically.
 
 ## Commands
-`npm test` (build + all suites) · `npm run dev` (http://localhost:8787) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright)
+`npm test` (build + all suites) · `npm run dev` (http://localhost:8787) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright) · `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs` (order flow end to end at 390 × 844 with a mocked backend: claim, link checks, order, done screen) · `BASE=http://127.0.0.1:8787 node test/e2e/production.mjs` (production E2E: lifecycle, preview and card actions, edit link, customers A/B authorization, server-side activation, failures, security; real SQL in PGlite; report in `test/e2e/report/`; payments listed as not tested until they're integrated)

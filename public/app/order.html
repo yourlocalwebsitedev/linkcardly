@@ -24,8 +24,15 @@
 <script src="/app/vendor/resources.js"></script>
 <script src="/assets/js/rules.js"></script>
 <script src="/app/support.js"></script>
+<script src="/app/estate-styles.js"></script>
+<script src="/app/scene-styles.js"></script>
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/app/skin.css">
+<!-- Linkcardly: load the confirmation screen and "Your link" field up front, so a dropped connection at the moment
+     of ordering can't leave the confirmation unstyled. The components skip loading these again (same ids). -->
+<link rel="stylesheet" id="lc-order-done-css" href="/app/components/order-done.css">
+<link rel="stylesheet" id="lc-link-claim-css" href="/app/components/link-claim.css">
+<link rel="preload" as="script" href="/app/components/order-done.js">
 </head>
 <body>
 <x-dc>
@@ -116,7 +123,7 @@ select option{background:var(--surface);color:var(--ink-2);}
                 <span style="display:flex;align-items:center;gap:10px;">
                   <span style="font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap;">{{ p.name }}</span>
                   <span style="flex:1;"></span>
-                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--mint-2);color:#3D472B;font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
+                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--btn);color:var(--btn-ink);font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
                   <span aria-hidden="true" style="width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid {{ p.radioRing }};display:grid;place-items:center;"><span style="width:12px;height:12px;border-radius:50%;background:var(--accent);opacity:{{ p.radioDot }};"></span></span>
                 </span>
                 <span style="display:flex;gap:12px;align-items:flex-start;">
@@ -237,6 +244,7 @@ select option{background:var(--surface);color:var(--ink-2);}
               </div>
             </sc-for>
           </div>
+          <sc-if value="{{ showLinkClaim }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="LcLinkClaim" from="/app/components/link-claim.js" value="{{ lc.value }}" status="{{ lc.status }}" message="{{ lc.message }}" alts="{{ lc.alts }}" from-home="{{ lc.fromHome }}" error="{{ lc.error }}" on-change="{{ lc.onChange }}" on-pick="{{ lc.onPick }}" hint-size="100%,150px"></x-import></sc-if>
           <sc-if value="{{ isMotionPlan }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);">
             <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="min-height:48px;padding:0;border:0;background:transparent;color:var(--ink);font:inherit;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;cursor:pointer;">
@@ -274,7 +282,7 @@ select option{background:var(--surface);color:var(--ink-2);}
               </span>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:17px;font-weight:800;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:14px;color:var(--muted);">1 year</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:17px;font-weight:800;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:14px;color:var(--muted);">{{ payLinkLine }}</span></div>
                   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span style="font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);">{{ subtotal }}</span><sc-if value="{{ payHasWas }}"><s style="font-size:13px;color:var(--faint);">{{ payWas }}</s></sc-if></div>
                 </div>
                 <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">
@@ -284,10 +292,10 @@ select option{background:var(--surface);color:var(--ink-2);}
             </div>
             <sc-if value="{{ hasCoupon }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2);">Coupon <span style="padding:2px 8px;border-radius:6px;background:rgba(var(--acc-rgb),0.1);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:0.04em;">{{ couponCode }}</span></span><span style="font-size:15px;font-weight:700;color:var(--accent);">− {{ couponOff }}</span></div></sc-if>
             <sc-if value="{{ hasGst }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="font-size:15px;color:var(--ink-2);">GST (18%)</span><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ gst }}</span></div></sc-if>
-            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--mint);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#3D472B;">{{ total }}</span></div>
+            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--bg-2);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#3D472B;">{{ total }}</span></div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--mint);">
-            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint-2);color:#3D472B;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);">
+            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:12px;background:var(--bg-2);color:var(--ink);display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
             <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:800;color:var(--ink);">{{ secureTitle }}</span><span style="font-size:13.5px;color:var(--ink-3);">{{ secureSub }}</span></span>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;">
@@ -308,9 +316,9 @@ select option{background:var(--surface);color:var(--ink-2);}
 
         <sc-if value="{{ fb.fixed }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;height:{{ fb.space }};margin-top:-20px;"></div></sc-if>
         <div ref="{{ formBarRef }}" style="position:{{ fb.pos }};left:0;right:0;bottom:0;z-index:40;margin:{{ fb.margin }};padding:{{ fb.pad }};background:var(--bg);border-top:1px solid rgba(var(--fg-rgb),0.06);border-radius:{{ fb.radius }};box-shadow:0 -14px 18px -14px rgba(16,24,32,0.22);display:flex;align-items:center;gap:12px;">
-          <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" style="flex:1 1 0;min-width:0;min-height:54px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>{{ backLabel }}</button></sc-if>
+          <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" class="lc-back" onClick="{{ back }}" style="flex:1 1 0;min-width:0;min-height:54px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>{{ backLabel }}</button></sc-if>
           <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="flex:1 1 0;"></span></sc-if>
-          <button type="button" onClick="{{ next }}" disabled="{{ busy }}" style="flex:1.35 1 0;min-width:0;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ nextLabel }}
+          <button type="button" class="lc-cta" onClick="{{ next }}" disabled="{{ busy }}" style="flex:1.35 1 0;min-width:0;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ nextLabel }}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
           </button>
         </div>
@@ -323,12 +331,13 @@ select option{background:var(--surface);color:var(--ink-2);}
         <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:8;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.22);background:rgba(11,27,43,0.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
         <iframe ref="{{ previewRef }}" onLoad="{{ onPreviewLoad }}" src="/app/card.html?preview=1" title="Live preview of your card" scrolling="{{ pv.scrolling }}" style="position:absolute;top:0;left:0;width:390px;height:{{ pv.ih }};border:0;transform:scale({{ pv.scale }});transform-origin:0 0;"></iframe>
         <sc-if value="{{ showSeaPv }}" hint-placeholder-val="{{ false }}">
-          <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:52px;right:8px;z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+          <div role="radiogroup" aria-label="Preview seasonal theme" style="position:absolute;top:{{ pv.seaTop }};left:{{ pv.seaLeft }};right:{{ pv.seaRight }};z-index:3;display:flex;flex-direction:column;gap:6px;padding:5px;border-radius:999px;background:rgba(10,12,18,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
             <sc-for list="{{ seaPv }}" as="sp"><button type="button" role="radio" aria-checked="{{ sp.checked }}" aria-label="{{ sp.label }}" title="{{ sp.label }}" onClick="{{ sp.pick }}" style="width:34px;height:34px;padding:0;border:0;border-radius:50%;background:{{ sp.bg }};color:{{ sp.fg }};display:grid;place-items:center;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ sp.icon }}"></path></svg></button></sc-for>
           </div>
         </sc-if>
       </div>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;width:100%;height:{{ pv.barSpace }};"></div></sc-if>
+      <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" on-select="{{ scs.select }}" offset="{{ scs.railTop }}" hint-size="44px,230px"></x-import></sc-if>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardStyleControls" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" open="{{ scs.open }}" on-toggle="{{ scs.toggle }}" on-select="{{ scs.select }}" on-next="{{ next }}" next-label="{{ pv.nextText }}" next-icon="{{ scs.nextIcon }}" busy="{{ busy }}" max-width="{{ scs.maxWidth }}" hint-size="390px,80px"></x-import></sc-if>
       <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
         <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
@@ -363,7 +372,8 @@ select option{background:var(--surface);color:var(--ink-2);}
   </sc-if>
 </sc-if>
 
-<sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ showNewDone }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcOrderDone" from="/app/components/order-done.js" title="{{ doneTitle }}" text="{{ doneText }}" title-ref="{{ doneRef }}" card="{{ dn.card }}" link-label="{{ linkLabel }}" link-note="{{ dn.linkNote }}" qr-svg="{{ dn.qrSvg }}" open-href="{{ openHref }}" on-copy-link="{{ copyLink }}" copy-label="{{ dn.copyLabel }}" on-download-qr="{{ downloadQR }}" edit-label="{{ dn.editLabel }}" edit-href="{{ dn.editHref }}" on-copy-edit="{{ copyEditLink }}" copy-edit-label="{{ dn.copyEditLabel }}" edit-note="{{ dn.editNote }}" change-href="{{ dn.changeHref }}" order-no="{{ dn.orderNo }}" on-copy-order="{{ copyOrder }}" copy-order-label="{{ copyOrderLabel }}" secondary-label="{{ dn.secondaryLabel }}" on-secondary="{{ dn.onSecondary }}" secondary-icon="{{ dn.secondaryIcon }}" home-href="{{ orderHref }}" hint-size="100%,1200px"></x-import></sc-if>
+<sc-if value="{{ showOldDone }}" hint-placeholder-val="{{ false }}">
   <div style="position:relative;max-width:760px;margin:0 auto;padding-top:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;">
     <div aria-hidden="true" style="position:absolute;left:50%;top:-40px;width:100vw;max-width:1100px;height:380px;transform:translateX(-50%);overflow:hidden;pointer-events:none;z-index:0;">
       <span style="position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0%,#F1E2C4 0%,rgba(241,226,196,0) 72%);"></span>
@@ -436,6 +446,14 @@ const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
 const LOCAL_KEY = 'nbr-orders';
 /* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
 const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
+/* TEST MODE (Linkcardly): payments and the Cloudflare Turnstile check are OFF so the product can be tested end to end.
+   With PAYMENTS_ON = false the order goes straight to the database (place_order) without Turnstile, Stripe or Razorpay,
+   the Payment step shows a "no payment" placeholder, and the database must be in test mode (supabase/live/README.md),
+   which marks the order paid (pay_provider 'test') and puts the card live.
+   TO TURN PAYMENTS BACK ON: set PAYMENTS_ON = true here, turn test mode off in the database, and check that the
+   Stripe/Razorpay webhooks, NBR_WORKER_SECRET and TURNSTILE_SECRET are set on the worker that serves /api/*.
+   Everything below that handles payment (startPayment, checkPayReturn, retryPay, /api/pay/*) is kept for that day. */
+const PAYMENTS_ON = false;
 const VIA_WORKER = () => /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
 
 const PRICING = {
@@ -461,21 +479,16 @@ const LUX_STYLES = [
   { id: 'lux-pearl', name: 'Pearl', layout: 'luxuryEstate', bg: '#faf8f5', ink: '#1e1c1a', accent: '#a08355', frame: 'square', font: "Newsreader,Georgia,serif" },
   { id: 'lux-midnight', name: 'Midnight Gold', layout: 'luxuryEstate', bg: '#0d1424', ink: '#f1ebdd', accent: '#d4b26a', frame: 'arch', font: "Newsreader,Georgia,serif" },
 ];
-/* Estate-layout designs per category: [id, name, mode, bg, ink, accent, on, card]. Each category has 7, incl. one layout unique to it. */
-const G = 'rgba(255,255,255,0.08)';
-const ESTATE_ROWS = {
-  re: [['re-poster', 'Skyline', 'poster', '#14213D', '#FFFFFF', '#F2E8D5', '#14213D', G], ['re-sign', 'Yard Sign', 'sign', '#F4F1EC', '#1B1B1B', '#C8102E', '#FFFFFF', '#FFFFFF'], ['re-list', 'Crisp', 'list', '#FFFFFF', '#14213D', '#E6ECF4', '#14213D', '#F4EFE6'], ['re-home', 'Hearth', 'home', '#EFE9E1', '#3A3A3A', '#E9A866', '#3A2A1A', '#FBF8F4'], ['re-poster-sage', 'Sage', 'poster', '#23332B', '#FFFFFF', '#E7DCC4', '#23332B', G], ['re-list-stone', 'Stone', 'list', '#F6F3EE', '#2B2A28', '#ECE5D8', '#2B2A28', '#EEE8DE'], ['re-home-coast', 'Coastal', 'home', '#E8EEF1', '#1F3440', '#3E7C92', '#FFFFFF', '#F6F9FA']],
-  hc: [['hc-poster', 'Clinic', 'poster', '#0B3B37', '#FFFFFF', '#D8F3EE', '#0B3B37', G], ['hc-clinic', 'Appointment', 'clinic', '#F1F6F5', '#0B2B28', '#0F766E', '#FFFFFF', '#FFFFFF'], ['hc-list', 'Pure', 'list', '#FFFFFF', '#0B2B28', '#D8F3EE', '#0F766E', '#F3F8F7'], ['hc-home', 'Calm', 'home', '#EAF4F2', '#0B2B28', '#0F766E', '#FFFFFF', '#F7FBFA'], ['hc-poster-ocean', 'Ocean', 'poster', '#0E2A47', '#FFFFFF', '#CFE6FF', '#0E2A47', G], ['hc-list-mint', 'Mint', 'list', '#F4FBF8', '#0F2F28', '#D5F0E6', '#0F6B55', '#E6F4EE'], ['hc-home-sky', 'Sky', 'home', '#EAF2FB', '#12324F', '#2F7DD1', '#FFFFFF', '#F6FAFE']],
-  bw: [['bw-poster', 'Mocha', 'poster', '#3E2A22', '#FFFFFF', '#F3D9C9', '#3E2A22', G], ['bw-menu', 'Price Menu', 'menu', '#F7F1EA', '#3B2A22', '#A8664E', '#FFFFFF', '#FFFFFF'], ['bw-list', 'Petal', 'list', '#FBF7F2', '#5B3A2E', '#F1DDD0', '#5B3A2E', '#F4EAE2'], ['bw-home', 'Silk', 'home', '#F6EFE8', '#5B3A2E', '#A8664E', '#FFFFFF', '#FBF7F2'], ['bw-poster-rose', 'Rosewood', 'poster', '#4A1F2A', '#FFFFFF', '#F4C7CF', '#4A1F2A', G], ['bw-list-lilac', 'Lilac', 'list', '#FAF6FB', '#3D2A45', '#EBDDF0', '#6B4A78', '#F2EAF5'], ['bw-home-blush', 'Blush', 'home', '#FBEFEF', '#4A2C2C', '#B5646A', '#FFFFFF', '#FFF8F7']],
-  lf: [['lf-poster', 'Chambers', 'poster', '#0B1733', '#FFFFFF', '#E9C46A', '#0B1733', G], ['lf-letter', 'Letterhead', 'letter', '#FBFAF7', '#14213D', '#8C6D3F', '#FFFFFF', '#FFFFFF'], ['lf-list', 'Counsel', 'list', '#FFFFFF', '#0B1733', '#E8ECF5', '#0B1733', '#F2F2F0'], ['lf-home', 'Heritage', 'home', '#ECEBE6', '#0B1733', '#E9C46A', '#0B1733', '#F7F6F2'], ['lf-poster-oxblood', 'Oxblood', 'poster', '#3A1418', '#FFFFFF', '#D9B77E', '#3A1418', G], ['lf-list-slate', 'Slate', 'list', '#F5F6F7', '#1F2933', '#E3E7EB', '#1F2933', '#ECEFF2'], ['lf-home-green', 'Ledger Green', 'home', '#E9EEEA', '#17322A', '#2F5D4A', '#FFFFFF', '#F6F8F6']],
-  hs: [['hs-poster', 'Hi-Vis', 'poster', '#1C1C1C', '#FFFFFF', '#FFC400', '#1C1C1C', G], ['hs-ticket', 'Job Ticket', 'ticket', '#FFC400', '#1C1C1C', '#1C1C1C', '#FFC400', '#FFFFFF'], ['hs-list', 'Toolbox', 'list', '#FFFFFF', '#1C1C1C', '#FFE58A', '#1C1C1C', '#F5F3EE'], ['hs-home-red', 'Spark', 'home', '#F6F2EE', '#1E1E1E', '#D7262B', '#FFFFFF', '#FFFFFF'], ['hs-poster-orange', 'Safety Orange', 'poster', '#1F2328', '#FFFFFF', '#FF7A1A', '#1F2328', G], ['hs-poster-blue', 'Pipeline', 'poster', '#0D2B4E', '#FFFFFF', '#48C1F0', '#0D2B4E', G], ['hs-list-green', 'Green Clean', 'list', '#FFFFFF', '#12301F', '#DDF2E4', '#1E7A46', '#F1F8F3']],
-  cc: [['cc-deck', 'Business Card', 'deck', '#EEF1F5', '#0E1620', '#2563EB', '#FFFFFF', '#FFFFFF'], ['cc-list', 'Memo', 'list', '#FFFFFF', '#0E1620', '#E3EBF8', '#2563EB', '#EEF2F7'], ['cc-home', 'Summit', 'home', '#EEF2F7', '#0E1620', '#2563EB', '#FFFFFF', '#F7F9FC'], ['cc-poster-navy', 'Midnight', 'poster', '#0B1B3A', '#FFFFFF', '#9FC3FF', '#0B1B3A', G], ['cc-poster-charcoal', 'Charcoal', 'poster', '#1E1E22', '#FFFFFF', '#F2C94C', '#1E1E22', G], ['cc-list-ink', 'Ink', 'list', '#FFFFFF', '#111827', '#E5E7EB', '#111827', '#F3F4F6'], ['cc-home-teal', 'Harbor', 'home', '#E8F1F2', '#10303A', '#1F6F7A', '#FFFFFF', '#F7FAFB']],
-};
+/* Estate-layout styles live in /app/estate-styles.js (shared with the other app page). */
+const G = window.LC_ESTATE.G;
+const ESTATE_ROWS = window.LC_ESTATE.rows;
 const estateOf = (k, biz) => ESTATE_ROWS[k].map(([id, name, mode, bg, ink, accent, on, card]) => ({ id, name, layout: 'estate', mode, bg, ink, accent, on, card, ...(biz ? { biz: k } : {}) }));
 const RE_STYLES = estateOf('re', false);
 const BIZ_PAL = { hc: 1, bw: 1, lf: 1, hs: 1, cc: 1 };
 const BIZ_STYLES = Object.keys(BIZ_PAL).flatMap(k => estateOf(k, true));
-const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES).map(s => [s.id, s]));
+// Personal scene designs (Summit, Tide) from /app/scene-styles.js, listed after the Classic colours.
+const SCENE_STYLES = window.LC_SCENES.styles;
+const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES, RE_STYLES, BIZ_STYLES, SCENE_STYLES).map(s => [s.id, s]));
 const COLLECTIONS = [
   { id: 'personal', name: 'Personal', preset: null },
   { id: 'professional', name: 'Professional', preset: 'entrepreneur', category: "Let's connect", tagline: 'Trusted · Professional · Reliable' },
@@ -487,7 +500,18 @@ const COLLECTIONS = [
   { id: 'hs', name: 'Home Services', preset: 'services', category: 'Home Services', tagline: 'Fix · Build · Maintain' },
   { id: 'cc', name: 'Corporate', preset: 'entrepreneur', category: 'Consulting', tagline: 'Strategy · Growth · Results' },
 ];
-const collOf = id => STYLE_BY_ID[id] ? (STYLE_BY_ID[id].layout === 'professional' ? 'professional' : STYLE_BY_ID[id].layout === 'estate' ? (STYLE_BY_ID[id].biz || 'realestate') : 'luxury') : 'personal';
+const collOf = id => STYLE_BY_ID[id] && STYLE_BY_ID[id].layout !== 'scene' ? (STYLE_BY_ID[id].layout === 'professional' ? 'professional' : STYLE_BY_ID[id].layout === 'estate' ? (STYLE_BY_ID[id].biz || 'realestate') : 'luxury') : 'personal';
+// Personal's colours are variants of one design: the phone style picker shows them as one tile and lists
+// the colours in a strip on the card (CardColourRail).
+const PERSONAL_FAMILY = { id: 'personal', name: 'Classic' };
+// A colour strip swatch for an estate style: its most colourful colour, with its background as the dot
+// (near-neutral styles use their darkest colour instead).
+const swatchOf = c => { const hex = x => parseInt(String(x).slice(1, 7), 16), ch = x => { const n = hex(x), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return Math.max(r, g, b) - Math.min(r, g, b); }, lum = x => { const n = hex(x); return (n >> 16 & 255) * .3 + (n >> 8 & 255) * .59 + (n & 255) * .11; };
+  const cs = [c.bg, c.accent, c.on].filter(x => /^#[0-9a-f]{6}$/i.test(x)); let key = cs.reduce((a, b) => ch(b) > ch(a) ? b : a, cs[0]);
+  if (ch(key) < 40) key = cs.reduce((a, b) => lum(b) < lum(a) ? b : a, cs[0]);
+  return { bg: key, dot: key === c.bg ? c.accent : c.bg }; };
+// Estate styles that share a design (window.LC_ESTATE.families) are colours of that design.
+const familyOf = c => { if (c.layout !== 'estate') return null; const k = c.biz || 're', name = ((window.LC_ESTATE.families || {})[k] || {})[c.mode]; return name ? { id: k + '-' + c.mode, name } : null; };
 const COLOURS = [
   { id: 'forest', name: 'Forest', bg: '#06120d', accent: '#f2c98a' },
   { id: 'burgundy', name: 'Rosé', bg: '#1a0a0e', accent: '#f2a3a8' },
@@ -625,6 +649,12 @@ const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone |
 // Linkcardly: the handle claimed on the home page (/create?h=) wins over the generated one.
 // Legacy slugs are a-z0-9- only, so dots become dashes; reserved words fall back to autoSlug.
 const claimedSlug = () => { try { const h = slugify(new URLSearchParams(location.search).get('h') || '').slice(0, 30).replace(/-+$/, ''); const rs = (window.LC_RULES && window.LC_RULES.reserved) || []; return h.length >= 3 && !rs.includes(h) ? h : ''; } catch (e) { return ''; } };
+// Linkcardly: the "Your link" field (components/link-claim.js). Rules come from /assets/js/rules.js
+// (generated from src/lib/handles.js); legacy slugs also have no dots.
+const LC_RULE = () => window.LC_RULES || {};
+const handleIssue = h => { if (!h) return 'Choose the name for your link.'; if (h.length < 3) return 'Use at least 3 letters or numbers.'; let re = null; try { re = new RegExp(LC_RULE().pattern || '^[a-z0-9](?:[a-z0-9.-]{1,28})[a-z0-9]$'); } catch (e) {} if (/[^a-z0-9-]/.test(h) || /--/.test(h) || (re && !re.test(h))) return 'Use letters, numbers and dashes, not at the start or end.'; if ((LC_RULE().reserved || []).includes(h)) return 'That name is reserved. Try another.'; return ''; };
+const nameSlug = d => slugify([d.firstName, d.lastName].filter(Boolean).join(' ')).replace(/-/g, '').slice(0, 30);
+const handleAlts = (h, d) => { const f = slugify(d.firstName || ''), l = slugify(d.lastName || ''), yy = String(new Date().getFullYear() % 100); return [...new Set([nameSlug(d), f && l ? f + '-' + l : '', h + '-card', h + yy, h + '1'])].map(x => String(x || '').slice(0, 30).replace(/-+$/, '')).filter(x => x && x !== h && !handleIssue(x)); };
 const addYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 const DRAFT_KEY = 'nbr-order-draft';
 /* Card changes are done by our team. Put your business WhatsApp number here (digits with country code, e.g. '919876543210'); empty = email. */
@@ -633,7 +663,7 @@ const SUPPORT_EMAIL = 'hello@linkcardly.com';
 const CHANGES_INCLUDED = { basic: 2, motion: 4 };
 const changeLink = (msg, subj) => SUPPORT_WA ? 'https://wa.me/' + SUPPORT_WA + '?text=' + encodeURIComponent(msg) : 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(msg);
 const readLocal = () => { try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch (e) { return []; } };
-const EMPTY = { profession: '', layout: 'original', colour: 'forest', photo: '', photoX: 50, photoY: 50, photoZoom: 1, firstName: '', lastName: '', title: '', company: '', phone: '', whatsapp: '', email: '', city: '', website: '', instagram: '', linkedin: '', bio: '', notes: '', seasonal: true, greeting: '', brokerage: '', licenseNo: '', licenseState: '', facebook: '', listingsUrl: '', bookingUrl: '', officeAddress: '', iabsUrl: '' };
+const EMPTY = { handle: '', profession: '', layout: 'original', colour: 'forest', photo: '', photoX: 50, photoY: 50, photoZoom: 1, firstName: '', lastName: '', title: '', company: '', phone: '', whatsapp: '', email: '', city: '', website: '', instagram: '', linkedin: '', bio: '', notes: '', seasonal: true, greeting: '', brokerage: '', licenseNo: '', licenseState: '', facebook: '', listingsUrl: '', bookingUrl: '', officeAddress: '', iabsUrl: '' };
 
 const NBR_PHOTO_MAX = 1080;
 /* Total GIF play time in seconds (sum of frame delays; 0 delay plays as 0.1s in browsers). */
@@ -749,7 +779,7 @@ class Component extends DCLogic {
   doneRef = React.createRef();
   tsRef = React.createRef();
   renderTs = () => {
-    if (!TURNSTILE_SITE_KEY) return;
+    if (!TURNSTILE_SITE_KEY || !PAYMENTS_ON) return; // Turnstile is off in test mode
     const go = () => { const el = this.tsRef.current; if (!el || !window.turnstile || el.childElementCount) return; this.tsToken = ''; this.tsWidget = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, size: 'flexible', callback: t => { this.tsToken = t; }, 'expired-callback': () => { this.tsToken = ''; } }); };
     if (window.turnstile) { setTimeout(go, 50); return; }
     if (!document.getElementById('cf-ts')) { const s = document.createElement('script'); s.id = 'cf-ts'; s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = () => setTimeout(go, 50); document.head.appendChild(s); } else setTimeout(go, 800);
@@ -758,7 +788,7 @@ class Component extends DCLogic {
 
   componentDidUpdate() { try { nbrSyncVids(this.state.d.photo); } catch (e) {} this.watchBar(); this.watchFormBar(); }
   componentDidMount() {
-    this.onMsg = ev => { if (ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
+    this.onMsg = ev => { if (ev.origin === location.origin && ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
     window.addEventListener('message', this.onMsg);
     this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     try { if (/[?&]qa=1/.test(location.search)) window.__nbrOrder = this; } catch (e) {}
@@ -808,7 +838,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { window.removeEventListener('scroll', this.onScrollHdr); window.removeEventListener('message', this.onMsg); window.removeEventListener('resize', this.onResize); clearTimeout(this.pvT); }
   setState(u, cb) {
-    return super.setState(u, () => { const S = this.state; if (S.d !== this.__lastD || S.plan !== this.__lastPlan) { this.__lastD = S.d; this.__lastPlan = S.plan; clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 100); } if (S.step === 4 && !S.done && !S.editToken) this.renderTs(); if (cb) cb(); });
+    return super.setState(u, () => { const S = this.state; if (S.step === 2 && !S.editToken && !S.done) { const hh = this.handleOf(S); if (hh !== this.__lastH) { this.__lastH = hh; this.queueHandleCheck(hh); } } if (S.d !== this.__lastD || S.plan !== this.__lastPlan) { this.__lastD = S.d; this.__lastPlan = S.plan; clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 100); } if (S.step === 4 && !S.done && !S.editToken) this.renderTs(); if (cb) cb(); });
   }
 
   row(slug, active, forSave) {
@@ -826,13 +856,15 @@ class Component extends DCLogic {
   }
   postPreview = () => {
     const f = this.previewRef.current; if (!f || !f.contentWindow) return;
-    const d = this.state.d, r = this.row('preview', true);
+    // Linkcardly: the preview's QR, Share and saved contact use the link the card will have (its claimed name).
+    const S = this.state, h = S.editToken ? ((S.editInfo || {}).slug || '') : this.handleOf(S);
+    const d = S.d, r = this.row(h && !handleIssue(h) ? h : 'preview', true);
     if (!d.firstName && !d.lastName) { r.first_name = 'Your'; r.last_name = 'Name'; }
     if (!d.title) r.title = 'Your job title';
     if (!d.phone) r.phone = '+18165550123';
     r.name_placeholder = !String(d.firstName || '').trim();
     r.preview_season = (this.state.plan !== 'motion' || this.state.d.seasonal === false) ? 'off' : (this.state.pvSeason || 'off');
-    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: r }, '*'); } catch (e) {}
+    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: r }, location.origin); } catch (e) {}
     clearTimeout(this.msT); this.msT = setTimeout(this.measurePreview, 500);
     if (d.photo !== this.__pvPhoto) { this.__pvPhoto = d.photo; try { f.contentWindow.scrollTo(0, 0); } catch (e) {} }
   };
@@ -935,6 +967,7 @@ class Component extends DCLogic {
     V('iabsUrl', v => /\.pdf($|\?)/i.test(v) || /trec|iabs/i.test(v), 'Link to your IABS PDF');
     ['website', 'listingsUrl', 'bookingUrl', 'meetingUrl', 'iabsUrl'].forEach(k => { if (!e[k] && d[k]) { const v = normLink(k, d[k]); if (v !== d[k]) d[k] = v; } });
     [['instagram', 'Instagram username', /^[A-Za-z0-9._]{1,30}$/], ['linkedin', 'LinkedIn ID', /^[A-Za-z0-9-]{3,100}$/], ['xHandle', 'X username', /^[A-Za-z0-9_]{1,15}$/]].forEach(([k, n, re]) => { const v = String(d[k] || '').trim(); if (v && shown.has(k) && !re.test(v)) e[k] = 'Enter just your ' + n + ', no spaces or symbols'; });
+    { const he = this.handleError(); if (he) e.handle = he; }
     return e;
   }
   goStep = n => { if (n > 2 && !this.state.editToken && !VISIBLE_BIZ.some(b => b.prof === this.state.d.profession)) { this.setState(s => ({ errors: { ...(s.errors || {}), profession: 'Pick your card category' } })); n = 2; } if (n > 2 && this.state.step === 2) { const ve = this.validate(); if (Object.keys(ve).length) { this.setState({ errors: ve }); return; } } if (n === 3 && this.state.vw >= 960) n = this.state.step > 3 ? 2 : 4; this.setState(s => ({ step: n, maxStep: Math.max(s.maxStep, n), submitError: '' }), () => { [80, 400, 1200].forEach(ms => setTimeout(this.measurePreview, ms)); if (this.state.step === 4) this.renderTs(); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -942,22 +975,49 @@ class Component extends DCLogic {
     const { step } = this.state;
     if (step === 2) {
       const e = this.validate();
-      if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k && document.getElementById('o-' + k.k); el && el.focus(); return; }
+      const hc = this.state.hCheck; if (Object.keys(e).length === 1 && e.handle && hc && hc.status === 'checking' && hc.h === this.handleOf()) { this.nextAfterCheck = true; return; }
+      if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k ? document.getElementById('o-' + k.k) : (e.handle ? document.getElementById('o-handle') : null); el && el.focus(); return; }
     }
     if (this.state.editToken) { if (step === 2 && this.state.vw < 960) this.goStep(3); else this.saveEdit(); return; }
     if (step < 4) this.goStep(step + 1); else this.placeOrder();
   };
 
   async uniqueSlug(base) {
-    const local = readLocal().map(o => o.card && o.card.slug);
     let s = base;
-    for (let i = 0; i < 5; i++) {
-      let taken = local.includes(s);
-      if (!taken) { try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(s), { headers: { apikey: SUPABASE_KEY } }); const j = await r.json(); taken = Array.isArray(j) && j.length > 0; } catch (e) {} }
-      if (!taken) return s;
-      s = base + Math.floor(10 + Math.random() * 90);
-    }
+    for (let i = 0; i < 5; i++) { if (!(await this.handleTaken(s))) return s; s = base + Math.floor(10 + Math.random() * 90); }
     return s;
+  }
+  // Linkcardly: "Your link". true = taken, false = free, null = couldn't check (the server still decides).
+  async handleTaken(h) {
+    if (readLocal().some(o => o.card && o.card.slug === h)) return true;
+    // slug_available (supabase/live/linkcardly.sql) sees every card, including unpaid orders; public_cards only live ones.
+    try { const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/slug_available', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: h }) }); if (r.ok) { const j = await r.json(); if (j && typeof j.available === 'boolean') return !j.available; } else if (r.status !== 404) return null; } catch (e) { return null; }
+    try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(h), { headers: { apikey: SUPABASE_KEY } }); if (!r.ok) return null; const j = await r.json(); return Array.isArray(j) && j.length > 0; } catch (e) { return null; }
+  }
+  async freeAlts(h, d, live) { const out = []; for (const a of handleAlts(h, d)) { if (out.length >= 3 || !live()) break; if ((await this.handleTaken(a)) === false) out.push(a); } return out; }
+  handleOf = (S = this.state) => (S.hTouched || S.d.handle) ? (S.d.handle || '') : (claimedSlug() || nameSlug(S.d));
+  setHandle = v => { this.nextAfterCheck = false; this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, errors: { ...s.errors, handle: '' } })); };
+  // Alternatives were checked a moment ago, so a tapped one is available straight away.
+  pickHandle = v => { this.__lastH = v; clearTimeout(this.hT); this.hSeq = (this.hSeq || 0) + 1; this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, hCheck: { h: v, status: 'ok', alts: [] }, errors: { ...s.errors, handle: '' } })); };
+  queueHandleCheck = h => {
+    clearTimeout(this.hT); const seq = this.hSeq = (this.hSeq || 0) + 1, live = () => seq === this.hSeq;
+    const bad = handleIssue(h);
+    if (bad) { this.setState({ hCheck: { h, status: h || this.state.hTouched ? 'invalid' : 'idle', message: bad, alts: [] } }); return; }
+    this.setState({ hCheck: { h, status: 'checking', alts: [] } });
+    this.hT = setTimeout(async () => {
+      const t = await this.handleTaken(h); if (!live()) return;
+      if (t !== true) { const go = this.nextAfterCheck; this.nextAfterCheck = false; this.setState(s => ({ hCheck: { h, status: t === false ? 'ok' : 'idle', alts: [] }, errors: { ...s.errors, handle: '' } }), () => { if (go && this.state.step === 2) this.next(); }); return; }
+      this.nextAfterCheck = false;
+      const alts = await this.freeAlts(h, this.state.d, live); if (live()) this.setState({ hCheck: { h, status: 'taken', alts } });
+    }, 400);
+  };
+  handleError(S = this.state) {
+    if (S.editToken) return '';
+    const h = this.handleOf(S), bad = handleIssue(h), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null;
+    if (bad) return bad;
+    if (c && c.status === 'taken') return 'That link is taken. Pick another name.';
+    if (c && c.status === 'checking') return 'Still checking your link. Try again in a second.';
+    return '';
   }
   couponFor = S => { const c = S.coupon; return c && c.plan === S.plan && c.region === (S.region || 'US') ? c : null; };
   applyCoupon = async () => {
@@ -979,10 +1039,14 @@ class Component extends DCLogic {
     if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
     this.setState({ busy: true, submitError: '' });
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
-    const slug = await this.uniqueSlug(claimedSlug() || autoSlug(d));
+    let slug = this.handleOf(S); const strict = !handleIssue(slug);
+    if (!strict) slug = await this.uniqueSlug(autoSlug(d));
+    // A retry of an order that was already sent (orderKey set) skips this check: that order may hold the name, and the
+    // database returns it for the same key instead of creating a second one ("link taken" still comes back if not).
+    else if (!this.orderKey && (await this.handleTaken(slug)) === true) { const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; }
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
-      card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
+      strict_slug: strict ? 'true' : '', card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
     if (!this.orderKey) { try { this.orderKey = crypto.randomUUID(); } catch (e) { this.orderKey = ''; } }
     order.idem = this.orderKey;
     if (S.d.photo && !order.card.photo_url) { this.setState({ busy: false, submitError: 'Please add your photo again (Step 2), then place your order.' }); return; }
@@ -992,9 +1056,9 @@ class Component extends DCLogic {
     if (String(order.card.photo_url).startsWith('data:') && VIA_WORKER()) { this.setState({ busy: false, submitError: 'Your photo could not be uploaded. Please try again, or remove the photo and add it later with your edit link.' + (window.__nbrUpErr ? ' (' + window.__nbrUpErr + ')' : '') }); return; }
     let remote = false;
     try {
-      const r = VIA_WORKER() ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
+      const r = VIA_WORKER() && PAYMENTS_ON ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
       if (r.ok) { const j = await r.json(); if (j && j.slug) { this.orderKey = ''; order.order_no = j.order_no || order.order_no; order.card.slug = j.slug; order.card.public_id = j.public_id || ''; order.edit_token = j.edit_token || ''; if (j.total != null) { order.total = j.total; order.discount = j.discount; } order.pay = j.pay || null; order.pay_status = j.pay_status || 'unpaid'; remote = true; } }
-      else { const j = await r.json().catch(() => ({})); if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
+      else { const j = await r.json().catch(() => ({})); if (/link taken/i.test(j.message || '') && strict) { this.resetTs(); const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; } if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
     } catch (err) {}
     this.resetTs();
     if (!remote) {
@@ -1004,6 +1068,7 @@ class Component extends DCLogic {
     const base = { orderNo: order.order_no, slug: order.card.slug, pid: order.card.public_id || '', tok: order.edit_token || '', remote, mode: S.mode, idem: order.idem || '', total: order.total, region: S.region || 'US' };
     this.orderKey = '';
     if (order.pay_status === 'paid' || order.pay_status === 'waived') { this.showDone({ ...base, paid: true }); return; }
+    if (!PAYMENTS_ON) { console.warn('Order ' + order.order_no + ' is unpaid but PAYMENTS_ON is false: turn on test mode in the database (supabase/live/README.md).'); this.setState({ busy: false, submitError: 'We couldn’t finish your order just now. Please try again in a few minutes, or message us and we’ll set it up for you.' }); return; }
     this.startPayment(order.pay, base);
   };
   showDone = (done) => { this.setState({ busy: false, done }, () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); }); };
@@ -1011,7 +1076,7 @@ class Component extends DCLogic {
      If payment isn't set up on the server (pay = null) the order is saved and we email a payment link. */
   startPayment = (pay, base) => {
     if (pay && pay.provider === 'stripe' && pay.url) {
-      try { localStorage.setItem('nbr-pay', JSON.stringify(base)); } catch (e) {}
+      try { localStorage.setItem('nbr-pay', JSON.stringify({ ...base, tok: '' })); } catch (e) {}
       location.href = pay.url; return;
     }
     if (pay && pay.provider === 'razorpay' && pay.order_id) { this.openRazorpay(pay, base); return; }
@@ -1125,7 +1190,8 @@ class Component extends DCLogic {
   keepEditing = () => this.setState({ done: null, step: 2, copied: false }, () => window.scrollTo(0, 0));
   editUrlOf(tok) { return CARD_BASE + '/e/' + tok; }
   copyEditLink = async () => { const t = this.state.done && this.state.done.tok; if (!t) return; try { await navigator.clipboard.writeText(this.editUrlOf(t)); this.setState({ editCopied: true }); } catch (e) {} };
-  urlOf(d) { return CARD_BASE + '/' + (d.pid ? 'c/' + d.pid : d.slug); }
+  // Linkcardly: the shared link and QR use the name the customer claimed; /c/<id> keeps working as a permanent fallback.
+  urlOf(d) { return CARD_BASE + '/' + (d.slug || (d.pid ? 'c/' + d.pid : '')); }
   qrSvg(url) { if (!window.qrcode) return ''; const q = window.qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true, title: 'QR code for ' + url }); }
   copyLink = async () => { try { await navigator.clipboard.writeText(this.urlOf(this.state.done)); this.setState({ copied: true }); } catch (e) {} };
   downloadQR = () => {
@@ -1133,7 +1199,7 @@ class Component extends DCLogic {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = s + '-qr.svg';
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   };
-  reset = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} this.setState({ mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, done: null, copied: false, coupon: null, couponInput: '', couponMsg: '' }); window.scrollTo(0, 0); };
+  reset = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} this.__lastH = undefined; this.setState({ mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, done: null, copied: false, coupon: null, couponInput: '', couponMsg: '', hTouched: false, hCheck: null, editCopied: false }); window.scrollTo(0, 0); };
 
   renderVals() {
     const _d = this.state.d || {}, thumbPh = _d.photo && !NBR_VID.test(_d.photo) && !/^data:video\//.test(_d.photoData || '') ? 'url("' + _d.photo + '") ' + (_d.photoX ?? 50) + '% ' + (_d.photoY ?? 50) + '% / cover' : '';
@@ -1143,7 +1209,7 @@ class Component extends DCLogic {
     const col = COLOURS.find(c => c.id === d.colour) || STYLE_BY_ID[d.colour] || COLOURS[0];
     const COLLS = bizOf(d.profession).colls.map(id => COLLECTIONS.find(c => c.id === id)).filter(Boolean);
     const collId = collOf(d.colour), ci = Math.max(0, COLLS.findIndex(c => c.id === collId));
-    const listFor = id => id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS;
+    const listFor = id => id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS.concat(SCENE_STYLES);
     const goColl = step => { const n = COLLS[(ci + step + COLLS.length) % COLLS.length]; this.set('colour', listFor(n.id)[0].id); };
     const plan = PLANS.find(p => p.id === S.plan) || PLANS[0];
     const layout = LAYOUTS[0];
@@ -1172,13 +1238,14 @@ class Component extends DCLogic {
       modesGap: S.vw < 960 ? (S.step === 3 ? '0' : '12px') : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
       pv: (() => {
         const mobile = S.vw < 960;
-        if (!mobile) return { barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
+        if (!mobile) return { seaTop: '52px', seaLeft: 'auto', seaRight: '8px', barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
         const fx = S.step === 3;
         // The Preview step shows the card full-bleed; other steps never show it on phones.
         const docH = S.pvDocH || 806, w = fx ? S.vw : Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
         // Phone preview: no footer bar. CardStyleControls (components/card-style-controls.js) floats over
         // the card; the spacer lets the end of the card scroll clear of it.
-        return { fixedBar: fx, barSpace: 'calc(96px + env(safe-area-inset-bottom))', radius: fx ? '0' : '20px', cardShadow: fx ? 'none' : '0 18px 40px -18px rgba(0,0,0,0.6)',
+        // Phone Preview: Personal's colour strip owns the top right, so seasonal themes sit under the back button.
+        return { seaTop: fx ? 'calc(70px + env(safe-area-inset-top))' : '52px', seaLeft: fx ? '14px' : 'auto', seaRight: fx ? 'auto' : '8px', fixedBar: fx, barSpace: 'calc(96px + env(safe-area-inset-bottom))', radius: fx ? '0' : '20px', cardShadow: fx ? 'none' : '0 18px 40px -18px rgba(0,0,0,0.6)',
           display: S.step === 3 ? 'flex' : 'none', scrolling: 'no', ih: docH + 'px', showNext: true, nextText: S.editToken ? (S.busy ? 'Saving…' : 'Save changes') : 'Continue to payment', showBack: true, mobile: false, desktop: false, flex: '1 1 100%', order: '-1', top: 'auto', pad: '0', bg: 'transparent', w: w + 'px', h: full + 'px', scale: sc.toFixed(4),
           expanded: S.pvOpen ? 'true' : 'false', toggleLabel: S.pvOpen ? 'Collapse preview' : 'See full card', icon: S.pvOpen ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6',
           toggle: () => this.setState(s => ({ pvOpen: !s.pvOpen })) };
@@ -1192,8 +1259,10 @@ class Component extends DCLogic {
         const c = S.mode === id, sm = S.vw < 960; return { title: sm ? (id === 'dfm' ? 'Design for me' : 'Build myself') : title, sub, showSub: !sm, gap: sm ? '10px' : '14px', pad: sm ? '12px 14px' : '18px 20px', titleSize: sm ? '15px' : '17px', checked: c ? 'true' : 'false', pick: () => this.setState({ mode: id, errors: {} }), border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.12)', bg: c ? 'rgba(var(--acc-rgb),0.07)' : 'var(--surface)', dot: c ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.3)', fill: c ? 'var(--btn)' : 'transparent' };
       }),
       ...(() => { const nV = S.vw >= 960 ? 3 : 4, cur = S.vw >= 960 && S.step >= 3 ? S.step - 1 : S.step; return { stepCols: 'repeat(' + nV + ',minmax(0,1fr))', stepW: 'calc((100% - 8px) / ' + nV + ')', stepX: ((cur - 1) * 100) + '%' }; })(),
-      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? '#56633F' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? 'var(--ink-3)' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      payLinkLine: (() => { const h = this.handleOf(S); return S.editToken || handleIssue(h) ? '1 year' : '1 year · ' + BASE_HOST + '/' + h; })(),
       isStep1: S.step === 1, isStep2: S.step === 2, isStep3: S.step === 2, isStep5: S.step === 4,
+      showLinkClaim: !S.editToken, lc: (() => { const h = this.handleOf(S), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null; return { value: h, status: c ? c.status : 'idle', message: c ? c.message || '' : '', alts: c ? c.alts || [] : [], fromHome: !S.hTouched && !S.d.handle && !!claimedSlug() && h === claimedSlug(), error: (S.errors || {}).handle || '', onChange: this.setHandle, onPick: this.pickHandle }; })(),
       reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
       changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
       plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '2px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', radioDot: c ? '1' : '0', thumb: S.vw < 960, motion: p.id === 'motion', img: p.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '18px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '28px' : '32px') : '36px', featFs: S.vw < 960 ? '13.5px' : '14px' }; }),
@@ -1214,9 +1283,11 @@ class Component extends DCLogic {
       pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
       swGap: listFor(collId).some(isTh) ? '12px' : '16px',
       // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
-      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, thumb: isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
+      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(c.layout === 'scene' ? { family: c.family, swatch: { bg: c.layers[2], dot: c.accent } } : cl.id === 'personal' ? { family: PERSONAL_FAMILY } : familyOf(c) ? { family: familyOf(c), swatch: swatchOf(c) } : {}), thumb: c.layout === 'scene' ? { bg: c.bg, image: window.LC_SCENES.thumb(c) } : isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
         value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
-        nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px' },
+        nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px',
+        // Scene cards show their QR code at the top right: the colour strip starts below it.
+        railTop: (STYLE_BY_ID[d.colour] || {}).layout === 'scene' ? 'calc(' + Math.round(108 * Math.min(1, S.vw / 390)) + 'px + env(safe-area-inset-top))' : '' },
       showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },
       collName: COLLS[ci].name, collPrev: () => goColl(-1), collNext: () => goColl(1), collPos: (ci + 1) + ' of ' + COLLS.length, collDots: COLLS.map((_, i) => ({ w: i === ci ? '16px' : '4px', bg: i === ci ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.18)' })),
       colours: listFor(collId).map((c, ci) => { const s = c.id === d.colour, th = isTh(c); return { ...c, isDot: !th, isThumb: th, rec: th && ci === 0, blocks: th ? thumbBlocks(c, 58, 80, thumbPh) : [], labelInk: s ? 'var(--ink)' : 'var(--muted)', checked: s ? 'true' : 'false', ring: s ? '0 0 0 3px var(--bg), 0 0 0 5px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.12)', ring2: s ? '0 0 0 2px var(--bg), 0 0 0 4px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.14)', pick: () => this.set('colour', c.id) }; }),
@@ -1257,17 +1328,24 @@ class Component extends DCLogic {
       cardHeading: S.plan === 'motion' ? 'Your Motion Card' : 'Your Digital Card',
       regions: ['IN', 'US'].map(k => { const on = (S.region || 'US') === k; return { label: PRICING[k].label, checked: on ? 'true' : 'false', pick: () => this.setState({ region: k, regionTouched: true }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)' }; }),
       panelDisplay: S.step === 3 && S.vw < 960 ? 'none' : 'flex', hasBack: !(S.editToken && S.step === 2) && S.step > 1 && !(S.step === 3 && S.vw < 960), noBack: false, back: () => { if (S.step <= 2 && S.standalone) { this.backToCard(); return; } this.goStep(S.step - 1); }, backLabel: S.step === 3 ? 'Make changes' : 'Back',
-      next: this.next, busy: S.busy, nextLabel: S.editToken ? (S.busy ? 'Saving…' : S.step === 2 && S.vw < 960 ? 'Continue' : 'Save changes') : S.step < 3 ? 'Continue' : S.step === 3 ? (S.vw < 400 ? 'Looks good' : 'Looks good · Continue') : (S.busy ? 'Starting payment…' : 'Pay ' + money(S.region, this.couponFor(S) ? this.couponFor(S).total : priceOf(S.region, plan.id).total)),
+      next: this.next, busy: S.busy, nextLabel: S.editToken ? (S.busy ? 'Saving…' : S.step === 2 && S.vw < 960 ? 'Continue' : 'Save changes') : S.step < 3 ? 'Continue' : S.step === 3 ? (S.vw < 400 ? 'Looks good' : 'Looks good · Continue') : (PAYMENTS_ON ? (S.busy ? 'Starting payment…' : 'Pay ' + money(S.region, this.couponFor(S) ? this.couponFor(S).total : priceOf(S.region, plan.id).total)) : (S.busy ? 'Placing order…' : 'Place order · no payment')),
       hasSubmitError: !!S.submitError, submitError: S.submitError, isPayStep: S.step > 3,
       previewRef: this.previewRef, onPreviewLoad: this.onPreviewLoad, tsRef: this.tsRef,
       previewNote: dfm ? 'Rough preview. Our designer will finish the details.' : 'Live preview. Tap around inside the phone.',
 
       doneRef: this.doneRef, orderNo: done ? done.orderNo : '',
+      showNewDone: !!(done && !done.unpaid && !done.verifying), showOldDone: !!(done && (done.unpaid || done.verifying)),
+      dn: (() => { if (!done) return {}; const ph = d.photo && !NBR_VID.test(d.photo) && !/^data:video\//.test(d.photoData || '') ? (d.photoData || d.photo) : '', nm = [d.firstName, d.lastName].filter(Boolean).join(' '), tok = !done.edit && done.tok ? done.tok : '';
+        return { card: nm ? { img: ph, name: nm, title: d.title || '' } : null, qrSvg: this.qrSvg(url),
+          linkNote: done.edit ? 'Same link and QR code as before.' : done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Your QR code keeps working, even after edits.',
+          copyLabel: S.copied ? 'Copied ✓' : 'Copy link', editLabel: tok ? BASE_HOST + '/e/' + tok.slice(0, 6) + '…' + tok.slice(-4) : '', editHref: tok ? this.editUrlOf(tok) : '', copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy', editNote: !tok && !done.edit ? 'Your private edit link is in your email. Keep it safe: anyone with it can edit your card.' : '',
+          changeHref: !done.edit ? changeLink('Hi Linkcardly, I’d like a change to my card ' + url + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '',
+          orderNo: !done.edit ? done.orderNo || '' : '', secondaryLabel: done.edit ? 'Keep editing' : 'Order another card', onSecondary: done.edit ? this.keepEditing : this.reset, secondaryIcon: done.edit ? '' : 'plus' }; })(),
       showChangeBox: !!(done && !done.edit && !done.unpaid && !done.verifying), isUnpaid: !!(done && done.unpaid), isVerifying: !!(done && done.verifying), showCardBox: !!(done && !done.unpaid && !done.verifying), payOnline: !!(done && done.unpaid && done.online !== false), payOffline: !!(done && done.unpaid && done.online === false),
       payBtn: S.payBusy ? 'Opening payment…' : 'Pay ' + (done && done.total != null ? money(done.region || S.region, done.total) : 'now'), retryPay: this.retryPay, hasPayError: !!(done && done.payError), payError: (done && done.payError) || '',
-      doneTitle: done && done.verifying ? 'Confirming your payment…' : done && done.unpaid ? 'Complete your payment' : done && done.edit ? 'Changes saved' : done && done.mode === 'dfm' ? 'Order received' : 'Your card is ready',
+      doneTitle: done && done.verifying ? 'Confirming your payment…' : done && done.unpaid ? 'Complete your payment' : done && done.edit ? 'Changes saved' : done && done.mode === 'dfm' ? 'Order received' : 'Your card is ready!',
       doneText: done && done.verifying ? 'This usually takes a few seconds. Please keep this page open.' : done && done.unpaid ? (done.online === false ? "Your order is saved. We'll email a secure payment link to " + (d.email || 'you') + ' shortly. Your card goes live as soon as payment is confirmed.' : 'Your order is saved but not paid yet. Your card goes live as soon as payment is confirmed.') : done && done.edit ? 'Your card is updated. It can take up to 5 minutes to show on every phone.' : done && done.mode === 'dfm' ? "We have your details and we'll start on your design. We'll message you when your card is live. Your link and QR code below are already reserved." : 'Your card is live at the link below. Share it by message, or print the QR code on anything.',
-      linkLabel: BASE_HOST + '/' + (done ? (done.pid ? 'c/' + done.pid : done.slug) : ''),
+      linkLabel: BASE_HOST + '/' + (done ? (done.slug || (done.pid ? 'c/' + done.pid : '')) : ''),
       linkNote: done && done.edit ? 'Same link and QR code as before.' : done && done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Keep this. Changes you ask for later use the same link.',
       openHref: done ? (/\.dc\.html$/.test(decodeURIComponent(location.pathname)) ? '/app/card.html?c=' + done.slug : (location.hostname.startsWith('card.') ? '/' + done.slug : '/app/card.html?c=' + done.slug)) : '#',
       seaStr: d.seasonal !== false ? 'true' : 'false', toggleSea: () => this.set('seasonal', d.seasonal === false),
@@ -1281,7 +1359,7 @@ class Component extends DCLogic {
       ...(() => { const pl = PLANS.find(p => p.id === S.plan) || PLANS[0], pr = PRICING[S.region] || PRICING.US, vid = /^data:video\//.test(d.photoData || '') || NBR_VID.test(d.photo || '');
         return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payImg: d.photo && !vid ? d.photo : (pl.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg') }; })(),
       panelBg: S.vw < 960 ? 'transparent' : 'var(--surface)', panelBd: S.vw < 960 ? '0' : '1px solid rgba(var(--fg-rgb),0.06)', panelSh: S.vw < 960 ? 'none' : '0 16px 40px -30px rgba(90,60,20,0.35)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
-      secureTitle: S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
+      secureTitle: !PAYMENTS_ON ? 'Payments are off while we test' : S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: !PAYMENTS_ON ? 'Your order goes through without paying. Payment comes back before launch.' : S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
       stepEyebrow: S.vw >= 960 ? 'STEP ' + Math.min(S.step >= 3 ? S.step - 1 : S.step, 3) + ' OF 3' : 'STEP ' + Math.min(S.step, 4) + ' OF 4',
       qrNode: done ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(url).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,
     };

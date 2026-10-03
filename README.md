@@ -25,6 +25,8 @@ The Turnstile site key lives in one place: `site/site.config.js` (marketing page
 ## Testing
 - `npm test`: builds, then runs `test/*.test.js` (Worker routing, native API, card view, built site, and the SQL migrations in an in-process Postgres). Tests marked `todo` reproduce known open defects; see `docs/SDLC_VALIDATION.md`.
 - `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs`: browser smoke test against `npm run dev` (needs Playwright).
+- `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs`: the order flow's screens at 390 × 844 with a mocked backend.
+- `BASE=http://127.0.0.1:8787 node test/e2e/production.mjs`: production E2E suite. The browser runs against the real database SQL (`supabase/live/*.sql` in PGlite behind a PostgREST stand-in, `test/support/`), with test mode on. Covers the customer lifecycle, preview and live-card actions, the edit link, customers A and B (authorization), that only the server can mark an order paid, failures (double click, lost response, offline, 500, slow network, refresh, bad file) and security (headers, XSS, secrets, CORS, rate limits). Writes `test/e2e/report/report.md` (Passed / Failed / Blocked / Not tested, findings, screenshots). `STAGING=1 BASE=https://<staging>` runs it against a deployed Worker and a non-production Supabase project in test mode. Payment and webhook scenarios are listed as Not tested until payments are integrated.
 - CI (`.github/workflows/ci.yml`) runs install, `npm audit`, `npm test` and a dry-run deploy on every PR and on `main`.
 
 ## Operations

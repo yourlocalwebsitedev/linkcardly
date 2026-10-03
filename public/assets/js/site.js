@@ -31,7 +31,11 @@
   }));
 
   // live availability (reads the same public_cards view the card page uses)
+  // slug_available (supabase/live/linkcardly.sql) also sees cards whose order isn't paid yet; public_cards is the fallback.
   const isTaken = async h => {
+    const q = await fetch(`${C.supabaseUrl}/rest/v1/rpc/slug_available`, { method: 'POST', headers: { apikey: C.supabaseKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: h }) });
+    if (q.ok) { const j = await q.json(); if (j && typeof j.available === 'boolean') return !j.available; }
+    else if (q.status !== 404) throw new Error('check failed');
     const r = await fetch(`${C.supabaseUrl}/rest/v1/public_cards?select=slug&slug=eq.${encodeURIComponent(h)}`, { headers: { apikey: C.supabaseKey } });
     if (!r.ok) throw new Error('check failed');
     const rows = await r.json();
