@@ -4,6 +4,10 @@
 -- Supabase → SQL Editor → paste all → Run. Safe to run again.
 --
 -- What it adds
+--  S. Security fixes from the production audit: read-only public card views, no direct table writes for the
+--     API roles, rate limits that can't be skipped with a header, payment only unpaid → paid, refunded cards
+--     go offline, new orders follow the same field rules as edits, a real email on every order.
+--  0. Test mode (off unless you switch it on; never on the production project).
 --  1. Card link names: slug_available() checks ALL cards (not just live ones), names held by
 --     unpaid orders older than 24 hours are released, and place_order() refuses a taken name
 --     ("link taken") when the order page asks for that exact name, instead of adding digits.
@@ -23,6 +27,71 @@
 --   pass ₹20,000; until then that partner's payouts are held · TDS 2% (Section 194H) from then on,
 --   on the whole year's commission. Check the TDS wording with your CA.
 -- ================================================================
+
+-- ----------------------------------------------------------------
+-- S) SECURITY FIXES (production audit, 2026-10)
+-- ----------------------------------------------------------------
+-- Public card views are read-only. Supabase gives new relations INSERT/UPDATE/DELETE for the API roles by
+-- default, and these simple views are updatable and run as their owner (bypassing RLS on cards), so without
+-- this anyone with the public key could edit, create or delete cards. ALL-IN-ONE.sql now does the same.
+revoke all on public.public_cards, public.public_card_extras from anon, authenticated;
+grant select on public.public_cards, public.public_card_extras to anon, authenticated;
+
+-- Tables are written only by SECURITY DEFINER functions (or by admins under RLS). Take away direct writes
+-- the API roles never need, as a second lock behind RLS. Nobody edits the admins list through the API.
+revoke insert, update, delete, truncate on public.admins, public.orders, public.leads, public.site_leads, public.rate_hits from anon;
+revoke insert, update, delete, truncate on public.admins from authenticated;
+
+-- Rate limits: the x-nbr-ip header is trusted only when the request carries the worker secret. Before,
+-- it was also trusted when no worker secret was set, which let any caller pick its own "IP" and skip limits.
+create or replace function public.rate_check(p_bucket text, p_max int, p_window interval)
+returns void language plpgsql security definer set search_path = public as $$
+declare h json := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::json;
+        v_ip text := case when coalesce(h->>'x-nbr-ip', '') <> '' and public.from_worker() then h->>'x-nbr-ip' else coalesce(h->>'cf-connecting-ip', split_part(h->>'x-forwarded-for', ',', 1), 'unknown') end;
+begin
+  delete from rate_hits where created_at < now() - interval '2 days';
+  if (select count(*) from rate_hits where bucket = p_bucket and ip = v_ip and created_at > now() - p_window) >= p_max then
+    raise exception 'too many requests';
+  end if;
+  insert into rate_hits (bucket, ip) values (p_bucket, v_ip);
+end $$;
+revoke all on function public.rate_check(text, int, interval) from public, anon, authenticated;
+
+-- Payments: an order moves to paid only from unpaid. Same as ALL-IN-ONE.sql otherwise.
+create or replace function public.mark_order_paid(p_order_no text, p_provider text, p_ref text, p_amount_minor bigint, p_currency text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare o record; c record; v_first boolean := false; v_tok text := '';
+begin
+  if not from_worker() then raise exception 'not allowed'; end if;
+  select * into o from orders where order_no = p_order_no for update;
+  if not found then raise exception 'order not found'; end if;
+  if upper(coalesce(p_currency, '')) <> o.currency then raise exception 'currency mismatch'; end if;
+  if coalesce(p_amount_minor, 0) < round(coalesce(o.total, o.price) * 100) then raise exception 'amount mismatch'; end if;
+  if o.pay_status = 'unpaid' then  -- only unpaid → paid: a refunded or waived order is never reactivated by a late or replayed webhook
+    update orders set pay_status = 'paid', paid_at = now(), pay_provider = left(coalesce(p_provider, ''), 20), pay_ref = left(coalesce(p_ref, ''), 120), amount_paid = p_amount_minor / 100.0 where id = o.id;
+    if o.mode = 'builder' and o.card_id is not null then update cards set active = true where id = o.card_id; end if;
+    -- Fresh private edit link for the "paid" email (the one made at checkout is never stored in plain text)
+    if o.card_id is not null then v_tok := new_edit_token(); update cards set edit_hash = edit_hash_of(v_tok) where id = o.card_id; end if;
+    v_first := true;
+  end if;
+  select slug, public_id into c from cards where id = o.card_id;
+  return jsonb_build_object('ok', true, 'first', v_first, 'order_no', o.order_no, 'mode', o.mode, 'plan', o.plan, 'region', o.region, 'total', o.total, 'currency', o.currency,
+    'customer_email', o.customer_email, 'customer_name', o.customer_name, 'customer_phone', o.customer_phone, 'notes', o.notes, 'slug', c.slug, 'public_id', c.public_id, 'edit_token', v_tok);
+end $$;
+revoke all on function public.mark_order_paid(text, text, text, bigint, text) from public;
+grant execute on function public.mark_order_paid(text, text, text, bigint, text) to anon, authenticated;
+
+-- Refunds: when an order is marked refunded (by an admin today, by refund webhooks later), its card goes offline.
+create or replace function public.on_order_refunded() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.pay_status = 'refunded' and old.pay_status is distinct from 'refunded' and new.card_id is not null then
+    update cards set active = false where id = new.card_id;
+  end if;
+  return new;
+end $$;
+revoke all on function public.on_order_refunded() from public, anon, authenticated;
+drop trigger if exists orders_refund_card_off on public.orders;
+create trigger orders_refund_card_off after update of pay_status on public.orders for each row execute function public.on_order_refunded();
 
 -- ----------------------------------------------------------------
 -- 0) TEST MODE: payments and the bot check off, so the product can be tested end to end
@@ -79,6 +148,97 @@ end $$;
 revoke all on function public.slug_available(text) from public;
 grant execute on function public.slug_available(text) to anon, authenticated;
 
+-- New orders get the same field rules as edits (update_card_by_token): an explicit list of fields with
+-- length limits and formats. Branding can't be switched off, and unknown fields are dropped.
+create or replace function public.order_card_clean(c jsonb) returns jsonb language plpgsql immutable set search_path = public as $$
+declare x jsonb; n text := '^-?[0-9]+(\.[0-9]+)?$';
+begin
+  if jsonb_typeof(c) is distinct from 'object' then raise exception 'invalid card'; end if;
+  x := case when jsonb_typeof(c->'extras') = 'object' then c->'extras' else '{}'::jsonb end;
+  return jsonb_build_object(
+    'slug', coalesce(c->>'slug', ''), 'region', coalesce(c->>'region', ''),
+    'first_name', left(trim(coalesce(c->>'first_name', '')), 60), 'last_name', left(coalesce(c->>'last_name', ''), 60),
+    'prefix', left(coalesce(c->>'prefix', ''), 10), 'title', left(coalesce(c->>'title', ''), 120), 'company', left(coalesce(c->>'company', ''), 120),
+    'profession', left(coalesce(c->>'profession', ''), 60), 'profession_other', left(coalesce(c->>'profession_other', ''), 80),
+    'city', left(coalesce(c->>'city', ''), 80), 'bio', left(coalesce(c->>'bio', ''), 1200), 'quote', left(coalesce(c->>'quote', ''), 300),
+    'notes', left(coalesce(c->>'notes', ''), 2000), 'category', left(coalesce(c->>'category', ''), 60), 'tagline', left(coalesce(c->>'tagline', ''), 120),
+    'phone', coalesce(c->>'phone', ''), 'whatsapp', coalesce(c->>'whatsapp', ''), 'email', coalesce(c->>'email', ''),
+    'website', coalesce(c->>'website', ''), 'instagram', coalesce(c->>'instagram', ''), 'linkedin', coalesce(c->>'linkedin', ''),
+    'photo_url', coalesce(c->>'photo_url', ''),
+    'phone_display', left(regexp_replace(coalesce(c->>'phone_display', ''), '[^0-9+ ()-]', '', 'g'), 40),
+    'colour', case when c->>'colour' ~ '^[a-z0-9-]{2,40}$' then c->>'colour' else 'forest' end,
+    'layout', case when c->>'layout' in ('original', 'professional', 'luxuryEstate', 'estate', 'scene') then c->>'layout' else 'original' end,
+    'preset', case when c->>'preset' ~ '^[A-Za-z]{2,30}$' then c->>'preset' else 'entrepreneur' end,
+    'photo_x', case when c->>'photo_x' ~ n then least(100, greatest(0, (c->>'photo_x')::numeric)) else 50 end,
+    'photo_y', case when c->>'photo_y' ~ n then least(100, greatest(0, (c->>'photo_y')::numeric)) else 50 end,
+    'photo_zoom', case when c->>'photo_zoom' ~ n then least(3, greatest(1, (c->>'photo_zoom')::numeric)) else 1 end,
+    'signature', '', 'titles', '', 'contact_photo_url', '', 'show_powered_by', true,
+    'extras', jsonb_build_object(
+      'brokerage', left(coalesce(x->>'brokerage', ''), 120), 'license_no', left(coalesce(x->>'license_no', ''), 40),
+      'license_state', upper(left(coalesce(x->>'license_state', ''), 2)), 'office_address', left(coalesce(x->>'office_address', ''), 200),
+      'facebook', safe_https(x->>'facebook', 500), 'x_url', safe_https(x->>'x_url', 200), 'listings_url', safe_https(x->>'listings_url', 500),
+      'booking_url', safe_https(x->>'booking_url', 500), 'iabs_url', safe_https(x->>'iabs_url', 500), 'meeting_url', safe_https(x->>'meeting_url', 500),
+      'greeting', left(coalesce(x->>'greeting', ''), 60), 'seasonal', coalesce(x->>'seasonal', 'true') <> 'false',
+      'seasonal_addon', coalesce(x->>'seasonal_addon', 'false') = 'true', 'lead_capture', coalesce(x->>'lead_capture', 'false') = 'true',
+      'reg_no', left(coalesce(x->>'reg_no', ''), 60), 'quals', left(coalesce(x->>'quals', ''), 120), 'hours', left(coalesce(x->>'hours', ''), 80),
+      'services', left(coalesce(x->>'services', ''), 300), 'practice', left(coalesce(x->>'practice', ''), 200),
+      'service_area', left(coalesce(x->>'service_area', ''), 120), 'insured', left(coalesce(x->>'insured', ''), 20),
+      'emergency', left(coalesce(x->>'emergency', ''), 20), 'og_image', coalesce(x->>'og_image', '')));
+end $$;
+
+-- Edits (same as ALL-IN-ONE.sql) now also accept the estate and scene layouts and style ids with digits, so a
+-- customer can switch their own card to a Real Estate, Home Services or Summit/Tide design.
+create or replace function public.update_card_by_token(p_token text, p_card jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare r cards; v jsonb := p_card; v_in jsonb; v_ex jsonb; v_photo text;
+begin
+  perform rate_check('edit_save', 30, interval '1 hour');
+  if coalesce(p_token, '') !~ '^[a-f0-9]{40}$' then raise exception 'invalid link'; end if;
+  select * into r from cards where edit_hash = edit_hash_of(p_token);
+  if not found then raise exception 'invalid link'; end if;
+  if r.renewal is not null and r.renewal::date < current_date - 15 then raise exception 'card expired'; end if;
+  if jsonb_typeof(v) <> 'object' or length(v::text) > 3000000 then raise exception 'invalid card'; end if;
+  if coalesce(trim(v->>'first_name'), '') = '' or length(regexp_replace(coalesce(v->>'phone', ''), '\D', '', 'g')) < 7 then raise exception 'missing fields'; end if;
+  v_in := case when jsonb_typeof(v->'extras') = 'object' then v->'extras' else '{}'::jsonb end;
+  v_ex := coalesce(r.extras, '{}'::jsonb) || jsonb_build_object(
+    'brokerage', left(coalesce(v_in->>'brokerage', ''), 120), 'license_no', left(coalesce(v_in->>'license_no', ''), 40),
+    'license_state', upper(left(coalesce(v_in->>'license_state', ''), 2)), 'office_address', left(coalesce(v_in->>'office_address', ''), 200),
+    'facebook', safe_https(v_in->>'facebook', 500), 'x_url', safe_https(v_in->>'x_url', 200), 'listings_url', safe_https(v_in->>'listings_url', 500),
+    'booking_url', safe_https(v_in->>'booking_url', 500), 'iabs_url', safe_https(v_in->>'iabs_url', 500),
+    'greeting', left(coalesce(v_in->>'greeting', ''), 60), 'seasonal', coalesce(v_in->>'seasonal', 'true') <> 'false',
+    'meeting_url', safe_https(v_in->>'meeting_url', 500), 'reg_no', left(coalesce(v_in->>'reg_no', ''), 60), 'quals', left(coalesce(v_in->>'quals', ''), 120), 'hours', left(coalesce(v_in->>'hours', ''), 80), 'services', left(coalesce(v_in->>'services', ''), 300), 'practice', left(coalesce(v_in->>'practice', ''), 200), 'service_area', left(coalesce(v_in->>'service_area', ''), 120), 'insured', left(coalesce(v_in->>'insured', ''), 20), 'emergency', left(coalesce(v_in->>'emergency', ''), 20));
+  v_photo := case when coalesce(v->>'photo_url', '') = '' then ''
+    when v->>'photo_url' = r.photo_url then r.photo_url
+    when v->>'photo_url' ~ '^https://hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+$'
+      or v->>'photo_url' ~ '^https://(img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' then v->>'photo_url'
+    else r.photo_url end;
+  v_ex := v_ex || jsonb_build_object('og_image', case when v_photo = '' then ''
+    when coalesce(v_in->>'og_image', '') ~ '^https://((img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}|hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+)\.jpg$' then v_in->>'og_image'
+    when v_photo = r.photo_url then coalesce(r.extras->>'og_image', '') else '' end);
+  update cards set
+    first_name = left(trim(v->>'first_name'), 60), last_name = left(coalesce(v->>'last_name', ''), 60),
+    title = left(coalesce(v->>'title', ''), 120), company = left(coalesce(v->>'company', ''), 120),
+    profession = left(coalesce(v->>'profession', r.profession, ''), 60), city = left(coalesce(v->>'city', ''), 80),
+    bio = left(coalesce(v->>'bio', ''), 1200),
+    phone = left(regexp_replace(coalesce(v->>'phone', ''), '[^0-9+ ()-]', '', 'g'), 30),
+    phone_display = left(regexp_replace(coalesce(v->>'phone_display', ''), '[^0-9+ ()-]', '', 'g'), 40),
+    whatsapp = left(regexp_replace(coalesce(v->>'whatsapp', ''), '[^0-9+ ()-]', '', 'g'), 30),
+    email = case when v->>'email' ~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then left(v->>'email', 200) else '' end,
+    website = case when v->>'website' ~* '^https?://[^\s<>"'']+$' then left(v->>'website', 500) else '' end,
+    instagram = safe_https(v->>'instagram', 500), linkedin = safe_https(v->>'linkedin', 500),
+    colour = case when v->>'colour' ~ '^[a-z0-9-]{2,40}$' then v->>'colour' else r.colour end,
+    layout = case when v->>'layout' in ('original', 'professional', 'luxuryEstate', 'estate', 'scene') then v->>'layout' else r.layout end,
+    preset = case when v->>'preset' ~ '^[A-Za-z]{2,30}$' then v->>'preset' else r.preset end,
+    category = left(coalesce(v->>'category', r.category, ''), 60), tagline = left(coalesce(v->>'tagline', r.tagline, ''), 120),
+    photo_url = v_photo,
+    photo_x = least(100, greatest(0, coalesce((v->>'photo_x')::numeric, 50))),
+    photo_y = least(100, greatest(0, coalesce((v->>'photo_y')::numeric, 50))),
+    photo_zoom = least(3, greatest(1, coalesce((v->>'photo_zoom')::numeric, 1))),
+    extras = v_ex, edited_at = now(), edit_seen = false
+  where id = r.id;
+  return jsonb_build_object('ok', true, 'slug', r.slug, 'public_id', r.public_id);
+end $$;
+
 -- Public order entry point (replaces the one in ALL-IN-ONE.sql; place_order_core is unchanged).
 create or replace function public.place_order(payload jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
@@ -86,6 +246,15 @@ declare v_slug text := slug_clean(payload->'card'->>'slug'); v_res jsonb; v_card
 begin
   perform bot_gate();
   perform rate_check('order', 20, interval '1 hour');
+  -- A real email is required: it's where the edit link and receipt go, and coupons are limited per email.
+  if coalesce(payload->>'customer_email', '') !~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then raise exception 'invalid email'; end if;
+  payload := payload || jsonb_build_object('card', order_card_clean(payload->'card'));
+  -- place_order_core adds two random digits to a taken name; once a name has 80 of those, use four.
+  if coalesce(payload->>'strict_slug', '') <> 'true' and v_slug <> ''
+     and (select count(*) from cards where slug ~ ('^' || v_slug || '[0-9]{2}$')) >= 80 then
+    v_slug := left(v_slug, 34) || lpad(floor(random() * 10000)::int::text, 4, '0');
+    payload := jsonb_set(payload, '{card,slug}', to_jsonb(v_slug));
+  end if;
   if v_slug <> '' then
     perform release_stale_slug(v_slug);
     -- The customer picked this exact name: say it's taken instead of adding digits (a retry of the same order is fine).
@@ -165,7 +334,7 @@ create index if not exists clicks_partner_at on partner.clicks (partner_id, at d
 
 create table if not exists partner.payouts (
   id bigserial primary key,
-  partner_id uuid not null references partner.partners(id) on delete cascade,
+  partner_id uuid not null references partner.partners(id) on delete restrict,
   period text not null check (period ~ '^[0-9]{4}-[0-9]{2}$'),   -- month the payout is for
   gross numeric not null, tds numeric not null default 0, net numeric not null,
   status text not null default 'scheduled' check (status in ('scheduled', 'held', 'paid')),
@@ -177,7 +346,7 @@ create index if not exists payouts_partner on partner.payouts (partner_id, creat
 
 create table if not exists partner.commissions (
   id bigserial primary key,
-  partner_id uuid not null references partner.partners(id) on delete cascade,
+  partner_id uuid not null references partner.partners(id) on delete restrict,
   order_no text not null,
   kind text not null default 'sale' check (kind in ('sale', 'clawback')),
   amount numeric not null,                         -- negative for a claw-back
@@ -205,7 +374,7 @@ create or replace function partner.phone10(t text) returns text language sql imm
 create or replace function partner.sync_commission() returns trigger language plpgsql security definer set search_path = partner, public as $$
 declare p partner.partners; s partner.settings; c partner.commissions; v_self boolean;
 begin
-  if new.coupon is null then return new; end if;
+  if new.coupon is null or new.pay_provider = 'test' then return new; end if;
   select * into p from partner.partners where code = new.coupon;
   if not found then return new; end if;
   select * into s from partner.settings;
@@ -216,7 +385,7 @@ begin
     values (p.id, new.order_no, 'sale', coalesce(p.commission, s.commission),
       case when v_self then 'rejected' else 'pending' end, case when v_self then 'Own order' else '' end,
       new.plan, new.total, coalesce(new.paid_at, now()), coalesce(new.paid_at, now()) + make_interval(days => s.hold_days))
-    on conflict (order_no, kind) do update set status = case when partner.commissions.status = 'reversed' then 'pending' else partner.commissions.status end, updated_at = now();
+    on conflict (order_no, kind) do nothing;
   elsif new.pay_status = 'refunded' and tg_op = 'UPDATE' and old.pay_status is distinct from 'refunded' then
     select * into c from partner.commissions where order_no = new.order_no and kind = 'sale';
     if found then
@@ -265,7 +434,7 @@ declare v text := upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '',
 begin
   perform public.rate_check('pcode', 60, interval '1 hour');
   if v !~ '^[A-Z0-9]{4,20}$' then return jsonb_build_object('code', v, 'available', false, 'reason', 'Use 4 to 20 letters or numbers.'); end if;
-  return jsonb_build_object('code', v, 'available', not exists (select 1 from partner.partners where code = v) and not exists (select 1 from public.coupons where code = v));
+  return jsonb_build_object('code', v, 'available', not exists (select 1 from partner.partners where code = v));
 end $$;
 revoke all on function public.partner_code_available(text) from public;
 grant execute on function public.partner_code_available(text) to anon, authenticated;

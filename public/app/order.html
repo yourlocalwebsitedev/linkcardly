@@ -367,7 +367,7 @@ select option{background:var(--surface);color:var(--ink-2);}
   </sc-if>
 </sc-if>
 
-<sc-if value="{{ showNewDone }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcOrderDone" from="/app/components/order-done.js" title="{{ doneTitle }}" text="{{ doneText }}" title-ref="{{ doneRef }}" card="{{ dn.card }}" link-label="{{ linkLabel }}" link-note="{{ dn.linkNote }}" qr-svg="{{ dn.qrSvg }}" open-href="{{ openHref }}" on-copy-link="{{ copyLink }}" copy-label="{{ dn.copyLabel }}" on-download-qr="{{ downloadQR }}" edit-label="{{ dn.editLabel }}" edit-href="{{ dn.editHref }}" on-copy-edit="{{ copyEditLink }}" copy-edit-label="{{ dn.copyEditLabel }}" change-href="{{ dn.changeHref }}" order-no="{{ dn.orderNo }}" on-copy-order="{{ copyOrder }}" copy-order-label="{{ copyOrderLabel }}" secondary-label="{{ dn.secondaryLabel }}" on-secondary="{{ dn.onSecondary }}" secondary-icon="{{ dn.secondaryIcon }}" home-href="{{ orderHref }}" hint-size="100%,1200px"></x-import></sc-if>
+<sc-if value="{{ showNewDone }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcOrderDone" from="/app/components/order-done.js" title="{{ doneTitle }}" text="{{ doneText }}" title-ref="{{ doneRef }}" card="{{ dn.card }}" link-label="{{ linkLabel }}" link-note="{{ dn.linkNote }}" qr-svg="{{ dn.qrSvg }}" open-href="{{ openHref }}" on-copy-link="{{ copyLink }}" copy-label="{{ dn.copyLabel }}" on-download-qr="{{ downloadQR }}" edit-label="{{ dn.editLabel }}" edit-href="{{ dn.editHref }}" on-copy-edit="{{ copyEditLink }}" copy-edit-label="{{ dn.copyEditLabel }}" edit-note="{{ dn.editNote }}" change-href="{{ dn.changeHref }}" order-no="{{ dn.orderNo }}" on-copy-order="{{ copyOrder }}" copy-order-label="{{ copyOrderLabel }}" secondary-label="{{ dn.secondaryLabel }}" on-secondary="{{ dn.onSecondary }}" secondary-icon="{{ dn.secondaryIcon }}" home-href="{{ orderHref }}" hint-size="100%,1200px"></x-import></sc-if>
 <sc-if value="{{ showOldDone }}" hint-placeholder-val="{{ false }}">
   <div style="position:relative;max-width:760px;margin:0 auto;padding-top:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;">
     <div aria-hidden="true" style="position:absolute;left:50%;top:-40px;width:100vw;max-width:1100px;height:380px;transform:translateX(-50%);overflow:hidden;pointer-events:none;z-index:0;">
@@ -783,7 +783,7 @@ class Component extends DCLogic {
 
   componentDidUpdate() { try { nbrSyncVids(this.state.d.photo); } catch (e) {} this.watchBar(); this.watchFormBar(); }
   componentDidMount() {
-    this.onMsg = ev => { if (ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
+    this.onMsg = ev => { if (ev.origin === location.origin && ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
     window.addEventListener('message', this.onMsg);
     this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     try { if (/[?&]qa=1/.test(location.search)) window.__nbrOrder = this; } catch (e) {}
@@ -857,7 +857,7 @@ class Component extends DCLogic {
     if (!d.phone) r.phone = '+18165550123';
     r.name_placeholder = !String(d.firstName || '').trim();
     r.preview_season = (this.state.plan !== 'motion' || this.state.d.seasonal === false) ? 'off' : (this.state.pvSeason || 'off');
-    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: r }, '*'); } catch (e) {}
+    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: r }, location.origin); } catch (e) {}
     clearTimeout(this.msT); this.msT = setTimeout(this.measurePreview, 500);
     if (d.photo !== this.__pvPhoto) { this.__pvPhoto = d.photo; try { f.contentWindow.scrollTo(0, 0); } catch (e) {} }
   };
@@ -983,7 +983,7 @@ class Component extends DCLogic {
   // Linkcardly: "Your link". true = taken, false = free, null = couldn't check (the server still decides).
   async handleTaken(h) {
     if (readLocal().some(o => o.card && o.card.slug === h)) return true;
-    // slug_available (supabase/live/partners.sql) sees every card, including unpaid orders; public_cards only live ones.
+    // slug_available (supabase/live/linkcardly.sql) sees every card, including unpaid orders; public_cards only live ones.
     try { const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/slug_available', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: h }) }); if (r.ok) { const j = await r.json(); if (j && typeof j.available === 'boolean') return !j.available; } else if (r.status !== 404) return null; } catch (e) { return null; }
     try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(h), { headers: { apikey: SUPABASE_KEY } }); if (!r.ok) return null; const j = await r.json(); return Array.isArray(j) && j.length > 0; } catch (e) { return null; }
   }
@@ -1059,7 +1059,7 @@ class Component extends DCLogic {
     const base = { orderNo: order.order_no, slug: order.card.slug, pid: order.card.public_id || '', tok: order.edit_token || '', remote, mode: S.mode, idem: order.idem || '', total: order.total, region: S.region || 'US' };
     this.orderKey = '';
     if (order.pay_status === 'paid' || order.pay_status === 'waived') { this.showDone({ ...base, paid: true }); return; }
-    if (!PAYMENTS_ON) { this.setState({ busy: false, submitError: 'Payments are switched off for testing, but the database is not in test mode, so this order (' + order.order_no + ') is waiting for payment. Turn on test mode in Supabase (see supabase/live/README.md) and place the order again.' }); return; }
+    if (!PAYMENTS_ON) { console.warn('Order ' + order.order_no + ' is unpaid but PAYMENTS_ON is false: turn on test mode in the database (supabase/live/README.md).'); this.setState({ busy: false, submitError: 'We couldn’t finish your order just now. Please try again in a few minutes, or message us and we’ll set it up for you.' }); return; }
     this.startPayment(order.pay, base);
   };
   showDone = (done) => { this.setState({ busy: false, done }, () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); }); };
@@ -1067,7 +1067,7 @@ class Component extends DCLogic {
      If payment isn't set up on the server (pay = null) the order is saved and we email a payment link. */
   startPayment = (pay, base) => {
     if (pay && pay.provider === 'stripe' && pay.url) {
-      try { localStorage.setItem('nbr-pay', JSON.stringify(base)); } catch (e) {}
+      try { localStorage.setItem('nbr-pay', JSON.stringify({ ...base, tok: '' })); } catch (e) {}
       location.href = pay.url; return;
     }
     if (pay && pay.provider === 'razorpay' && pay.order_id) { this.openRazorpay(pay, base); return; }
@@ -1329,7 +1329,7 @@ class Component extends DCLogic {
       dn: (() => { if (!done) return {}; const ph = d.photo && !NBR_VID.test(d.photo) && !/^data:video\//.test(d.photoData || '') ? (d.photoData || d.photo) : '', nm = [d.firstName, d.lastName].filter(Boolean).join(' '), tok = !done.edit && done.tok ? done.tok : '';
         return { card: nm ? { img: ph, name: nm, title: d.title || '' } : null, qrSvg: this.qrSvg(url),
           linkNote: done.edit ? 'Same link and QR code as before.' : done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Your QR code keeps working, even after edits.',
-          copyLabel: S.copied ? 'Copied ✓' : 'Copy link', editLabel: tok ? BASE_HOST + '/e/' + tok.slice(0, 6) + '…' + tok.slice(-4) : '', editHref: tok ? this.editUrlOf(tok) : '', copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy',
+          copyLabel: S.copied ? 'Copied ✓' : 'Copy link', editLabel: tok ? BASE_HOST + '/e/' + tok.slice(0, 6) + '…' + tok.slice(-4) : '', editHref: tok ? this.editUrlOf(tok) : '', copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy', editNote: !tok && !done.edit ? 'Your private edit link is in your email. Keep it safe: anyone with it can edit your card.' : '',
           changeHref: !done.edit ? changeLink('Hi Linkcardly, I’d like a change to my card ' + url + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '',
           orderNo: !done.edit ? done.orderNo || '' : '', secondaryLabel: done.edit ? 'Keep editing' : 'Order another card', onSecondary: done.edit ? this.keepEditing : this.reset, secondaryIcon: done.edit ? '' : 'plus' }; })(),
       showChangeBox: !!(done && !done.edit && !done.unpaid && !done.verifying), isUnpaid: !!(done && done.unpaid), isVerifying: !!(done && done.verifying), showCardBox: !!(done && !done.unpaid && !done.verifying), payOnline: !!(done && done.unpaid && done.online !== false), payOffline: !!(done && done.unpaid && done.online === false),

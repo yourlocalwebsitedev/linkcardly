@@ -1,4 +1,4 @@
-// The live database: supabase/live/ALL-IN-ONE.sql (from NexBizRise) + supabase/live/partners.sql, applied in an
+// The live database: supabase/live/ALL-IN-ONE.sql (from NexBizRise) + supabase/live/linkcardly.sql, applied in an
 // in-process Postgres (PGlite) with stand-ins for what Supabase provides (auth.uid/jwt, storage, API roles).
 // Covers card link names and the partner programme end to end: apply → approve → order → paid → approved → payout.
 import { test, before } from 'node:test';
@@ -53,8 +53,8 @@ before(async () => {
       website text, quote text, bio text, photo_url text, created_at timestamptz default now());
     insert into public.admins values ('${ADMIN}');`);
   await db.exec(await live('ALL-IN-ONE.sql'));
-  await db.exec(await live('partners.sql'));
-  await db.exec(await live('partners.sql')); // safe to run again
+  await db.exec(await live('linkcardly.sql'));
+  await db.exec(await live('linkcardly.sql')); // safe to run again
 });
 
 // ---------- card link names ----------
@@ -219,7 +219,7 @@ test('pausing a partner switches their coupon off', async () => {
 });
 
 // ---------- test mode (payments off) ----------
-test('test mode: off by default; when on, orders skip the bot check and count as paid (provider test), card live, commission recorded', async () => {
+test('test mode: off by default; when on, orders skip the bot check and count as paid (provider test), card live, no commission', async () => {
   // Off: an order stays unpaid and the card is not live.
   const a = await rpc('anon', 'place_order', [order({ card: { slug: 'tm-off', first_name: 'T', phone: '9811100001' } })]);
   assert.equal(a.pay_status, 'unpaid');
@@ -235,10 +235,101 @@ test('test mode: off by default; when on, orders skip the bot check and count as
   const o = await one(`select pay_status, pay_provider, amount_paid from orders where order_no = $1`, [b.order_no]);
   assert.deepEqual([o.pay_status, o.pay_provider, Number(o.amount_paid)], ['paid', 'test', 0]);
   assert.equal((await one(`select active from cards where slug = 'tm-on'`)).active, true);
-  assert.equal((await one(`select status from partner.commissions where order_no = $1`, [b.order_no])).status, 'pending');
+  assert.equal((await one(`select count(*)::int as n from partner.commissions where order_no = $1`, [b.order_no])).n, 0, 'test orders never earn commission');
   assert.equal((await rpc('anon', 'slug_available', ['tm-on'])).available, false);
   // Off again: back to normal.
   await db.exec(`delete from public.app_flags where key = 'test_mode'; delete from app_secrets where key = 'worker'`);
   const c = await rpc('anon', 'place_order', [order({ card: { slug: 'tm-off2', first_name: 'T', phone: '9811100004' } })]);
   assert.equal(c.pay_status, 'unpaid');
+});
+
+// ---------- security fixes (production audit) ----------
+// Run SQL as anon with request headers, the way PostgREST passes them (request.headers is client-controlled).
+async function anonWithHeaders(headers, sql, params) {
+  await db.exec('set role anon');
+  await db.query(`select set_config('request.headers', $1, false)`, [JSON.stringify(headers)]);
+  try { return (await db.query(sql, params)).rows; }
+  finally { await db.exec(`reset role; select set_config('request.headers', '', false)`); }
+}
+
+test('public card views are read-only for the API roles', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  await rpc('anon', 'place_order', [order({ card: { slug: 'viewvictim', first_name: 'V', phone: '9812300000' } })]);
+  await db.query(`update cards set active = true where slug = 'viewvictim'`);
+  for (const role of ['anon', 'authenticated']) {
+    await assert.rejects(as(role, `update public.public_cards set phone = '000' where slug = 'viewvictim'`, [], role === 'authenticated' ? { id: STRANGER, email: 's@example.com' } : null), /permission denied/);
+    await assert.rejects(as(role, `insert into public.public_cards (slug, first_name) values ('free', 'F')`, [], role === 'authenticated' ? { id: STRANGER, email: 's@example.com' } : null), /permission denied/);
+    await assert.rejects(as(role, `delete from public.public_card_extras where slug = 'viewvictim'`, [], role === 'authenticated' ? { id: STRANGER, email: 's@example.com' } : null), /permission denied/);
+  }
+  assert.equal((await as('anon', `select first_name from public.public_cards where slug = 'viewvictim'`))[0].first_name, 'V', 'reading still works');
+  for (const t of ['admins', 'orders', 'leads', 'site_leads', 'rate_hits'])
+    await assert.rejects(as('anon', `insert into public.${t} default values`), /permission denied/);
+});
+
+test('rate limits ignore a spoofed x-nbr-ip header unless the request carries the worker secret', async () => {
+  await db.exec(`delete from rate_hits where bucket = 'slug'`);
+  let blocked = false;
+  for (let i = 0; i < 125 && !blocked; i++) {
+    try { await anonWithHeaders({ 'x-nbr-ip': '10.0.0.' + i, 'cf-connecting-ip': '203.0.113.9' }, `select public.slug_available('spoof${i}')`); }
+    catch (e) { if (/too many requests/.test(e.message)) blocked = true; else throw e; }
+  }
+  assert.ok(blocked, 'the 121st call from one real IP is refused even with a new x-nbr-ip each time');
+  await db.exec(`delete from rate_hits where bucket = 'slug'`);
+});
+
+test('payments: only unpaid → paid; a refund takes the card offline and a replayed webhook does not bring it back', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  const secret = 'w'.repeat(32);
+  await db.query(`insert into app_secrets values ('worker', $1) on conflict (key) do update set value = excluded.value`, [secret]);
+  const worker = { 'x-nbr-secret': secret, 'cf-connecting-ip': '198.51.100.1' };
+  try {
+    const o = await anonWithHeaders(worker, `select public.place_order($1) as r`, [order({ card: { slug: 'refundme', first_name: 'R', phone: '9812311111' } })]).then(r => r[0].r);
+    const total = Math.round(Number(o.total) * 100);
+    await assert.rejects(anonWithHeaders({ 'cf-connecting-ip': '198.51.100.1' }, `select public.mark_order_paid($1, 'razorpay', 'pay_1', $2, 'INR')`, [o.order_no, total]), /not allowed/);
+    const paid = (await anonWithHeaders(worker, `select public.mark_order_paid($1, 'razorpay', 'pay_1', $2, 'INR') as r`, [o.order_no, total]))[0].r;
+    assert.equal(paid.first, true);
+    assert.equal((await one(`select active from cards where slug = 'refundme'`)).active, true);
+    await db.query(`update orders set pay_status = 'refunded' where order_no = $1`, [o.order_no]);
+    assert.equal((await one(`select active from cards where slug = 'refundme'`)).active, false, 'refund takes the card offline');
+    const replay = (await anonWithHeaders(worker, `select public.mark_order_paid($1, 'razorpay', 'pay_1', $2, 'INR') as r`, [o.order_no, total]))[0].r;
+    assert.equal(replay.first, false); assert.equal(replay.edit_token, '');
+    assert.equal((await one(`select pay_status from orders where order_no = $1`, [o.order_no])).pay_status, 'refunded');
+    assert.equal((await one(`select active from cards where slug = 'refundme'`)).active, false);
+  } finally { await db.exec(`delete from app_secrets where key = 'worker'`); }
+});
+
+test('new orders: a real email is required and the card follows the edit field rules', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  await assert.rejects(rpc('anon', 'place_order', [order({ customer_email: '', card: { slug: 'noemail', first_name: 'N', phone: '9812322222' } })]), /invalid email/);
+  await assert.rejects(rpc('anon', 'place_order', [order({ customer_email: 'not-an-email', card: { slug: 'noemail', first_name: 'N', phone: '9812322222' } })]), /invalid email/);
+  const r = await rpc('anon', 'place_order', [order({ customer_email: 'clean@example.com', card: {
+    slug: 'cleanme', first_name: 'C', phone: '9812333333', show_powered_by: false, signature: '<img src=x onerror=alert(1)>', titles: 'x',
+    colour: '"><script>', layout: 'scene', preset: 'bad preset!', photo_zoom: 'abc', is_admin: true,
+    extras: { greeting: 'g'.repeat(500), office_address: '<b>x</b>', booking_url: 'javascript:alert(1)', evil: 'x', lead_capture: true } } })]);
+  const c = await one(`select show_powered_by, signature, titles, colour, layout, preset, photo_zoom, extras from cards where slug = $1`, [r.slug]);
+  assert.equal(c.show_powered_by, true); assert.equal(c.signature, ''); assert.equal(c.titles, '');
+  assert.equal(c.colour, 'forest'); assert.equal(c.layout, 'scene'); assert.equal(c.preset, 'entrepreneur'); assert.equal(Number(c.photo_zoom), 1);
+  assert.equal(c.extras.greeting.length, 60); assert.equal(c.extras.booking_url, ''); assert.equal(c.extras.evil, undefined); assert.equal(c.extras.lead_capture, true);
+});
+
+test('a name with 80 numbered copies gets a 4-digit suffix instead of looping forever', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  await db.exec(`insert into cards (slug, first_name, phone) select 'busy' || g, 'B', '9800000000' from generate_series(10, 89) g`);
+  await db.exec(`insert into cards (slug, first_name, phone) values ('busy', 'B', '9800000000')`);
+  const r = await rpc('anon', 'place_order', [order({ customer_email: 'busy@example.com', card: { slug: 'busy', first_name: 'B', phone: '9812344444' } })]);
+  assert.match(r.slug, /^busy\d{4}$/);
+});
+
+test('edit links can switch a card to the estate and scene designs', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  const r = await rpc('anon', 'place_order', [order({ customer_email: 'edit@example.com', card: { slug: 'editscene', first_name: 'E', phone: '9812355555' } })]);
+  await rpc('anon', 'update_card_by_token', [r.edit_token, { first_name: 'E', phone: '9812355555', layout: 'scene', colour: 'summit-pine' }]);
+  const c = await one(`select layout, colour from cards where slug = 'editscene'`);
+  assert.deepEqual([c.layout, c.colour], ['scene', 'summit-pine']);
+});
+
+test('partner code check does not reveal other coupons', async () => {
+  await db.exec(`insert into coupons (code, kind, value, region, note) values ('SECRET50', 'percent', 50, null, 'internal') on conflict do nothing`);
+  assert.equal((await rpc('anon', 'partner_code_available', ['SECRET50'])).available, true);
+  await assert.rejects(rpc('authenticated', 'partner_apply', [{ full_name: 'Sneaky', phone: '9876511111', code: 'SECRET50', terms_version: '2026-10' }], { id: '00000000-0000-0000-0000-0000000000d1', email: 'sneak@example.com' }), /code taken/);
 });

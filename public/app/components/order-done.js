@@ -24,6 +24,7 @@
  *   editLabel        shortened private edit link, or '' to hide the edit section
  *   editHref         the full edit link
  *   onCopyEdit, copyEditLabel
+ *   editNote         shown instead of the edit section when there's no edit link here (e.g. it was emailed after payment)
  *   changeHref       "Request a change" link, or '' to hide it
  *   orderNo, onCopyOrder, copyOrderLabel
  *   secondaryLabel, onSecondary, secondaryIcon ('plus' | '')   the footer button
@@ -94,6 +95,9 @@
             h('button', { type: 'button', className: 'lcd__pill', onClick: p.onCopyEdit }, p.copyEditLabel || 'Copy')),
           h('a', { className: 'lcd__dark', href: p.editHref }, 'Edit my card now', icon('arrow', 16, 2.4)),
           h('span', { className: 'lcd__warn' }, icon('warn', 14, 2.2), 'Keep it private. Anyone with this link can edit your card.')) : null,
+        !p.editLabel && p.editNote ? h('section', { className: 'lcd__panel lcd__panel--sand lcd__row', 'aria-label': 'Edit your card' },
+          h('span', { className: 'lcd__ic' }, icon('pen')),
+          h('span', { className: 'lcd__col' }, h('b', { className: 'lcd__h2' }, 'Edit your card yourself'), h('span', { className: 'lcd__sub' }, p.editNote))) : null,
         p.changeHref ? h('a', { className: 'lcd__change', href: p.changeHref, target: '_blank', rel: 'noopener' },
           h('span', null, p.editLabel ? 'Prefer we make the change?' : 'Need a change? We’ll update your card.'), h('b', null, 'Request a change →')) : null,
         p.orderNo ? h('section', { className: 'lcd__panel lcd__order', 'aria-label': 'Order number' },

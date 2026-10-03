@@ -4,16 +4,18 @@ The database linkcardly.com runs on today. It was set up by NexBizRise; its sche
 
 | File | What | Run |
 |---|---|---|
-| `ALL-IN-ONE.sql` | Cards, orders, coupons, payments, edit links, leads, admin log (copied from NexBizRise `supabase/ALL-IN-ONE.sql`, commit d92bfea). Already applied to the live database. | Only when setting up a new database. |
-| `partners.sql` | Card link names (availability check, stale unpaid names released, "link taken" instead of random digits) and the partner programme (schema `partner`). | Once, after `ALL-IN-ONE.sql`. Safe to run again. |
+| `ALL-IN-ONE.sql` | Cards, orders, coupons, payments, edit links, leads, admin log (copied from NexBizRise `supabase/ALL-IN-ONE.sql`, commit d92bfea; the public card views are now read-only). Already applied to the live database. | Only when setting up a new database. |
+| `linkcardly.sql` | Security fixes from the production audit (read-only card views, no direct table writes, rate limits that can't be spoofed, payment only unpaid → paid, refunded cards go offline, field rules and a real email on new orders), test mode (off), card link names (availability check, stale unpaid names released, "link taken" instead of random digits) and the partner programme (schema `partner`). | Once, after `ALL-IN-ONE.sql`. Safe to run again. |
 
 Both are tested together in `test/live-db.test.js` (in-process Postgres with Supabase stand-ins for `auth`, `storage` and the API roles).
 
 `supabase/migrations/` is the separate schema for native mode (later), not this database.
 
 ## Test mode (payments off)
+**Never switch test mode on in the production project.** While it is on, anyone can place an order that goes live without paying. Use a separate Supabase project (a copy of the schema) for test mode. Test-mode orders never earn partner commission.
+
 Payments and the Cloudflare Turnstile check are switched off while we test the product end to end.
-- Database: run `insert into public.app_flags (key) values ('test_mode') on conflict (key) do nothing;` (after `partners.sql`). Every new order is then marked paid with `pay_provider = 'test'` and the card goes live.
+- Database: run `insert into public.app_flags (key) values ('test_mode') on conflict (key) do nothing;` (after `linkcardly.sql`). Every new order is then marked paid with `pay_provider = 'test'` and the card goes live.
 - Order page: `PAYMENTS_ON = false` in `public/app/order.html` (no Turnstile, order goes straight to the database, "no payment" placeholder on the Payment step).
 - Order e-mails that the old NexBizRise worker sends after `/api/order` don't go out in test mode, because orders skip that worker.
 

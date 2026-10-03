@@ -29,7 +29,7 @@ linkcardly/
 │   ├── assets/img/brand/  favicon companions, OG image
 │   ├── assets/img/samples/ sample portrait used by the app
 │   └── favicon.svg, robots.txt
-├── supabase/live/         The live database: ALL-IN-ONE.sql (from NexBizRise) + partners.sql (link names, partner programme); see its README
+├── supabase/live/         The live database: ALL-IN-ONE.sql (from NexBizRise) + linkcardly.sql (link names, partner programme); see its README
 ├── supabase/migrations/   Native schema (for MODE = "native"): 0001 init, 0002 hardening, 0003 retention schedule
 ├── test/                  node:test suites (+ e2e/smoke.mjs for a browser check)
 ├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy
@@ -56,5 +56,13 @@ linkcardly/
 - `public/app/card.html` and `order.html` are 270 KB and 180 KB single files, and the app compiles JSX in the browser (Babel, 3 MB). Fine to keep while it's vendored; a native rebuild should precompile.
 - The Motion Card plan preview on the Plan step points at `/portrait.gif`, which isn't in the repo (inherited from NexBizRise), so that preview is an empty tile. Needs a licensed moving-portrait sample in `public/assets/img/samples/`.
 - Three Google Fonts requests (marketing layout, `skin.css` `@import`, the app's own link). Self-hosting the two brand fonts would remove a third-party dependency and the render-blocking `@import`.
-- Card link names: the browser asks `slug_available` (supabase/live/partners.sql), which sees every card including unpaid orders, and the order sends `strict_slug` so the database answers "link taken" instead of adding digits. Names held by unpaid orders older than 24 hours are released. Until partners.sql is run, the browser falls back to the live-cards view and the database still adds digits.
+- Card link names: the browser asks `slug_available` (supabase/live/linkcardly.sql), which sees every card including unpaid orders, and the order sends `strict_slug` so the database answers "link taken" instead of adding digits. Names held by unpaid orders older than 24 hours are released. Until linkcardly.sql is run, the browser falls back to the live-cards view and the database still adds digits.
 - `order.html` keeps its old done markup for the unpaid and verifying states; the rest of the done screen is `components/order-done.js`. Move those two states into the component when they are next changed.
+- Production audit (2026-10), still open:
+  - The proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so its order, edit, upload and payment routes may answer 403. Move those routes into this Worker (DEF-28) or allow the origin there.
+  - Region is chosen by the buyer: a US buyer can pick India and pay the INR price. Until payments move here, turn off international cards in Razorpay.
+  - The NexBizRise worker handles only "paid" webhooks (no failed, expired, refund or dispute events), logs nothing, uploads need no order and keep EXIF on GIF/video, and its CSP has no `script-src`. The app CSP here is still report-only with `unsafe-eval`.
+  - Coupons are counted when an order is placed, not when it's paid; unpaid orders can use them up.
+  - No retention or deletion: unpaid orders, inactive cards and `admin_log` snapshots are kept forever.
+  - Partner payout details (UPI, bank account, PAN) are plain text; encrypt before scaling the programme.
+  - The NexBizRise `app_secrets` worker secret must be at least 24 characters and match `NBR_WORKER_SECRET` on that worker, or every order fails the bot check and no payment can be marked paid.

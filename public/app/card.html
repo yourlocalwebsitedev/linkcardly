@@ -1275,7 +1275,7 @@ class Component extends DCLogic {
       quote: row.quote, bio: row.bio, signature: row.signature || name, titles: row.titles || [row.title, row.company].filter(Boolean).join(' · '),
       phone: toE164(row.phone, row.region), phoneDisplay: fmtPhone(row.phone || row.phone_display, row.region), whatsapp: row.whatsapp ? toE164(row.whatsapp, row.region).replace(/\D/g, '') : '', email: row.email, socials, details: x.office_address ? [{ label: 'Office', value: x.office_address, maps: true }] : (row.city ? [{ label: 'City', value: row.city, maps: true }] : []), cta: x.booking_url ? { label: (BIZ_CFG[row.profession] || {}).cta || (row.region === 'IN' ? 'Book a site visit' : 'Schedule a showing'), url: x.booking_url } : null,
       previewSeason: row.preview_season || '', namePlaceholder: !!row.name_placeholder, seasonal: x.seasonal !== false, greeting: String(x.greeting || '').slice(0, 60), premium: x.motion === true || row.plan === 'motion' || x.seasonal_addon === true,
-      slug, region: row.region, city: row.city || '', listingsUrl: x.listings_url || '', officeAddress: x.office_address || '', brokerage: x.brokerage || '', licenseNo: x.license_no || '', licenseState: String(x.license_state || '').toUpperCase(), iabsUrl: x.iabs_url || '', profession: row.profession || '', bookingUrl: x.booking_url || '', meetingUrl: x.meeting_url || '', regNo: x.reg_no || '', quals: x.quals || '', hours: x.hours || '', services: x.services || '', practice: x.practice || '', serviceArea: x.service_area || '', insured: x.insured || '', emergency: x.emergency || '', leadCapture: x.lead_capture !== false, poweredBy: row.show_powered_by !== false, showPlans: row.show_powered_by !== false,
+      slug, region: row.region, city: row.city || '', listingsUrl: x.listings_url || '', officeAddress: x.office_address || '', brokerage: x.brokerage || '', licenseNo: x.license_no || '', licenseState: String(x.license_state || '').toUpperCase(), iabsUrl: x.iabs_url || '', profession: row.profession || '', bookingUrl: safeUrl(x.booking_url), meetingUrl: safeUrl(x.meeting_url), regNo: x.reg_no || '', quals: x.quals || '', hours: x.hours || '', services: x.services || '', practice: x.practice || '', serviceArea: x.service_area || '', insured: x.insured || '', emergency: x.emergency || '', leadCapture: x.lead_capture !== false, poweredBy: row.show_powered_by !== false, showPlans: row.show_powered_by !== false,
       url: location.origin + (viaQuery ? '/?c=' + (row.public_id || slug) : row.public_id ? '/c/' + row.public_id : '/' + slug) };
     m.pid = row.public_id || '';
     if (row.category) m.category = row.category;
@@ -1286,16 +1286,18 @@ class Component extends DCLogic {
 
   async loadRemote() {
     try {
-      if (new URLSearchParams(location.search).get('preview')) {
+      // Linkcardly: preview mode only inside the order page's own frame (same origin); opened directly it's a normal card.
+      if (new URLSearchParams(location.search).get('preview') && window.parent !== window) {
         try { document.documentElement.style.overscrollBehaviorY = 'auto'; document.body.style.overscrollBehaviorY = 'auto'; } catch (e) {}
         this.onPreviewMsg = ev => {
           const d = ev.data;
+          if (ev.origin !== location.origin || ev.source !== window.parent) return; // only our own order page may drive the preview
           if (!d || d.type !== 'nbr-preview' || !d.row) return;
           const row = d.row, slug = row.slug || 'preview'; this.isPreview = true;
           this.setState({ remote: this.mapRow(row, slug, false), remoteStatus: 'ok' });
         };
         window.addEventListener('message', this.onPreviewMsg);
-        try { window.parent.postMessage({ type: 'nbr-preview-ready' }, '*'); } catch (e) {}
+        try { window.parent.postMessage({ type: 'nbr-preview-ready' }, location.origin); } catch (e) {}
         return;
       }
     } catch (e) {}

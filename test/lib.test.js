@@ -380,3 +380,26 @@ test('order done screen and link field are components, and the share link uses t
   assert.doesNotMatch(html, /#56633F|#3D472B.*POPULAR/, 'no olive in the step tabs or plan badge');
   for (const f of ['order-done.js', 'order-done.css', 'link-claim.js', 'link-claim.css']) await readFile(new URL('../public/app/components/' + f, import.meta.url), 'utf8');
 });
+
+test('proxy keeps only intended database messages in error responses', async () => {
+  const { cleanError } = await import('../src/routes/proxy.js');
+  const mk = (b, s = 400) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } });
+  assert.deepEqual(await (await cleanError(mk({ code: 'P0001', details: null, hint: null, message: 'link taken' }))).json(), { message: 'link taken' });
+  const leak = await cleanError(mk({ code: '23505', details: 'Key (slug)=(x) already exists.', hint: null, message: 'duplicate key value violates unique constraint "cards_slug_key"' }, 409));
+  assert.equal(leak.status, 409);
+  assert.deepEqual(await leak.json(), { message: 'Something went wrong. Please try again.' });
+  assert.deepEqual(await (await cleanError(mk({ message: 'forbidden' }, 403))).json(), { message: 'forbidden' });
+  const html = await cleanError(new Response('<h1>x</h1>', { status: 502, headers: { 'Content-Type': 'text/html' } }));
+  assert.equal(await html.text(), '<h1>x</h1>');
+});
+
+test('card page preview only listens to its own order page', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const card = await readFile(new URL('../public/app/card.html', import.meta.url), 'utf8');
+  const order = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(card, /get\('preview'\) && window\.parent !== window/);
+  assert.match(card, /ev\.origin !== location\.origin \|\| ev\.source !== window\.parent/);
+  assert.match(card, /bookingUrl: safeUrl\(x\.booking_url\)/);
+  assert.doesNotMatch(order, /postMessage\(\{ type: 'nbr-preview', row: r \}, '\*'\)/);
+  assert.match(order, /localStorage\.setItem\('nbr-pay', JSON\.stringify\(\{ \.\.\.base, tok: '' \}\)\)/);
+});

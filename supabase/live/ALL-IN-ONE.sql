@@ -488,6 +488,7 @@ create view public.public_cards as
          show_powered_by
   from public.cards
   where active is not false;
+revoke all on public.public_cards from anon, authenticated;  -- Linkcardly: read-only (the default grants made the view writable)
 grant select on public.public_cards to anon, authenticated;
 
 drop view if exists public.public_card_extras;
@@ -499,6 +500,7 @@ create view public.public_card_extras as
     'seasonal', extras->'seasonal', 'seasonal_addon', extras->'seasonal_addon', 'greeting', extras->'greeting', 'motion', to_jsonb(plan = 'motion'),
     'meeting_url', extras->'meeting_url', 'reg_no', extras->'reg_no', 'quals', extras->'quals', 'hours', extras->'hours', 'services', extras->'services', 'practice', extras->'practice', 'service_area', extras->'service_area', 'insured', extras->'insured', 'emergency', extras->'emergency', 'og_image', extras->'og_image')) as extras
   from public.cards where active is not false;
+revoke all on public.public_card_extras from anon, authenticated;  -- Linkcardly: read-only (the default grants made the view writable)
 grant select on public.public_card_extras to anon, authenticated;
 
 -- B) Public entry points with limits.
