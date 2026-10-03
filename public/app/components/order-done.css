@@ -45,7 +45,8 @@
 .lcd__qr svg{width:100%;height:100%;display:block}
 .lcd__link-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;text-align:left}
 .lcd__kicker{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--n700)}
-.lcd__url{font-size:17px;line-height:1.3;overflow-wrap:anywhere}
+.lcd__url{font-size:17px;line-height:1.3}
+.lcd__url-name{display:inline-block;max-width:100%;overflow-wrap:anywhere}
 .lcd__note{display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.35;color:var(--n700)}
 .lcd__note-ic{flex:none;width:24px;height:24px;border-radius:50%;background:var(--lc-surface);color:var(--a700);display:grid;place-items:center}
 .lcd__acts{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px}

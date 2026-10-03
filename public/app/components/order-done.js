@@ -54,6 +54,12 @@
   var BITS = [[5, 70, 0, 0, -30], [13, 40, 1, 1, 20], [23, 118, 0, 2, 45], [8, 170, 2, 3, 0], [31, 22, 0, 4, -50], [69, 36, 1, 0, 35],
     [80, 92, 0, 1, -20], [90, 58, 2, 2, 0], [87, 176, 0, 3, 60], [76, 150, 1, 4, -40], [93, 236, 0, 0, 25], [3, 250, 1, 2, -15], [56, 14, 2, 1, 0]];
 
+  // "linkcardly.com/" then the name: a long link wraps after the slash, not in the middle of the name.
+  function urlParts(label) {
+    var s = String(label || ''), i = s.lastIndexOf('/');
+    return i < 0 ? s : [s.slice(0, i + 1), h('wbr', { key: 'w' }), h('span', { key: 'n', className: 'lcd__url-name' }, s.slice(i + 1))];
+  }
+
   function OrderDone(p) {
     ensureCss();
     var stamp = h('span', { className: 'lcd__tick' }, icon('tick', p.card ? 24 : 30, 3.2));
@@ -78,7 +84,7 @@
             h('span', { className: 'lcd__qr', role: 'img', 'aria-label': 'QR code for ' + p.linkLabel, dangerouslySetInnerHTML: { __html: p.qrSvg || '' } }),
             h('span', { className: 'lcd__link-txt' },
               h('span', { className: 'lcd__kicker' }, 'YOUR CARD LINK'),
-              h('b', { className: 'lcd__url' }, p.linkLabel),
+              h('b', { className: 'lcd__url' }, urlParts(p.linkLabel)),
               p.linkNote ? h('span', { className: 'lcd__note' }, h('span', { className: 'lcd__note-ic' }, icon('loop', 14, 2.4)), p.linkNote) : null)),
           h('div', { className: 'lcd__acts' },
             h('a', { className: 'lcd__act', href: p.openHref, target: '_blank', rel: 'noopener' }, icon('open'), 'Open card'),

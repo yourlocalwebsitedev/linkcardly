@@ -57,7 +57,7 @@
 .lcs__bar>*{pointer-events:auto}
 
 /* StyleTrigger: glass pill, 160px wide, growing to 208px for longer names, then truncating */
-.lcs-trigger{width:auto;min-width:160px;max-width:min(208px,calc(100% - 68px));height:56px;flex:none;padding:0 14px 0 10px;border-radius:28px;
+.lcs-trigger{width:auto;min-width:160px;max-width:min(236px,calc(100% - 68px));height:56px;flex:none;padding:0 14px 0 10px;border-radius:28px;
   color:var(--lcs-ink);display:flex;align-items:center;gap:10px;transition:color var(--lcs-dur) ease-out,transform 120ms ease-out}
 .lcs-trigger::before{border-radius:28px 28px 0 0}
 .lcs-trigger:active{transform:scale(.97)}
