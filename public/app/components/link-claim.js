@@ -45,7 +45,7 @@
     var status = props.status || 'idle', value = props.value || '', prefix = props.prefix || 'linkcardly.com/';
     var id = props.inputId || 'o-handle', statusId = id + '-status';
     var full = prefix + value;
-    var bad = status === 'taken' || status === 'invalid' || !!props.error;
+    var bad = status === 'taken' || status === 'invalid' || (!!props.error && status !== 'ok');
     var mark = status === 'ok' ? h('span', { className: 'lcl__mark lcl__mark--ok', 'aria-hidden': 'true' }, icon('M20 6 9 17l-5-5', 14, 3))
       : status === 'checking' ? h('span', { className: 'lcl__spin', 'aria-hidden': 'true' })
       : bad ? h('span', { className: 'lcl__mark lcl__mark--bad', 'aria-hidden': 'true' }, icon('M18 6 6 18M6 6l12 12', 13, 3)) : null;
@@ -68,7 +68,7 @@
         status === 'taken' && (props.alts || []).length ? h('div', { className: 'lcl__alts' }, props.alts.map(function (a) {
           return h('button', { key: a, type: 'button', className: 'lcl__alt', onClick: function () { if (props.onPick) props.onPick(a); } }, a);
         })) : null,
-        props.error && status !== 'taken' && status !== 'invalid' ? h('p', { className: 'lcl__line', role: 'alert' }, h('b', { className: 'lcl__bad' }, props.error)) : null),
+        props.error && status !== 'taken' && status !== 'invalid' && status !== 'ok' ? h('p', { className: 'lcl__line', role: 'alert' }, h('b', { className: 'lcl__bad' }, props.error)) : null),
       h('p', { className: 'lcl__hint' }, 'Letters, numbers and dashes. 3 to 30 characters.'));
   }
   window.LcLinkClaim = LinkClaim;

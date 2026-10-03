@@ -38,4 +38,4 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. Routing and handle reservation follow automatically.
 
 ## Commands
-`npm test` (build + all suites) · `npm run dev` (http://localhost:8787) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright)
+`npm test` (build + all suites) · `npm run dev` (http://localhost:8787) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright) · `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs` (order flow end to end at 390 × 844 with a mocked backend: claim, link checks, order, done screen)

@@ -960,6 +960,7 @@ class Component extends DCLogic {
     const { step } = this.state;
     if (step === 2) {
       const e = this.validate();
+      const hc = this.state.hCheck; if (Object.keys(e).length === 1 && e.handle && hc && hc.status === 'checking' && hc.h === this.handleOf()) { this.nextAfterCheck = true; return; }
       if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k ? document.getElementById('o-' + k.k) : (e.handle ? document.getElementById('o-handle') : null); el && el.focus(); return; }
     }
     if (this.state.editToken) { if (step === 2 && this.state.vw < 960) this.goStep(3); else this.saveEdit(); return; }
@@ -978,7 +979,9 @@ class Component extends DCLogic {
   }
   async freeAlts(h, d, live) { const out = []; for (const a of handleAlts(h, d)) { if (out.length >= 3 || !live()) break; if ((await this.handleTaken(a)) === false) out.push(a); } return out; }
   handleOf = (S = this.state) => (S.hTouched || S.d.handle) ? (S.d.handle || '') : (claimedSlug() || nameSlug(S.d));
-  setHandle = v => this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, errors: { ...s.errors, handle: '' } }));
+  setHandle = v => { this.nextAfterCheck = false; this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, errors: { ...s.errors, handle: '' } })); };
+  // Alternatives were checked a moment ago, so a tapped one is available straight away.
+  pickHandle = v => { this.__lastH = v; clearTimeout(this.hT); this.hSeq = (this.hSeq || 0) + 1; this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, hCheck: { h: v, status: 'ok', alts: [] }, errors: { ...s.errors, handle: '' } })); };
   queueHandleCheck = h => {
     clearTimeout(this.hT); const seq = this.hSeq = (this.hSeq || 0) + 1, live = () => seq === this.hSeq;
     const bad = handleIssue(h);
@@ -986,7 +989,8 @@ class Component extends DCLogic {
     this.setState({ hCheck: { h, status: 'checking', alts: [] } });
     this.hT = setTimeout(async () => {
       const t = await this.handleTaken(h); if (!live()) return;
-      if (t !== true) { this.setState({ hCheck: { h, status: t === false ? 'ok' : 'idle', alts: [] } }); return; }
+      if (t !== true) { const go = this.nextAfterCheck; this.nextAfterCheck = false; this.setState(s => ({ hCheck: { h, status: t === false ? 'ok' : 'idle', alts: [] }, errors: { ...s.errors, handle: '' } }), () => { if (go && this.state.step === 2) this.next(); }); return; }
+      this.nextAfterCheck = false;
       const alts = await this.freeAlts(h, this.state.d, live); if (live()) this.setState({ hCheck: { h, status: 'taken', alts } });
     }, 400);
   };
@@ -1238,7 +1242,7 @@ class Component extends DCLogic {
       steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? 'var(--ink-3)' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
       payLinkLine: (() => { const h = this.handleOf(S); return S.editToken || handleIssue(h) ? '1 year' : '1 year · ' + BASE_HOST + '/' + h; })(),
       isStep1: S.step === 1, isStep2: S.step === 2, isStep3: S.step === 2, isStep5: S.step === 4,
-      showLinkClaim: !S.editToken, lc: (() => { const h = this.handleOf(S), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null; return { value: h, status: c ? c.status : 'idle', message: c ? c.message || '' : '', alts: c ? c.alts || [] : [], fromHome: !S.hTouched && !S.d.handle && !!claimedSlug() && h === claimedSlug(), error: (S.errors || {}).handle || '', onChange: this.setHandle, onPick: this.setHandle }; })(),
+      showLinkClaim: !S.editToken, lc: (() => { const h = this.handleOf(S), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null; return { value: h, status: c ? c.status : 'idle', message: c ? c.message || '' : '', alts: c ? c.alts || [] : [], fromHome: !S.hTouched && !S.d.handle && !!claimedSlug() && h === claimedSlug(), error: (S.errors || {}).handle || '', onChange: this.setHandle, onPick: this.pickHandle }; })(),
       reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
       changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
       plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '2px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', radioDot: c ? '1' : '0', thumb: S.vw < 960, motion: p.id === 'motion', img: p.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '18px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '28px' : '32px') : '36px', featFs: S.vw < 960 ? '13.5px' : '14px' }; }),
