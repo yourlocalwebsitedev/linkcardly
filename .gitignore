@@ -14,3 +14,6 @@ dist-staging/
 public/assets/js/rules.js
 src/lib/qrcode.gen.js
 public/assets/js/catalogue.js
+
+# E2E report (node test/e2e/production.mjs)
+test/e2e/report/

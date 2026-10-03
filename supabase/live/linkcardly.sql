@@ -41,6 +41,12 @@ grant select on public.public_cards, public.public_card_extras to anon, authenti
 -- the API roles never need, as a second lock behind RLS. Nobody edits the admins list through the API.
 revoke insert, update, delete, truncate on public.admins, public.orders, public.leads, public.site_leads, public.rate_hits from anon;
 revoke insert, update, delete, truncate on public.admins from authenticated;
+-- Anonymous visitors never read or write the cards table itself: public cards come through the read-only views
+-- above and every write goes through a SECURITY DEFINER function. RLS already hides the rows; this is the second
+-- lock, so a policy mistake can't expose edit hashes, emails or unpaid cards. Admins (authenticated) keep RLS access.
+revoke all on public.cards from anon;
+-- Nor the admins list (who the admins are is not public).
+revoke all on public.admins from anon;
 
 -- Rate limits: the x-nbr-ip header is trusted only when the request carries the worker secret. Before,
 -- it was also trusted when no worker secret was set, which let any caller pick its own "IP" and skip limits.

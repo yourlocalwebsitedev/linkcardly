@@ -5,7 +5,7 @@ The database linkcardly.com runs on today. It was set up by NexBizRise; its sche
 | File | What | Run |
 |---|---|---|
 | `ALL-IN-ONE.sql` | Cards, orders, coupons, payments, edit links, leads, admin log (copied from NexBizRise `supabase/ALL-IN-ONE.sql`, commit d92bfea; the public card views are now read-only). Already applied to the live database. | Only when setting up a new database. |
-| `linkcardly.sql` | Security fixes from the production audit (read-only card views, no direct table writes, rate limits that can't be spoofed, payment only unpaid → paid, refunded cards go offline, field rules and a real email on new orders), test mode (off), card link names (availability check, stale unpaid names released, "link taken" instead of random digits) and the partner programme (schema `partner`). | Once, after `ALL-IN-ONE.sql`. Safe to run again. |
+| `linkcardly.sql` | Security fixes from the production audit (read-only card views, no direct table writes, no anonymous access to the cards table or the admins list, rate limits that can't be spoofed, payment only unpaid → paid, refunded cards go offline, field rules and a real email on new orders), test mode (off), card link names (availability check, stale unpaid names released, "link taken" instead of random digits) and the partner programme (schema `partner`). | Once, after `ALL-IN-ONE.sql`. Safe to run again. |
 
 Both are tested together in `test/live-db.test.js` (in-process Postgres with Supabase stand-ins for `auth`, `storage` and the API roles).
 

@@ -28,6 +28,11 @@
 <script src="/app/scene-styles.js"></script>
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/app/skin.css">
+<!-- Linkcardly: load the confirmation screen and "Your link" field up front, so a dropped connection at the moment
+     of ordering can't leave the confirmation unstyled. The components skip loading these again (same ids). -->
+<link rel="stylesheet" id="lc-order-done-css" href="/app/components/order-done.css">
+<link rel="stylesheet" id="lc-link-claim-css" href="/app/components/link-claim.css">
+<link rel="preload" as="script" href="/app/components/order-done.js">
 </head>
 <body>
 <x-dc>
@@ -851,7 +856,9 @@ class Component extends DCLogic {
   }
   postPreview = () => {
     const f = this.previewRef.current; if (!f || !f.contentWindow) return;
-    const d = this.state.d, r = this.row('preview', true);
+    // Linkcardly: the preview's QR, Share and saved contact use the link the card will have (its claimed name).
+    const S = this.state, h = S.editToken ? ((S.editInfo || {}).slug || '') : this.handleOf(S);
+    const d = S.d, r = this.row(h && !handleIssue(h) ? h : 'preview', true);
     if (!d.firstName && !d.lastName) { r.first_name = 'Your'; r.last_name = 'Name'; }
     if (!d.title) r.title = 'Your job title';
     if (!d.phone) r.phone = '+18165550123';
@@ -1034,7 +1041,9 @@ class Component extends DCLogic {
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
     let slug = this.handleOf(S); const strict = !handleIssue(slug);
     if (!strict) slug = await this.uniqueSlug(autoSlug(d));
-    else if ((await this.handleTaken(slug)) === true) { const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; }
+    // A retry of an order that was already sent (orderKey set) skips this check: that order may hold the name, and the
+    // database returns it for the same key instead of creating a second one ("link taken" still comes back if not).
+    else if (!this.orderKey && (await this.handleTaken(slug)) === true) { const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; }
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
       strict_slug: strict ? 'true' : '', card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };

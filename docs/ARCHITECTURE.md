@@ -31,7 +31,7 @@ linkcardly/
 │   └── favicon.svg, robots.txt
 ├── supabase/live/         The live database: ALL-IN-ONE.sql (from NexBizRise) + linkcardly.sql (link names, partner programme); see its README
 ├── supabase/migrations/   Native schema (for MODE = "native"): 0001 init, 0002 hardening, 0003 retention schedule
-├── test/                  node:test suites (+ e2e/smoke.mjs for a browser check)
+├── test/                  node:test suites; e2e/ (smoke, order-flow, production suite); support/ (live database in PGlite + PostgREST stand-in)
 ├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy
 └── docs/                  ARCHITECTURE.md, QA.md, SDLC_VALIDATION.md
 ```
@@ -57,6 +57,12 @@ linkcardly/
 - The Motion Card plan preview on the Plan step points at `/portrait.gif`, which isn't in the repo (inherited from NexBizRise), so that preview is an empty tile. Needs a licensed moving-portrait sample in `public/assets/img/samples/`.
 - Three Google Fonts requests (marketing layout, `skin.css` `@import`, the app's own link). Self-hosting the two brand fonts would remove a third-party dependency and the render-blocking `@import`.
 - Card link names: the browser asks `slug_available` (supabase/live/linkcardly.sql), which sees every card including unpaid orders, and the order sends `strict_slug` so the database answers "link taken" instead of adding digits. Names held by unpaid orders older than 24 hours are released. Until linkcardly.sql is run, the browser falls back to the live-cards view and the database still adds digits.
+- From the production E2E run (2026-10), open:
+  - Refreshing the order page (or a phone closing the tab) loses what the customer typed; keep a draft in `sessionStorage`.
+  - Save contact shows the iPhone guide ("Two taps on iPhone") on every device (`iosGuide` "Always" in card.html); Android only needs one tap.
+  - Order numbers still start with `NBR-` (set in the database's `place_order`).
+  - Choosing a file that isn't an image gives no message on the Your card step.
+  - Payment and webhook scenarios aren't tested (payments are off). Add them to `test/e2e/production.mjs` when they're on.
 - `order.html` keeps its old done markup for the unpaid and verifying states; the rest of the done screen is `components/order-done.js`. Move those two states into the component when they are next changed.
 - Production audit (2026-10), still open:
   - The proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so its order, edit, upload and payment routes may answer 403. Move those routes into this Worker (DEF-28) or allow the origin there.
@@ -65,4 +71,5 @@ linkcardly/
   - Coupons are counted when an order is placed, not when it's paid; unpaid orders can use them up.
   - No retention or deletion: unpaid orders, inactive cards and `admin_log` snapshots are kept forever.
   - Partner payout details (UPI, bank account, PAN) are plain text; encrypt before scaling the programme.
+  - Photo upload (`/api/upload`) and edit saves (`/api/edit`) also go through that proxy, so in production a photo order or a saved edit may fail until the origin issue is fixed. The E2E suite can't reach the deployed site; run it with `STAGING=1` before launch.
   - The NexBizRise `app_secrets` worker secret must be at least 24 characters and match `NBR_WORKER_SECRET` on that worker, or every order fails the bot check and no payment can be marked paid.
