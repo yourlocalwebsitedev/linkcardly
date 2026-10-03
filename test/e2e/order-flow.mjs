@@ -16,14 +16,20 @@ const browser = await chromium.launch();
 async function newPage(taken) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, permissions: ['clipboard-read', 'clipboard-write'] });
   const page = await ctx.newPage();
-  const state = { taken, orders: [], errors: [] };
+  const state = { taken, serverTaken: new Set(), orders: [], errors: [] };
   page.on('pageerror', e => state.errors.push(e.message));
   await page.route('**/rest/v1/public_cards**', route => {
     const slug = decodeURIComponent((route.request().url().match(/slug=eq\.([^&]+)/) || [])[1] || '');
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.taken.has(slug) ? [{ slug }] : []) });
   });
+  await page.route('**/rest/v1/rpc/slug_available', route => {
+    const slug = JSON.parse(route.request().postData() || '{}').p_slug || '';
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ slug, available: !state.taken.has(slug) }) });
+  });
   await page.route('**/rest/v1/rpc/place_order', route => {
     const { payload } = JSON.parse(route.request().postData() || '{}');
+    // The database refuses a claimed name someone else got first (supabase/live/partners.sql).
+    if (payload.strict_slug === 'true' && state.serverTaken.has(payload.card.slug)) return route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: 'link taken' }) });
     state.orders.push(payload);
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ slug: payload.card.slug, order_no: 'LC-E2E001', public_id: 'nbr_e2e001', edit_token: TOKEN, pay_status: 'paid', total: payload.total }) });
   });
@@ -121,6 +127,7 @@ try {
     await page.waitForSelector('.lcd', { timeout: 15000 });
     assert.equal(state.orders.length, 1);
     assert.equal(state.orders[0].card.slug, 'ryancollins');
+    assert.equal(state.orders[0].strict_slug, 'true', 'the order asks for exactly this name');
     assert.equal(await page.locator('.lcd__title').innerText(), 'Your card is ready!');
     assert.equal(await page.locator('.lcd__url').innerText(), 'linkcardly.com/ryancollins');
     assert.match(await page.locator('.lcd__act').first().getAttribute('href'), /^(\/|\/app\/card\.html\?c=)ryancollins$/);
@@ -190,6 +197,32 @@ try {
     assert.deepEqual(race.state.errors, []);
   });
   await race.ctx.close();
+
+  // The browser check said free, but the database had it (e.g. an order seconds earlier): "link taken".
+  const race2 = await newPage(new Set());
+  await step('race: database says the link was taken → back to pick another, then the order goes through', async () => {
+    const p = race2.page; globalThis.__p = p;
+    await p.goto(BASE + '/create?h=samlee&plan=basic');
+    await p.getByRole('option', { name: /Corporate & Consultants/ }).first().click();
+    await p.fill('#o-firstName', 'Sam'); await p.fill('#o-lastName', 'Lee'); await p.fill('#o-title', 'Founder'); await p.fill('#o-phone', '(312) 555-0177'); await p.fill('#o-email', 'sam@example.com');
+    await p.waitForFunction(() => /samlee is available/.test(document.querySelector('#o-handle-status').textContent), null, { timeout: 5000 });
+    await p.locator('.lc-cta').click();
+    await p.locator('.lcs-next').click({ timeout: 15000 });
+    await p.waitForSelector('text=Complete your card');
+    race2.state.serverTaken.add('samlee');
+    await p.locator('.lc-cta').click();
+    await p.waitForFunction(() => /samlee is taken/.test((document.querySelector('#o-handle-status') || {}).textContent || ''), null, { timeout: 8000 });
+    assert.equal(race2.state.orders.length, 0);
+    await p.locator('.lcl__alt').first().click();
+    const pick = await p.inputValue('#o-handle');
+    await p.locator('.lc-cta').click();
+    await p.locator('.lcs-next').click({ timeout: 15000 });
+    await p.locator('.lc-cta').click();
+    await p.waitForSelector('.lcd', { timeout: 15000 });
+    assert.equal(race2.state.orders[0].card.slug, pick);
+    assert.deepEqual(race2.state.errors, []);
+  });
+  await race2.ctx.close();
 
   // Saved edit and still-unpaid states.
   const misc = await newPage(new Set());

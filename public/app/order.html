@@ -975,6 +975,8 @@ class Component extends DCLogic {
   // Linkcardly: "Your link". true = taken, false = free, null = couldn't check (the server still decides).
   async handleTaken(h) {
     if (readLocal().some(o => o.card && o.card.slug === h)) return true;
+    // slug_available (supabase/live/partners.sql) sees every card, including unpaid orders; public_cards only live ones.
+    try { const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/slug_available', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: h }) }); if (r.ok) { const j = await r.json(); if (j && typeof j.available === 'boolean') return !j.available; } else if (r.status !== 404) return null; } catch (e) { return null; }
     try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(h), { headers: { apikey: SUPABASE_KEY } }); if (!r.ok) return null; const j = await r.json(); return Array.isArray(j) && j.length > 0; } catch (e) { return null; }
   }
   async freeAlts(h, d, live) { const out = []; for (const a of handleAlts(h, d)) { if (out.length >= 3 || !live()) break; if ((await this.handleTaken(a)) === false) out.push(a); } return out; }
@@ -1022,12 +1024,12 @@ class Component extends DCLogic {
     if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
     this.setState({ busy: true, submitError: '' });
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
-    let slug = this.handleOf(S);
-    if (handleIssue(slug)) slug = await this.uniqueSlug(autoSlug(d));
+    let slug = this.handleOf(S); const strict = !handleIssue(slug);
+    if (!strict) slug = await this.uniqueSlug(autoSlug(d));
     else if ((await this.handleTaken(slug)) === true) { const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; }
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
-      card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
+      strict_slug: strict ? 'true' : '', card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
     if (!this.orderKey) { try { this.orderKey = crypto.randomUUID(); } catch (e) { this.orderKey = ''; } }
     order.idem = this.orderKey;
     if (S.d.photo && !order.card.photo_url) { this.setState({ busy: false, submitError: 'Please add your photo again (Step 2), then place your order.' }); return; }
@@ -1039,7 +1041,7 @@ class Component extends DCLogic {
     try {
       const r = VIA_WORKER() ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
       if (r.ok) { const j = await r.json(); if (j && j.slug) { this.orderKey = ''; order.order_no = j.order_no || order.order_no; order.card.slug = j.slug; order.card.public_id = j.public_id || ''; order.edit_token = j.edit_token || ''; if (j.total != null) { order.total = j.total; order.discount = j.discount; } order.pay = j.pay || null; order.pay_status = j.pay_status || 'unpaid'; remote = true; } }
-      else { const j = await r.json().catch(() => ({})); if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
+      else { const j = await r.json().catch(() => ({})); if (/link taken/i.test(j.message || '') && strict) { this.resetTs(); const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; } if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
     } catch (err) {}
     this.resetTs();
     if (!remote) {
