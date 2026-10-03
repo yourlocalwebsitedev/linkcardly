@@ -28,6 +28,8 @@
  *              shows the selected option's group ("<group> styles") and its position in that group.
  *              thumb.bg (a hex colour) is also the card colour used for the glass tone and the fade.
  *              With several groups the sheet shows one tab per group and the row shows only that group.
+ *              design (optional) names the design the option belongs to; the button shows it before the
+ *              collection ("Pine" over "Summit · Personal").
  *              family: { id, name } marks colour variants of one design (e.g. Personal's colours): they
  *              collapse into one tile named family.name, and LcCardColourRail lists the colours.
  *              swatch: { bg, dot } is how a colour looks in that strip (default: thumb.bg and thumb.dot).
@@ -233,7 +235,7 @@
       h('span', { className: 'lcs__panel', 'aria-hidden': 'true' }),
       h(StyleSelector, { id: idRef.current, options: options, value: current && current.id, open: !!props.open, onSelect: function (id) { if (props.onSelect) props.onSelect(id); }, onClose: close }),
       h('div', { className: 'lcs__bar' },
-        h(StyleTrigger, { option: current, sub: groupsOf(options).length > 1 && current ? current.group : '', open: !!props.open, controls: idRef.current, onToggle: toggle, buttonRef: triggerRef }),
+        h(StyleTrigger, { option: current, sub: current ? [current.design, groupsOf(options).length > 1 ? current.group : ''].filter(Boolean).join(' · ') : '', open: !!props.open, controls: idRef.current, onToggle: toggle, buttonRef: triggerRef }),
         h(NextButton, { label: props.nextLabel, icon: props.nextIcon, busy: props.busy, onNext: props.onNext })));
   }
 

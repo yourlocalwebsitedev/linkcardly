@@ -1283,7 +1283,7 @@ class Component extends DCLogic {
       pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
       swGap: listFor(collId).some(isTh) ? '12px' : '16px',
       // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
-      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(c.layout === 'scene' ? { family: c.family, swatch: { bg: c.layers[2], dot: c.accent } } : cl.id === 'personal' ? { family: PERSONAL_FAMILY } : familyOf(c) ? { family: familyOf(c), swatch: swatchOf(c) } : {}), thumb: c.layout === 'scene' ? { bg: c.bg, image: window.LC_SCENES.thumb(c) } : isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
+      scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(c.layout === 'scene' ? { family: c.family, design: c.family.name, swatch: { bg: c.layers[2], dot: c.accent } } : cl.id === 'personal' ? { family: PERSONAL_FAMILY } : familyOf(c) ? { family: familyOf(c), swatch: swatchOf(c) } : {}), thumb: c.layout === 'scene' ? { bg: c.bg, image: window.LC_SCENES.thumb(c) } : isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
         value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
         nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px',
         // Scene cards show their QR code at the top right: the colour strip starts below it.
