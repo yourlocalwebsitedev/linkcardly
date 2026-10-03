@@ -23,7 +23,7 @@ linkcardly/
 │   ├── app/               Vendored NexBizRise order and card app (see app/README.md)
 │   │   ├── estate-styles.js  Estate card styles shared by order.html and card.html (window.LC_ESTATE)
 │   │   ├── scene-styles.js   Personal scene styles (Summit, Tide) and their art, shared the same way (window.LC_SCENES)
-│   │   └── components/    Linkcardly UI components for the app (e.g. card-style-controls.js + .css)
+│   │   └── components/    Linkcardly UI components for the app: card-style-controls, link-claim ("Your link"), order-done (done screen)
 │   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing), card.css (native card)
 │   ├── assets/js/         site.js (marketing behaviour), card.js (native card), config.js; generated: catalogue.js, icons.js, rules.js
 │   ├── assets/img/brand/  favicon companions, OG image
@@ -55,3 +55,5 @@ linkcardly/
 - `public/app/card.html` and `order.html` are 270 KB and 180 KB single files, and the app compiles JSX in the browser (Babel, 3 MB). Fine to keep while it's vendored; a native rebuild should precompile.
 - The Motion Card plan preview on the Plan step points at `/portrait.gif`, which isn't in the repo (inherited from NexBizRise), so that preview is an empty tile. Needs a licensed moving-portrait sample in `public/assets/img/samples/`.
 - Three Google Fonts requests (marketing layout, `skin.css` `@import`, the app's own link). Self-hosting the two brand fonts would remove a third-party dependency and the render-blocking `@import`.
+- Card links use the name the customer claims (`linkcardly.com/<name>`), checked in the browser against the public `public_cards` view, which lists live cards only. A name held by an unpaid order elsewhere can still pass the check; NexBizRise has the final say and returns the slug it saved, which the done screen shows. A server-side hold (reserve the name for the checkout) needs `/api/handle` in proxy mode or native mode.
+- `order.html` keeps its old done markup for the unpaid and verifying states; the rest of the done screen is `components/order-done.js`. Move those two states into the component when they are next changed.

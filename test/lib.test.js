@@ -152,7 +152,9 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
   assert.match(html, /<script src="\/assets\/js\/rules\.js"><\/script>/);
-  assert.match(html, /uniqueSlug\(claimedSlug\(\) \|\| autoSlug\(d\)\)/);
+  // The claimed name feeds the "Your link" field (handleOf), which the order then uses.
+  assert.match(html, /claimedSlug\(\) \|\| nameSlug\(S\.d\)/);
+  assert.match(html, /let slug = this\.handleOf\(S\);/);
   // Run the helper as the browser would.
   const src = html.match(/const slugify = [^\n]+/)[0] + '\n' + html.match(/const claimedSlug = [^\n]+/)[0];
   const run = (search, reserved = ['create']) => new Function('location', 'window', 'URLSearchParams', src + '\nreturn claimedSlug();')({ search }, { LC_RULES: { reserved } }, URLSearchParams);
@@ -344,4 +346,37 @@ test('CardStyleControls CSS: liquid glass, spec sizes, safe area, tokens and red
   assert.match(css, /--lcs-accent:var\(--lc-terracotta/);
   assert.match(css, /@supports not/, 'opaque fallback without backdrop-filter');
   assert.match(css, /prefers-reduced-motion:reduce/);
+});
+
+test('order app "Your link": rules, name suggestion and free alternatives', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  const { HANDLE_RE } = await import('../src/lib/handles.js');
+  const line = name => html.match(new RegExp('const ' + name + ' = [^\\n]+'))[0];
+  const src = ['slugify', 'LC_RULE', 'handleIssue', 'nameSlug', 'handleAlts'].map(line).join('\n');
+  const lib = new Function('window', src + '\nreturn { handleIssue, nameSlug, handleAlts };')({ LC_RULES: { reserved: ['create', 'admin'], pattern: HANDLE_RE.source } });
+  assert.equal(lib.handleIssue('ryancollins'), '');
+  assert.equal(lib.handleIssue('ryan-collins'), '');
+  assert.match(lib.handleIssue(''), /Choose/);
+  assert.match(lib.handleIssue('ab'), /at least 3/);
+  assert.match(lib.handleIssue('-ryan'), /letters, numbers and dashes/);
+  assert.match(lib.handleIssue('ryan--c'), /letters, numbers and dashes/);
+  assert.match(lib.handleIssue('ryan.c'), /letters, numbers and dashes/, 'legacy links have no dots');
+  assert.match(lib.handleIssue('admin'), /reserved/);
+  const d = { firstName: 'Ryan', lastName: "O'Collins" };
+  assert.equal(lib.nameSlug(d), 'ryanocollins');
+  const alts = lib.handleAlts('ryanocollins', d);
+  assert.ok(alts.length >= 3 && !alts.includes('ryanocollins'));
+  assert.ok(alts.every(a => lib.handleIssue(a) === '' && a.length <= 30));
+  assert.ok(alts.includes('ryan-o-collins'));
+});
+
+test('order done screen and link field are components, and the share link uses the claimed name', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /component-from-global-scope="LcOrderDone" from="\/app\/components\/order-done\.js"/);
+  assert.match(html, /component-from-global-scope="LcLinkClaim" from="\/app\/components\/link-claim\.js"/);
+  assert.match(html, /urlOf\(d\) \{ return CARD_BASE \+ '\/' \+ \(d\.slug \|\|/);
+  assert.doesNotMatch(html, /#56633F|#3D472B.*POPULAR/, 'no olive in the step tabs or plan badge');
+  for (const f of ['order-done.js', 'order-done.css', 'link-claim.js', 'link-claim.css']) await readFile(new URL('../public/app/components/' + f, import.meta.url), 'utf8');
 });

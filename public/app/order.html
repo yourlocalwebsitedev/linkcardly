@@ -118,7 +118,7 @@ select option{background:var(--surface);color:var(--ink-2);}
                 <span style="display:flex;align-items:center;gap:10px;">
                   <span style="font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap;">{{ p.name }}</span>
                   <span style="flex:1;"></span>
-                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--mint-2);color:#3D472B;font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
+                  <sc-if value="{{ p.popular }}"><span style="padding:4px 10px;border-radius:999px;background:var(--btn);color:var(--btn-ink);font-size:11px;font-weight:800;letter-spacing:0.08em;">POPULAR</span></sc-if>
                   <span aria-hidden="true" style="width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid {{ p.radioRing }};display:grid;place-items:center;"><span style="width:12px;height:12px;border-radius:50%;background:var(--accent);opacity:{{ p.radioDot }};"></span></span>
                 </span>
                 <span style="display:flex;gap:12px;align-items:flex-start;">
@@ -239,6 +239,7 @@ select option{background:var(--surface);color:var(--ink-2);}
               </div>
             </sc-for>
           </div>
+          <sc-if value="{{ showLinkClaim }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="LcLinkClaim" from="/app/components/link-claim.js" value="{{ lc.value }}" status="{{ lc.status }}" message="{{ lc.message }}" alts="{{ lc.alts }}" from-home="{{ lc.fromHome }}" error="{{ lc.error }}" on-change="{{ lc.onChange }}" on-pick="{{ lc.onPick }}" hint-size="100%,150px"></x-import></sc-if>
           <sc-if value="{{ isMotionPlan }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:14px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);">
             <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="min-height:48px;padding:0;border:0;background:transparent;color:var(--ink);font:inherit;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;cursor:pointer;">
@@ -276,7 +277,7 @@ select option{background:var(--surface);color:var(--ink-2);}
               </span>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:17px;font-weight:800;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:14px;color:var(--muted);">1 year</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:17px;font-weight:800;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:14px;color:var(--muted);">{{ payLinkLine }}</span></div>
                   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span style="font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);">{{ subtotal }}</span><sc-if value="{{ payHasWas }}"><s style="font-size:13px;color:var(--faint);">{{ payWas }}</s></sc-if></div>
                 </div>
                 <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">
@@ -286,10 +287,10 @@ select option{background:var(--surface);color:var(--ink-2);}
             </div>
             <sc-if value="{{ hasCoupon }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2);">Coupon <span style="padding:2px 8px;border-radius:6px;background:rgba(var(--acc-rgb),0.1);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:0.04em;">{{ couponCode }}</span></span><span style="font-size:15px;font-weight:700;color:var(--accent);">− {{ couponOff }}</span></div></sc-if>
             <sc-if value="{{ hasGst }}"><div style="display:flex;justify-content:space-between;gap:12px;margin:0 14px;padding:10px 4px;border-top:1px solid rgba(var(--fg-rgb),0.07);"><span style="font-size:15px;color:var(--ink-2);">GST (18%)</span><span style="font-size:15px;font-weight:700;color:var(--ink);">{{ gst }}</span></div></sc-if>
-            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--mint);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#3D472B;">{{ total }}</span></div>
+            <div style="margin:6px 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-radius:14px;background:var(--bg-2);"><span style="font-size:17px;font-weight:800;color:var(--ink);">Total due today</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.02em;color:#3D472B;">{{ total }}</span></div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--mint);">
-            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint-2);color:#3D472B;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);">
+            <span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:12px;background:var(--bg-2);color:var(--ink);display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span>
             <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:800;color:var(--ink);">{{ secureTitle }}</span><span style="font-size:13.5px;color:var(--ink-3);">{{ secureSub }}</span></span>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;">
@@ -310,9 +311,9 @@ select option{background:var(--surface);color:var(--ink-2);}
 
         <sc-if value="{{ fb.fixed }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;height:{{ fb.space }};margin-top:-20px;"></div></sc-if>
         <div ref="{{ formBarRef }}" style="position:{{ fb.pos }};left:0;right:0;bottom:0;z-index:40;margin:{{ fb.margin }};padding:{{ fb.pad }};background:var(--bg);border-top:1px solid rgba(var(--fg-rgb),0.06);border-radius:{{ fb.radius }};box-shadow:0 -14px 18px -14px rgba(16,24,32,0.22);display:flex;align-items:center;gap:12px;">
-          <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" style="flex:1 1 0;min-width:0;min-height:54px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>{{ backLabel }}</button></sc-if>
+          <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" class="lc-back" onClick="{{ back }}" style="flex:1 1 0;min-width:0;min-height:54px;padding:0 18px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.18);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>{{ backLabel }}</button></sc-if>
           <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="flex:1 1 0;"></span></sc-if>
-          <button type="button" onClick="{{ next }}" disabled="{{ busy }}" style="flex:1.35 1 0;min-width:0;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ nextLabel }}
+          <button type="button" class="lc-cta" onClick="{{ next }}" disabled="{{ busy }}" style="flex:1.35 1 0;min-width:0;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:16px;font-weight:700;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(16,24,32,0.5);" style-hover="background:var(--btn-hover);">{{ nextLabel }}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
           </button>
         </div>
@@ -366,7 +367,8 @@ select option{background:var(--surface);color:var(--ink-2);}
   </sc-if>
 </sc-if>
 
-<sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ showNewDone }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcOrderDone" from="/app/components/order-done.js" title="{{ doneTitle }}" text="{{ doneText }}" title-ref="{{ doneRef }}" card="{{ dn.card }}" link-label="{{ linkLabel }}" link-note="{{ dn.linkNote }}" qr-svg="{{ dn.qrSvg }}" open-href="{{ openHref }}" on-copy-link="{{ copyLink }}" copy-label="{{ dn.copyLabel }}" on-download-qr="{{ downloadQR }}" edit-label="{{ dn.editLabel }}" edit-href="{{ dn.editHref }}" on-copy-edit="{{ copyEditLink }}" copy-edit-label="{{ dn.copyEditLabel }}" change-href="{{ dn.changeHref }}" order-no="{{ dn.orderNo }}" on-copy-order="{{ copyOrder }}" copy-order-label="{{ copyOrderLabel }}" secondary-label="{{ dn.secondaryLabel }}" on-secondary="{{ dn.onSecondary }}" secondary-icon="{{ dn.secondaryIcon }}" home-href="{{ orderHref }}" hint-size="100%,1200px"></x-import></sc-if>
+<sc-if value="{{ showOldDone }}" hint-placeholder-val="{{ false }}">
   <div style="position:relative;max-width:760px;margin:0 auto;padding-top:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;">
     <div aria-hidden="true" style="position:absolute;left:50%;top:-40px;width:100vw;max-width:1100px;height:380px;transform:translateX(-50%);overflow:hidden;pointer-events:none;z-index:0;">
       <span style="position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0%,#F1E2C4 0%,rgba(241,226,196,0) 72%);"></span>
@@ -634,6 +636,12 @@ const autoSlug = d => (slugify(d.firstName).replace(/-/g, '') + String(d.phone |
 // Linkcardly: the handle claimed on the home page (/create?h=) wins over the generated one.
 // Legacy slugs are a-z0-9- only, so dots become dashes; reserved words fall back to autoSlug.
 const claimedSlug = () => { try { const h = slugify(new URLSearchParams(location.search).get('h') || '').slice(0, 30).replace(/-+$/, ''); const rs = (window.LC_RULES && window.LC_RULES.reserved) || []; return h.length >= 3 && !rs.includes(h) ? h : ''; } catch (e) { return ''; } };
+// Linkcardly: the "Your link" field (components/link-claim.js). Rules come from /assets/js/rules.js
+// (generated from src/lib/handles.js); legacy slugs also have no dots.
+const LC_RULE = () => window.LC_RULES || {};
+const handleIssue = h => { if (!h) return 'Choose the name for your link.'; if (h.length < 3) return 'Use at least 3 letters or numbers.'; let re = null; try { re = new RegExp(LC_RULE().pattern || '^[a-z0-9](?:[a-z0-9.-]{1,28})[a-z0-9]$'); } catch (e) {} if (/[^a-z0-9-]/.test(h) || /--/.test(h) || (re && !re.test(h))) return 'Use letters, numbers and dashes, not at the start or end.'; if ((LC_RULE().reserved || []).includes(h)) return 'That name is reserved. Try another.'; return ''; };
+const nameSlug = d => slugify([d.firstName, d.lastName].filter(Boolean).join(' ')).replace(/-/g, '').slice(0, 30);
+const handleAlts = (h, d) => { const f = slugify(d.firstName || ''), l = slugify(d.lastName || ''), yy = String(new Date().getFullYear() % 100); return [...new Set([nameSlug(d), f && l ? f + '-' + l : '', h + '-card', h + yy, h + '1'])].map(x => String(x || '').slice(0, 30).replace(/-+$/, '')).filter(x => x && x !== h && !handleIssue(x)); };
 const addYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 const DRAFT_KEY = 'nbr-order-draft';
 /* Card changes are done by our team. Put your business WhatsApp number here (digits with country code, e.g. '919876543210'); empty = email. */
@@ -642,7 +650,7 @@ const SUPPORT_EMAIL = 'hello@linkcardly.com';
 const CHANGES_INCLUDED = { basic: 2, motion: 4 };
 const changeLink = (msg, subj) => SUPPORT_WA ? 'https://wa.me/' + SUPPORT_WA + '?text=' + encodeURIComponent(msg) : 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(msg);
 const readLocal = () => { try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch (e) { return []; } };
-const EMPTY = { profession: '', layout: 'original', colour: 'forest', photo: '', photoX: 50, photoY: 50, photoZoom: 1, firstName: '', lastName: '', title: '', company: '', phone: '', whatsapp: '', email: '', city: '', website: '', instagram: '', linkedin: '', bio: '', notes: '', seasonal: true, greeting: '', brokerage: '', licenseNo: '', licenseState: '', facebook: '', listingsUrl: '', bookingUrl: '', officeAddress: '', iabsUrl: '' };
+const EMPTY = { handle: '', profession: '', layout: 'original', colour: 'forest', photo: '', photoX: 50, photoY: 50, photoZoom: 1, firstName: '', lastName: '', title: '', company: '', phone: '', whatsapp: '', email: '', city: '', website: '', instagram: '', linkedin: '', bio: '', notes: '', seasonal: true, greeting: '', brokerage: '', licenseNo: '', licenseState: '', facebook: '', listingsUrl: '', bookingUrl: '', officeAddress: '', iabsUrl: '' };
 
 const NBR_PHOTO_MAX = 1080;
 /* Total GIF play time in seconds (sum of frame delays; 0 delay plays as 0.1s in browsers). */
@@ -817,7 +825,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { window.removeEventListener('scroll', this.onScrollHdr); window.removeEventListener('message', this.onMsg); window.removeEventListener('resize', this.onResize); clearTimeout(this.pvT); }
   setState(u, cb) {
-    return super.setState(u, () => { const S = this.state; if (S.d !== this.__lastD || S.plan !== this.__lastPlan) { this.__lastD = S.d; this.__lastPlan = S.plan; clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 100); } if (S.step === 4 && !S.done && !S.editToken) this.renderTs(); if (cb) cb(); });
+    return super.setState(u, () => { const S = this.state; if (S.step === 2 && !S.editToken && !S.done) { const hh = this.handleOf(S); if (hh !== this.__lastH) { this.__lastH = hh; this.queueHandleCheck(hh); } } if (S.d !== this.__lastD || S.plan !== this.__lastPlan) { this.__lastD = S.d; this.__lastPlan = S.plan; clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 100); } if (S.step === 4 && !S.done && !S.editToken) this.renderTs(); if (cb) cb(); });
   }
 
   row(slug, active, forSave) {
@@ -944,6 +952,7 @@ class Component extends DCLogic {
     V('iabsUrl', v => /\.pdf($|\?)/i.test(v) || /trec|iabs/i.test(v), 'Link to your IABS PDF');
     ['website', 'listingsUrl', 'bookingUrl', 'meetingUrl', 'iabsUrl'].forEach(k => { if (!e[k] && d[k]) { const v = normLink(k, d[k]); if (v !== d[k]) d[k] = v; } });
     [['instagram', 'Instagram username', /^[A-Za-z0-9._]{1,30}$/], ['linkedin', 'LinkedIn ID', /^[A-Za-z0-9-]{3,100}$/], ['xHandle', 'X username', /^[A-Za-z0-9_]{1,15}$/]].forEach(([k, n, re]) => { const v = String(d[k] || '').trim(); if (v && shown.has(k) && !re.test(v)) e[k] = 'Enter just your ' + n + ', no spaces or symbols'; });
+    { const he = this.handleError(); if (he) e.handle = he; }
     return e;
   }
   goStep = n => { if (n > 2 && !this.state.editToken && !VISIBLE_BIZ.some(b => b.prof === this.state.d.profession)) { this.setState(s => ({ errors: { ...(s.errors || {}), profession: 'Pick your card category' } })); n = 2; } if (n > 2 && this.state.step === 2) { const ve = this.validate(); if (Object.keys(ve).length) { this.setState({ errors: ve }); return; } } if (n === 3 && this.state.vw >= 960) n = this.state.step > 3 ? 2 : 4; this.setState(s => ({ step: n, maxStep: Math.max(s.maxStep, n), submitError: '' }), () => { [80, 400, 1200].forEach(ms => setTimeout(this.measurePreview, ms)); if (this.state.step === 4) this.renderTs(); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -951,22 +960,43 @@ class Component extends DCLogic {
     const { step } = this.state;
     if (step === 2) {
       const e = this.validate();
-      if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k && document.getElementById('o-' + k.k); el && el.focus(); return; }
+      if (Object.keys(e).length) { this.setState({ errors: e }); const k = FIELDS.find(f => e[f.k]); const el = k ? document.getElementById('o-' + k.k) : (e.handle ? document.getElementById('o-handle') : null); el && el.focus(); return; }
     }
     if (this.state.editToken) { if (step === 2 && this.state.vw < 960) this.goStep(3); else this.saveEdit(); return; }
     if (step < 4) this.goStep(step + 1); else this.placeOrder();
   };
 
   async uniqueSlug(base) {
-    const local = readLocal().map(o => o.card && o.card.slug);
     let s = base;
-    for (let i = 0; i < 5; i++) {
-      let taken = local.includes(s);
-      if (!taken) { try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(s), { headers: { apikey: SUPABASE_KEY } }); const j = await r.json(); taken = Array.isArray(j) && j.length > 0; } catch (e) {} }
-      if (!taken) return s;
-      s = base + Math.floor(10 + Math.random() * 90);
-    }
+    for (let i = 0; i < 5; i++) { if (!(await this.handleTaken(s))) return s; s = base + Math.floor(10 + Math.random() * 90); }
     return s;
+  }
+  // Linkcardly: "Your link". true = taken, false = free, null = couldn't check (the server still decides).
+  async handleTaken(h) {
+    if (readLocal().some(o => o.card && o.card.slug === h)) return true;
+    try { const r = await fetch(SUPABASE_URL + '/rest/v1/public_cards?select=slug&slug=eq.' + encodeURIComponent(h), { headers: { apikey: SUPABASE_KEY } }); if (!r.ok) return null; const j = await r.json(); return Array.isArray(j) && j.length > 0; } catch (e) { return null; }
+  }
+  async freeAlts(h, d, live) { const out = []; for (const a of handleAlts(h, d)) { if (out.length >= 3 || !live()) break; if ((await this.handleTaken(a)) === false) out.push(a); } return out; }
+  handleOf = (S = this.state) => (S.hTouched || S.d.handle) ? (S.d.handle || '') : (claimedSlug() || nameSlug(S.d));
+  setHandle = v => this.setState(s => ({ hTouched: true, d: { ...s.d, handle: v }, errors: { ...s.errors, handle: '' } }));
+  queueHandleCheck = h => {
+    clearTimeout(this.hT); const seq = this.hSeq = (this.hSeq || 0) + 1, live = () => seq === this.hSeq;
+    const bad = handleIssue(h);
+    if (bad) { this.setState({ hCheck: { h, status: h || this.state.hTouched ? 'invalid' : 'idle', message: bad, alts: [] } }); return; }
+    this.setState({ hCheck: { h, status: 'checking', alts: [] } });
+    this.hT = setTimeout(async () => {
+      const t = await this.handleTaken(h); if (!live()) return;
+      if (t !== true) { this.setState({ hCheck: { h, status: t === false ? 'ok' : 'idle', alts: [] } }); return; }
+      const alts = await this.freeAlts(h, this.state.d, live); if (live()) this.setState({ hCheck: { h, status: 'taken', alts } });
+    }, 400);
+  };
+  handleError(S = this.state) {
+    if (S.editToken) return '';
+    const h = this.handleOf(S), bad = handleIssue(h), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null;
+    if (bad) return bad;
+    if (c && c.status === 'taken') return 'That link is taken. Pick another name.';
+    if (c && c.status === 'checking') return 'Still checking your link. Try again in a second.';
+    return '';
   }
   couponFor = S => { const c = S.coupon; return c && c.plan === S.plan && c.region === (S.region || 'US') ? c : null; };
   applyCoupon = async () => {
@@ -988,7 +1018,9 @@ class Component extends DCLogic {
     if (Object.keys(e).length) { this.setState({ errors: e }); this.goStep(2); return; }
     this.setState({ busy: true, submitError: '' });
     const S = this.state, d = S.d, plan = PLANS.find(p => p.id === S.plan);
-    const slug = await this.uniqueSlug(claimedSlug() || autoSlug(d));
+    let slug = this.handleOf(S);
+    if (handleIssue(slug)) slug = await this.uniqueSlug(autoSlug(d));
+    else if ((await this.handleTaken(slug)) === true) { const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; }
     const order = { ref: S.ref || '', order_no: 'LC-' + Date.now().toString(36).slice(-6).toUpperCase(), mode: S.mode, plan: S.plan, region: S.region || 'US', price: priceOf(S.region, S.plan).base, tax: priceOf(S.region, S.plan).tax, total: priceOf(S.region, S.plan).total, currency: (PRICING[S.region] || PRICING.US).code, status: 'new',
       customer_name: [d.firstName, d.lastName].filter(Boolean).join(' '), customer_email: d.email.trim(), customer_phone: d.phone.trim(), notes: d.notes || '',
       card: this.row(slug, S.mode === 'builder', true), created_at: new Date().toISOString(), coupon: this.couponFor(S) ? this.couponFor(S).code : '' };
@@ -1134,7 +1166,8 @@ class Component extends DCLogic {
   keepEditing = () => this.setState({ done: null, step: 2, copied: false }, () => window.scrollTo(0, 0));
   editUrlOf(tok) { return CARD_BASE + '/e/' + tok; }
   copyEditLink = async () => { const t = this.state.done && this.state.done.tok; if (!t) return; try { await navigator.clipboard.writeText(this.editUrlOf(t)); this.setState({ editCopied: true }); } catch (e) {} };
-  urlOf(d) { return CARD_BASE + '/' + (d.pid ? 'c/' + d.pid : d.slug); }
+  // Linkcardly: the shared link and QR use the name the customer claimed; /c/<id> keeps working as a permanent fallback.
+  urlOf(d) { return CARD_BASE + '/' + (d.slug || (d.pid ? 'c/' + d.pid : '')); }
   qrSvg(url) { if (!window.qrcode) return ''; const q = window.qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true, title: 'QR code for ' + url }); }
   copyLink = async () => { try { await navigator.clipboard.writeText(this.urlOf(this.state.done)); this.setState({ copied: true }); } catch (e) {} };
   downloadQR = () => {
@@ -1142,7 +1175,7 @@ class Component extends DCLogic {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = s + '-qr.svg';
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   };
-  reset = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} this.setState({ mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, done: null, copied: false, coupon: null, couponInput: '', couponMsg: '' }); window.scrollTo(0, 0); };
+  reset = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} this.__lastH = undefined; this.setState({ mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, done: null, copied: false, coupon: null, couponInput: '', couponMsg: '', hTouched: false, hCheck: null, editCopied: false }); window.scrollTo(0, 0); };
 
   renderVals() {
     const _d = this.state.d || {}, thumbPh = _d.photo && !NBR_VID.test(_d.photo) && !/^data:video\//.test(_d.photoData || '') ? 'url("' + _d.photo + '") ' + (_d.photoX ?? 50) + '% ' + (_d.photoY ?? 50) + '% / cover' : '';
@@ -1202,8 +1235,10 @@ class Component extends DCLogic {
         const c = S.mode === id, sm = S.vw < 960; return { title: sm ? (id === 'dfm' ? 'Design for me' : 'Build myself') : title, sub, showSub: !sm, gap: sm ? '10px' : '14px', pad: sm ? '12px 14px' : '18px 20px', titleSize: sm ? '15px' : '17px', checked: c ? 'true' : 'false', pick: () => this.setState({ mode: id, errors: {} }), border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.12)', bg: c ? 'rgba(var(--acc-rgb),0.07)' : 'var(--surface)', dot: c ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.3)', fill: c ? 'var(--btn)' : 'transparent' };
       }),
       ...(() => { const nV = S.vw >= 960 ? 3 : 4, cur = S.vw >= 960 && S.step >= 3 ? S.step - 1 : S.step; return { stepCols: 'repeat(' + nV + ',minmax(0,1fr))', stepW: 'calc((100% - 8px) / ' + nV + ')', stepX: ((cur - 1) * 100) + '%' }; })(),
-      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? '#56633F' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      steps: STEP_LABELS.map((label, i) => ({ label, i })).filter(x => !(S.vw >= 960 && x.i === 2)).map(({ label, i }) => { const n = i + 1, cur = n === S.step, reach = n <= S.maxStep; return { n, label, done: n < S.step, pillFg: cur ? 'var(--btn-ink)' : n < S.step ? 'var(--ink-3)' : reach ? 'var(--ink-3)' : 'var(--faint)', current: cur ? 'step' : 'false', locked: !reach, cursor: reach ? 'pointer' : 'default', go: () => reach && this.goStep(n), bar: n <= S.step ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', ink: cur ? 'var(--ink)' : (reach ? 'var(--ink-3)' : 'var(--faint)') }; }),
+      payLinkLine: (() => { const h = this.handleOf(S); return S.editToken || handleIssue(h) ? '1 year' : '1 year · ' + BASE_HOST + '/' + h; })(),
       isStep1: S.step === 1, isStep2: S.step === 2, isStep3: S.step === 2, isStep5: S.step === 4,
+      showLinkClaim: !S.editToken, lc: (() => { const h = this.handleOf(S), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null; return { value: h, status: c ? c.status : 'idle', message: c ? c.message || '' : '', alts: c ? c.alts || [] : [], fromHome: !S.hTouched && !S.d.handle && !!claimedSlug() && h === claimedSlug(), error: (S.errors || {}).handle || '', onChange: this.setHandle, onPick: this.setHandle }; })(),
       reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
       changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
       plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '2px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', radioDot: c ? '1' : '0', thumb: S.vw < 960, motion: p.id === 'motion', img: p.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '18px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '28px' : '32px') : '36px', featFs: S.vw < 960 ? '13.5px' : '14px' }; }),
@@ -1275,11 +1310,18 @@ class Component extends DCLogic {
       previewNote: dfm ? 'Rough preview. Our designer will finish the details.' : 'Live preview. Tap around inside the phone.',
 
       doneRef: this.doneRef, orderNo: done ? done.orderNo : '',
+      showNewDone: !!(done && !done.unpaid && !done.verifying), showOldDone: !!(done && (done.unpaid || done.verifying)),
+      dn: (() => { if (!done) return {}; const ph = d.photo && !NBR_VID.test(d.photo) && !/^data:video\//.test(d.photoData || '') ? (d.photoData || d.photo) : '', nm = [d.firstName, d.lastName].filter(Boolean).join(' '), tok = !done.edit && done.tok ? done.tok : '';
+        return { card: nm ? { img: ph, name: nm, title: d.title || '' } : null, qrSvg: this.qrSvg(url),
+          linkNote: done.edit ? 'Same link and QR code as before.' : done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Your QR code keeps working, even after edits.',
+          copyLabel: S.copied ? 'Copied ✓' : 'Copy link', editLabel: tok ? BASE_HOST + '/e/' + tok.slice(0, 6) + '…' + tok.slice(-4) : '', editHref: tok ? this.editUrlOf(tok) : '', copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy',
+          changeHref: !done.edit ? changeLink('Hi Linkcardly, I’d like a change to my card ' + url + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '',
+          orderNo: !done.edit ? done.orderNo || '' : '', secondaryLabel: done.edit ? 'Keep editing' : 'Order another card', onSecondary: done.edit ? this.keepEditing : this.reset, secondaryIcon: done.edit ? '' : 'plus' }; })(),
       showChangeBox: !!(done && !done.edit && !done.unpaid && !done.verifying), isUnpaid: !!(done && done.unpaid), isVerifying: !!(done && done.verifying), showCardBox: !!(done && !done.unpaid && !done.verifying), payOnline: !!(done && done.unpaid && done.online !== false), payOffline: !!(done && done.unpaid && done.online === false),
       payBtn: S.payBusy ? 'Opening payment…' : 'Pay ' + (done && done.total != null ? money(done.region || S.region, done.total) : 'now'), retryPay: this.retryPay, hasPayError: !!(done && done.payError), payError: (done && done.payError) || '',
-      doneTitle: done && done.verifying ? 'Confirming your payment…' : done && done.unpaid ? 'Complete your payment' : done && done.edit ? 'Changes saved' : done && done.mode === 'dfm' ? 'Order received' : 'Your card is ready',
+      doneTitle: done && done.verifying ? 'Confirming your payment…' : done && done.unpaid ? 'Complete your payment' : done && done.edit ? 'Changes saved' : done && done.mode === 'dfm' ? 'Order received' : 'Your card is ready!',
       doneText: done && done.verifying ? 'This usually takes a few seconds. Please keep this page open.' : done && done.unpaid ? (done.online === false ? "Your order is saved. We'll email a secure payment link to " + (d.email || 'you') + ' shortly. Your card goes live as soon as payment is confirmed.' : 'Your order is saved but not paid yet. Your card goes live as soon as payment is confirmed.') : done && done.edit ? 'Your card is updated. It can take up to 5 minutes to show on every phone.' : done && done.mode === 'dfm' ? "We have your details and we'll start on your design. We'll message you when your card is live. Your link and QR code below are already reserved." : 'Your card is live at the link below. Share it by message, or print the QR code on anything.',
-      linkLabel: BASE_HOST + '/' + (done ? (done.pid ? 'c/' + done.pid : done.slug) : ''),
+      linkLabel: BASE_HOST + '/' + (done ? (done.slug || (done.pid ? 'c/' + done.pid : '')) : ''),
       linkNote: done && done.edit ? 'Same link and QR code as before.' : done && done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Keep this. Changes you ask for later use the same link.',
       openHref: done ? (/\.dc\.html$/.test(decodeURIComponent(location.pathname)) ? '/app/card.html?c=' + done.slug : (location.hostname.startsWith('card.') ? '/' + done.slug : '/app/card.html?c=' + done.slug)) : '#',
       seaStr: d.seasonal !== false ? 'true' : 'false', toggleSea: () => this.set('seasonal', d.seasonal === false),
