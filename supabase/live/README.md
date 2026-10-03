@@ -11,6 +11,23 @@ Both are tested together in `test/live-db.test.js` (in-process Postgres with Sup
 
 `supabase/migrations/` is the separate schema for native mode (later), not this database.
 
+## Test mode (payments off)
+Payments and the Cloudflare Turnstile check are switched off while we test the product end to end.
+- Database: run `insert into public.app_flags (key) values ('test_mode') on conflict (key) do nothing;` (after `partners.sql`). Every new order is then marked paid with `pay_provider = 'test'` and the card goes live.
+- Order page: `PAYMENTS_ON = false` in `public/app/order.html` (no Turnstile, order goes straight to the database, "no payment" placeholder on the Payment step).
+- Order e-mails that the old NexBizRise worker sends after `/api/order` don't go out in test mode, because orders skip that worker.
+
+Before launch:
+1. `delete from public.app_flags where key = 'test_mode';`
+2. Set `PAYMENTS_ON = true` and deploy.
+3. Check the Stripe and Razorpay webhooks, `NBR_WORKER_SECRET` and `TURNSTILE_SECRET` on the worker that serves `/api/*`, then place one real order.
+4. Remove test orders (run together):
+   ```sql
+   delete from partner.commissions where order_no in (select order_no from public.orders where pay_provider = 'test');
+   delete from public.cards where id in (select card_id from public.orders where pay_provider = 'test');
+   delete from public.orders where pay_provider = 'test';
+   ```
+
 ## Partner programme: operating it
 All calls are Supabase RPCs; admins must be signed in (`public.admins`).
 1. A partner signs in (email link) and calls `partner_apply` → status `applied`.

@@ -18,6 +18,7 @@ async function newPage(taken) {
   const page = await ctx.newPage();
   const state = { taken, serverTaken: new Set(), orders: [], errors: [] };
   page.on('pageerror', e => state.errors.push(e.message));
+  page.on('request', r => { if (/challenges\.cloudflare\.com|checkout\.razorpay|js\.stripe|\/api\/pay\//.test(r.url())) state.payCalls = (state.payCalls || 0) + 1; });
   await page.route('**/rest/v1/public_cards**', route => {
     const slug = decodeURIComponent((route.request().url().match(/slug=eq\.([^&]+)/) || [])[1] || '');
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.taken.has(slug) ? [{ slug }] : []) });
@@ -118,6 +119,8 @@ try {
     await page.locator('.lcs-next').click({ timeout: 15000 });
     await page.waitForSelector('text=Complete your card');
     await page.waitForSelector('text=1 year · linkcardly.com/ryancollins');
+    await page.waitForSelector('text=Payments are off while we test');
+    assert.match(await page.locator('.lc-cta').innerText(), /Place order · no payment/);
     assert.deepEqual(await greens(page), []);
     assert.ok(await noOverflow(page));
   });
@@ -133,6 +136,7 @@ try {
     assert.match(await page.locator('.lcd__act').first().getAttribute('href'), /^(\/|\/app\/card\.html\?c=)ryancollins$/);
     assert.equal(await page.locator('.lcd__qr svg').count(), 1);
     assert.equal(await page.locator('.lcd__no').innerText(), 'LC-E2E001');
+    assert.equal(state.payCalls || 0, 0, 'test mode: no Turnstile, Stripe, Razorpay or /api/pay calls');
   });
 
   await step('done: QR, link and three actions are on the first screen', async () => {

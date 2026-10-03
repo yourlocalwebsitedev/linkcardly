@@ -217,3 +217,28 @@ test('pausing a partner switches their coupon off', async () => {
   assert.equal((await one(`select active from coupons where code = 'PRIYA'`)).active, false);
   assert.equal((await rpc('anon', 'partner_click', ['priya'])).ok, false);
 });
+
+// ---------- test mode (payments off) ----------
+test('test mode: off by default; when on, orders skip the bot check and count as paid (provider test), card live, commission recorded', async () => {
+  // Off: an order stays unpaid and the card is not live.
+  const a = await rpc('anon', 'place_order', [order({ card: { slug: 'tm-off', first_name: 'T', phone: '9811100001' } })]);
+  assert.equal(a.pay_status, 'unpaid');
+  // The bot check is on in production (worker secret set): direct calls are refused...
+  await db.exec(`insert into app_secrets values ('worker', repeat('x', 24)) on conflict (key) do update set value = excluded.value`);
+  await assert.rejects(rpc('anon', 'place_order', [order({ card: { slug: 'tm-bot', first_name: 'T', phone: '9811100002' } })]), /bot check failed/);
+  // ...until test mode is on.
+  await db.exec(`insert into public.app_flags (key) values ('test_mode') on conflict (key) do nothing`);
+  const p = await one(`select id from partner.partners where code = 'PRIYA'`);
+  await rpc('authenticated', 'admin_partner_set', [p.id, 'approved', null, null], { id: ADMIN, email: 'admin@example.com' });
+  const b = await rpc('anon', 'place_order', [order({ coupon: 'PRIYA', customer_email: 'tm@example.com', card: { slug: 'tm-on', first_name: 'T', phone: '9811100003' } })]);
+  assert.equal(b.pay_status, 'paid'); assert.equal(b.test, true); assert.ok(b.edit_token);
+  const o = await one(`select pay_status, pay_provider, amount_paid from orders where order_no = $1`, [b.order_no]);
+  assert.deepEqual([o.pay_status, o.pay_provider, Number(o.amount_paid)], ['paid', 'test', 0]);
+  assert.equal((await one(`select active from cards where slug = 'tm-on'`)).active, true);
+  assert.equal((await one(`select status from partner.commissions where order_no = $1`, [b.order_no])).status, 'pending');
+  assert.equal((await rpc('anon', 'slug_available', ['tm-on'])).available, false);
+  // Off again: back to normal.
+  await db.exec(`delete from public.app_flags where key = 'test_mode'; delete from app_secrets where key = 'worker'`);
+  const c = await rpc('anon', 'place_order', [order({ card: { slug: 'tm-off2', first_name: 'T', phone: '9811100004' } })]);
+  assert.equal(c.pay_status, 'unpaid');
+});

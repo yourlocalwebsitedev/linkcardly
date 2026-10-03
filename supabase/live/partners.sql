@@ -25,6 +25,30 @@
 -- ================================================================
 
 -- ----------------------------------------------------------------
+-- 0) TEST MODE: payments and the bot check off, so the product can be tested end to end
+-- ----------------------------------------------------------------
+-- ON:   insert into public.app_flags (key) values ('test_mode') on conflict (key) do nothing;
+-- OFF:  delete from public.app_flags where key = 'test_mode';
+-- While ON: place_order skips the Turnstile/worker check (bot_gate) and marks every new order paid with
+-- pay_provider = 'test' (amount 0), so the card goes live and partner commissions behave as on a real sale.
+-- The order page must have PAYMENTS_ON = false (public/app/order.html). Before launch: turn it OFF, set
+-- PAYMENTS_ON = true, and remove test orders (see supabase/live/README.md).
+create table if not exists public.app_flags (key text primary key, at timestamptz not null default now());
+alter table public.app_flags enable row level security;
+revoke all on public.app_flags from anon, authenticated;
+create or replace function public.test_mode() returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from app_flags where key = 'test_mode') $$;
+revoke all on function public.test_mode() from public, anon, authenticated;
+
+-- Same as ALL-IN-ONE.sql, plus the test-mode exception.
+create or replace function public.bot_gate() returns void language plpgsql stable security definer set search_path = public as $$
+begin
+  if test_mode() then return; end if;
+  if exists (select 1 from app_secrets where key = 'worker') and not from_worker() then raise exception 'bot check failed'; end if;
+end $$;
+revoke all on function public.bot_gate() from public, anon, authenticated;
+
+-- ----------------------------------------------------------------
 -- 1) CARD LINK NAMES
 -- ----------------------------------------------------------------
 create or replace function public.slug_clean(t text) returns text language sql immutable as $$
@@ -58,7 +82,7 @@ grant execute on function public.slug_available(text) to anon, authenticated;
 -- Public order entry point (replaces the one in ALL-IN-ONE.sql; place_order_core is unchanged).
 create or replace function public.place_order(payload jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
-declare v_slug text := slug_clean(payload->'card'->>'slug');
+declare v_slug text := slug_clean(payload->'card'->>'slug'); v_res jsonb; v_card uuid; v_mode text;
 begin
   perform bot_gate();
   perform rate_check('order', 20, interval '1 hour');
@@ -70,7 +94,15 @@ begin
       raise exception 'link taken';
     end if;
   end if;
-  return place_order_core(payload);
+  v_res := place_order_core(payload);
+  -- Test mode: no payment step, so the order counts as paid now (provider 'test').
+  if test_mode() and v_res->>'pay_status' = 'unpaid' then
+    update orders set pay_status = 'paid', paid_at = now(), pay_provider = 'test', pay_ref = 'test', amount_paid = 0
+      where order_no = v_res->>'order_no' returning card_id, mode into v_card, v_mode;
+    if v_mode = 'builder' and v_card is not null then update cards set active = true where id = v_card; end if;
+    v_res := v_res || jsonb_build_object('pay_status', 'paid', 'test', true);
+  end if;
+  return v_res;
 end $$;
 revoke all on function public.place_order(jsonb) from public;
 grant execute on function public.place_order(jsonb) to anon, authenticated;

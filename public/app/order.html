@@ -441,6 +441,14 @@ const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
 const LOCAL_KEY = 'nbr-orders';
 /* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
 const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
+/* TEST MODE (Linkcardly): payments and the Cloudflare Turnstile check are OFF so the product can be tested end to end.
+   With PAYMENTS_ON = false the order goes straight to the database (place_order) without Turnstile, Stripe or Razorpay,
+   the Payment step shows a "no payment" placeholder, and the database must be in test mode (supabase/live/README.md),
+   which marks the order paid (pay_provider 'test') and puts the card live.
+   TO TURN PAYMENTS BACK ON: set PAYMENTS_ON = true here, turn test mode off in the database, and check that the
+   Stripe/Razorpay webhooks, NBR_WORKER_SECRET and TURNSTILE_SECRET are set on the worker that serves /api/*.
+   Everything below that handles payment (startPayment, checkPayReturn, retryPay, /api/pay/*) is kept for that day. */
+const PAYMENTS_ON = false;
 const VIA_WORKER = () => /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
 
 const PRICING = {
@@ -766,7 +774,7 @@ class Component extends DCLogic {
   doneRef = React.createRef();
   tsRef = React.createRef();
   renderTs = () => {
-    if (!TURNSTILE_SITE_KEY) return;
+    if (!TURNSTILE_SITE_KEY || !PAYMENTS_ON) return; // Turnstile is off in test mode
     const go = () => { const el = this.tsRef.current; if (!el || !window.turnstile || el.childElementCount) return; this.tsToken = ''; this.tsWidget = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, size: 'flexible', callback: t => { this.tsToken = t; }, 'expired-callback': () => { this.tsToken = ''; } }); };
     if (window.turnstile) { setTimeout(go, 50); return; }
     if (!document.getElementById('cf-ts')) { const s = document.createElement('script'); s.id = 'cf-ts'; s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = () => setTimeout(go, 50); document.head.appendChild(s); } else setTimeout(go, 800);
@@ -1039,7 +1047,7 @@ class Component extends DCLogic {
     if (String(order.card.photo_url).startsWith('data:') && VIA_WORKER()) { this.setState({ busy: false, submitError: 'Your photo could not be uploaded. Please try again, or remove the photo and add it later with your edit link.' + (window.__nbrUpErr ? ' (' + window.__nbrUpErr + ')' : '') }); return; }
     let remote = false;
     try {
-      const r = VIA_WORKER() ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
+      const r = VIA_WORKER() && PAYMENTS_ON ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
       if (r.ok) { const j = await r.json(); if (j && j.slug) { this.orderKey = ''; order.order_no = j.order_no || order.order_no; order.card.slug = j.slug; order.card.public_id = j.public_id || ''; order.edit_token = j.edit_token || ''; if (j.total != null) { order.total = j.total; order.discount = j.discount; } order.pay = j.pay || null; order.pay_status = j.pay_status || 'unpaid'; remote = true; } }
       else { const j = await r.json().catch(() => ({})); if (/link taken/i.test(j.message || '') && strict) { this.resetTs(); const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; } if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
     } catch (err) {}
@@ -1051,6 +1059,7 @@ class Component extends DCLogic {
     const base = { orderNo: order.order_no, slug: order.card.slug, pid: order.card.public_id || '', tok: order.edit_token || '', remote, mode: S.mode, idem: order.idem || '', total: order.total, region: S.region || 'US' };
     this.orderKey = '';
     if (order.pay_status === 'paid' || order.pay_status === 'waived') { this.showDone({ ...base, paid: true }); return; }
+    if (!PAYMENTS_ON) { this.setState({ busy: false, submitError: 'Payments are switched off for testing, but the database is not in test mode, so this order (' + order.order_no + ') is waiting for payment. Turn on test mode in Supabase (see supabase/live/README.md) and place the order again.' }); return; }
     this.startPayment(order.pay, base);
   };
   showDone = (done) => { this.setState({ busy: false, done }, () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); }); };
@@ -1310,7 +1319,7 @@ class Component extends DCLogic {
       cardHeading: S.plan === 'motion' ? 'Your Motion Card' : 'Your Digital Card',
       regions: ['IN', 'US'].map(k => { const on = (S.region || 'US') === k; return { label: PRICING[k].label, checked: on ? 'true' : 'false', pick: () => this.setState({ region: k, regionTouched: true }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)' }; }),
       panelDisplay: S.step === 3 && S.vw < 960 ? 'none' : 'flex', hasBack: !(S.editToken && S.step === 2) && S.step > 1 && !(S.step === 3 && S.vw < 960), noBack: false, back: () => { if (S.step <= 2 && S.standalone) { this.backToCard(); return; } this.goStep(S.step - 1); }, backLabel: S.step === 3 ? 'Make changes' : 'Back',
-      next: this.next, busy: S.busy, nextLabel: S.editToken ? (S.busy ? 'Saving…' : S.step === 2 && S.vw < 960 ? 'Continue' : 'Save changes') : S.step < 3 ? 'Continue' : S.step === 3 ? (S.vw < 400 ? 'Looks good' : 'Looks good · Continue') : (S.busy ? 'Starting payment…' : 'Pay ' + money(S.region, this.couponFor(S) ? this.couponFor(S).total : priceOf(S.region, plan.id).total)),
+      next: this.next, busy: S.busy, nextLabel: S.editToken ? (S.busy ? 'Saving…' : S.step === 2 && S.vw < 960 ? 'Continue' : 'Save changes') : S.step < 3 ? 'Continue' : S.step === 3 ? (S.vw < 400 ? 'Looks good' : 'Looks good · Continue') : (PAYMENTS_ON ? (S.busy ? 'Starting payment…' : 'Pay ' + money(S.region, this.couponFor(S) ? this.couponFor(S).total : priceOf(S.region, plan.id).total)) : (S.busy ? 'Placing order…' : 'Place order · no payment')),
       hasSubmitError: !!S.submitError, submitError: S.submitError, isPayStep: S.step > 3,
       previewRef: this.previewRef, onPreviewLoad: this.onPreviewLoad, tsRef: this.tsRef,
       previewNote: dfm ? 'Rough preview. Our designer will finish the details.' : 'Live preview. Tap around inside the phone.',
@@ -1341,7 +1350,7 @@ class Component extends DCLogic {
       ...(() => { const pl = PLANS.find(p => p.id === S.plan) || PLANS[0], pr = PRICING[S.region] || PRICING.US, vid = /^data:video\//.test(d.photoData || '') || NBR_VID.test(d.photo || '');
         return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payImg: d.photo && !vid ? d.photo : (pl.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg') }; })(),
       panelBg: S.vw < 960 ? 'transparent' : 'var(--surface)', panelBd: S.vw < 960 ? '0' : '1px solid rgba(var(--fg-rgb),0.06)', panelSh: S.vw < 960 ? 'none' : '0 16px 40px -30px rgba(90,60,20,0.35)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
-      secureTitle: S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
+      secureTitle: !PAYMENTS_ON ? 'Payments are off while we test' : S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: !PAYMENTS_ON ? 'Your order goes through without paying. Payment comes back before launch.' : S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
       stepEyebrow: S.vw >= 960 ? 'STEP ' + Math.min(S.step >= 3 ? S.step - 1 : S.step, 3) + ' OF 3' : 'STEP ' + Math.min(S.step, 4) + ' OF 4',
       qrNode: done ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(url).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,
     };
