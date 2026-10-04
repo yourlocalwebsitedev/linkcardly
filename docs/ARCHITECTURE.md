@@ -33,7 +33,7 @@ linkcardly/
 ├── supabase/migrations/   Native schema (for MODE = "native"): 0001 init, 0002 hardening, 0003 retention schedule
 ├── test/                  node:test suites; e2e/ (smoke, order-flow, production suite); support/ (live database in PGlite + PostgREST stand-in)
 ├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy
-└── docs/                  ARCHITECTURE.md, QA.md, SDLC_VALIDATION.md
+└── docs/                  ARCHITECTURE.md, INFRASTRUCTURE.md (accounts, services, secrets, setup log), QA.md, SDLC_VALIDATION.md
 ```
 
 ## Modes

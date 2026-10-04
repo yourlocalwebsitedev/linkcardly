@@ -5,22 +5,26 @@ Digital business cards at `linkcardly.com/<handle>`. A new repo, built on the sa
 ## Structure
 See `docs/ARCHITECTURE.md`. In short, edit marketing pages in `site/`, the server in `src/`, and static files in `public/`. `public/app/` is the vendored NexBizRise order and card app.
 
+## Infrastructure
+Everything Linkcardly runs on (Cloudflare Worker, R2 photos, Turnstile, Supabase, Resend, email forwarding), how each
+piece was set up, the secret names and where their values come from, and what's still to do: **`docs/INFRASTRUCTURE.md`**.
+
 ## Setup
 ```bash
 npm ci
-npx wrangler login
-# native mode only: set SUPABASE_URL in wrangler.toml, then
-npx wrangler secret put SUPABASE_SERVICE_KEY
-npx wrangler secret put TURNSTILE_SECRET
-npx wrangler secret put SUPABASE_ANON_KEY   # optional: public card reads go through RLS
-# native mode only: run supabase/migrations/*.sql in order (0001, 0002, 0003)
-npm test           # build + unit, integration and database tests
-npm run dev        # build + http://localhost:8787
-npm run deploy     # build + deploy
+npx wrangler login     # the Linkcardly Cloudflare account
+npm test               # build + unit, integration and database tests
+npm run dev            # build + http://localhost:8787
 ```
+Production deploys come from merging to `main` (Workers Builds). Public settings for each environment are in
+`wrangler.toml`; secrets are set on the Worker (`npx wrangler secret put <NAME> [--env staging]`), never in the repo.
 `wrangler dev` and `wrangler deploy` also run the build themselves (`[build]` in `wrangler.toml`).
 
-The Turnstile site key lives in one place: `site/site.config.js` (marketing pages) and `TURNSTILE_SITE_KEY` in `wrangler.toml` (native lead form). In proxy mode it is the NexBizRise widget's key, the same one `public/app/order.html` uses.
+**New database:** run `supabase/live/0-base.sql`, `ALL-IN-ONE.sql`, `linkcardly.sql` in that order, then the steps
+in `docs/INFRASTRUCTURE.md` (secrets, admin, signups off), and check it with `supabase/live/verify.sql`.
+
+Turnstile site keys: `TURNSTILE_SITE_KEY` in `wrangler.toml` (Linkcardly's widgets). In proxy mode the order page
+still uses the NexBizRise widget (`site/site.config.js`, `public/app/order.html`) until cutover.
 
 ## Testing
 - `npm test`: builds, then runs `test/*.test.js` (Worker routing, native API, card view, built site, and the SQL migrations in an in-process Postgres). Tests marked `todo` reproduce known open defects; see `docs/SDLC_VALIDATION.md`.
