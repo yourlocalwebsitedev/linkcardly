@@ -12,7 +12,7 @@ export const ORDER_ALIASES = new Set(['order', 'pricing']);
 
 // Asset paths without ".html": the assets binding redirects *.html URLs, which would drop the
 // card handle or edit token from the address bar (the vendored app reads them from location).
-export const APP = { order: '/app/order', card: '/app/card' };
+export const APP = { order: '/app/order', card: '/app/card', admin: '/app/admin' };
 
 // A first path segment ending in one of these is a static file. Handles may contain dots,
 // so only real file extensions count (handles.js rejects handles that end in one).

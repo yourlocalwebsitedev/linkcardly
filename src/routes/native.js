@@ -10,7 +10,7 @@
 //   POST /api/contact              contact form on linkcardly.com (emails Linkcardly)
 //   POST /api/pay/start | /api/pay/verify, GET /api/pay/status      Razorpay / Stripe checkout
 //   POST /api/razorpay/webhook | /api/stripe/webhook                 paid, failed and refunded events
-//   GET  /api/stats, POST /api/purge                                 admin only (Supabase admin login)
+//   GET  /api/stats, POST /api/purge, POST /api/admin/paid          admin only (Supabase admin login)
 // The scheduled job (renewal reminders, which also keeps the database active) is `scheduled()` below.
 import { rpc, view, RpcError } from '../lib/live.js';
 import { verifyTurnstile } from '../lib/turnstile.js';
@@ -290,6 +290,18 @@ async function isAdmin(req, env) {
   } catch (_) { return false; }
 }
 
+// /admin "Mark paid": a payment received outside the website (UPI, bank transfer). Same as an online payment: card live,
+// "your card is live" email with a fresh edit link, admin notification. The edit link also comes back to the admin.
+async function adminPaid(req, env, ctx) {
+  if (!(await isAdmin(req, env))) return json({ error: 'unauthorized' }, 401, noStore);
+  const j = await readJson(req, 2000);
+  if (!ORDER_NO.test(String(j.order_no || ''))) return fail('bad request', 400);
+  const o = await rpc(env, 'mark_order_paid_manual', { p_order_no: j.order_no, p_ref: String(j.ref || '').slice(0, 120) });
+  if (o && o.first) await purgeCards(env, [o.slug, o.public_id]);
+  later(ctx, afterPaid(env, o));
+  return json({ ok: true, first: !!(o && o.first), order_no: o.order_no, slug: o.slug, edit_link: o && o.first ? editLink(env, o.edit_token) : '' }, 200, noStore);
+}
+
 async function stats(req, env) {
   if (!(await isAdmin(req, env))) return json({ error: 'unauthorized' }, 401, noStore);
   if (!env.CF_ANALYTICS_TOKEN || !env.CF_ACCOUNT_ID) return json({ error: 'stats not configured', data: [] }, 200, noStore);
@@ -311,7 +323,7 @@ async function hit(req, env) {
 
 export async function nativeApi(parts, req, env, url, ctx) {
   const [route, sub] = parts, m = req.method;
-  const formRoute = ['upload', 'order', 'edit', 'lead', 'contact'].includes(route) || (route === 'pay' && m === 'POST');
+  const formRoute = ['upload', 'order', 'edit', 'lead', 'contact', 'admin'].includes(route) || (route === 'pay' && m === 'POST');
   if (formRoute && !sameOrigin(req, url, env)) return fail('forbidden', 403);
   try {
     if (route === 'card' && m === 'GET' && parts.length === 2 && KEY_RE.test(sub || '')) {
@@ -330,6 +342,7 @@ export async function nativeApi(parts, req, env, url, ctx) {
     if (route === 'razorpay' && sub === 'webhook' && m === 'POST') return await razorpayWebhook(req, env, ctx);
     if (route === 'stripe' && sub === 'webhook' && m === 'POST') return await stripeWebhook(req, env, ctx);
     if (route === 'stats' && m === 'GET') return await stats(req, env);
+    if (route === 'admin' && sub === 'paid' && m === 'POST') return await adminPaid(req, env, ctx);
     if (route === 'purge' && m === 'POST') {
       if (!(await isAdmin(req, env))) return json({ error: 'unauthorized' }, 401, noStore);
       const j = await readJson(req, 4000); await purgeCards(env, Array.isArray(j.keys) ? j.keys : []);

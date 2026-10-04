@@ -7,7 +7,10 @@
 //   POST   /rest/v1/<table>               insert (object or array)
 //   PATCH  /rest/v1/<table>?col=eq.value  update
 //   DELETE /rest/v1/<table>?col=eq.value  delete
-// Anything else answers 404. It trusts nothing from the caller: the role is always anon.
+// Anything else answers 404. It trusts nothing from the caller: the role is anon unless the request carries an
+// access token this stand-in issued itself (`users`: email/password sign-in for test admins), then it is
+// `authenticated` with that user's id, as Supabase does. Auth (GoTrue) parts, only what supabase-js uses here:
+//   POST /auth/v1/token?grant_type=password   GET /auth/v1/user   POST /auth/v1/logout
 
 const IDENT = /^[a-z_][a-z0-9_]*$/;
 const q = id => { if (!IDENT.test(id)) throw Object.assign(new Error('bad identifier'), { code: 'PGRST100', status: 400 }); return '"' + id + '"'; };
@@ -34,22 +37,44 @@ function where(params, start) {
   return { sql: parts.length ? ' where ' + parts.join(' and ') : '', vals };
 }
 
-export function createPostgrest(db, { log } = {}) {
+export function createPostgrest(db, { log, users = [] } = {}) {
   let chain = Promise.resolve();
   const serial = fn => { const p = chain.then(fn, fn); chain = p.catch(() => {}); return p; };
+  const sessions = new Map();   // access token → user
+  const userOf = h => sessions.get(String(h.authorization || '').replace(/^Bearer /i, '')) || null;
 
   async function run(headers, fn) {
+    const user = userOf(headers);
     return db.transaction(async tx => {
-      await tx.exec('set local role anon');
-      await tx.query(`select set_config('request.headers', $1, true), set_config('request.jwt.claim.role', 'anon', true)`, [JSON.stringify(headers)]);
+      await tx.exec(user ? 'set local role authenticated' : 'set local role anon');
+      await tx.query(`select set_config('request.headers', $1, true), set_config('request.jwt.claim.role', $2, true),
+        set_config('request.jwt.claim.sub', $3, true), set_config('request.jwt.claims', $4, true)`,
+        [JSON.stringify(headers), user ? 'authenticated' : 'anon', user ? user.id : '', user ? JSON.stringify({ sub: user.id, email: user.email, role: 'authenticated' }) : '']);
       return fn(tx);
     });
+  }
+
+  function auth(method, u, h, json) {
+    const path = u.pathname.replace(/^\/auth\/v1\/?/, '');
+    const userBody = x => ({ id: x.id, aud: 'authenticated', role: 'authenticated', email: x.email, app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' });
+    if (path === 'token' && method === 'POST' && u.searchParams.get('grant_type') === 'password') {
+      const x = users.find(v => v.email === (json && json.email) && v.password === (json && json.password));
+      if (!x) return { status: 400, body: { error: 'invalid_grant', error_description: 'Invalid login credentials', msg: 'Invalid login credentials', code: 'invalid_credentials' } };
+      const token = 'test-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      sessions.set(token, x);
+      const now = Math.floor(Date.now() / 1000);
+      return { status: 200, body: { access_token: token, token_type: 'bearer', expires_in: 3600, expires_at: now + 3600, refresh_token: 'r-' + token, user: userBody(x) } };
+    }
+    if (path === 'user' && method === 'GET') { const x = userOf(h); return x ? { status: 200, body: userBody(x) } : { status: 401, body: { msg: 'invalid JWT' } }; }
+    if (path === 'logout' && method === 'POST') { sessions.delete(String(h.authorization || '').replace(/^Bearer /i, '')); return { status: 204, body: null }; }
+    return { status: 404, body: { msg: 'not found' } };
   }
 
   async function handle({ method, url, headers = {}, body }) {
     const u = new URL(url), path = u.pathname.replace(/^\/rest\/v1\/?/, '');
     const h = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), String(v)]));
     if (!h.apikey) return { status: 401, body: { message: 'No API key found in request', hint: 'No `apikey` request header or url param was found.' } };
+    if (u.pathname.startsWith('/auth/v1/')) { let j = null; try { j = body ? JSON.parse(body) : null; } catch (_) {} return auth(method, u, h, j); }
     let json = null;
     if (body) { try { json = JSON.parse(body); } catch (e) { return { status: 400, body: { code: 'PGRST102', message: 'Empty or invalid json' } }; } }
     try {
@@ -78,7 +103,8 @@ export function createPostgrest(db, { log } = {}) {
         if (method === 'GET') {
           const sel = (u.searchParams.get('select') || '*').split(',').map(s => s.trim()).filter(Boolean).map(s => s === '*' ? '*' : q(s)).join(', ');
           const w = where(params, 0), lim = Math.min(Number(u.searchParams.get('limit')) || 1000, 1000);
-          return run(h, async tx => ({ status: 200, body: (await tx.query(`select ${sel} from ${table}${w.sql} limit ${lim}`, w.vals)).rows }));
+          const ord = (u.searchParams.get('order') || '').split(',').filter(Boolean).map(o => { const [c, d] = o.split('.'); return q(c) + (d === 'desc' ? ' desc' : ' asc'); }).join(', ');
+          return run(h, async tx => ({ status: 200, body: (await tx.query(`select ${sel} from ${table}${w.sql}${ord ? ' order by ' + ord : ''} limit ${lim}`, w.vals)).rows }));
         }
         const ret = /return=representation/.test(h.prefer || '');
         if (method === 'POST') {
@@ -104,6 +130,10 @@ export function createPostgrest(db, { log } = {}) {
         }
         return { status: 405, body: { message: 'method not allowed' } };
       });
+      if (/vnd\.pgrst\.object/.test(h.accept || '') && Array.isArray(out.body)) {
+        if (out.body.length !== 1) return { status: 406, body: { code: 'PGRST116', message: 'JSON object requested, multiple (or no) rows returned' } };
+        out.body = out.body[0];
+      }
       log && log(method, path, out.status);
       return out;
     } catch (e) {

@@ -113,10 +113,23 @@ test('self-hosted React and Babel are byte-identical to the SRI-pinned unpkg fil
     const got = 'sha384-' + createHash('sha384').update(await readFile(new URL('.' + map[url], pub))).digest('base64');
     assert.equal(got, want, url);
   }
-  for (const page of ['order', 'card']) {
+  for (const page of ['order', 'card', 'admin']) {
     const html = await readFile(new URL(`app/${page}.html`, pub), 'utf8');
     assert.ok(html.indexOf('/app/vendor/resources.js') > 0 && html.indexOf('/app/vendor/resources.js') < html.indexOf('/app/support.js'), page);
   }
+});
+
+test('admin page: self-hosted supabase-js 2.45.4 (byte-identical to npm), no third-party script, no NexBizRise settings', async () => {
+  const { createHash } = await import('node:crypto');
+  const { readFile } = await import('node:fs/promises');
+  const pub = new URL('../public/', import.meta.url);
+  const js = await readFile(new URL('app/vendor/supabase-js-2.45.4/supabase.js', pub));
+  // dist/umd/supabase.js from the npm tarball whose integrity matches the registry (sha512-E5p8/zOL…)
+  assert.equal('sha384-' + createHash('sha384').update(js).digest('base64'), 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o');
+  const html = await readFile(new URL('app/admin.html', pub), 'utf8');
+  assert.match(html, /<script src="\/app\/config\.js"><\/script>/);
+  assert.match(html, /<script src="\/app\/vendor\/supabase-js-2\.45\.4\/supabase\.js"><\/script>/);
+  assert.doesNotMatch(html, /esm\.sh|unpkg\.com\/@supabase|nexbizrise|hyaqvmrtqafqhbhcdecd|sb_publishable_/i);
 });
 
 test('order app uses the handle claimed on the home page (/create?h=) when it is allowed', async () => {

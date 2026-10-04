@@ -10,7 +10,8 @@ import { appConfig, browserDbOrigin } from './routes/app-config.js';
 
 const isFile = s => FILE_EXT.test(s);
 // API routes behind the per-IP rate limit (not /api/hit or /api/card, which every card view calls).
-const LIMITED = new Set(['order', 'contact', 'lead', 'edit', 'upload', 'pay', 'csp-report']);
+const LIMITED = new Set(['order', 'contact', 'lead', 'edit', 'upload', 'pay', 'admin', 'purge', 'csp-report']);
+const isAdmin = parts => parts[0] === 'admin' && parts.length === 1;
 const isEditLink = parts => parts[0] === 'e' && /^[a-f0-9]{40}$/.test(parts[1] || '');
 const isCardLink = parts => (parts[0] === 'c' && /^nbr_[a-f0-9]{6}$/.test(parts[1] || '')) || (parts.length === 1 && validateHandle(parts[0]).ok);
 
@@ -37,6 +38,9 @@ async function route(req, env, url, parts, ctx) {
   if (url.hostname === 'www.linkcardly.com') return Response.redirect(`${env.SITE_URL}${url.pathname}${url.search}`, 301);
 
   if (first === 'health') return health(env, url, proxyMode);
+
+  // Admin (vendored NexBizRise admin page: Supabase admin login, cards, orders, leads, coupons, Mark paid)
+  if (isAdmin(parts)) return serveAsset(env, req, APP.admin);
 
   // Ordering
   if (first === 'create') return serveAsset(env, req, APP.order, url.search);
@@ -92,9 +96,10 @@ export default {
     }
     // CSP only on pages this repo renders (marketing pages, 404), never on the
     // vendored app (/app, /create, card and edit links) or API responses.
-    const vendored = ['app', 'create'].includes(first) || isCardLink(parts) || isEditLink(parts);
+    const vendored = ['app', 'create'].includes(first) || isAdmin(parts) || isCardLink(parts) || isEditLink(parts);
     const csp = !vendored && first !== 'api';
     res = secure(res, { csp, appCsp: vendored, editLink: isEditLink(parts), db: browserDbOrigin(env) });
+    if (isAdmin(parts) || url.pathname.startsWith('/app/admin')) { res.headers.set('X-Robots-Tag', 'noindex, nofollow'); res.headers.set('Cache-Control', 'no-store'); }
     console.log(JSON.stringify({ t: 'req', method: req.method, path: logPath(url.pathname), status: res.status, ms: Date.now() - t0, mode: env.MODE, ray: req.headers.get('cf-ray') || undefined }));
     return res;
   }

@@ -144,14 +144,30 @@ Database changes that came with it (`supabase/live/`, run on both projects, see 
 `media_url_ok` (only `img.linkcardly.com` / `img-staging.linkcardly.com` photos are stored), `mark_order_refunded`,
 and a contact form without a required phone number.
 
-### Database updates (run once on each project)
-The native API needs the latest `ALL-IN-ONE.sql` and `linkcardly.sql`. Both are safe to run again.
+### Database updates (run once on each project, and again whenever these files change)
+The native API and the admin page need the latest `ALL-IN-ONE.sql` and `linkcardly.sql`. Both are safe to run again.
 1. Supabase → **linkcardly-staging** → SQL Editor → New query.
 2. Paste all of `supabase/live/ALL-IN-ONE.sql` → Run. Expected: "Success. No rows returned".
 3. New query → paste all of `supabase/live/linkcardly.sql` → Run. Same result.
 4. New query → paste `supabase/live/verify.sql` → Run. Expected: every line PASS, including the new line 17
-   (`2/true`). Line 05 expects `on`; on production change `'on'` to `'off'` in the first line before running.
+   (`3/true`). Line 05 expects `on`; on production change `'on'` to `'off'` in the first line before running.
 5. Repeat 1–4 on **linkcardly-prod**.
+
+## Admin page
+
+`https://linkcardly.com/admin` (and `/admin` on staging). Sign in with an admin login of that environment's Supabase
+project: Authentication → Users (added during setup, step 5 above) and listed in `public.admins`. Anyone else who
+signs in sees "no access" and no data. Tabs: Clients (cards: create, edit, pause, new edit link), Orders, Leads,
+Coupons, plus visit counts.
+
+**Mark paid** (until Razorpay, for UPI or bank transfers): Orders → the order shows **Unpaid** → **Mark paid** →
+type the payment reference → OK. The card goes live, the customer gets "Your Linkcardly card is live" with their
+private edit link, hello@ gets a copy of the order, and the edit link is copied to your clipboard (for WhatsApp).
+The order then shows **Paid**. The status menu (New / In progress / Delivered) is for your own tracking; "Delivered"
+also puts a card live without marking it paid (design-for-me orders).
+
+To add another admin: Supabase → Authentication → Users → Add user (Auto Confirm), then in the SQL Editor
+`insert into public.admins (user_id) select id from auth.users where email = '<email>' on conflict do nothing;`
 
 ## Staging
 
@@ -271,16 +287,7 @@ Still running and still doing linkcardly.com's ordering until cutover: Cloudflar
 
 ## Still to do
 
-1. **Database updates** on staging and production (section above).
-2. **Staging** (section above), then the hand tests on it.
-3. **Backups** set up and one manual run green (section above).
-4. **Razorpay** (owner's PAN, Aadhaar and Indian bank account; KYC), test keys and webhook on staging, then live keys
-   on production. Online payment turns on by itself once the keys are set; then run the payment tests (deferred).
-5. **Before go-live**: privacy and terms pages updated (business name, Supabase, Resend, Razorpay), HSTS on.
-6. **Switch-over** (production is set to native in the code): run the database updates on linkcardly-prod, then merge.
-   On linkcardly.com check `/health?deep=1` (`"mode":"native"`, all ok), place an order, edit it, send the contact
-   form, check the emails. After 30 quiet days, retire NexBizRise (section above) and remove `LEGACY_ORIGIN`.
-7. Optional: delete `SUPABASE_SERVICE_KEY` from the production Worker (unused).
+The to-do list is **[docs/TODO.md](TODO.md)** (launch steps, legal and money, safety, running it, later).
 
 The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
 
@@ -296,3 +303,4 @@ The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
 | 2026-10-03 | Old NexBizRise analytics token rolled after exposure |
 | 2026-10-03 | Native API built (all `/api/*` routes, emails, payments, daily job); `/app/config.js`; staging set to native; nightly backup workflow; database updates `media_url_ok`, `mark_order_refunded`, contact form phone optional |
 | 2026-10-03 | Production switched to native mode in `wrangler.toml` (NexBizRise kept only as emergency rollback) |
+| 2026-10-03 | Admin page at `/admin` (from NexBizRise) with Mark paid; `mark_order_paid_manual` |
