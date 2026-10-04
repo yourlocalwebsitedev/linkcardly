@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<script src="/app/vendor/resources.js"></script>
+<script src="/app/config.js"></script>
+<script src="/app/support.js"></script>
+<script src="/app/vendor/supabase-js-2.45.4/supabase.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Linkcardly Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="/app/qrcode.js"></script>
+<script>try{var t=localStorage.getItem('nbr-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<style>
+:root,[data-theme="dark"]{--bg:#070B14;--bg-2:#0A0F1A;--surface:#0F1624;--surface-1:#0C121E;--surface-hi:#1B2536;--header-bg:rgba(7,11,20,0.82);--ink:#FFFFFF;--ink-2:var(--ink-2);--ink-3:var(--ink-3);--body:#B4C0CF;--muted:var(--muted);--faint:#7D8CA1;--accent:#00E5FF;--accent-hover:#7DF3FF;--accent-2:#00D6B3;--danger:#FF8A8A;--fg-rgb:255,255,255;--shadow:rgba(0,0,0,0.45);color-scheme:dark;}
+[data-theme="light"]{--bg:#F6F8FB;--bg-2:#EDF1F6;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E6ECF3;--header-bg:rgba(246,248,251,0.86);--ink:#0A0F1A;--ink-2:#1E293B;--ink-3:#334155;--body:#3F4B5C;--muted:#4F5D70;--faint:#64748B;--accent:#0E7490;--accent-hover:#0B5E75;--accent-2:#0F766E;--danger:#B42318;--fg-rgb:10,15,26;--shadow:rgba(15,23,42,0.12);color-scheme:light;}
+html,:root{--brand:#00E5FF;--brand-hi:#7DF3FF;--brand-rgb:0,229,255;--row-pad:14px 16px;--av:48px;--row-gap:14px 18px;}
+body{margin:0;background:var(--bg);}
+*{box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink-2);-webkit-font-smoothing:antialiased;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent-hover);}
+input::placeholder,textarea::placeholder{color:var(--faint);}
+select option{background:var(--surface);color:var(--ink-2);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+input,textarea,select{font:inherit;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;">
+  <header style="position:sticky;top:0;z-index:20;background:var(--header-bg);backdrop-filter:blur(12px);border-bottom:1px solid rgba(var(--fg-rgb),0.07);color:var(--ink-2);padding:0 24px;min-height:64px;display:flex;align-items:center;gap:16px;">
+    <div style="display:flex;align-items:baseline;gap:10px;flex:1;min-width:0;">
+      <a href="#/" style="display:flex;align-items:center;gap:8px;color:var(--ink);"><span style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">link<span style="color:var(--accent);">card</span>ly</span></a>
+      <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);padding:3px 8px;border:1px solid rgba(var(--brand-rgb),0.35);border-radius:6px;">Tap Card Admin</span>
+    </div>
+    <button type="button" onClick="{{ toggleTheme }}" aria-label="{{ themeLabel }}" title="{{ themeLabel }}" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(var(--fg-rgb),0.16);border-radius:10px;color:var(--ink-2);cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ themeIcon }}"></path></svg></button>
+    <sc-if value="{{ signedIn }}">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:13px;color:rgba(232,238,245,0.75);">{{ userEmail }}</span>
+        <button type="button" onClick="{{ logout }}" style="height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(232,238,245,0.3);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Sign out</button>
+      </div>
+    </sc-if>
+  </header>
+
+  <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:grid;place-items:center;padding:80px 24px;"><span style="font-size:13px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Loading…</span></div>
+  </sc-if>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:grid;place-items:center;padding:48px 20px;">
+      <div style="width:100%;max-width:380px;background:var(--surface);border-radius:20px;border:1px solid rgba(var(--fg-rgb),0.07);padding:28px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:30px;">Sign in</h1>
+          <p style="margin:0;font-size:14px;color:var(--muted);">Admin access for Linkcardly cards.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label for="l-email" style="font-size:14px;font-weight:600;">Email</label>
+          <input id="l-email" type="email" autoComplete="email" inputMode="email" value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" onKeyDown="{{ loginKey }}" style="height:48px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:16px;color:var(--ink-2);outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label for="l-pass" style="font-size:14px;font-weight:600;">Password</label>
+          <input id="l-pass" type="password" autoComplete="current-password" value="{{ loginPassword }}" onChange="{{ onLoginPassword }}" onKeyDown="{{ loginKey }}" style="height:48px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:16px;color:var(--ink-2);outline:none;">
+        </div>
+        <sc-if value="{{ hasLoginError }}"><p role="alert" style="margin:0;font-size:13px;font-weight:600;color:var(--danger);">{{ loginError }}</p></sc-if>
+        <button type="button" onClick="{{ login }}" style="height:50px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ loginLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isNotAdmin }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:grid;place-items:center;padding:48px 20px;">
+      <div style="width:100%;max-width:520px;background:var(--surface);border-radius:20px;border:1px solid rgba(var(--fg-rgb),0.07);padding:28px;display:flex;flex-direction:column;gap:12px;">
+        <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:28px;">Not an admin yet</h1>
+        <p style="margin:0;font-size:15px;line-height:1.5;color:var(--ink-3);">You're signed in as {{ userEmail }}, but this account isn't in the admins table. Run this in Supabase → SQL Editor, then reload:</p>
+        <code style="display:block;padding:12px;border-radius:10px;background:var(--bg-2);font-size:13px;line-height:1.5;overflow-wrap:anywhere;">{{ adminSql }}</code>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <main style="width:100%;max-width:1120px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+      <div role="tablist" aria-label="Admin sections" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="2">
+          <button type="button" role="tab" aria-selected="{{ tb.selected }}" onClick="{{ tb.pick }}" style="min-height:40px;padding:0 18px;border:0;border-radius:999px;background:{{ tb.bg }};color:{{ tb.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;">{{ tb.label }}<sc-if value="{{ tb.hasBadge }}"><span style="min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--brand);color:#04121A;font-size:12px;font-weight:800;display:grid;place-items:center;">{{ tb.badge }}</span></sc-if></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ tabClients }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Clients</h1>
+          <p style="margin:0;font-size:15px;color:var(--muted);">{{ summary }}</p>
+        </div>
+        <button type="button" onClick="{{ newClient }}" style="height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          New client
+        </button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+        <label style="flex:1 1 260px;position:relative;display:flex;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);display:flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></span>
+          <input type="search" aria-label="Search clients" placeholder="Search by name, company or link" value="{{ search }}" onChange="{{ onSearch }}" style="height:46px;width:100%;padding:0 14px 0 42px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);font-size:15px;color:var(--ink-2);outline:none;">
+        </label>
+        <div role="tablist" aria-label="Filter" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{ fl.selected }}" onClick="{{ fl.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ fl.border }};background:{{ fl.bg }};color:{{ fl.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ fl.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ hasLoadError }}"><p role="alert" style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(255,90,90,0.1);color:#FFB4B4;font-size:14px;font-weight:600;">Couldn't load clients: {{ loadError }}</p></sc-if>
+      <div style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.07);">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+          <div style="padding:var(--row-pad);display:flex;flex-wrap:wrap;align-items:center;gap:var(--row-gap);border-top:1px solid rgba(var(--fg-rgb),0.06);">
+            <div style="display:flex;align-items:center;gap:12px;flex:1 1 240px;min-width:0;">
+              <div aria-hidden="true" style="width:var(--av);height:var(--av);border-radius:50%;flex:none;background:{{ r.avatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:18px;color:{{ r.accent }};">{{ r.initialsShown }}</div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                <span style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.name }}</span>
+                <span style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.role }}</span>
+              </div>
+            </div>
+            <a href="{{ r.url }}" target="_blank" rel="noopener" style="flex:1 1 200px;min-width:0;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.urlLabel }}</a>
+            <div style="display:flex;align-items:center;gap:8px;flex:0 0 150px;">
+              <span aria-hidden="true" style="width:22px;height:22px;border-radius:6px;background:{{ r.bg }};box-shadow:inset 0 0 0 5px {{ r.bg }}, inset 0 0 0 11px {{ r.accent }};flex:none;"></span>
+              <span style="font-size:13px;color:var(--ink-3);">{{ r.colourName }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 130px;">
+              <span style="font-size:13px;font-weight:600;">{{ r.plan }}</span>
+              <span style="font-size:12px;color:var(--muted);">Renews {{ r.renewal }}</span>
+              <sc-if value="{{ r.hasStats }}"><span title="Last 30 days" style="font-size:12px;color:var(--muted);">{{ r.stats }}</span></sc-if>
+            </div>
+            <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ r.statusBg }};color:{{ r.statusInk }};font-size:12px;font-weight:700;">{{ r.status }}</span>
+            <sc-if value="{{ r.edited }}"><span title="The client changed this card with their edit link. Open it to clear." style="flex:none;padding:4px 10px;border-radius:999px;background:rgba(250,204,21,0.14);color:#FDE68A;font-size:12px;font-weight:700;">Edited by client</span></sc-if>
+            <div style="display:flex;gap:6px;flex:none;margin-left:auto;">
+              <button type="button" onClick="{{ r.onQR }}" aria-label="{{ r.qrAria }}" style="width:40px;height:40px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--surface-hi);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"></path></svg></button>
+              <button type="button" onClick="{{ r.onEdit }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit</button>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;padding:40px 16px;text-align:center;font-size:15px;color:var(--muted);">{{ emptyText }}</p>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ tabLeads }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Leads</h1>
+            <p style="margin:0;font-size:15px;color:var(--muted);">{{ leadsSummary }}</p>
+          </div>
+          <button type="button" onClick="{{ refreshLeads }}" style="height:40px;padding:0 16px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
+        </div>
+        <sc-if value="{{ leadsEmpty }}"><p style="margin:0;padding:20px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);font-size:15px;color:var(--muted);">No leads yet. When someone taps “Share your contact” on a card, it appears here.</p></sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ leadRows }}" as="l" hint-placeholder-count="3">
+            <div style="padding:16px 18px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;">
+                <span style="font-size:16px;font-weight:700;">{{ l.name }}</span>
+                <span style="font-size:13px;color:var(--muted);">For {{ l.card }} · {{ l.when }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;">
+                <a href="{{ l.telHref }}">{{ l.phone }}</a>
+                <a href="{{ l.waHref }}" target="_blank" rel="noopener">WhatsApp</a>
+                <sc-if value="{{ l.hasEmail }}"><a href="{{ l.mailHref }}">{{ l.email }}</a></sc-if>
+                <sc-if value="{{ l.hasTopic }}"><span style="color:var(--ink-3);">{{ l.topic }}</span></sc-if>
+              </div>
+              <sc-if value="{{ l.hasMessage }}"><p style="margin:0;font-size:14px;line-height:1.5;color:var(--ink-3);white-space:pre-wrap;">{{ l.message }}</p></sc-if>
+              <div role="group" aria-label="Lead status" style="display:flex;gap:6px;flex-wrap:wrap;">
+                <sc-for list="{{ l.statuses }}" as="ls"><button type="button" aria-pressed="{{ ls.pressed }}" onClick="{{ ls.pick }}" style="height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.14);background:{{ ls.bg }};color:{{ ls.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ ls.label }}</button></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tabCoupons }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Coupons</h1>
+          <p style="margin:0;font-size:15px;color:var(--muted);">{{ couponsSummary }}</p>
+        </div>
+        <div style="padding:20px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);display:flex;flex-direction:column;gap:14px;">
+          <h2 style="margin:0;font-size:17px;font-weight:800;">New coupon</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:12px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Code<input value="{{ cf.code }}" onInput="{{ cf.onCode }}" maxlength="32" placeholder="LAUNCH20" autocomplete="off" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Type<select value="{{ cf.kind }}" onChange="{{ cf.onKind }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="percent">% off</option><option value="amount">Fixed amount off</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">{{ cf.valueLabel }}<input type="number" min="1" step="1" value="{{ cf.value }}" onInput="{{ cf.onValue }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Country<select value="{{ cf.region }}" onChange="{{ cf.onRegion }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="IN">India (₹)</option><option value="US">USA ($)</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Plan<select value="{{ cf.plan }}" onChange="{{ cf.onPlan }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="basic">Digital Card</option><option value="motion">Motion Card</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Total uses (blank = unlimited)<input type="number" min="1" step="1" value="{{ cf.maxUses }}" onInput="{{ cf.onMax }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Uses per email<input type="number" min="1" step="1" value="{{ cf.perEmail }}" onInput="{{ cf.onPer }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Expires (optional)<input type="date" value="{{ cf.expires }}" onInput="{{ cf.onExp }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+            <button type="button" onClick="{{ cf.save }}" disabled="{{ cf.busy }}" style="height:44px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ cf.saveLabel }}</button>
+            <button type="button" onClick="{{ cf.random }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Generate random code</button>
+            <sc-if value="{{ cf.hasMsg }}"><span role="status" style="font-size:14px;font-weight:600;color:{{ cf.msgColor }};">{{ cf.msg }}</span></sc-if>
+          </div>
+          <p style="margin:0;font-size:13px;line-height:1.5;color:var(--muted);">Codes are 4–32 letters, numbers, - or _. Use 8+ random characters for high-value codes. Fixed-amount coupons need a country so the currency is clear.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid rgba(var(--fg-rgb),0.08);background:var(--surface);">
+          <sc-if value="{{ noCoupons }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:20px;font-size:14px;color:var(--muted);">No coupons yet.</p></sc-if>
+          <sc-for list="{{ couponRows }}" as="cr" hint-placeholder-count="2">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:14px 18px;border-top:1px solid rgba(var(--fg-rgb),0.06);">
+              <span style="flex:0 0 150px;font-size:15px;font-weight:800;letter-spacing:0.05em;color:{{ cr.codeInk }};">{{ cr.code }}</span>
+              <span style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;font-weight:600;color:var(--ink-2);">{{ cr.offer }}</span><span style="font-size:13px;color:var(--muted);">{{ cr.rules }}</span></span>
+              <span style="flex:0 0 90px;font-size:13px;font-weight:600;color:var(--ink-3);">{{ cr.usage }}</span>
+              <button type="button" onClick="{{ cr.toggle }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ cr.toggleLabel }}</button>
+              <button type="button" onClick="{{ cr.remove }}" aria-label="{{ cr.removeAria }}" style="height:36px;padding:0 12px;border-radius:10px;border:0;background:transparent;color:var(--danger);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Delete</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tabOrders }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Orders</h1>
+            <p style="margin:0;font-size:15px;color:var(--muted);">{{ ordersSummary }}</p>
+          </div>
+          <button type="button" onClick="{{ refreshOrders }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
+        </div>
+        <sc-if value="{{ ordersNeedSetup }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="padding:14px 16px;border-radius:12px;background:rgba(250,204,21,0.10);border:1px solid rgba(250,204,21,0.3);font-size:14px;line-height:1.5;color:var(--ink-2);">The orders table isn't set up yet. Run <code style="font-weight:700;">supabase/orders.sql</code> in Supabase → SQL Editor. Until then, only orders placed in this browser show here. They're saved as client cards when you open this tab.</div>
+        </sc-if>
+        <div role="tablist" aria-label="Country" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;">
+          <sc-for list="{{ regionTabs }}" as="rt" hint-placeholder-count="3">
+            <button type="button" role="tab" aria-selected="{{ rt.selected }}" onClick="{{ rt.pick }}" style="text-align:left;display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;border:{{ rt.border }};background:{{ rt.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;">
+              <span style="font-size:15px;font-weight:700;color:var(--ink);">{{ rt.label }}</span>
+              <span style="font-size:13px;color:var(--muted);">{{ rt.sub }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div role="tablist" aria-label="Order status" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <sc-for list="{{ orderFilters }}" as="of" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{ of.selected }}" onClick="{{ of.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ of.border }};background:{{ of.bg }};color:{{ of.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ of.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.07);">
+          <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="3">
+            <div style="padding:var(--row-pad);display:flex;flex-wrap:wrap;align-items:center;gap:var(--row-gap);border-top:1px solid rgba(var(--fg-rgb),0.06);">
+              <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 130px;">
+                <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:700;color:var(--ink);">{{ o.no }}</span>
+                <span style="font-size:12px;color:var(--muted);">{{ o.date }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;flex:1 1 220px;min-width:0;">
+                <span style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ o.name }}</span>
+                <span style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ o.contact }}</span>
+              </div>
+              <span style="flex:none;padding:4px 10px;border-radius:999px;background:rgba(var(--fg-rgb),0.08);color:var(--ink-2);font-size:12px;font-weight:700;">{{ o.regionLabel }}</span>
+              <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ o.modeBg }};color:{{ o.modeInk }};font-size:12px;font-weight:700;">{{ o.mode }}</span>
+              <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ o.payBg }};color:var(--ink);font-size:12px;font-weight:700;">{{ o.payLabel }}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 120px;">
+                <span style="font-size:13px;font-weight:600;">{{ o.plan }}</span>
+                <span style="font-size:12px;color:var(--muted);">{{ o.price }}</span>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:4px;flex:0 0 150px;">
+                <span style="position:absolute;left:-9999px;">Status for {{ o.no }}</span>
+                <select value="{{ o.status }}" onChange="{{ o.onStatus }}" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid {{ o.statusBorder }};background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;">
+                  <option value="new">New</option>
+                  <option value="in_progress">In progress</option>
+                  <option value="delivered">Delivered</option>
+                </select>
+              </label>
+              <div style="display:flex;gap:6px;flex:none;margin-left:auto;">
+                <sc-if value="{{ o.canMarkPaid }}"><button type="button" onClick="{{ o.onMarkPaid }}" disabled="{{ o.payBusy }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(0,214,179,0.55);background:var(--surface);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;" style-hover="background:var(--surface-hi);">Mark paid</button></sc-if>
+                <sc-if value="{{ o.hasCard }}"><button type="button" onClick="{{ o.onOpen }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit card</button></sc-if>
+              </div>
+              <sc-if value="{{ o.hasNotes }}"><p style="margin:0;flex:1 1 100%;padding:10px 12px;border-radius:10px;background:var(--bg-2);font-size:13px;line-height:1.5;color:var(--ink-3);">{{ o.notes }}</p></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noOrderRows }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:40px 16px;text-align:center;font-size:15px;color:var(--muted);">{{ ordersEmpty }}</p>
+          </sc-if>
+        </div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+    <main style="width:100%;max-width:1180px;margin:0 auto;padding:24px 24px 120px;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 340px), 1fr));gap:32px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:20px;min-width:0;grid-column:span 1;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button type="button" onClick="{{ backToList }}" aria-label="Back to clients" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:32px;line-height:1.1;">{{ editTitle }}</h1>
+        </div>
+
+        <section onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="background:var(--surface);border-radius:16px;border:{{ dropBorder }};padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Photo or GIF</h2>
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div aria-hidden="true" onClick="{{ pickPhoto }}" style="cursor:pointer;width:88px;height:88px;border-radius:18px;flex:none;background:{{ pvAvatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:32px;color:{{ pvAccent }};">{{ pvInitialsShown }}</div>
+            <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:180px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button type="button" onClick="{{ pickPhoto }}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>
+                  {{ uploadLabel }}
+                </button>
+                <input ref="{{ fileRef }}" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange="{{ onPhoto }}" tabindex="-1" aria-hidden="true" style="display:none;">
+                <sc-if value="{{ hasPhoto }}">
+                  <button type="button" onClick="{{ removePhoto }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Remove</button>
+                </sc-if>
+              </div>
+              <p style="margin:0;font-size:13px;line-height:1.4;color:var(--muted);">{{ photoNote }}</p>
+            </div>
+          </div>
+          <sc-if value="{{ hasPhoto }}">
+            <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding-top:14px;border-top:1px solid rgba(var(--fg-rgb),0.06);">
+              <div onPointerDown="{{ adjDown }}" aria-label="Drag to position the photo" style="position:relative;width:200px;height:200px;border-radius:16px;overflow:hidden;background:{{ pvBg }};cursor:grab;touch-action:none;user-select:none;flex:none;">
+                <div style="position:absolute;inset:0;background-image:{{ adjBg }};background-size:cover;background-position:{{ adjPos }};transform:scale({{ adjZoom }});transform-origin:{{ adjPos }};pointer-events:none;"></div>
+                <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg, transparent 50%, rgba(6,18,13,0.55) 100%);pointer-events:none;"></div>
+                <div aria-hidden="true" style="position:absolute;inset:0;background-image:linear-gradient(rgba(var(--fg-rgb),0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--fg-rgb),0.25) 1px, transparent 1px);background-size:33.33% 33.33%;pointer-events:none;"></div>
+                <span style="position:absolute;left:10px;bottom:10px;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,0.55);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;pointer-events:none;">Drag to move</span>
+              </div>
+              <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label for="f-zoom" style="font-size:14px;font-weight:600;display:flex;justify-content:space-between;"><span>Zoom</span><span style="font-weight:500;color:var(--muted);">{{ zoomLabel }}</span></label>
+                  <input id="f-zoom" type="range" min="1" max="2.5" step="0.05" value="{{ adjZoom }}" onChange="{{ onZoom }}" style="width:100%;accent-color:var(--accent);">
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:6px;">
+                  <sc-for list="{{ focusPresets }}" as="fp">
+                    <button type="button" onClick="{{ fp.pick }}" style="height:38px;border-radius:9px;border:1px solid rgba(var(--fg-rgb),0.13);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ fp.label }}</button>
+                  </sc-for>
+                </div>
+                <p style="margin:0;font-size:13px;line-height:1.4;color:var(--muted);">The square is the top of the card. Drag the photo and zoom until the face sits well above the name.</p>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+
+        <section style="background:var(--surface);border-radius:16px;border:1px solid rgba(var(--fg-rgb),0.07);padding:20px;display:flex;flex-direction:column;gap:16px;">
+          <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Profession &amp; colour</h2>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label for="f-profession" style="font-size:14px;font-weight:600;">Profession *</label>
+            <select id="f-profession" value="{{ draftProfession }}" onChange="{{ onProfession }}" style="height:46px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;color:var(--ink-2);">
+              <sc-for list="{{ professionOptions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+            </select>
+            <p style="margin:0;font-size:13px;color:var(--muted);">Same list as the order form. Sets the card style ({{ presetLabel }}), label and tagline. You can change them below.</p>
+          </div>
+          <sc-if value="{{ isOtherProf }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label for="f-professionOther" style="font-size:14px;font-weight:600;">Their profession *</label>
+              <input id="f-professionOther" type="text" placeholder="e.g. Chartered Accountant, Photographer" value="{{ draftProfessionOther }}" onChange="{{ onProfessionOther }}" aria-invalid="{{ profOtherInvalid }}" style="height:46px;padding:0 12px;border-radius:10px;border:1px solid {{ profOtherBorder }};background:var(--surface);font-size:15px;color:var(--ink-2);outline:none;">
+              <sc-if value="{{ hasProfOtherError }}"><span style="font-size:13px;font-weight:600;color:var(--danger);">{{ profOtherError }}</span></sc-if>
+            </div>
+          </sc-if>
+          <div role="radiogroup" aria-label="Card colour" style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:14px;font-weight:600;">Style · {{ colourName }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <sc-for list="{{ colourOptions }}" as="c" hint-placeholder-count="7">
+                <button type="button" role="radio" aria-checked="{{ c.selected }}" aria-label="{{ c.name }}" onClick="{{ c.pick }}" style="width:52px;height:52px;border-radius:14px;border:0;padding:0;cursor:pointer;background:{{ c.bg }};box-shadow:{{ c.ring }};display:grid;place-items:center;">
+                  <span style="width:18px;height:18px;border-radius:50%;background:{{ c.accent }};"></span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div role="radiogroup" aria-label="Design" style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:14px;font-weight:600;">Collection · {{ collName }}</span>
+            <div role="radiogroup" aria-label="Collection" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;flex-wrap:wrap;">
+              <sc-for list="{{ collOptions }}" as="co" hint-placeholder-count="3">
+                <button type="button" role="radio" aria-checked="{{ co.selected }}" onClick="{{ co.pick }}" style="min-height:38px;padding:0 16px;border:0;border-radius:999px;background:{{ co.bg }};color:{{ co.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">{{ co.label }}</button>
+              </sc-for>
+            </div>
+            <div hidden="" style="display:none;">
+              <sc-for list="{{ layoutOptions }}" as="l" hint-placeholder-count="0">
+                <button type="button" role="radio" aria-checked="{{ l.selected }}" onClick="{{ l.pick }}" style="padding:8px;border-radius:12px;border:{{ l.border }};background:var(--surface);display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-width:0;">
+                  <span aria-hidden="true" style="height:70px;border-radius:8px;background:{{ l.thumb }};box-shadow:inset 0 0 0 1px rgba(var(--fg-rgb),0.06);"></span>
+                  <span style="font-size:13px;font-weight:700;color:var(--ink-2);">{{ l.name }}</span>
+                  <span style="font-size:11px;color:var(--muted);">{{ l.tag }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <p style="margin:0;font-size:13px;color:var(--muted);">Same details for every design. The colour sets the accent.</p>
+          </div>
+        </section>
+
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
+          <section style="background:var(--surface);border-radius:16px;border:1px solid rgba(var(--fg-rgb),0.07);padding:20px;display:flex;flex-direction:column;gap:14px;">
+            <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">{{ sec.title }}</h2>
+            <div style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:14px;">
+              <sc-for list="{{ sec.fields }}" as="f">
+                <div style="display:flex;flex-direction:column;gap:6px;grid-column:{{ f.span }};min-width:0;">
+                  <label for="{{ f.id }}" style="font-size:14px;font-weight:600;">{{ f.label }}</label>
+                  <sc-if value="{{ f.isInput }}">
+                    <input id="{{ f.id }}" type="{{ f.type }}" inputMode="{{ f.inputMode }}" placeholder="{{ f.placeholder }}" value="{{ f.value }}" onChange="{{ f.onChange }}" aria-invalid="{{ f.invalid }}" style="height:46px;width:100%;padding:0 12px;border-radius:10px;border:1px solid {{ f.border }};background:var(--surface);font-size:15px;color:var(--ink-2);outline:none;">
+                  </sc-if>
+                  <sc-if value="{{ f.isArea }}">
+                    <textarea id="{{ f.id }}" rows="3" placeholder="{{ f.placeholder }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;line-height:1.45;color:var(--ink-2);resize:vertical;outline:none;"></textarea>
+                  </sc-if>
+                  <sc-if value="{{ f.hasError }}"><span style="font-size:13px;font-weight:600;color:var(--danger);">{{ f.error }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </sc-for>
+
+        <section style="background:var(--surface);border-radius:16px;border:1px solid rgba(var(--fg-rgb),0.07);padding:20px;display:flex;flex-direction:column;gap:16px;">
+          <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Link, plan &amp; status</h2>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label for="f-slug" style="font-size:14px;font-weight:600;">Card link *</label>
+            <div style="display:flex;align-items:stretch;border-radius:10px;border:1px solid {{ slugBorder }};overflow:hidden;background:var(--surface);">
+              <span style="padding:0 10px 0 12px;display:flex;align-items:center;background:var(--bg-2);font-size:14px;color:var(--muted);white-space:nowrap;">{{ baseHost }}/</span>
+              <input id="f-slug" type="text" value="{{ draftSlug }}" onChange="{{ onSlug }}" aria-invalid="{{ slugInvalid }}" style="height:46px;flex:1;min-width:0;padding:0 12px;border:0;font-size:15px;color:var(--ink-2);outline:none;">
+            </div>
+            <sc-if value="{{ hasSlugError }}"><span style="font-size:13px;font-weight:600;color:var(--danger);">{{ slugError }}</span></sc-if>
+            <sc-if value="{{ noSlugError }}"><span style="font-size:13px;color:var(--muted);">Made from first name + last 4 digits of the mobile (e.g. rahul3210). You can edit it.</span></sc-if>
+          </div>
+          <div role="radiogroup" aria-label="Region" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;">
+            <sc-for list="{{ regionOptions }}" as="rg">
+              <button type="button" role="radio" aria-checked="{{ rg.selected }}" onClick="{{ rg.pick }}" style="min-height:40px;padding:0 16px;border:0;border-radius:999px;background:{{ rg.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:{{ rg.weight }};box-shadow:{{ rg.shadow }};cursor:pointer;">{{ rg.label }}</button>
+            </sc-for>
+          </div>
+          <div role="radiogroup" aria-label="Plan" style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
+            <sc-for list="{{ planOptions }}" as="p">
+              <button type="button" role="radio" aria-checked="{{ p.selected }}" onClick="{{ p.pick }}" style="min-height:58px;padding:8px 12px;border-radius:12px;border:{{ p.border }};background:{{ p.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:2px;cursor:pointer;"><span style="font-size:14px;font-weight:700;">{{ p.name }}</span><span style="font-size:13px;color:var(--muted);">{{ p.price }}</span></button>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">
+            <div style="display:flex;flex-direction:column;gap:6px;flex:1 1 180px;">
+              <label for="f-renew" style="font-size:14px;font-weight:600;">Renews on</label>
+              <input id="f-renew" type="date" value="{{ draftRenewal }}" onChange="{{ onRenewal }}" style="height:46px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;color:var(--ink-2);">
+            </div>
+            <button type="button" role="switch" aria-checked="{{ activeStr }}" onClick="{{ toggleActive }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+              <span>{{ activeLabel }}</span>
+              <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ switchBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ knobLeft }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
+            </button>
+            <button type="button" role="switch" aria-checked="{{ pbStr }}" onClick="{{ togglePB }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+              <span>Show plans &amp; “Powered by”</span>
+              <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ pbBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ pbKnob }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
+            </button>
+            <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+              <span>{{ seaLabel }}</span>
+              <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ seaBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ seaKnob }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
+            </button>
+          </div>
+          <sc-if value="{{ showGreeting }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label for="a-greeting" style="font-size:14px;font-weight:600;color:var(--ink-2);">Holiday greeting</label>
+              <input id="a-greeting" type="text" maxLength="60" value="{{ greetingVal }}" onChange="{{ onGreeting }}" placeholder="{{ greetingPh }}" style="height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;">
+              <span style="font-size:13px;color:var(--muted);">Leave blank to use “Happy Holidays from {{ greetingName }}”. Motion cards also get snowfall, New Year sparkle and Thanksgiving.</span>
+            </div>
+          </sc-if>
+        </section>
+
+        <sc-if value="{{ canDelete }}">
+          <button type="button" onClick="{{ deleteClient }}" style="align-self:flex-start;height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,138,138,0.4);background:transparent;color:var(--danger);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ deleteLabel }}</button>
+        </sc-if>
+      </div>
+
+      <aside aria-label="Live preview" style="position:sticky;top:84px;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Live preview</span>
+          <span style="font-size:12px;color:var(--muted);">· scroll and tap inside</span>
+        </div>
+        <div style="width:336px;max-width:100%;padding:8px;border-radius:44px;background:#1A2232;box-shadow:0 30px 60px -24px rgba(0,0,0,0.7),0 0 0 1px rgba(var(--fg-rgb),0.08);">
+          <div style="position:relative;width:320px;height:660px;border-radius:36px;overflow:hidden;background:#06120d;">
+            <iframe ref="{{ previewRef }}" src="{{ previewSrc }}" title="Live card preview" onLoad="{{ onPreviewLoad }}" style="position:absolute;top:0;left:0;width:390px;height:804px;border:0;transform:scale(0.8205);transform-origin:0 0;background:#06120d;"></iframe>
+          </div>
+        </div>
+        <span style="font-size:13px;color:var(--muted);">{{ pvUrl }}</span>
+      </aside>
+
+      <div style="position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--header-bg);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid rgba(var(--fg-rgb),0.07);padding:12px 24px max(12px, env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;">
+        <button type="button" onClick="{{ backToList }}" style="height:48px;padding:0 18px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;">Cancel</button>
+        <button type="button" onClick="{{ publish }}" style="height:48px;padding:0 22px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ publishLabel }}</button>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:40;background:rgba(3,10,7,0.6);display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div role="dialog" aria-modal="true" aria-labelledby="pub-h" onClick="{{ stop }}" style="width:100%;max-width:400px;max-height:92vh;overflow-y:auto;background:var(--bg-2);border-radius:20px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,0.6);">
+        <sc-if value="{{ modalIsPublish }}">
+          <span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:50%;background:rgba(0,214,179,0.15);color:var(--accent-2);display:grid;place-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"></path></svg></span>
+        </sc-if>
+        <div style="flex:none;display:flex;flex-direction:column;gap:4px;">
+          <h2 id="pub-h" style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:26px;">{{ modalTitle }}</h2>
+          <p style="margin:0;font-size:14px;color:var(--muted);">{{ modalSub }}</p>
+        </div>
+        <div style="flex:none;width:220px;height:220px;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#FFFFFF;">{{ qrNode }}</div>
+        <div style="flex:none;width:100%;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);font-size:14px;font-weight:600;overflow-wrap:anywhere;">{{ modalUrl }}</div>
+        <div style="flex:none;width:100%;display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
+          <button type="button" onClick="{{ copyLink }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ copyLabel }}</button>
+          <sc-if value="{{ hasEditToken }}"><a href="{{ sendHref }}" target="_blank" rel="noopener" style="height:46px;border-radius:12px;background:var(--brand);color:#04121A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;">Send on WhatsApp</a></sc-if>
+          <sc-if value="{{ noEditToken }}"><button type="button" onClick="{{ resetEditLink }}" style="height:46px;border-radius:12px;background:var(--brand);color:#04121A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;">Send to client</button></sc-if>
+        </div>
+        <div style="flex:none;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);">
+          <span style="font-size:13.5px;font-weight:600;color:var(--ink-2);">{{ changesLabel }}</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" onClick="{{ undoChange }}" aria-label="Remove one change" style="width:36px;height:36px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-size:18px;font-weight:700;cursor:pointer;">−</button>
+            <button type="button" onClick="{{ addChange }}" aria-label="Add one change" style="width:36px;height:36px;border-radius:10px;border:0;background:var(--brand);color:#04121A;font-size:18px;font-weight:700;cursor:pointer;">+</button>
+          </div>
+        </div>
+        <button type="button" onClick="{{ downloadQR }}" style="flex:none;height:44px;width:100%;border:0;border-radius:12px;background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;">Download QR (SVG)</button>
+        <sc-if value="{{ hasEditLink }}">
+          <div style="flex:none;width:100%;display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid rgba(var(--fg-rgb),0.08);">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:8px;">
+              <button type="button" onClick="{{ editBtn }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ copyEditLabel }}</button>
+            </div>
+            <p style="margin:0;font-size:12.5px;line-height:1.45;color:var(--muted);">{{ editNote }}</p>
+          </div>
+        </sc-if>
+        <button type="button" ref="{{ doneRef }}" onClick="{{ closeModal }}" style="flex:none;height:44px;width:100%;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Done</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <div role="status" aria-live="polite" style="position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:50;pointer-events:none;">
+    <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--surface);border:1px solid rgba(var(--brand-rgb),0.35);color:var(--ink-2);padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;white-space:nowrap;box-shadow:0 16px 40px -12px rgba(0,0,0,0.5);">{{ toast }}</div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comfortable&quot;,&quot;Standard&quot;,&quot;Compact&quot;],&quot;default&quot;:&quot;Standard&quot;,&quot;tsType&quot;:&quot;'Comfortable'|'Standard'|'Compact'&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cyan&quot;,&quot;Emerald&quot;,&quot;Amber&quot;],&quot;default&quot;:&quot;Cyan&quot;,&quot;tsType&quot;:&quot;'Cyan'|'Emerald'|'Amber'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;showRevenue&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Privacy&quot;}}">
+const CF_EMPTY = { code: '', kind: 'percent', value: '', region: '', plan: '', maxUses: '', perEmail: '1', expires: '' };
+/* Linkcardly: this environment's database and publishable key from /app/config.js (served by the Worker). */
+const LC = window.LC_CONFIG || {};
+const SUPABASE_URL = LC.supabaseUrl || '';
+const SUPABASE_KEY = LC.supabaseKey || '';   // publishable key — safe in the browser
+const CARD_BASE = location.origin;  // links point at the site this admin is opened on (production or staging)
+/* True when served by the Linkcardly Worker, which answers /api/upload, /api/stats, /api/purge, /api/admin/paid. */
+const VIA_WORKER = () => !!LC.native || /(^|\.)linkcardly\.com$|\.workers\.dev$/.test(location.hostname);
+const LINK_STYLE = 'path';   // 'path' → /rahul-sharma · 'query' → /?c=rahul-sharma
+const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
+const CHANGES_INCLUDED = { basic: 2, motion: 4 };
+const TODAY = new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00');
+const toRow = c => ({ region: c.region || 'IN', layout: c.layout || 'original', photo_x: Math.round(c.photoX ?? 50), photo_y: Math.round(c.photoY ?? 50), photo_zoom: Number(c.photoZoom || 1), phone_display: c.phoneDisplay || '', signature: c.signature || '', titles: c.titles || '', contact_photo_url: c.contactPhoto || '', show_powered_by: c.showPoweredBy !== false, profession: c.profession || '', profession_other: c.professionOther || '', city: c.city || '', notes: c.notes || '', slug: c.slug, prefix: c.prefix || '', first_name: c.firstName, last_name: c.lastName || '', title: c.title, company: c.company || '', preset: c.preset, colour: c.colour, category: c.category || '', tagline: c.tagline || '', phone: c.phone, whatsapp: c.whatsapp || '', email: c.email || '', linkedin: c.linkedin || '', instagram: c.instagram || '', website: c.website || '', quote: c.quote || '', bio: c.bio || '', photo_url: c.photo || '', plan: c.plan, renewal: c.renewal, active: !!c.active, extras: { ...(c.extras || {}), seasonal: c.seasonal !== false, seasonal_addon: c.plan !== 'motion' && !!c.seasonAddon, greeting: String(c.greeting || '').trim().slice(0, 60) } });
+const dataToBlobUrl = p => { if (!String(p || '').startsWith('data:')) return p || ''; try { const [m, b64] = p.split(','); const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return URL.createObjectURL(new Blob([u], { type: m.slice(5).split(';')[0] })); } catch (e) { return ''; } };
+const fromRow = r => ({ changesUsed: Number(r.changes_used) || 0, publicId: r.public_id || '', editUnseen: r.edit_seen === false, region: r.region || (/^\+1/.test(String(r.phone || '').replace(/[^\d+]/g, '')) ? 'US' : 'IN'), layout: r.layout || 'original', photoX: r.photo_x ?? 50, photoY: r.photo_y ?? 50, photoZoom: Number(r.photo_zoom || 1), phoneDisplay: r.phone_display || '', signature: r.signature || '', titles: r.titles || '', contactPhoto: r.contact_photo_url || '', showPoweredBy: r.show_powered_by !== false, profession: r.profession || 'Entrepreneur / Business owner', professionOther: r.profession_other || '', city: r.city || '', notes: r.notes || '', id: r.id, slug: r.slug, prefix: r.prefix || '', firstName: r.first_name || '', lastName: r.last_name || '', title: r.title || '', company: r.company || '', preset: r.preset, colour: r.colour, category: r.category || '', tagline: r.tagline || '', phone: r.phone || '', whatsapp: r.whatsapp || '', email: r.email || '', linkedin: r.linkedin || '', instagram: r.instagram || '', website: r.website || '', quote: r.quote || '', bio: r.bio || '', photo: dataToBlobUrl(r.photo_url), plan: r.plan, renewal: r.renewal, active: r.active, extras: r.extras || {}, seasonal: (r.extras || {}).seasonal !== false, seasonAddon: (r.extras || {}).seasonal_addon === true, greeting: (r.extras || {}).greeting || '' });
+
+const COLOURS = [
+  { id: 'forest',   name: 'Forest Green',  bg: '#06120d', accent: '#f2c98a', bgTop: '#0b2a1d', bgBack: '#134a33' },
+  { id: 'burgundy', name: 'Burgundy Rose', bg: '#1a0a0e', accent: '#f2a3a8' },
+  { id: 'teal',     name: 'Deep Teal',     bg: '#061618', accent: '#74d3c6' },
+  { id: 'plum',     name: 'Royal Plum',    bg: '#140a1c', accent: '#d6b4ee' },
+  { id: 'espresso', name: 'Espresso',      bg: '#160d09', accent: '#e8a57f' },
+  { id: 'blush',    name: 'Blush Pink',    bg: '#1c0a14', accent: '#ff9ecb' },
+];
+const PRESETS = {
+  entrepreneur: { label: 'Entrepreneur', category: "Let's connect", tagline: 'Digital · Automate · Grow' },
+  realEstate:   { label: 'Real Estate', category: 'Real Estate', tagline: 'Buy · Sell · Rent' },
+  services:     { label: 'Services', category: 'Services', tagline: 'Design · Style · Transform' },
+  healthcare:   { label: 'Healthcare', category: 'Healthcare', tagline: 'Care · Treat · Smile' },
+};
+const PROFESSIONS = ['Entrepreneur / Business owner', 'Real Estate', 'Healthcare', 'Interior / Design services', 'Consultant / Coach', 'Legal / Finance', 'Retail / Shop', 'Other'];
+const PROF_PRESET = { 'Entrepreneur / Business owner': 'entrepreneur', 'Real Estate': 'realEstate', 'Healthcare': 'healthcare', 'Interior / Design services': 'services', 'Consultant / Coach': 'entrepreneur', 'Legal / Finance': 'entrepreneur', 'Retail / Shop': 'services', 'Other': 'entrepreneur' };
+const PRO_STYLES = [
+  { id: 'pro-executive', name: 'Executive', layout: 'professional', mode: 'banner', bg: '#0f1a2e', ink: '#f1ece2', card: '#17243d', accent: '#d8b36a', on: '#15120a', font: "'Cormorant Garamond',Georgia,serif", rad: '12px', align: 'left', boxed: true },
+  { id: 'pro-minimal', name: 'Minimal', layout: 'professional', mode: 'side', bg: '#ffffff', ink: '#111418', card: '#f3f4f6', accent: '#111418', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '10px', align: 'left', boxed: false },
+  { id: 'pro-classic', name: 'Classic', layout: 'professional', mode: 'ring', bg: '#f4efe6', ink: '#1c1a17', card: '#fbf8f2', accent: '#b08a45', on: '#ffffff', font: "'Cormorant Garamond',Georgia,serif", rad: '2px', align: 'center', boxed: false },
+  { id: 'pro-modern', name: 'Modern', layout: 'professional', mode: 'tile', bg: '#1f2124', ink: '#f2f0ec', card: '#2a2d31', accent: '#c7ccd4', on: '#15171a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '999px', align: 'left', boxed: true },
+  { id: 'pro-corporate', name: 'Corporate', layout: 'professional', mode: 'band', bg: '#eef2f7', ink: '#14243b', card: '#ffffff', accent: '#2f5d9a', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '12px', align: 'center', boxed: true },
+  { id: 'pro-studio', name: 'Studio', layout: 'professional', mode: 'hero', bg: '#0b0b0c', ink: '#f5f3ee', card: '#161618', accent: '#e6d3a3', on: '#15120a', font: "'Bricolage Grotesque',system-ui,sans-serif", rad: '14px', align: 'left', boxed: true },
+];
+const LUX_STYLES = [
+  { id: 'lux-champagne', name: 'Champagne', layout: 'luxuryEstate', bg: '#f4efe6', ink: '#1c1a17', accent: '#c9a45c', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-onyx', name: 'Onyx & Gold', layout: 'luxuryEstate', bg: '#0c0b0a', ink: '#f3ead8', accent: '#d4af37', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-emerald', name: 'Emerald', layout: 'luxuryEstate', bg: '#0b2a20', ink: '#f1e9d6', accent: '#d9b56a', frame: 'circle', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-marble', name: 'Marble', layout: 'luxuryEstate', bg: '#f7f6f3', ink: '#22201d', accent: '#9c8a6e', frame: 'square', font: "Newsreader,Georgia,serif" },
+  { id: 'lux-velvet', name: 'Burgundy Velvet', layout: 'luxuryEstate', bg: '#2a0d14', ink: '#f5e6e0', accent: '#e0b28a', frame: 'arch', font: "'Cormorant Garamond',Georgia,serif" },
+  { id: 'lux-sapphire', name: 'Sapphire', layout: 'luxuryEstate', bg: '#0e1633', ink: '#eef0f7', accent: '#b8c4e6', frame: 'circle', font: "Newsreader,Georgia,serif" },
+];
+const STYLE_BY_ID = Object.fromEntries(PRO_STYLES.concat(LUX_STYLES).map(s => [s.id, s]));
+const COLLS = [['personal', 'Personal'], ['professional', 'Professional'], ['luxury', 'Luxury']];
+const collOf = id => STYLE_BY_ID[id] ? (STYLE_BY_ID[id].layout === 'professional' ? 'professional' : 'luxury') : 'personal';
+const LAYOUTS = [
+  { id: 'original', name: 'Original', tag: 'All professions', thumb: 'linear-gradient(180deg, #134a33 0%, #06120d 55%, #06120d 70%, #f2c98a 70% 78%, #06120d 78%)' },
+  { id: 'luxuryEstate', name: 'Luxury Estate', tag: 'Real estate', thumb: 'radial-gradient(28% 34% at 50% 34%, #cfc3ad 98%, transparent 100%), linear-gradient(180deg, #f4efe6 0 66%, #1c1a17 66% 76%, #f4efe6 76%)' },
+  { id: 'listingShowcase', name: 'Listing Showcase', tag: 'Real estate', thumb: 'linear-gradient(180deg, #b9bdc7 0 46%, #f6f4f0 46% 58%, #f2c98a 58% 70%, #f6f4f0 70% 74%, #13233f 74% 86%, #f6f4f0 86%)' },
+];
+const PRICING = {
+  IN: { label: '🇮🇳 India', cur: '₹', locale: 'en-IN', basic: 799, motion: 3999 },
+  US: { label: '🇺🇸 USA', cur: '$', locale: 'en-US', basic: 49, motion: 129 },
+};
+const money = (reg, n) => { if (window.__nbrHideMoney) return (PRICING[reg] || PRICING.IN).cur + '•••'; const r = PRICING[reg] || PRICING.IN; return r.cur + Number(n).toLocaleString(r.locale); };
+const PLANS = { basic: { name: 'Digital Card' }, motion: { name: 'Motion Card' } };
+
+const SEED = [
+  { id: 'c1', slug: 'alexmorgan', prefix: '', firstName: 'Alex', lastName: 'Morgan', title: 'Founder', company: 'Morgan Studio', preset: 'entrepreneur', colour: 'forest', category: "Let's connect", tagline: 'Digital · Automate · Grow', phone: '+13125550100', whatsapp: '', email: 'alex@example.com', linkedin: '', instagram: '', website: '', quote: '“Creating is a form of connecting.”', bio: 'I build digital experiences and intelligent automation that connect businesses with the people they serve.', photo: '', plan: 'motion', renewal: '2027-09-25', active: true },
+  { id: 'c2', slug: 'rahul-sharma', prefix: '', firstName: 'Rahul', lastName: 'Sharma', title: 'Senior Property Consultant', company: 'Skyline Realty', preset: 'realEstate', colour: 'espresso', category: 'Real Estate', tagline: 'Buy · Sell · Rent', phone: '+919876543210', whatsapp: '919876543210', email: 'rahul@skylinerealty.in', linkedin: '', instagram: 'https://www.instagram.com/', website: 'https://example.com', quote: '“The right home changes everything.”', bio: 'I help families and investors find, value and close on property.', photo: '', plan: 'basic', renewal: '2026-10-12', active: true },
+  { id: 'c3', slug: 'priya-reddy', prefix: '', firstName: 'Priya', lastName: 'Reddy', title: 'Interior Designer', company: 'Studio Aangan', preset: 'services', colour: 'blush', category: 'Services', tagline: 'Design · Style · Transform', phone: '+919123456780', whatsapp: '919123456780', email: 'priya@studioaangan.in', linkedin: '', instagram: 'https://www.instagram.com/', website: '', quote: '“Good design feels like home.”', bio: 'Calm, practical, personal spaces.', photo: '', plan: 'motion', renewal: '2027-03-02', active: true },
+  { id: 'c4', slug: 'dr-kavya-menon', prefix: 'Dr.', firstName: 'Kavya', lastName: 'Menon', title: 'Dental Surgeon', company: 'SmileCare Dental Clinic', preset: 'healthcare', colour: 'teal', category: 'Healthcare', tagline: 'Care · Treat · Smile', phone: '+919988776655', whatsapp: '919988776655', email: 'care@smilecaredental.in', linkedin: '', instagram: '', website: 'https://example.com', quote: '“Healthy smiles, gentle care.”', bio: 'Preventive, restorative and cosmetic dental care.', photo: '', plan: 'basic', renewal: '2026-09-20', active: true },
+];
+
+const SECTIONS = [
+  { title: 'Name & role', fields: [
+    { key: 'firstName', label: 'First name *', placeholder: 'Rahul', span: 1, required: 'Enter a first name' },
+    { key: 'lastName', label: 'Last name', placeholder: 'Sharma', span: 1 },
+    { key: 'prefix', label: 'Prefix', placeholder: 'Dr., Adv. (optional)', span: 2 },
+    { key: 'title', label: 'Job title *', placeholder: 'Senior Property Consultant', span: 2, required: 'Enter a job title' },
+    { key: 'company', label: 'Business name', placeholder: 'Skyline Realty', span: 2 },
+    { key: 'category', label: 'Label above name', placeholder: "Let's connect", span: 1 },
+    { key: 'tagline', label: 'Tagline', placeholder: 'Buy · Sell · Rent', span: 1 },
+  ] },
+  { title: 'Contact', fields: [
+    { key: 'phone', label: 'Mobile *', placeholder: '+91 98765 43210', type: 'tel', inputMode: 'tel', span: 1, required: 'Enter a mobile number' },
+    { key: 'phoneDisplay', label: 'Mobile as shown', placeholder: '+1 (816) 772-3649 (optional)', type: 'tel', inputMode: 'tel', span: 2 },
+    { key: 'whatsapp', label: 'WhatsApp', placeholder: 'Blank = no WhatsApp button', type: 'tel', inputMode: 'tel', span: 1 },
+    { key: 'email', label: 'Email', placeholder: 'name@business.com', type: 'email', inputMode: 'email', span: 2 },
+    { key: 'city', label: 'City', placeholder: 'e.g. Hyderabad', span: 2 },
+  ] },
+  { title: 'Links', fields: [
+    { key: 'linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/…', type: 'url', inputMode: 'url', span: 2 },
+    { key: 'instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/…', type: 'url', inputMode: 'url', span: 2 },
+    { key: 'website', label: 'Website', placeholder: 'https://…', type: 'url', inputMode: 'url', span: 2 },
+  ] },
+  { title: 'Flip side', fields: [
+    { key: 'quote', label: 'Quote', placeholder: '“The right home changes everything.”', span: 2 },
+    { key: 'signature', label: 'Signature', placeholder: 'e.g. Alex M (default: full name)', span: 1 },
+    { key: 'titles', label: 'Titles line', placeholder: 'Founder · Strategist (default: title · company)', span: 1 },
+    { key: 'bio', label: 'Short bio', placeholder: 'One or two sentences about what they do.', area: true, span: 2 },
+  ] },
+  { title: 'Internal notes (not shown on card)', fields: [
+    { key: 'notes', label: 'Notes', placeholder: 'Anything from the order form: services, colours they like, tagline ideas…', area: true, span: 2 },
+  ] },
+];
+
+const autoSlug = d => (slugify(d.firstName || '').replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40);
+const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+const fmtDate = iso => { try { return new Date(iso + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return iso; } };
+const addYear = () => { const d = new Date(TODAY); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
+const handleOf = url => { try { const u = new URL(url); const p = u.pathname.replace(/\/+$/, '').split('/').pop(); return p ? (u.hostname.includes('instagram') ? '@' + p : p) : u.hostname.replace(/^www\./, ''); } catch (e) { return url; } };
+
+const NBR_PHOTO_MAX = 1080;
+const nbrCompress = file => new Promise((res, rej) => {
+  if (file.type === 'image/gif') return res(file);
+  const img = new Image(), u = URL.createObjectURL(file);
+  img.onload = () => {
+    const k = Math.min(1, NBR_PHOTO_MAX / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+    c.toBlob(b => b && b.type === 'image/webp' ? res(b) : c.toBlob(j => j ? res(j) : rej(new Error('compress')), 'image/jpeg', 0.85), 'image/webp', 0.82);
+  };
+  img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('image')); };
+  img.src = u;
+});
+/* Upload to Cloudflare R2 via the site's /api/upload. Returns '' when R2 isn't available (caller falls back to Supabase storage). */
+const nbrUpload = async blob => {
+  if (!VIA_WORKER()) return '';
+  try { const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob }); if (!r.ok) return ''; const j = await r.json(); return j.url || ''; } catch (e) { return ''; }
+};
+
+class Component extends DCLogic {
+  state = { clients: [], auth: 'loading', userEmail: '', loginEmail: '', loginPassword: '', loginError: '', loadError: '', busy: false, view: 'list', draft: null, editingId: null, search: '', filter: 'all', tab: 'clients', orders: [], ordersSetup: false, ofilter: 'all', oregion: 'all', ordersSyncedAt: '', errors: {}, modal: null, toast: '', copied: false };
+  doneRef = React.createRef();
+  fileRef = React.createRef();
+  previewRef = React.createRef();
+  adjDown = e => {
+    const d = this.state.draft; if (!d) return;
+    const box = e.currentTarget.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY, x0 = d.photoX ?? 50, y0 = d.photoY ?? 50, z = d.photoZoom || 1;
+    const k = 140 / z;
+    const move = ev => {
+      const x = Math.max(0, Math.min(100, x0 - (ev.clientX - sx) / box.width * k));
+      const y = Math.max(0, Math.min(100, y0 - (ev.clientY - sy) / box.height * k));
+      this.setState(s => ({ draft: { ...s.draft, photoX: x, photoY: y } }));
+    };
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    e.preventDefault();
+  };
+  setState(u, cb) {
+    return super.setState(u, () => { if (this.state.view === 'edit' && this.state.draft !== this.__lastDraft) { this.__lastDraft = this.state.draft; this.queuePreview(); } if (cb) cb(); });
+  }
+  postPreview = () => {
+    const f = this.previewRef.current, d = this.state.draft;
+    if (!f || !f.contentWindow || !d) return;
+    try { f.contentWindow.postMessage({ type: 'nbr-preview', row: toRow({ ...d, slug: slugify(d.slug) || 'preview' }) }, '*'); } catch (e) {}
+  };
+  onPreviewLoad = () => { this.postPreview(); setTimeout(this.postPreview, 400); setTimeout(this.postPreview, 1200); };
+  pickPhoto = () => { const i = this.fileRef.current; if (i) { i.value = ''; i.click(); } };
+  readFile = file => {
+    if (!file) return;
+    this.pendingFile = file;
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) { this.toastMsg('Use a JPG, PNG, WebP or GIF'); return; }
+    if (file.size > 15 * 1024 * 1024) { this.toastMsg('File is over 15 MB — please pick a smaller one'); return; }
+    if (this.blobUrl) { try { URL.revokeObjectURL(this.blobUrl); } catch (e) {} }
+    this.blobUrl = URL.createObjectURL(file);
+    this.setState(s => ({ draft: { ...s.draft, photoX: 50, photoY: 50, photoZoom: 1 } }));
+    this.setDraft('photo', this.blobUrl);
+    this.setState({ photoInfo: file.name + ' · ' + (file.size / 1048576).toFixed(1) + ' MB' });
+    this.toastMsg('Photo added — publish to save it');
+  };
+
+  applyTweaks() {
+    const BR = { Cyan: ['#00E5FF', '#7DF3FF', '0,229,255'], Emerald: ['#2EE59D', '#8FF5C8', '46,229,157'], Amber: ['#FFB547', '#FFD591', '255,181,71'] };
+    const DEN = { Comfortable: ['18px 20px', '56px', '14px 22px'], Standard: ['14px 16px', '48px', '14px 18px'], Compact: ['8px 14px', '34px', '8px 14px'] };
+    const b = BR[this.props.accent] || BR.Cyan, d = DEN[this.props.density] || DEN.Standard, s = document.documentElement.style;
+    s.setProperty('--brand', b[0]); s.setProperty('--brand-hi', b[1]); s.setProperty('--brand-rgb', b[2]);
+    s.setProperty('--row-pad', d[0]); s.setProperty('--av', d[1]); s.setProperty('--row-gap', d[2]);
+  }
+  componentDidUpdate(prev) { if (prev.accent !== this.props.accent || prev.density !== this.props.density) this.applyTweaks(); }
+  componentDidMount() {
+    this.applyTweaks();
+    this.setState({ theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark' });
+    this.initSb();
+    this.onKey = e => { if (e.key === 'Escape' && this.state.modal) this.closeModal(); };
+    window.addEventListener('keydown', this.onKey);
+    this.onReady = ev => { if (ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
+    window.addEventListener('message', this.onReady);
+  }
+  queuePreview = () => { clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 120); };
+  componentWillUnmount() { clearInterval(this.ordT); if (this.onFocus) window.removeEventListener('focus', this.onFocus); window.removeEventListener('message', this.onReady); window.removeEventListener('keydown', this.onKey); clearTimeout(this.tt); }
+
+  async initSb() {
+    try {
+      const m = window.supabase; /* Linkcardly: self-hosted copy (public/app/vendor), not a CDN */ if (!m) throw new Error('supabase-js did not load');
+      this.sb = m.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { data } = await this.sb.auth.getSession();
+      this.sb.auth.onAuthStateChange((_e, session) => { if (!session) this.setState({ auth: 'out', clients: [] }); });
+      if (data && data.session) this.afterLogin(data.session); else this.setState({ auth: 'out' });
+    } catch (e) { this.setState({ auth: 'out', loginError: 'Could not reach Supabase. Check your connection and reload.' }); }
+  }
+  async afterLogin(session) {
+    this.setState({ auth: 'loading', userEmail: session.user.email });
+    const { data: adm } = await this.sb.from('admins').select('user_id').eq('user_id', session.user.id).maybeSingle();
+    if (!adm) { this.setState({ auth: 'notAdmin' }); return; }
+    await this.loadCards();
+    this.setState({ auth: 'in' });
+    this.loadOrders(); this.loadCoupons(); this.loadLeads();
+    clearInterval(this.ordT); this.ordT = setInterval(() => { if (this.state.auth === 'in' && document.visibilityState === 'visible') this.loadOrders(); }, 20000);
+    if (!this.onFocus) { this.onFocus = () => { if (this.state.auth === 'in') this.loadOrders(); }; window.addEventListener('focus', this.onFocus); }
+  }
+  async loadCards() {
+    const { data, error } = await this.sb.from('cards').select('*').order('created_at', { ascending: false });
+    if (error) { this.setState({ loadError: error.message }); return; }
+    this.setState({ clients: (data || []).map(fromRow), loadError: '' });
+    this.loadStats();
+    const ne = (data || []).filter(r => r.edit_seen === false).length;
+    if (ne) this.toastMsg(ne + (ne === 1 ? ' card was' : ' cards were') + ' updated by the client');
+  }
+  async loadCoupons() {
+    const { data, error } = await this.sb.from('coupons').select('*').order('created_at', { ascending: false });
+    this.setState({ coupons: error ? [] : (data || []), couponsError: error ? 'Coupons table not set up. Run supabase/ALL-IN-ONE.sql.' : '' });
+  }
+  saveCoupon = async () => {
+    const f = { ...CF_EMPTY, ...(this.state.cf || {}) };
+    const code = String(f.code || '').trim().toUpperCase(), value = Number(f.value);
+    const err = !/^[A-Z0-9_-]{4,32}$/.test(code) ? 'Code must be 4–32 letters, numbers, - or _.'
+      : !(value > 0) || (f.kind === 'percent' && value > 100) ? (f.kind === 'percent' ? 'Percent must be 1–100.' : 'Enter an amount above 0.')
+      : f.kind === 'amount' && !f.region ? 'Pick a country for fixed-amount coupons.' : '';
+    if (err) { this.setState({ cfMsg: err, cfOk: false }); return; }
+    this.setState({ cfBusy: true, cfMsg: '' });
+    const row = { code, kind: f.kind, value, region: f.region || null, plan: f.plan || null, max_uses: f.maxUses ? Math.max(1, parseInt(f.maxUses, 10)) : null, per_email: Math.max(1, parseInt(f.perEmail || '1', 10) || 1), expires_at: f.expires ? new Date(f.expires + 'T23:59:59').toISOString() : null, active: true };
+    const { error } = await this.sb.from('coupons').insert(row);
+    if (error) { this.setState({ cfBusy: false, cfMsg: /duplicate/i.test(error.message) ? 'That code already exists.' : 'Could not save: ' + error.message, cfOk: false }); return; }
+    this.setState({ cfBusy: false, cf: { ...CF_EMPTY }, cfMsg: 'Saved ' + code + '.', cfOk: true });
+    this.loadCoupons();
+  };
+  couponVals(S) {
+    const f = { ...CF_EMPTY, ...(S.cf || {}) }, setF = (k, v) => this.setState(s => ({ cf: { ...CF_EMPTY, ...(s.cf || {}), [k]: v }, cfMsg: '' }));
+    const cur = r => r === 'IN' ? '₹' : '$', now = Date.now();
+    const rows = (S.coupons || []).map(c => {
+      const expired = c.expires_at && new Date(c.expires_at).getTime() < now, used = c.max_uses != null && c.uses >= c.max_uses;
+      const state = !c.active ? 'Paused' : expired ? 'Expired' : used ? 'Used up' : 'Live';
+      return { code: c.code, codeInk: state === 'Live' ? 'var(--ink)' : 'var(--muted)',
+        offer: (c.kind === 'percent' ? c.value + '% off' : cur(c.region) + Number(c.value).toLocaleString() + ' off') + ' · ' + state,
+        rules: [c.region ? (c.region === 'IN' ? 'India' : 'USA') : 'Any country', c.plan ? (c.plan === 'motion' ? 'Motion Card' : 'Digital Card') : 'Any plan', c.per_email + ' per email', c.expires_at ? 'Expires ' + new Date(c.expires_at).toLocaleDateString() : 'No expiry'].join(' · '),
+        usage: c.uses + (c.max_uses != null ? ' / ' + c.max_uses : '') + ' used',
+        toggleLabel: c.active ? 'Pause' : 'Resume', removeAria: 'Delete coupon ' + c.code,
+        toggle: async () => { const { error } = await this.sb.from('coupons').update({ active: !c.active }).eq('code', c.code); if (error) this.toastMsg('Could not update coupon'); this.loadCoupons(); },
+        remove: async () => { if (!window.confirm('Delete coupon ' + c.code + '? Past orders keep their discount.')) return; const { error } = await this.sb.from('coupons').delete().eq('code', c.code); if (error) this.toastMsg('Could not delete coupon'); this.loadCoupons(); } };
+    });
+    const live = rows.filter(r => / · Live$/.test(r.offer)).length;
+    return {
+      couponRows: rows, noCoupons: rows.length === 0,
+      couponsSummary: S.couponsError || (rows.length + ' coupons · ' + live + ' live. Discounts are checked and applied on the server at checkout.'),
+      cf: { ...f, valueLabel: f.kind === 'percent' ? 'Percent off' : 'Amount off', busy: !!S.cfBusy, saveLabel: S.cfBusy ? 'Saving…' : 'Save coupon', hasMsg: !!S.cfMsg, msg: S.cfMsg || '', msgColor: S.cfOk ? 'var(--brand)' : 'var(--danger)',
+        onCode: e => setF('code', e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 32)), onKind: e => setF('kind', e.target.value), onValue: e => setF('value', e.target.value),
+        onRegion: e => setF('region', e.target.value), onPlan: e => setF('plan', e.target.value), onMax: e => setF('maxUses', e.target.value), onPer: e => setF('perEmail', e.target.value), onExp: e => setF('expires', e.target.value),
+        save: this.saveCoupon,
+        random: () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', b = new Uint32Array(10); crypto.getRandomValues(b); setF('code', Array.from(b, x => A[x % A.length]).join('')); } }
+    };
+  }
+  async loadLeads() {
+    const { data, error } = await this.sb.from('leads').select('*').order('created_at', { ascending: false }).limit(500);
+    if (!error) this.setState({ leads: data || [] });
+  }
+  setLeadStatus = async (l, status) => {
+    this.setState(s => ({ leads: (s.leads || []).map(x => x.id === l.id ? { ...x, status } : x) }));
+    const { error } = await this.sb.from('leads').update({ status }).eq('id', l.id);
+    if (error) this.toastMsg('Could not update lead: ' + error.message);
+  };
+  async purgeCard(c) {
+    try {
+      if (!c || !VIA_WORKER()) return;
+      const { data } = await this.sb.auth.getSession(); const t = data && data.session && data.session.access_token; if (!t) return;
+      await fetch('/api/purge', { method: 'POST', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ keys: [c.slug, c.publicId].filter(Boolean) }) });
+    } catch (e) {}
+  }
+  async loadOrders() {
+    let remote = [], setup = false;
+    const res = await this.sb.from('orders').select('*').order('created_at', { ascending: false });
+    if (res.error) setup = true; else remote = res.data || [];
+    let local = []; /* Supabase is the only source of orders; old browser-saved test orders are ignored */
+    let imported = false;
+    for (const o of local) {
+      if (o.card_id) continue;
+      let card = { ...o.card };
+      if ((card.photo_url || '').startsWith('data:')) {
+        try { const blob = await (await fetch(card.photo_url)).blob(), path = card.slug + '/' + Date.now() + '.' + (blob.type.split('/')[1] || 'jpg');
+          const up = await this.sb.storage.from('photos').upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: false });
+          card.photo_url = up.error ? '' : this.sb.storage.from('photos').getPublicUrl(path).data.publicUrl; } catch (e) { card.photo_url = ''; }
+      }
+      let r = await this.sb.from('cards').insert(card).select().single();
+      if (r.error && r.error.code === '23505') { card.slug = card.slug + Math.floor(10 + Math.random() * 90); o.card = card; r = await this.sb.from('cards').insert(card).select().single(); }
+      if (!r.error && r.data) { o.card_id = r.data.id; imported = true; }
+    }
+    if (imported) { try { localStorage.setItem('nbr-orders', JSON.stringify(local)); } catch (e) {} await this.loadCards(); this.toastMsg('New website orders added as client cards'); }
+    const seen = new Set(remote.map(o => o.order_no));
+    const merged = remote.map(o => ({ ...o, local: false })).concat(local.filter(o => !seen.has(o.order_no)).map(o => ({ ...o, local: true })));
+    merged.forEach(o => { if (!o.region) o.region = (o.card && o.card.region) || (o.currency === 'INR' ? 'IN' : 'US'); });
+    merged.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+    this.setState({ ordersSetup: setup, orders: merged, ordersSyncedAt: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) });
+  }
+  /* Linkcardly: payment received outside the website (UPI, bank transfer). The Worker marks the order paid, puts the
+     card live and emails the customer their card and private edit link; the edit link is also copied here. */
+  markPaid = async (o) => {
+    const ref = window.prompt('Mark ' + o.order_no + ' as paid (' + (o.customer_name || 'customer') + ').\n\nPayment reference (UPI or bank reference):', '');
+    if (ref === null) return;
+    const { data } = await this.sb.auth.getSession(); const t = data && data.session && data.session.access_token;
+    if (!t) { this.toastMsg('Please sign in again'); return; }
+    this.setState({ payBusy: o.order_no });
+    try {
+      const r = await fetch('/api/admin/paid', { method: 'POST', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ order_no: o.order_no, ref: ref.trim() }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { this.toastMsg('Could not mark paid: ' + (j.message || j.error || r.status)); return; }
+      let copied = false;
+      if (j.edit_link) { try { await navigator.clipboard.writeText(j.edit_link); copied = true; } catch (e) {} }
+      this.setState(s => ({ orders: s.orders.map(x => x.order_no === o.order_no ? { ...x, pay_status: 'paid' } : x) }));
+      this.toastMsg(j.first ? o.order_no + ' paid · card live · customer emailed' + (copied ? ' · edit link copied' : '') : o.order_no + ' was already paid');
+      await this.loadCards();
+    } catch (e) { this.toastMsg('Could not mark paid: check your connection'); }
+    finally { this.setState({ payBusy: '' }); }
+  };
+  setOrderStatus = async (o, status) => {
+    if (o.local) {
+      try { const l = JSON.parse(localStorage.getItem('nbr-orders') || '[]').map(x => x.id === o.id ? { ...x, status } : x); localStorage.setItem('nbr-orders', JSON.stringify(l)); } catch (e) {}
+    } else {
+      const { error } = await this.sb.from('orders').update({ status }).eq('id', o.id);
+      if (error) { this.toastMsg('Could not update: ' + error.message); return; }
+    }
+    this.setState(s => ({ orders: s.orders.map(x => x.id === o.id ? { ...x, status } : x) }));
+    if (status === 'delivered' && o.card_id) {
+      const { error } = await this.sb.from('cards').update({ active: true }).eq('id', o.card_id);
+      if (!error) { this.setState(s => ({ clients: s.clients.map(c => c.id === o.card_id ? { ...c, active: true } : c) })); this.toastMsg(o.order_no + ' delivered · card is live'); }
+    } else this.toastMsg(o.order_no + ' marked ' + status.replace('_', ' '));
+  };
+  login = async () => {
+    const { loginEmail, loginPassword } = this.state;
+    if (!this.sb) { this.setState({ loginError: 'Still connecting to Supabase…' }); return; }
+    if (!loginEmail.trim() || !loginPassword) { this.setState({ loginError: 'Enter your email and password' }); return; }
+    this.setState({ busy: true, loginError: '' });
+    const { data, error } = await this.sb.auth.signInWithPassword({ email: loginEmail.trim(), password: loginPassword });
+    this.setState({ busy: false, loginPassword: '' });
+    if (error) { this.setState({ loginError: error.message }); return; }
+    this.afterLogin(data.session);
+  };
+  logout = async () => { try { await this.sb.auth.signOut(); } catch (e) {} this.setState({ auth: 'out', clients: [], view: 'list', draft: null }); };
+  toastMsg(m) { clearTimeout(this.tt); this.setState({ toast: m }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2400); }
+
+  colourOf(id) { const s = STYLE_BY_ID[id]; if (s) return { id: s.id, name: s.name + ' · ' + (s.layout === 'professional' ? 'Professional' : 'Luxury'), bg: s.bg, accent: s.accent }; return COLOURS.find(c => c.id === id) || COLOURS[0]; }
+  pickStyle = id => { const s = STYLE_BY_ID[id]; this.setState(st => ({ draft: { ...st.draft, colour: id, layout: s ? s.layout : 'original' } })); setTimeout(this.queuePreview, 0); };
+  nameOf(c) { return [c.prefix, c.firstName, c.lastName].filter(Boolean).join(' ') || 'New client'; }
+  initialsOf(c) { return ((c.firstName || '')[0] || '') + ((c.lastName || '')[0] || '') || '+'; }
+  urlOf(c) { if (c.slug) return CARD_BASE + '/' + c.slug; return c.publicId ? CARD_BASE + '/c/' + c.publicId : CARD_BASE; } /* Linkcardly: the claimed name first, like the rest of the site */
+  statusOf(c) {
+    if (!c.active) return { label: 'Paused', bg: 'rgba(160,174,192,0.15)', ink: 'var(--ink-3)' };
+    const days = (new Date(c.renewal + 'T00:00:00') - TODAY) / 864e5;
+    if (days < 0) return { label: 'Expired', bg: 'rgba(255,90,90,0.14)', ink: '#FFB4B4' };
+    if (days <= 30) return { label: 'Renews soon', bg: 'rgba(250,204,21,0.14)', ink: '#FDE68A' };
+    return { label: 'Active', bg: 'rgba(0,214,179,0.15)', ink: '#5EEAD4' };
+  }
+
+  newClient = () => this.setState({ view: 'edit', editingId: null, errors: {}, slugTouched: false,
+    draft: { id: 'c' + Date.now(), slug: '', prefix: '', firstName: '', lastName: '', title: '', company: '', profession: 'Entrepreneur / Business owner', professionOther: '', city: '', notes: '', region: 'IN', layout: 'original', photoX: 50, photoY: 50, photoZoom: 1, phoneDisplay: '', signature: '', titles: '', contactPhoto: '', showPoweredBy: true, preset: 'entrepreneur', colour: 'forest', category: PRESETS.entrepreneur.category, tagline: PRESETS.entrepreneur.tagline, phone: '', whatsapp: '', email: '', linkedin: '', instagram: '', website: '', quote: '', bio: '', photo: '', plan: 'basic', renewal: addYear(), active: true } }, () => window.scrollTo(0, 0));
+  editClient = c => {
+    if (c.editUnseen) { this.sb.from('cards').update({ edit_seen: true }).eq('id', c.id).then(() => {}); c = { ...c, editUnseen: false }; this.setState(s => ({ clients: s.clients.map(x => x.id === c.id ? { ...x, editUnseen: false } : x) })); }
+    this.setState({ view: 'edit', editingId: c.id, draft: { ...c }, errors: {}, slugTouched: true }, () => window.scrollTo(0, 0));
+  };
+  backToList = () => this.setState({ view: 'list', draft: null, editingId: null });
+
+  setDraft = (key, v) => this.setState(s => {
+    const d = { ...s.draft, [key]: v };
+    if ((key === 'firstName' || key === 'phone') && !s.slugTouched) d.slug = autoSlug(d);
+    if (key === 'phone') { const p = String(v || '').replace(/[^\d+]/g, ''); if (/^\+1\d/.test(p)) d.region = 'US'; else if (/^\+91\d/.test(p)) d.region = 'IN'; }
+    this.queuePreview && setTimeout(this.queuePreview, 0);
+    return { draft: d, errors: { ...s.errors, [key]: '', slug: key === 'firstName' || key === 'phone' ? '' : (s.errors || {}).slug } };
+  });
+
+  onPhoto = e => { const f = e.target.files && e.target.files[0]; this.readFile(f); };
+  onDragOver = e => { e.preventDefault(); if (!this.state.dragging) this.setState({ dragging: true }); };
+  onDragLeave = () => this.setState({ dragging: false });
+  onDrop = e => { e.preventDefault(); this.setState({ dragging: false }); this.readFile(e.dataTransfer.files && e.dataTransfer.files[0]); };
+
+  publish = async () => {
+    const d = this.state.draft, errors = {};
+    SECTIONS.forEach(s => s.fields.forEach(f => { if (f.required && !String(d[f.key] || '').trim()) errors[f.key] = f.required; }));
+    if (d.profession === 'Other' && !String(d.professionOther || '').trim()) errors.professionOther = 'Enter their profession';
+    const slug = slugify(d.slug);
+    if (!slug) errors.slug = 'Enter a link';
+    else if (this.state.clients.some(c => c.slug === slug && c.id !== d.id)) errors.slug = BASE_HOST + '/' + slug + ' is already taken';
+    if (Object.keys(errors).length) {
+      this.setState({ errors });
+      const first = ['professionOther', 'firstName', 'title', 'phone', 'slug'].find(k => errors[k]);
+      const el = first && document.getElementById(first === 'slug' ? 'f-slug' : 'f-' + first);
+      if (el) { el.focus(); const y = el.getBoundingClientRect().top + window.scrollY - 120; window.scrollTo({ top: y, behavior: 'smooth' }); }
+      this.toastMsg('Fix the highlighted fields');
+      return;
+    }
+    if (this.state.busy) return;
+    this.setState({ busy: true });
+    try {
+      let photo = d.photo || '';
+      if (!this.pendingFile && photo.startsWith('blob:')) { try { const bl = await (await fetch(photo)).blob(); this.pendingFile = new File([bl], 'photo.' + (bl.type === 'image/gif' ? 'gif' : 'jpg'), { type: bl.type }); } catch (e) {} }
+      if (this.pendingFile && (photo.startsWith('blob:') || photo.startsWith('data:'))) {
+        let f = this.pendingFile; try { f = await nbrCompress(f); } catch (e) {}
+        const ext = f.type === 'image/gif' ? 'gif' : f.type === 'image/webp' ? 'webp' : f.type === 'image/png' ? 'png' : 'jpg';
+        photo = await nbrUpload(f);
+        if (!photo) {
+          const path = slug + '/' + Date.now() + '.' + ext;
+          const up = await this.sb.storage.from('photos').upload(path, f, { contentType: f.type, cacheControl: '31536000', upsert: false });
+          if (up.error) throw up.error;
+          photo = this.sb.storage.from('photos').getPublicUrl(path).data.publicUrl;
+        }
+        d.contactPhoto = '';
+      }
+      const row = toRow({ ...d, slug, photo });
+      const res = this.state.editingId
+        ? await this.sb.from('cards').update(row).eq('id', d.id).select().single()
+        : await this.sb.from('cards').insert(row).select().single();
+      if (res.error) {
+        if (res.error.code === '23505') { this.setState({ busy: false, errors: { slug: BASE_HOST + '/' + slug + ' is already taken' } }); this.toastMsg('That link is taken'); return; }
+        throw res.error;
+      }
+      this.pendingFile = null;
+      const saved = fromRow(res.data);
+      this.purgeCard(saved); if (this.state.editingId && d.slug && d.slug !== saved.slug) this.purgeCard({ slug: d.slug });
+      const clients = this.state.editingId ? this.state.clients.map(c => c.id === saved.id ? saved : c) : [saved, ...this.state.clients];
+      this.setState({ busy: false, clients, view: 'list', draft: null, editingId: null, modal: { id: saved.id, type: 'publish' }, copied: false }, () => this.doneRef.current && this.doneRef.current.focus());
+    } catch (err) { this.setState({ busy: false }); this.toastMsg('Could not save: ' + (err.message || err)); }
+  };
+
+  deleteClient = async () => {
+    const d = this.state.draft;
+    if (!window.confirm('Delete ' + this.nameOf(d) + '? Their link will stop working.')) return;
+    const { error } = await this.sb.from('cards').delete().eq('id', d.id);
+    if (error) { this.toastMsg('Could not delete: ' + error.message); return; }
+    this.purgeCard(d);
+    this.setState(s => ({ clients: s.clients.filter(c => c.id !== d.id), view: 'list', draft: null, editingId: null }));
+    this.toastMsg('Client deleted');
+  };
+  closeModal = () => this.setState({ modal: null });
+  async loadStats() {
+    try {
+      if (!VIA_WORKER()) return;
+      const { data } = await this.sb.auth.getSession(); const t = data && data.session && data.session.access_token; if (!t) return;
+      const r = await fetch('/api/stats', { headers: { Authorization: 'Bearer ' + t } }); if (!r.ok) return;
+      const j = await r.json(); if (j.error) return;
+      const m = {}; (j.data || []).forEach(x => { const o = m[x.k] = m[x.k] || { view: 0, save: 0, tap: 0 }; const n = Number(x.n) || 0; if (x.e === 'view') o.view += n; else if (x.e === 'save') o.save += n; else if (x.e !== 'qr' && x.e !== 'share') o.tap += n; });
+      this.setState({ stats: m });
+    } catch (e) {}
+  }
+  editUrlOf(c) { return CARD_BASE + '/e/' + c.editToken; }
+  copyEditLink = async () => {
+    const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (!c || !c.editToken) return;
+    try { await navigator.clipboard.writeText(this.editUrlOf(c)); this.setState({ editCopied: true }); } catch (e) { this.toastMsg('Copy not available'); }
+  };
+  resetEditLink = async () => {
+    const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (!c) return;
+    if (!window.confirm('This creates a new private edit link for ' + this.nameOf(c) + ' so you can send it. Any older edit link stops working. Continue?')) return;
+    const { data, error } = await this.sb.rpc('admin_new_edit_link', { p_card: c.id });
+    if (error || !data) { this.toastMsg('Could not create link: ' + ((error && error.message) || 'no link')); return; }
+    this.setState(s => ({ clients: s.clients.map(x => x.id === c.id ? { ...x, editToken: data } : x), editCopied: false }));
+    this.toastMsg('New edit link ready. Tap Send on WhatsApp or Copy edit link. It is only shown once.');
+  };
+  bumpChanges = async n => {
+    const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (!c) return;
+    const v = Math.max(0, (c.changesUsed || 0) + n);
+    this.setState(s => ({ clients: s.clients.map(x => x.id === c.id ? { ...x, changesUsed: v } : x) }));
+    const { error } = await this.sb.from('cards').update({ changes_used: v }).eq('id', c.id);
+    if (error) this.toastMsg('Could not save change count: ' + error.message);
+  };
+  editBtn = () => { const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (c && c.editToken) this.copyEditLink(); else this.resetEditLink(); };
+  copyLink = async () => {
+    const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (!c) return;
+    try { await navigator.clipboard.writeText(this.urlOf(c)); this.setState({ copied: true }); } catch (e) { this.toastMsg('Copy not available'); }
+  };
+  qrSvg(url) {
+    if (!window.qrcode) return '';
+    const q = window.qrcode(0, 'M'); q.addData(url); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 8, scalable: true, title: 'QR code for ' + url });
+  }
+  downloadQR = () => {
+    const c = this.state.clients.find(x => x.id === (this.state.modal || {}).id); if (!c) return;
+    const blob = new Blob([this.qrSvg(this.urlOf(c))], { type: 'image/svg+xml' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = c.slug + '-qr.svg';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  };
+
+  renderVals() {
+    window.__nbrHideMoney = (this.props.showRevenue ?? true) === false;
+    const S = this.state, q = S.search.trim().toLowerCase();
+    const withStatus = S.clients.map(c => ({ c, st: this.statusOf(c) }));
+    const count = l => withStatus.filter(x => x.st.label === l).length;
+    const FIL = [['all', 'All', () => true], ['active', 'Active', x => x.st.label === 'Active'], ['soon', 'Renews soon', x => x.st.label === 'Renews soon'], ['expired', 'Expired / paused', x => x.st.label === 'Expired' || x.st.label === 'Paused']];
+    const fn = (FIL.find(f => f[0] === S.filter) || FIL[0])[2];
+    const rows = withStatus.filter(fn).filter(({ c }) => !q || [this.nameOf(c), c.company, c.slug, c.title].join(' ').toLowerCase().includes(q)).map(({ c, st }) => {
+      const col = this.colourOf(c.colour);
+      return { name: this.nameOf(c), role: [c.title, c.company].filter(Boolean).join(' · '), url: this.urlOf(c), urlLabel: this.urlOf(c).replace(/^https?:\/\//, ''),
+        avatarBg: c.photo ? 'url("' + c.photo + '")' : col.bg, initialsShown: c.photo ? '' : this.initialsOf(c), accent: col.accent, bg: col.bg, colourName: col.name,
+        plan: PLANS[c.plan].name + ' · ' + (c.region === 'US' ? 'US' : 'IN'), renewal: fmtDate(c.renewal), status: st.label, edited: !!c.editUnseen, ...(() => { const x = S.stats && (S.stats[c.publicId] || S.stats[c.slug]); const v = x ? x.view : 0, t = x ? x.tap : 0, sv = x ? x.save : 0; return { hasStats: !!S.stats, stats: v + (v === 1 ? ' visit' : ' visits') + ' · ' + sv + (sv === 1 ? ' save' : ' saves') + ' · ' + t + (t === 1 ? ' tap' : ' taps') }; })(), statusBg: st.bg, statusInk: st.ink,
+        onEdit: () => this.editClient(c), onQR: () => this.setState({ modal: { id: c.id, type: 'qr' }, copied: false, editCopied: false }, () => this.doneRef.current && this.doneRef.current.focus()), qrAria: 'Show QR for ' + this.nameOf(c) };
+    });
+
+    const d = S.draft || SEED[0];
+    const col = this.colourOf(d.colour), err = S.errors || {};
+    const pre = PRESETS[d.preset] || PRESETS.entrepreneur;
+    const links = [['LinkedIn', d.linkedin], ['Instagram', d.instagram], ['Website', d.website]].filter(l => l[1]).map(([label, u]) => ({ label, handle: handleOf(u) }));
+    const modalClient = S.modal ? S.clients.find(c => c.id === S.modal.id) : null;
+    const mUrl = modalClient ? this.urlOf(modalClient) : '';
+    const editing = !!S.editingId;
+
+    const PAY_ST = { unpaid: ['Unpaid', 'rgba(250,204,21,0.22)'], paid: ['Paid', 'rgba(0,214,179,0.22)'], waived: ['Free', 'rgba(0,214,179,0.22)'], refunded: ['Refunded', 'rgba(255,99,99,0.22)'] };
+    const ORD_ST = { new: ['New', 'rgba(var(--brand-rgb),0.55)'], in_progress: ['In progress', 'rgba(250,204,21,0.55)'], delivered: ['Delivered', 'rgba(0,214,179,0.55)'] };
+    const ocount = st => S.orders.filter(o => (S.oregion === 'all' || o.region === S.oregion) && (o.status || 'new') === st).length;
+    const regStat = reg => { const l = S.orders.filter(o => o.region === reg); return l.length + ' orders · ' + l.filter(o => (o.status || 'new') === 'new').length + ' new · ' + money(reg, l.reduce((n, o) => n + Number(o.price || 0), 0)) + (reg === 'IN' ? ' + GST' : ''); };
+    const inRegion = S.orders.filter(o => S.oregion === 'all' || o.region === S.oregion);
+    const orderRows = inRegion.filter(o => S.ofilter === 'all' || (o.status || 'new') === S.ofilter).map(o => {
+      const client = S.clients.find(c => c.id === o.card_id) || S.clients.find(c => o.card && c.slug === o.card.slug);
+      const st = o.status || 'new';
+      return { no: o.order_no, date: (() => { try { return new Date(o.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } })(),
+        name: o.customer_name || 'Customer', contact: [o.customer_phone, o.customer_email].filter(Boolean).join(' · '),
+        mode: o.mode === 'dfm' ? 'Design for me' : 'Self-built', modeBg: o.mode === 'dfm' ? 'rgba(214,180,238,0.16)' : 'rgba(var(--brand-rgb),0.12)', modeInk: o.mode === 'dfm' ? '#D6B4EE' : 'var(--accent)',
+        plan: (PLANS[o.plan] || PLANS.basic).name, price: money(o.region === 'IN' ? 'IN' : 'US', o.total || (Number(o.price || 0) + Number(o.tax || 0))) + (o.region === 'IN' ? ' incl. GST' : '') + ' / year' + (o.local ? ' · this browser only' : ''), regionLabel: o.region === 'IN' ? '🇮🇳 India' : '🇺🇸 USA',
+        status: st, statusBorder: ORD_ST[st][1], onStatus: e => this.setOrderStatus(o, e.target.value),
+        payLabel: (PAY_ST[o.pay_status] || PAY_ST.unpaid)[0], payBg: (PAY_ST[o.pay_status] || PAY_ST.unpaid)[1],
+        canMarkPaid: !o.local && (o.pay_status || 'unpaid') === 'unpaid' && VIA_WORKER(), onMarkPaid: () => this.markPaid(o), payBusy: S.payBusy === o.order_no,
+        hasCard: !!client, onOpen: () => client && this.editClient(client), hasNotes: !!o.notes, notes: 'Notes: ' + (o.notes || '') };
+    });
+    return {
+      tabs: [['clients', 'Clients', 0], ['orders', 'Orders', ocount('new')], ['leads', 'Leads', (S.leads || []).filter(l => l.status === 'new').length], ['coupons', 'Coupons', 0]].map(([id, label, n]) => { const on = S.tab === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', hasBadge: n > 0, badge: String(n) }; }),
+      tabClients: S.tab === 'clients', tabOrders: S.tab === 'orders', tabCoupons: S.tab === 'coupons', tabLeads: S.tab === 'leads',
+      leadsSummary: (S.leads || []).length + ' leads · ' + (S.leads || []).filter(l => l.status === 'new').length + ' new', leadsEmpty: !(S.leads || []).length, refreshLeads: () => this.loadLeads(),
+      leadRows: (S.leads || []).map(l => { const c = S.clients.find(x => x.id === l.card_id); return { id: l.id, name: l.name, phone: l.phone, telHref: 'tel:' + l.phone, waHref: 'https://wa.me/' + String(l.phone || '').replace(/\D/g, ''), email: l.email || '', hasEmail: !!l.email, mailHref: 'mailto:' + (l.email || ''),
+        topic: l.topic || '', hasTopic: !!l.topic, message: l.message || '', hasMessage: !!l.message, card: c ? this.nameOf(c) : l.slug, when: new Date(l.created_at).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }),
+        statuses: [['new', 'New'], ['contacted', 'Contacted'], ['closed', 'Closed']].map(([id, label]) => { const on = l.status === id; return { label, pressed: on ? 'true' : 'false', bg: on ? 'var(--brand)' : 'transparent', ink: on ? '#04121A' : 'var(--ink-2)', pick: () => this.setLeadStatus(l, id) }; }) }; }),
+      ...this.couponVals(S),
+      regionTabs: [['all', 'All countries', S.orders.length + ' orders'], ['IN', '🇮🇳 India', regStat('IN')], ['US', '🇺🇸 USA', regStat('US')]].map(([id, label, sub]) => { const on = S.oregion === id; return { label, sub, selected: on ? 'true' : 'false', pick: () => this.setState({ oregion: id }), border: on ? '2px solid var(--brand)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: on ? 'rgba(var(--brand-rgb),0.07)' : 'var(--surface)' }; }),
+      ordersSummary: (S.ordersSyncedAt ? 'Synced ' + S.ordersSyncedAt + ' · auto-refreshes every 20s · ' : '') + inRegion.length + ' orders · ' + ocount('new') + ' new · ' + ocount('in_progress') + ' in progress · ' + ocount('delivered') + ' delivered',
+      ordersNeedSetup: S.ordersSetup, refreshOrders: () => this.loadOrders(),
+      orderFilters: [['all', 'All'], ['new', 'New'], ['in_progress', 'In progress'], ['delivered', 'Delivered']].map(([id, label]) => { const on = S.ofilter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ ofilter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? '#04121A' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
+      orderRows, noOrderRows: orderRows.length === 0,
+      ordersEmpty: S.orders.length ? 'No orders with this status.' : 'No orders yet. Orders from the website appear here.',
+      isLoading: S.auth === 'loading', isLogin: S.auth === 'out', isNotAdmin: S.auth === 'notAdmin', signedIn: S.auth === 'in' || S.auth === 'notAdmin',
+      isList: S.auth === 'in' && S.view === 'list', isEdit: S.auth === 'in' && S.view === 'edit',
+      userEmail: S.userEmail, logout: this.logout,
+      loginEmail: S.loginEmail, loginPassword: S.loginPassword, onLoginEmail: e => this.setState({ loginEmail: e.target.value, loginError: '' }), onLoginPassword: e => this.setState({ loginPassword: e.target.value, loginError: '' }),
+      loginKey: e => { if (e.key === 'Enter') this.login(); }, login: this.login, loginLabel: S.busy ? 'Signing in…' : 'Sign in', hasLoginError: !!S.loginError, loginError: S.loginError,
+      adminSql: "insert into public.admins (user_id) select id from auth.users where email = '" + String(S.userEmail || 'you@example.com').replace(/'/g, "''") + "';",
+      hasLoadError: !!S.loadError, loadError: S.loadError,
+      emptyText: S.clients.length ? 'No clients match. Try another search or filter.' : 'No clients yet. Click New client to add the first one.',
+      summary: S.clients.length + ' clients · ' + count('Active') + ' active · ' + count('Renews soon') + ' renewing within 30 days · ' + (count('Expired') + count('Paused')) + ' expired or paused' + (() => { const live = S.clients.filter(c => c.active); const sum = reg => live.filter(c => (c.region || 'IN') === reg).reduce((n, c) => n + (PRICING[reg][c.plan] || 0), 0); return ' · Yearly revenue ' + money('IN', sum('IN')) + ' + ' + money('US', sum('US')); })(),
+      newClient: this.newClient, search: S.search, onSearch: e => this.setState({ search: e.target.value }),
+      filters: FIL.map(([id, label]) => { const on = S.filter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ filter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? '#04121A' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
+      rows, noRows: rows.length === 0,
+
+      editTitle: editing ? 'Edit ' + this.nameOf(d) : 'New client', backToList: this.backToList,
+      hasPhoto: !!d.photo, noPhoto: !d.photo, removePhoto: () => { this.pendingFile = null; this.setDraft('photo', ''); }, onPhoto: this.onPhoto, pickPhoto: this.pickPhoto, fileRef: this.fileRef,
+      uploadLabel: d.photo ? 'Change photo' : 'Upload photo', onDragOver: this.onDragOver, onDragLeave: this.onDragLeave, onDrop: this.onDrop,
+      dropBorder: S.dragging ? '2px dashed var(--brand)' : '1px solid rgba(var(--fg-rgb),0.07)',
+      photoNote: d.photo ? (S.photoInfo && (d.photo.startsWith('blob:') || d.photo.startsWith('data:')) ? S.photoInfo : 'Current photo') + '. Square works best. GIFs animate on the card.' : 'Click Upload or drag a file here. JPG, PNG or GIF, square, under 8 MB. No photo shows initials.',
+      pvAvatarBg: d.photo ? 'url("' + d.photo + '")' : col.bg, pvInitialsShown: d.photo ? '' : this.initialsOf(d),
+      draftPreset: d.preset, presetOptions: Object.keys(PRESETS).map(k => ({ value: k, label: PRESETS[k].label })),
+      onPreset: e => { const p = PRESETS[e.target.value]; this.setState(s => ({ draft: { ...s.draft, preset: e.target.value, category: p.category, tagline: p.tagline } })); setTimeout(this.queuePreview, 0); },
+      draftProfession: d.profession || 'Entrepreneur / Business owner', professionOptions: PROFESSIONS.map(p => ({ value: p, label: p })),
+      presetLabel: (PRESETS[d.preset] || PRESETS.entrepreneur).label,
+      onProfession: e => { const v = e.target.value, k = PROF_PRESET[v] || 'entrepreneur', p = PRESETS[k]; this.setState(s => ({ draft: { ...s.draft, profession: v, preset: k, category: p.category, tagline: p.tagline }, errors: { ...s.errors, professionOther: '' } })); setTimeout(this.queuePreview, 0); },
+      isOtherProf: d.profession === 'Other', draftProfessionOther: d.professionOther || '', onProfessionOther: e => this.setDraft('professionOther', e.target.value),
+      hasProfOtherError: !!err.professionOther, profOtherError: err.professionOther || '', profOtherInvalid: err.professionOther ? 'true' : 'false', profOtherBorder: err.professionOther ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)',
+      colourName: col.name,
+      collName: (COLLS.find(c => c[0] === collOf(d.colour)) || COLLS[0])[1],
+      collOptions: COLLS.map(([id, label]) => { const on = collOf(d.colour) === id; return { label, selected: on ? 'true' : 'false', bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', pick: () => { if (on) return; const first = id === 'professional' ? PRO_STYLES[0].id : id === 'luxury' ? LUX_STYLES[0].id : COLOURS[0].id; this.pickStyle(first); } }; }),
+      colourOptions: (collOf(d.colour) === 'professional' ? PRO_STYLES : collOf(d.colour) === 'luxury' ? LUX_STYLES : COLOURS).map(c => { const on = c.id === d.colour; return { ...c, selected: on ? 'true' : 'false', ring: on ? '0 0 0 3px #0F1624, 0 0 0 5px var(--brand)' : '0 0 0 1px rgba(var(--fg-rgb),0.10)', pick: () => this.pickStyle(c.id) }; }),
+      sections: SECTIONS.map(s => ({ title: s.title, fields: s.fields.map(f => ({ id: 'f-' + f.key, label: f.label, placeholder: f.placeholder || '', type: f.type || 'text', inputMode: f.inputMode || 'text',
+        value: d[f.key] || '', onChange: e => this.setDraft(f.key, e.target.value), isInput: !f.area, isArea: !!f.area, span: f.span === 1 ? 'span 1' : '1 / -1',
+        hasError: !!err[f.key], error: err[f.key] || '', invalid: err[f.key] ? 'true' : 'false', border: err[f.key] ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)' })) })),
+      baseHost: BASE_HOST, draftSlug: d.slug, onSlug: e => { this.setState({ slugTouched: true }); this.setDraft('slug', slugify(e.target.value)); },
+      hasSlugError: !!err.slug, noSlugError: !err.slug, slugError: err.slug || '', slugInvalid: err.slug ? 'true' : 'false', slugBorder: err.slug ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)',
+      regionOptions: ['IN', 'US'].map(k => { const on = (d.region || 'IN') === k; return { label: PRICING[k].label, selected: on ? 'true' : 'false', bg: on ? 'var(--surface-hi)' : 'transparent', weight: on ? '700' : '500', shadow: on ? '0 1px 3px rgba(0,0,0,0.12)' : 'none', pick: () => this.setDraft('region', k) }; }),
+      planOptions: Object.keys(PLANS).map(k => { const on = d.plan === k; return { ...PLANS[k], price: money(d.region || 'IN', PRICING[d.region || 'IN'][k]) + ' / year', selected: on ? 'true' : 'false', pick: () => this.setDraft('plan', k), border: on ? '2px solid var(--brand)' : '1px solid rgba(var(--fg-rgb),0.14)', bg: on ? 'rgba(var(--brand-rgb),0.08)' : 'var(--surface)' }; }),
+      draftRenewal: d.renewal, onRenewal: e => this.setDraft('renewal', e.target.value),
+      activeStr: d.active ? 'true' : 'false', activeLabel: d.active ? 'Card is live' : 'Card is paused', toggleActive: () => this.setDraft('active', !d.active),
+      switchBg: d.active ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', knobLeft: d.active ? '19px' : '3px',
+      ...(() => { const mo = d.plan === 'motion', on = mo ? d.seasonal !== false : !!d.seasonAddon && d.seasonal !== false; return { seaLabel: mo ? 'Seasonal themes' : 'Seasonal add-on (extra)', seaStr: on ? 'true' : 'false', toggleSea: () => mo ? this.setDraft('seasonal', d.seasonal === false) : this.setState(s => ({ draft: { ...s.draft, seasonAddon: !on, seasonal: true } })), seaBg: on ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', seaKnob: on ? '19px' : '3px' }; })(),
+      showGreeting: (d.plan === 'motion' || d.seasonAddon) && d.seasonal !== false, greetingVal: d.greeting || '', onGreeting: e => this.setDraft('greeting', e.target.value), greetingName: d.firstName || 'you', greetingPh: 'Happy Holidays from the ' + (d.lastName || 'Moreno') + ' Team',
+      pbStr: d.showPoweredBy !== false ? 'true' : 'false', togglePB: () => this.setDraft('showPoweredBy', d.showPoweredBy === false),
+      pbBg: d.showPoweredBy !== false ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', pbKnob: d.showPoweredBy !== false ? '19px' : '3px',
+      adjBg: d.photo ? 'url("' + d.photo + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),
+      zoomLabel: Math.round((d.photoZoom || 1) * 100) + '%', adjDown: this.adjDown, onZoom: e => this.setDraft('photoZoom', Number(e.target.value)),
+      focusPresets: [['Top', 50, 15], ['Centre', 50, 50], ['Bottom', 50, 85]].map(([label, x, y]) => ({ label, pick: () => this.setState(s => ({ draft: { ...s.draft, photoX: x, photoY: y } })) })).concat([{ label: 'Reset', pick: () => this.setState(s => ({ draft: { ...s.draft, photoX: 50, photoY: 50, photoZoom: 1 } })) }]),
+      layoutName: (LAYOUTS.find(l => l.id === (d.layout || 'original')) || LAYOUTS[0]).name,
+      layoutOptions: LAYOUTS.map(l => { const on = (d.layout || 'original') === l.id; return { ...l, selected: on ? 'true' : 'false', border: on ? '2px solid var(--brand)' : '1px solid rgba(var(--fg-rgb),0.10)', pick: () => this.setDraft('layout', l.id) }; }),
+      canDelete: editing, deleteClient: this.deleteClient, deleteLabel: 'Delete ' + this.nameOf(d),
+      publish: this.publish, publishLabel: S.busy ? 'Saving…' : (editing ? 'Save & publish' : 'Publish card'),
+
+      previewRef: this.previewRef, onPreviewLoad: this.onPreviewLoad,
+      previewSrc: '/app/card.html?preview=1',
+      pvBg: col.bg, pvAccent: col.accent, pvBgTop: col.bgTop || 'color-mix(in srgb, ' + col.bg + ' 82%, ' + col.accent + ')', pvBgBack: col.bgBack || 'color-mix(in srgb, ' + col.bg + ' 70%, ' + col.accent + ')',
+      pvHeroImg: d.photo ? 'url("' + d.photo + '")' : 'none', pvInitials: this.initialsOf(d),
+      pvCategory: d.category || pre.category, pvName: this.nameOf(d), pvTitle: d.title || 'Job title', pvCompany: d.company ? ' · ' + d.company : '',
+      pvTagline: d.tagline || '', pvMsg: d.whatsapp ? 'WhatsApp' : 'Text', pvLinks: links, pvUrl: BASE_HOST + '/' + (slugify(d.slug) || '…'),
+
+      modalOpen: !!modalClient, modalIsPublish: !!(S.modal && S.modal.type === 'publish'),
+      modalTitle: S.modal && S.modal.type === 'publish' ? 'Card is live' : (modalClient ? this.nameOf(modalClient) : ''),
+      modalSub: S.modal && S.modal.type === 'publish' ? 'Share the link or print the QR for their NFC tag.' : 'Scan to open the card',
+      modalUrl: mUrl, closeModal: this.closeModal, doneRef: this.doneRef, stop: e => e.stopPropagation(),
+      copyLink: this.copyLink, copyLabel: S.copied ? 'Copied ✓' : 'Copy link', downloadQR: this.downloadQR,
+      copyEditLink: this.copyEditLink, resetEditLink: this.resetEditLink, copyEditLabel: modalClient && modalClient.editToken ? (S.editCopied ? 'Copied ✓' : 'Copy edit link') : 'Create new edit link', hasEditLink: !!modalClient, editBtn: this.editBtn, editNote: modalClient && modalClient.editToken ? 'Copy it now and send it to the client. For security it is only shown once.' : 'For special cases only. Changes are normally made by you. An edit link lets the client change their card themselves; it is shown once, and a new one stops the old one working.',
+      sendHref: modalClient ? 'https://wa.me/' + String(modalClient.whatsapp || modalClient.phone || '').replace(/\D/g, '') + '?text=' + encodeURIComponent('Hi ' + modalClient.firstName + ', your Linkcardly digital card is live: ' + mUrl + '\n\nYour plan includes ' + (CHANGES_INCLUDED[modalClient.plan] || 2) + ' changes a year. Just message us here with what you want changed.') : '#',
+      hasEditToken: true, noEditToken: false,
+      changesLabel: modalClient ? 'Changes this year: ' + (modalClient.changesUsed || 0) + ' of ' + (CHANGES_INCLUDED[modalClient.plan] || 2) + ((modalClient.changesUsed || 0) > (CHANGES_INCLUDED[modalClient.plan] || 2) ? ' · extra changes are chargeable' : '') : '', addChange: () => this.bumpChanges(1), undoChange: () => this.bumpChanges(-1),
+      qrNode: modalClient ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(mUrl).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,
+      toast: S.toast,
+      themeLabel: S.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode',
+      themeIcon: S.theme === 'light' ? 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' : 'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 1 0 0-10z',
+      toggleTheme: () => { const t = S.theme === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('nbr-theme', t); } catch (e) {} this.setState({ theme: t }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -146,6 +146,21 @@ end $$;
 revoke all on function public.mark_order_refunded(text, text, text) from public;
 grant execute on function public.mark_order_refunded(text, text, text) to anon, authenticated;
 
+-- Payment received outside the website (UPI, bank transfer) and marked by an admin on /admin. Worker only: the Worker
+-- checks the admin's login first. Same effect as an online payment (mark_order_paid): unpaid → paid for the order's
+-- own total, card live, fresh edit link for the "card is live" email.
+create or replace function public.mark_order_paid_manual(p_order_no text, p_ref text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare o record;
+begin
+  if not from_worker() then raise exception 'not allowed'; end if;
+  select order_no, total, price, currency into o from orders where order_no = p_order_no;
+  if not found then raise exception 'order not found'; end if;
+  return mark_order_paid(o.order_no, 'manual', left(coalesce(nullif(trim(p_ref), ''), 'manual'), 120), round(coalesce(o.total, o.price) * 100)::bigint, o.currency);
+end $$;
+revoke all on function public.mark_order_paid_manual(text, text) from public;
+grant execute on function public.mark_order_paid_manual(text, text) to anon, authenticated;
+
 -- ----------------------------------------------------------------
 -- 0) TEST MODE: payments and the bot check off, so the product can be tested end to end
 -- ----------------------------------------------------------------

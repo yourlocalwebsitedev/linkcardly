@@ -40,6 +40,7 @@ them hard-coded.
       --var SERVE_IMG:1 --var CRON_KEY:e2e-cron-key
     ```
   - **Staging**: `STAGING=1 BASE=https://linkcardly-staging.yourlocalwebsitedev.workers.dev node test/e2e/production.mjs` (the staging Supabase project must have test mode on).
+- `BASE=http://127.0.0.1:8787 node test/e2e/admin.mjs`: the admin page in a browser (native mode, same server as above): login, a non-admin is refused, Mark paid puts the card live. Screenshots in `test/e2e/report/`.
 - CI (`.github/workflows/ci.yml`) runs install, `npm audit`, `npm test` and a dry-run deploy on every PR and on `main`.
 
 ## Operations
@@ -69,6 +70,7 @@ them hard-coded.
 | `/create` | Order app; `/order` and `/pricing` 301 here |
 | `/<name>`, `/c/<nbr_id>` | Live card (card app; link previews get the card's name and photo) |
 | `/e/<token>` | Private edit link (order app in edit mode; never cached, no referrer) |
+| `/admin` | Admin page (Supabase admin login): clients, orders with **Mark paid**, leads, coupons, visit counts. Never indexed or cached |
 | `/app/config.js` | This environment's browser settings (database, publishable key, Turnstile site key) |
 | `/api/*` | Native API (`docs/ARCHITECTURE.md`) or, in proxy mode, the NexBizRise worker |
 | `POST /api/csp-report` | CSP violation reports from the vendored app (logged only), both modes |

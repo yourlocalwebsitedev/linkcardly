@@ -56,6 +56,7 @@ linkcardly/
 | `POST /api/pay/start`, `/api/pay/verify`, `GET /api/pay/status` | Razorpay (INR) and Stripe (USD) checkout; each off until its keys are set |
 | `POST /api/razorpay/webhook`, `/api/stripe/webhook` | Signed events: paid → `mark_order_paid`; full refund → `mark_order_refunded`; failed and expired are logged |
 | `GET /api/stats`, `POST /api/purge` | Admin only (Supabase admin login checked with `is_admin`) |
+| `POST /api/admin/paid` | Admin only: a payment received outside the website (UPI, bank). `mark_order_paid_manual` → card live, "card is live" email with a fresh edit link, which also goes back to the admin |
 | `GET /img/p/<file>` | Local development only (`SERVE_IMG = "1"`): photos from the local R2 |
 
 Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from other origins. Every database call carries the Worker secret (`x-nbr-secret`, checked by `from_worker()`) and the visitor's address (`x-nbr-ip`), so the database's bot gate and rate limits apply per visitor; without the secret it refuses direct orders. Only errors the SQL raises on purpose (`link taken`, `invalid email`) reach the browser.
@@ -91,5 +92,6 @@ Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from oth
   - No retention or deletion: unpaid orders, inactive cards and `admin_log` snapshots are kept forever.
   - Partner payout details (UPI, bank account, PAN) are plain text; encrypt before scaling the programme.
   - The app CSP is still report-only with `unsafe-eval` (in-browser Babel).
+- Admin page (`public/app/admin.html`, vendored from NexBizRise): keeps NexBizRise's own look (cyan accents, Plus Jakarta Sans), and on a phone its header is crowded and the page is 26 px wider than the screen. Its edits go straight to the tables as the signed-in admin (row-level security allows admins), so they skip the field rules that `update_card_by_token` applies; only admins can do this.
 - `src/lib/handles.js` (`HANDLE_RE`) allows dots in a card name; the database and the order page don't. Align it when handles are next touched.
 - Changing the photo from an edit link isn't automated in the E2E suite yet (the upload itself is, in a native run).

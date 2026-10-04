@@ -444,3 +444,23 @@ test('card cache: "not found" and cards whose extras failed are not cached; a re
   await worker.fetch(await rzpHook('refund.processed', { refund: { entity: { id: 'rfnd_1', payment_id: 'pay_full' } } }), env(RZP), ctx());
   assert.equal(cache.size, 0);
 });
+
+test('admin "Mark paid": admin login and our own origin required; marks paid, purges, emails the edit link', async () => {
+  const cache = fakeCache();
+  cache.set('https://linkcardly.com/api/card/asha', '{"row":{}}');
+  f = stubFetch(async (url, req) => {
+    if (url.endsWith('/rpc/is_admin')) return json(req.headers.get('authorization') === 'Bearer good.jwt');
+    if (url.endsWith('/rpc/mark_order_paid_manual')) return json({ first: true, order_no: 'NBR-AB12CD', slug: 'asha', public_id: 'nbr_abc123', mode: 'builder', customer_email: 'asha@example.com', customer_name: 'Asha', edit_token: 'e'.repeat(40), total: 943, currency: 'INR' });
+    if (url === 'https://api.resend.com/emails') return json({});
+  });
+  const body = { order_no: 'NBR-AB12CD', ref: 'UPI 4455' };
+  assert.equal((await worker.fetch(post('/api/admin/paid', body), env(), ctx())).status, 401);
+  assert.equal((await worker.fetch(post('/api/admin/paid', body, { Authorization: 'Bearer good.jwt', Origin: 'https://evil.example' }), env(), ctx())).status, 403);
+  const c = ctx();
+  const r = await worker.fetch(post('/api/admin/paid', body, { Authorization: 'Bearer good.jwt' }), env(), c);
+  assert.deepEqual(await r.json(), { ok: true, first: true, order_no: 'NBR-AB12CD', slug: 'asha', edit_link: 'https://linkcardly.com/e/' + 'e'.repeat(40) });
+  assert.deepEqual(JSON.parse(f.calls.find(x => x.url.endsWith('/mark_order_paid_manual')).body), { p_order_no: 'NBR-AB12CD', p_ref: 'UPI 4455' });
+  assert.equal(cache.size, 0);
+  await c.done();
+  assert.equal(mails().find(m => m.to[0] === 'asha@example.com').subject, 'Your Linkcardly card is live');
+});

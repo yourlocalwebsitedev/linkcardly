@@ -100,9 +100,9 @@ test('proxy mode: card links and edit links are served in place, keeping the pat
   assert.equal(f.calls.length, 0);
 });
 
-test('proxy mode: only /api/* is forwarded; other unknown paths (e.g. /admin) are a local 404', async () => {
+test('proxy mode: only /api/* is forwarded; other unknown paths (e.g. /admin/x) are a local 404', async () => {
   f = stubFetch(() => new Response('legacy'));
-  for (const p of ['/admin', '/admin/x', '/alex/contact.vcf', '/wp-login.php/x']) {
+  for (const p of ['/admin/x', '/alex/contact.vcf', '/wp-login.php/x']) {
     const r = await worker.fetch(request(p), env({ MODE: 'proxy' }));
     assert.equal(r.status, 404, p);
     assert.match(await r.text(), /couldn't find that page/, p);
@@ -135,7 +135,7 @@ test('native mode: card and edit links serve the card and order app, same as pro
 
 test('security headers on every response; CSP only on pages this repo renders', async () => {
   f = stubFetch(() => new Response('legacy', { headers: { 'Content-Type': 'text/html' } }));
-  for (const [p, mode, csp] of [['/', 'proxy', true], ['/designs', 'proxy', true], ['/nope.css', 'proxy', true], ['/create', 'proxy', false], ['/alexmorgan', 'proxy', false], ['/e/' + 'a'.repeat(40), 'proxy', false], ['/admin', 'proxy', true]]) {
+  for (const [p, mode, csp] of [['/', 'proxy', true], ['/designs', 'proxy', true], ['/nope.css', 'proxy', true], ['/create', 'proxy', false], ['/alexmorgan', 'proxy', false], ['/e/' + 'a'.repeat(40), 'proxy', false], ['/admin', 'proxy', false], ['/admin/x', 'proxy', true]]) {
     const r = await worker.fetch(request(p), env({ MODE: mode }));
     for (const h of ['strict-transport-security', 'x-content-type-options', 'referrer-policy', 'x-frame-options']) assert.ok(r.headers.get(h), `${p}: ${h}`);
     assert.equal(!!r.headers.get('content-security-policy'), csp, `${p}: CSP`);
@@ -224,4 +224,17 @@ test('CSP lets the browser reach only this environment\'s database (the one in /
     const app = await worker.fetch(request('/create'), e);
     assert.match(app.headers.get('content-security-policy-report-only'), new RegExp(`connect-src 'self' ${origin.replace(/\./g, '\\.')} `));
   }
+});
+
+test('/admin serves the admin page: report-only app CSP, never indexed or cached', async () => {
+  const r = await worker.fetch(request('/admin'), env());
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /<title>Linkcardly Admin<\/title>/);
+  assert.equal(assets.calls.at(-1), '/app/admin');
+  assert.ok(r.headers.get('content-security-policy-report-only'));
+  assert.equal(r.headers.get('content-security-policy'), null);
+  assert.equal(r.headers.get('x-robots-tag'), 'noindex, nofollow');
+  assert.equal(r.headers.get('cache-control'), 'no-store');
+  assert.doesNotMatch(r.headers.get('content-security-policy-report-only'), /esm\.sh/);
+  assert.equal((await worker.fetch(request('/admin/x'), env())).status, 404);
 });

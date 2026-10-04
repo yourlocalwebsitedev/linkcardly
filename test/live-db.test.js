@@ -374,3 +374,22 @@ test('verify.sql runs, and its native API check passes once both files are appli
   assert.equal(rows.length, 17);
   assert.equal(rows.find(r => r.check_name.startsWith('17')).status, 'PASS');
 });
+
+test('manual payment (admin page): worker only; marks paid at the order\'s own total, card live, new edit link; once', async () => {
+  await db.exec('delete from rate_hits');
+  const secret = 'm'.repeat(32);
+  await db.query(`insert into app_secrets values ('worker', $1) on conflict (key) do update set value = excluded.value`, [secret]);
+  const worker = { 'x-nbr-secret': secret, 'cf-connecting-ip': '198.51.100.3' };
+  const call = (h, no) => anonWithHeaders(h, `select public.mark_order_paid_manual($1, 'UPI 4455') as r`, [no]).then(r => r[0].r);
+  try {
+    const o = await anonWithHeaders(worker, `select public.place_order($1) as r`, [order({ card: { slug: 'manualpay', first_name: 'M', phone: '9812388888' } })]).then(r => r[0].r);
+    await assert.rejects(call({ 'cf-connecting-ip': '198.51.100.3' }, o.order_no), /not allowed/);
+    const r = await call(worker, o.order_no);
+    assert.equal(r.first, true); assert.match(r.edit_token, /^[a-f0-9]{40}$/); assert.equal(r.slug, 'manualpay');
+    const row = await one(`select o.pay_status, o.pay_provider, o.pay_ref, o.amount_paid::float paid, o.total::float total, c.active from orders o join cards c on c.id = o.card_id where o.order_no = $1`, [o.order_no]);
+    assert.deepEqual([row.pay_status, row.pay_provider, row.pay_ref, row.active], ['paid', 'manual', 'UPI 4455', true]);
+    assert.equal(row.paid, row.total);
+    assert.equal((await call(worker, o.order_no)).first, false, 'a second click changes nothing');
+    await assert.rejects(call(worker, 'NBR-NOPE00'), /order not found/);
+  } finally { await db.exec(`delete from app_secrets where key = 'worker'`); }
+});
