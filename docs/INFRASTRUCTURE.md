@@ -84,7 +84,7 @@ Managed, no pre-clearance. `Linkcardly staging`: site key `0x4AAAAAAFNHwEXiZ92pC
 | URL | `https://iqqxitntkcmrcvuqxxex.supabase.co` | `https://ctzoyorugnybzvkoyvwj.supabase.co` |
 | Publishable key (public) | `sb_publishable_BB6t10anvceY7vy5VXkN6w_7-LGJXUC` | `sb_publishable_EYwRSCPgTjV7FX6WOrmzDg_PRbMTNSY` |
 | Region | South Asia (Mumbai) | South Asia (Mumbai) |
-| Plan | Free; **upgrade the org to Pro before go-live** (Free pauses after a week without traffic and has no daily backups) | Free |
+| Plan | Free. Free pauses a project after 1 week with no activity and has no backups, so production gets a daily database job (keeps it active) and a nightly backup (GitHub Action, 14 days kept). Pro ($25/month, daily managed backups) is optional later. | Free |
 | Test mode | **off** (never on in production) | on |
 
 How both were built (2026-10-03), each step in the SQL Editor of that project:
@@ -131,8 +131,8 @@ Still running and still doing linkcardly.com's ordering until cutover: Cloudflar
 (`card.nexbizrise.com`), Supabase project "Digital Card" (`hyaqvmrtqafqhbhcdecd`), R2 `img.nexbizrise.com`.
 
 - Its `CF_API_TOKEN` (account token `nbr-analytics-read`) was rolled on 2026-10-03 after being exposed, and stored as
-  a Secret. Its `NBR_WORKER_SECRET` was also exposed: replace it (Pages secret + `app_secrets` in the old database,
-  then Retry deployment) unless the project is deleted first.
+  a Secret. Its `NBR_WORKER_SECRET` was also exposed. Decision (2026-10-03): handle later; the project may be deleted
+  entirely and replaced with a new domain.
 - All its data is test data; nothing moves to the new databases.
 - After cutover plus 30 quiet days: revoke its keys, back up and pause the old database, delete the Pages project and
   bucket. Keep the `nexbizrise.com` domain and the `card.nexbizrise.com` redirect while printed cards may exist.
@@ -144,7 +144,7 @@ Still running and still doing linkcardly.com's ordering until cutover: Cloudflar
    payments and webhooks, emails, renewal reminders, admin page.
 3. **Staging Worker**: `npx wrangler deploy --env staging`, then its secrets (staging values of the six above).
 4. **Run the production E2E suite on staging**: `STAGING=1 BASE=https://linkcardly-staging.yourlocalwebsitedev.workers.dev node test/e2e/production.mjs`.
-5. **Before go-live**: Supabase Pro, privacy and terms pages updated (business name, Supabase, Resend), HSTS on.
+5. **Before go-live**: daily database job and nightly backup running, privacy and terms pages updated (business name, Supabase, Resend), HSTS on.
 6. **Cutover**: `MODE = "native"`, remove `LEGACY_ORIGIN`; rollback = set `MODE = "proxy"` again.
 
 The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
