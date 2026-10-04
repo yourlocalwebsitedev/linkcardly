@@ -38,6 +38,7 @@ linkcardly/
 
 ## Modes
 - **proxy** (current): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404; the NexBizRise admin stays on its own host. Card pages (`/<slug>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/app/` and fetch their data through `/api/*`. Link-preview bots get the card's name, role and photo in the meta tags (`routes/og.js`). The app loads React and Babel from `public/app/vendor/`, not unpkg.
+- **Linkcardly's own setup (2026-10, ready for native):** Supabase `linkcardly-prod` and `linkcardly-staging`, R2 buckets `linkcardly-photos` (`img.linkcardly.com`) and `linkcardly-photos-staging`, Turnstile widgets `Linkcardly` and `Linkcardly staging`, Analytics Engine datasets `linkcardly_stats(_staging)`. Their public settings are in `wrangler.toml` per environment; production's secrets (`SUPABASE_SERVICE_KEY`, `WORKER_SECRET`, `CRON_KEY`, `TURNSTILE_SECRET`, `CF_ANALYTICS_TOKEN`) are set on the Worker. None of this is used until `MODE = "native"`.
 - **native** (later): `routes/api.js` and `routes/cards.js` with the Supabase schema in `supabase/`. Not yet at parity: the vendored app also calls `/api/card`, `/api/hit`, `/api/upload`, `/api/edit` and `/api/pay/*`, and native has no `/e/<token>`, `/c/<id>`, admin, e-mails or payments. Keep proxy mode until those exist.
 
 ## Rules

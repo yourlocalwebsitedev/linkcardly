@@ -47,6 +47,13 @@ revoke insert, update, delete, truncate on public.admins from authenticated;
 revoke all on public.cards from anon;
 -- Nor the admins list (who the admins are is not public).
 revoke all on public.admins from anon;
+-- Supabase's "Enable automatic RLS" option (new projects) adds public.rls_auto_enable(), which the API roles can
+-- call. Nobody needs to call it; take that away when it exists.
+do $$ begin
+  if to_regprocedure('public.rls_auto_enable()') is not null then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
 
 -- Rate limits: the x-nbr-ip header is trusted only when the request carries the worker secret. Before,
 -- it was also trusted when no worker secret was set, which let any caller pick its own "IP" and skip limits.

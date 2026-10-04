@@ -1,13 +1,16 @@
 # Live database (Supabase)
 
-The database linkcardly.com runs on today. It was set up by NexBizRise; its schema now lives here.
+The database schema for linkcardly.com. It started in the NexBizRise project (`hyaqvmrtqafqhbhcdecd`); Linkcardly now has its own projects, `linkcardly-prod` (`iqqxitntkcmrcvuqxxex`) and `linkcardly-staging` (`ctzoyorugnybzvkoyvwj`), built from these files.
+
+**New project:** run `0-base.sql`, then `ALL-IN-ONE.sql`, then `linkcardly.sql` (SQL Editor → New query → Run each). The three together are what `test/support/live-db.mjs` runs before every database and browser test.
 
 | File | What | Run |
 |---|---|---|
+| `0-base.sql` | The `cards` and `admins` tables that ALL-IN-ONE.sql builds on (columns, checks, indexes, admin-only access rules, `updated_at` trigger), as they were in the NexBizRise project. | First, on a new project. Safe to run again. |
 | `ALL-IN-ONE.sql` | Cards, orders, coupons, payments, edit links, leads, admin log (copied from NexBizRise `supabase/ALL-IN-ONE.sql`, commit d92bfea; the public card views are now read-only). Already applied to the live database. | Only when setting up a new database. |
 | `linkcardly.sql` | Security fixes from the production audit (read-only card views, no direct table writes, no anonymous access to the cards table or the admins list, rate limits that can't be spoofed, payment only unpaid → paid, refunded cards go offline, field rules and a real email on new orders), test mode (off), card link names (availability check, stale unpaid names released, "link taken" instead of random digits) and the partner programme (schema `partner`). | Once, after `ALL-IN-ONE.sql`. Safe to run again. |
 
-Both are tested together in `test/live-db.test.js` (in-process Postgres with Supabase stand-ins for `auth`, `storage` and the API roles).
+All three are tested together in `test/live-db.test.js` (in-process Postgres with Supabase stand-ins for `auth`, `storage` and the API roles).
 
 `supabase/migrations/` is the separate schema for native mode (later), not this database.
 

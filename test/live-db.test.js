@@ -290,8 +290,8 @@ test('new orders: a real email is required and the card follows the edit field r
 
 test('a name with 80 numbered copies gets a 4-digit suffix instead of looping forever', async () => {
   await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
-  await db.exec(`insert into cards (slug, first_name, phone) select 'busy' || g, 'B', '9800000000' from generate_series(10, 89) g`);
-  await db.exec(`insert into cards (slug, first_name, phone) values ('busy', 'B', '9800000000')`);
+  await db.exec(`insert into cards (slug, first_name, title, phone) select 'busy' || g, 'B', '', '9800000000' from generate_series(10, 89) g`);
+  await db.exec(`insert into cards (slug, first_name, title, phone) values ('busy', 'B', '', '9800000000')`);
   const r = await rpc('anon', 'place_order', [order({ customer_email: 'busy@example.com', card: { slug: 'busy', first_name: 'B', phone: '9812344444' } })]);
   assert.match(r.slug, /^busy\d{4}$/);
 });
