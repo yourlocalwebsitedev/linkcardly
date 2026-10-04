@@ -1,6 +1,7 @@
 // /health → "ok <version>[ proxy]" (cheap liveness). /health?deep=1 → JSON with dependency checks (readiness).
 import { VERSION, TIMEOUTS } from '../config.js';
 import { json, fetchWithTimeout } from '../http.js';
+import { view } from '../lib/live.js';
 
 async function check(name, fn) {
   const t0 = Date.now();
@@ -17,10 +18,10 @@ export async function health(env, url, proxyMode) {
       if (r.status >= 500) throw new Error(`status ${r.status}`);
     }));
   } else {
-    checks.push(await check('supabase', async () => {
-      const r = await fetchWithTimeout(`${env.SUPABASE_URL}/rest/v1/cards?select=id&limit=1`, { headers: { apikey: env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}` } }, TIMEOUTS.health);
-      if (!r.ok) throw new Error(`status ${r.status}`);
-    }));
+    // The same read a visitor's card page makes (publishable key, public view): no privileged key needed.
+    checks.push(await check('supabase', () => view(env, 'public_cards', 'select=slug&limit=1')));
+    // Without these every order fails: the database refuses calls without the Worker secret, and the bot check fails closed.
+    checks.push({ name: 'worker_secret', ok: !!env.WORKER_SECRET });
     checks.push({ name: 'turnstile_secret', ok: !!env.TURNSTILE_SECRET });
   }
   const ok = checks.every(c => c.ok);

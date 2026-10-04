@@ -11,39 +11,58 @@ linkcardly/
 │   ├── pages.js           Page registry: path, title, description, flags (also drives Worker routes and reserved handles)
 │   ├── catalogue.js       Design-catalogue copy (categories, colourway names, sample people)
 │   └── pages/*.html       Page bodies (inside <main>)
-├── scripts/build.mjs      site/ → public/*.html, sitemap.xml, assets/js/{icons,rules,catalogue}.js, src/lib/qrcode.gen.js
+├── scripts/build.mjs      site/ → public/*.html, sitemap.xml, assets/js/{icons,rules,catalogue}.js
 ├── src/                   Worker (server)
 │   ├── index.js           Routing, security headers, request logging, error handling, rate limit
 │   ├── config.js          Route tables, app paths, file extensions, timeouts, version
-│   ├── http.js            json(), serveAsset(), notFound(), errorPage(), secure() + CSP
-│   ├── routes/            proxy.js (to NexBizRise), og.js (share previews), api.js (native), cards.js (native), health.js
-│   ├── views/card-page.js Server-rendered card (native)
-│   └── lib/               Pure helpers: handles, icons, themes, vcard, sanitize, qr, supabase, turnstile
+│   ├── http.js            json(), serveAsset(), notFound(), errorPage(), secure() + CSP (scoped to this environment's database)
+│   ├── routes/            native.js (the API in native mode + daily job), proxy.js (to NexBizRise), app-config.js (/app/config.js),
+│   │                      og.js (share previews), health.js
+│   └── lib/               live.js (database calls), mail.js (Resend), payments.js (Razorpay, Stripe), turnstile, handles, icons, themes
 ├── public/                Served as-is
 │   ├── app/               Vendored NexBizRise order and card app (see app/README.md)
 │   │   ├── estate-styles.js  Estate card styles shared by order.html and card.html (window.LC_ESTATE)
 │   │   ├── scene-styles.js   Personal scene styles (Summit, Tide) and their art, shared the same way (window.LC_SCENES)
 │   │   └── components/    Linkcardly UI components for the app: card-style-controls, link-claim ("Your link"), order-done (done screen)
-│   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing), card.css (native card)
-│   ├── assets/js/         site.js (marketing behaviour), card.js (native card), config.js; generated: catalogue.js, icons.js, rules.js
+│   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing)
+│   ├── assets/js/         site.js (marketing behaviour); generated: catalogue.js, icons.js, rules.js
 │   ├── assets/img/brand/  favicon companions, OG image
 │   ├── assets/img/samples/ sample portrait used by the app
 │   └── favicon.svg, robots.txt
-├── supabase/live/         The live database: ALL-IN-ONE.sql (from NexBizRise) + linkcardly.sql (link names, partner programme); see its README
-├── supabase/migrations/   Native schema (for MODE = "native"): 0001 init, 0002 hardening, 0003 retention schedule
-├── test/                  node:test suites; e2e/ (smoke, order-flow, production suite); support/ (live database in PGlite + PostgREST stand-in)
-├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy
-└── docs/                  ARCHITECTURE.md, QA.md, SDLC_VALIDATION.md
+├── supabase/live/         The database: 0-base.sql + ALL-IN-ONE.sql (from NexBizRise) + linkcardly.sql (Linkcardly changes); see its README
+├── test/                  node:test suites (native.test.js: the native API); e2e/ (smoke, order-flow, production suite);
+│                          support/ (live database in PGlite + PostgREST stand-in)
+├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy.
+│                          backup.yml: nightly production database backup to R2
+└── docs/                  ARCHITECTURE.md, INFRASTRUCTURE.md (accounts, services, secrets, setup log), QA.md, SDLC_VALIDATION.md
 ```
 
 ## Modes
-- **proxy** (current): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404; the NexBizRise admin stays on its own host. Card pages (`/<slug>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/app/` and fetch their data through `/api/*`. Link-preview bots get the card's name, role and photo in the meta tags (`routes/og.js`). The app loads React and Babel from `public/app/vendor/`, not unpkg.
-- **Linkcardly's own setup (2026-10, ready for native):** Supabase `linkcardly-prod` and `linkcardly-staging`, R2 buckets `linkcardly-photos` (`img.linkcardly.com`) and `linkcardly-photos-staging`, Turnstile widgets `Linkcardly` and `Linkcardly staging`, Analytics Engine datasets `linkcardly_stats(_staging)`. Their public settings are in `wrangler.toml` per environment; production's secrets (`SUPABASE_SERVICE_KEY`, `WORKER_SECRET`, `CRON_KEY`, `TURNSTILE_SECRET`, `CF_ANALYTICS_TOKEN`) are set on the Worker. None of this is used until `MODE = "native"`.
-- **native** (later): `routes/api.js` and `routes/cards.js` with the Supabase schema in `supabase/`. Not yet at parity: the vendored app also calls `/api/card`, `/api/hit`, `/api/upload`, `/api/edit` and `/api/pay/*`, and native has no `/e/<token>`, `/c/<id>`, admin, e-mails or payments. Keep proxy mode until those exist.
+`MODE` in `wrangler.toml`. Production and staging are **native**; **proxy** is kept only as an emergency rollback until NexBizRise is retired. Rollback is setting `MODE = "proxy"` again.
+- **proxy** (emergency rollback only): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404. `/app/config.js` gives the browser the NexBizRise database and Turnstile key, so the app keeps working against the old worker.
+- **native**: `/api/*` is `src/routes/native.js`, against Linkcardly's own Supabase project (`supabase/live/*.sql`), R2 bucket, Turnstile widget, Resend and payment accounts. `/app/config.js` gives the browser this environment's database and Turnstile key (`wrangler.toml`).
+- **Both modes:** marketing pages, the order app (`/create`), card pages (`/<name>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/`; the app loads React and Babel from `public/app/vendor/`. Link-preview bots get the card's name, role and photo in the meta tags (`routes/og.js`). The daily job (`scheduled()` in native.js, 09:00 India) sends renewal reminders and keeps the Supabase Free project active.
+
+### Native API (`src/routes/native.js`)
+| Route | What it does |
+|---|---|
+| `GET /api/card/<name or nbr_id>` | Card data from the public views; cached 5 minutes at the edge, purged on every edit |
+| `POST /api/hit` | Visit and tap counts → Analytics Engine (`STATS`) |
+| `POST /api/upload` | Photo or video → R2 (`PHOTOS`); type decided by the file's bytes; 5 MB; returns its `IMG_BASE` address |
+| `POST /api/order` | Turnstile → `place_order` (database prices it) → starts payment → emails. The edit link comes back only for orders already paid (test mode, free coupon); otherwise it is emailed after payment |
+| `POST /api/edit` | `update_card_by_token`, then purges the card cache |
+| `POST /api/lead` | Card contact form → `submit_lead`, emails the card owner (owner details never go back to the visitor) |
+| `POST /api/contact` | linkcardly.com contact and teams forms → `submit_site_lead`, emails Linkcardly |
+| `POST /api/pay/start`, `/api/pay/verify`, `GET /api/pay/status` | Razorpay (INR) and Stripe (USD) checkout; each off until its keys are set |
+| `POST /api/razorpay/webhook`, `/api/stripe/webhook` | Signed events: paid → `mark_order_paid`; full refund → `mark_order_refunded`; failed and expired are logged |
+| `GET /api/stats`, `POST /api/purge` | Admin only (Supabase admin login checked with `is_admin`) |
+| `GET /img/p/<file>` | Local development only (`SERVE_IMG = "1"`): photos from the local R2 |
+
+Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from other origins. Every database call carries the Worker secret (`x-nbr-secret`, checked by `from_worker()`) and the visitor's address (`x-nbr-ip`), so the database's bot gate and rate limits apply per visitor; without the secret it refuses direct orders. Only errors the SQL raises on purpose (`link taken`, `invalid email`) reach the browser.
 
 ## Rules
-- Single sources of truth (full table in `CLAUDE.md`): brand tokens `public/assets/css/tokens.css`; pages and their routes `site/pages.js` (`STATIC_PAGES` and reserved handles are derived from it); colourways `src/lib/themes.js` (the browser catalogue is generated with copy from `site/catalogue.js`); icons `src/lib/icons.js`; handle rules `src/lib/handles.js`; nav, footer and Turnstile key `site/site.config.js`; QR generator `public/app/qrcode.js`. Generated copies are git-ignored and rebuilt by every `npm test`, `wrangler dev` and `wrangler deploy`.
-- Pages this repo renders get an enforced Content-Security-Policy (`src/http.js`). The vendored app gets a report-only one (`APP_CSP`), because it relies on inline scripts, in-browser Babel and payment SDKs.
+- Single sources of truth (full table in `CLAUDE.md`): brand tokens `public/assets/css/tokens.css`; pages and their routes `site/pages.js` (`STATIC_PAGES` and reserved handles are derived from it); colourways `src/lib/themes.js` (the browser catalogue is generated with copy from `site/catalogue.js`); icons `src/lib/icons.js`; handle rules `src/lib/handles.js`; nav and footer `site/site.config.js`; the browser's environment settings (database, publishable key, Turnstile site key) `wrangler.toml` vars, served as `/app/config.js` to every page; QR generator `public/app/qrcode.js`. Generated copies are git-ignored and rebuilt by every `npm test`, `wrangler dev` and `wrangler deploy`.
+- Pages this repo renders get an enforced Content-Security-Policy (`src/http.js`). The vendored app gets a report-only one (`APP_CSP`), because it relies on inline scripts, in-browser Babel and payment SDKs. Both allow only this environment's database origin (the one in `/app/config.js`).
 - Every request and failure is logged as one JSON line. Never log edit tokens or personal data.
 - Brand tokens live only in `assets/css/tokens.css` (`--lc-*` base colours, `--n`/`--a`/`--s` ramps, fonts, shadows). `site.css` maps them to its roles (`--bg`, `--accent`, …) and adds components and utilities (`.stack`, `.row`, `.grid` with `--g` and `--min`, `.page`/`.page-head` for text pages). `app/skin.css` maps the vendored app's own variables to the same tokens. Mobile first: base styles target 390 px, `min-width` queries widen.
 - Don't refactor `public/app/`. It mirrors NexBizRise so updates can be copied over.
@@ -61,16 +80,16 @@ linkcardly/
 - From the production E2E run (2026-10), open:
   - Refreshing the order page (or a phone closing the tab) loses what the customer typed; keep a draft in `sessionStorage`.
   - Save contact shows the iPhone guide ("Two taps on iPhone") on every device (`iosGuide` "Always" in card.html); Android only needs one tap.
-  - Order numbers still start with `NBR-` (set in the database's `place_order`).
+  - Order numbers still start with `NBR-` (set in the database's `place_order_core`). The native API accepts `NBR-` and `LC-`; changing the prefix is a SQL change on both projects.
   - Choosing a file that isn't an image gives no message on the Your card step.
   - Payment and webhook scenarios aren't tested (payments are off). Add them to `test/e2e/production.mjs` when they're on.
 - `order.html` keeps its old done markup for the unpaid and verifying states; the rest of the done screen is `components/order-done.js`. Move those two states into the component when they are next changed.
 - Production audit (2026-10), still open:
-  - The proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so its order, edit, upload and payment routes may answer 403. Move those routes into this Worker (DEF-28) or allow the origin there.
-  - Region is chosen by the buyer: a US buyer can pick India and pay the INR price. Until payments move here, turn off international cards in Razorpay.
-  - The NexBizRise worker handles only "paid" webhooks (no failed, expired, refund or dispute events), logs nothing, uploads need no order and keep EXIF on GIF/video, and its CSP has no `script-src`. The app CSP here is still report-only with `unsafe-eval`.
+  - Proxy mode (rollback only): the proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so photo uploads, edit saves and payments may answer 403 there. Native mode fixes this (the routes are in this Worker); cutover is the fix.
+  - Region is chosen by the buyer: a US buyer can pick India and pay the INR price. Turn off international cards in Razorpay, or check the region server-side when payments go live.
   - Coupons are counted when an order is placed, not when it's paid; unpaid orders can use them up.
   - No retention or deletion: unpaid orders, inactive cards and `admin_log` snapshots are kept forever.
   - Partner payout details (UPI, bank account, PAN) are plain text; encrypt before scaling the programme.
-  - Photo upload (`/api/upload`) and edit saves (`/api/edit`) also go through that proxy, so in production a photo order or a saved edit may fail until the origin issue is fixed. The E2E suite can't reach the deployed site; run it with `STAGING=1` before launch.
-  - The NexBizRise `app_secrets` worker secret must be at least 24 characters and match `NBR_WORKER_SECRET` on that worker, or every order fails the bot check and no payment can be marked paid.
+  - The app CSP is still report-only with `unsafe-eval` (in-browser Babel).
+- `src/lib/handles.js` (`HANDLE_RE`) allows dots in a card name; the database and the order page don't. Align it when handles are next touched.
+- Changing the photo from an edit link isn't automated in the E2E suite yet (the upload itself is, in a native run).

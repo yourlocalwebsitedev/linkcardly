@@ -18,8 +18,9 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 | Card colourways | `src/lib/themes.js` | `public/assets/js/catalogue.js` (merged with copy from `site/catalogue.js`) |
 | Reserved handles, handle rules | `src/lib/handles.js` | `public/assets/js/rules.js` |
 | Icons | `src/lib/icons.js` | `public/assets/js/icons.js` |
-| QR generator | `public/app/qrcode.js` | `src/lib/qrcode.gen.js` |
-| Nav, footer, Turnstile site key | `site/site.config.js` | none |
+| QR generator | `public/app/qrcode.js` | none |
+| Nav, footer | `site/site.config.js` | none |
+| Browser settings per environment (database URL, publishable key, Turnstile site key) | `wrangler.toml` vars (native) or `LEGACY` in `src/routes/app-config.js` (proxy) | none: served as `/app/config.js` to every page; the pages' CSP allows that database only |
 | Prices | `public/app/order.html` (`PRICING`) | none |
 | Estate card styles (per category, incl. colours of one design) | `public/app/estate-styles.js` | none: `order.html` and `card.html` both load it |
 | Personal scene styles (Summit, Tide) and their landscape art | `public/app/scene-styles.js` | none: `order.html` and `card.html` both load it |
@@ -30,12 +31,13 @@ Requirements → Analysis → Design → Implementation → Testing → Review �
 - **Mobile first, designed at 390 × 844.** Base styles are for phones; widen with `min-width` media queries (641px, 821px, 960px). No horizontal scroll; tap targets at least 44 px tall unless the link sits inside a sentence; respect `prefers-reduced-motion`; visible focus on every control.
 
 ## Architecture rules
-- `src/` is the Worker: `index.js` routes, `routes/` handle requests, `lib/` holds pure helpers, `views/` renders HTML. Keep business logic out of `index.js`.
+- `src/` is the Worker: `index.js` routes, `routes/` handle requests, `lib/` holds pure helpers. Keep business logic out of `index.js`.
 - `site/` is build-time source for marketing pages; `public/` is served as-is. Edit generated files only through their source.
 - `public/app/` mirrors the NexBizRise app. Change it only when necessary, keep each change small, and list it in `public/app/README.md`. New UI for it is a reusable component in `public/app/components/` (see ARCHITECTURE.md), not more inline markup.
 - Proxy mode forwards `/api/*` only, without credentials. Don't widen it.
+- Native mode: `/api/*` is `src/routes/native.js`; database calls go through `src/lib/live.js` (SECURITY DEFINER functions with the Worker secret, never the service key in a browser path); emails through `src/lib/mail.js`; payments through `src/lib/payments.js`. Prices and paid status come from the database only.
 - Security: pages this repo renders get the enforced CSP; never log edit tokens or personal data; validate all input on the server.
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. Routing and handle reservation follow automatically.
 
 ## Commands
-`npm test` (build + all suites) · `npm run dev` (http://localhost:8787) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright) · `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs` (order flow end to end at 390 × 844 with a mocked backend: claim, link checks, order, done screen) · `BASE=http://127.0.0.1:8787 node test/e2e/production.mjs` (production E2E: lifecycle, preview and card actions, edit link, customers A/B authorization, server-side activation, failures, security; real SQL in PGlite; report in `test/e2e/report/`; payments listed as not tested until they're integrated)
+`npm test` (build + all suites) · `npm run dev` (http://localhost:8787, native mode on the staging database) · `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs` (browser smoke test, needs Playwright) · `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs` (order flow end to end at 390 × 844 with a mocked backend: claim, link checks, order, done screen) · `BASE=http://127.0.0.1:8787 node test/e2e/production.mjs` (production E2E: lifecycle, preview and card actions, edit link, customers A/B authorization, server-side activation, failures, security; real SQL in PGlite; report in `test/e2e/report/`; payments listed as not tested until they're integrated. Start `wrangler dev` with the vars in README "Testing" for native mode, or with `--var MODE:proxy` for the rollback mode)

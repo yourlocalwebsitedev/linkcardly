@@ -21,10 +21,11 @@ run_worker_first = true
 [vars]
 SITE_URL = "https://linkcardly.com"
 
-# Proxy mode (today): Linkcardly serves its own pages and forwards /api/* to the old NexBizRise worker, which
-# still does ordering, uploads, edits and payments with its own keys. The values below are Linkcardly's own
-# and are only used once MODE = "native" (cutover day, see docs/ARCHITECTURE.md). Nothing here is secret.
-MODE = "proxy"
+# Native mode: this Worker is the whole back office (orders, photos, edits, emails, payments) on Linkcardly's own
+# services below. Nothing here is secret.
+# Emergency rollback only: MODE = "proxy" sends /api/* to the old NexBizRise worker at LEGACY_ORIGIN again.
+# Remove LEGACY_ORIGIN (and proxy mode) once NexBizRise is retired.
+MODE = "native"
 LEGACY_ORIGIN = "https://card.nexbizrise.com"
 LEGACY_HOSTS = ""
 
@@ -37,11 +38,20 @@ TURNSTILE_SITE_KEY = "0x4AAAAAAFNHrxM63OpIlzd5"
 IMG_BASE = "https://img.linkcardly.com"
 # Cloudflare account, for reading visit counts (Analytics Engine) with CF_ANALYTICS_TOKEN.
 CF_ACCOUNT_ID = "56bb7259aae8956fc8e82826ee95e7cb"
+STATS_DATASET = "linkcardly_stats"
+# Emails (Resend, RESEND_API_KEY): sent from MAIL_FROM; replies, new-order and enquiry emails go to ADMIN_EMAIL.
+MAIL_FROM = "Linkcardly <hello@linkcardly.com>"
+ADMIN_EMAIL = "hello@linkcardly.com"
 
 # Secrets (set in the dashboard or with `npx wrangler secret put <NAME>`, never in this file):
-#   SUPABASE_SERVICE_KEY  WORKER_SECRET  CRON_KEY  TURNSTILE_SECRET  CF_ANALYTICS_TOKEN
-#   later: RESEND_API_KEY  RAZORPAY_KEY_ID  RAZORPAY_KEY_SECRET  RAZORPAY_WEBHOOK_SECRET
-# Production has all five of the first line (set 2026-10-03).
+#   SUPABASE_SERVICE_KEY  WORKER_SECRET  CRON_KEY  TURNSTILE_SECRET  CF_ANALYTICS_TOKEN  RESEND_API_KEY
+#   later: RAZORPAY_KEY_ID  RAZORPAY_KEY_SECRET  RAZORPAY_WEBHOOK_SECRET  (STRIPE_SECRET_KEY  STRIPE_WEBHOOK_SECRET)
+# Production has all six of the first line (set 2026-10-03).
+
+# Daily job at 03:30 UTC (09:00 India): renewal reminders. It also queries the database every day, which keeps a
+# Supabase Free project from pausing for inactivity. Runs in both modes (src/routes/native.js `scheduled`).
+[triggers]
+crons = ["30 3 * * *"]
 
 # Card photos and visit counts.
 [[r2_buckets]]
@@ -66,7 +76,8 @@ name = "linkcardly-staging"
 
 [env.staging.vars]
 SITE_URL = "https://linkcardly-staging.yourlocalwebsitedev.workers.dev"
-MODE = "proxy"
+# Staging runs the native API (its own database, bucket, widget, emails) so it can be tested before cutover.
+MODE = "native"
 LEGACY_ORIGIN = "https://card.nexbizrise.com"
 LEGACY_HOSTS = ""
 SUPABASE_URL = "https://ctzoyorugnybzvkoyvwj.supabase.co"
@@ -74,6 +85,12 @@ SUPABASE_ANON_KEY = "sb_publishable_EYwRSCPgTjV7FX6WOrmzDg_PRbMTNSY"
 TURNSTILE_SITE_KEY = "0x4AAAAAAFNHwEXiZ92pCaRo"
 IMG_BASE = "https://img-staging.linkcardly.com"
 CF_ACCOUNT_ID = "56bb7259aae8956fc8e82826ee95e7cb"
+STATS_DATASET = "linkcardly_stats_staging"
+MAIL_FROM = "Linkcardly staging <hello@linkcardly.com>"
+ADMIN_EMAIL = "hello@linkcardly.com"
+
+[env.staging.triggers]
+crons = ["30 3 * * *"]
 
 [[env.staging.r2_buckets]]
 binding = "PHOTOS"
@@ -101,6 +118,7 @@ SUPABASE_ANON_KEY = "sb_publishable_EYwRSCPgTjV7FX6WOrmzDg_PRbMTNSY"
 TURNSTILE_SITE_KEY = "0x4AAAAAAFNHwEXiZ92pCaRo"
 IMG_BASE = "https://img-staging.linkcardly.com"
 CF_ACCOUNT_ID = "56bb7259aae8956fc8e82826ee95e7cb"
+STATS_DATASET = "linkcardly_stats_staging"
 
 [[previews.ratelimits]]
 name = "RATE_LIMITER"

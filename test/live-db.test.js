@@ -30,6 +30,8 @@ const pay = no => db.query(`update orders set pay_status = 'paid', paid_at = now
 
 before(async () => {
   db = await createLiveDb();
+  // Both live projects were built before later changes, so updating them means running these two again.
+  await db.exec(await live('ALL-IN-ONE.sql')); // safe to run again
   await db.exec(await live('linkcardly.sql')); // safe to run again
 });
 
@@ -314,4 +316,61 @@ test('anonymous visitors cannot read the cards table or the admins list (only th
   await assert.rejects(as('anon', 'select * from public.cards limit 1'), /permission denied/);
   await assert.rejects(as('anon', 'select * from public.admins limit 1'), /permission denied/);
   assert.ok(Array.isArray(await as('anon', 'select slug from public.public_cards limit 1')));
+});
+
+test('photos: only Linkcardly R2 addresses (img / img-staging, p/<24 hex>) are kept; anything else is dropped', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  const ok = 'https://img.linkcardly.com/p/0123456789abcdef01234567.webp';
+  const okJpg = 'https://img-staging.linkcardly.com/p/0123456789abcdef01234567.jpg';
+  for (const [u, jpg, want] of [
+    [ok, false, true], [okJpg, true, true], [ok, true, false],
+    ['https://img.nexbizrise.com/p/0123456789abcdef01234567.webp', false, false],
+    ['https://img.linkcardly.com.evil.com/p/0123456789abcdef01234567.webp', false, false],
+    ['https://img.linkcardly.com/p/../x.webp', false, false], ['javascript:alert(1)', false, false], [null, false, false]
+  ]) assert.equal((await one(`select public.media_url_ok($1, $2) as ok`, [u, jpg])).ok, want, String(u));
+  const r = await rpc('anon', 'place_order', [order({ customer_email: 'photo@example.com', card: { slug: 'photome', first_name: 'P', phone: '9812366666',
+    photo_url: 'https://evil.example.com/p.webp', extras: { og_image: 'https://evil.example.com/o.jpg' } } })]);
+  let c = await one(`select photo_url, extras->>'og_image' as og from cards where slug = 'photome'`);
+  assert.deepEqual([c.photo_url, c.og], ['', ''], 'foreign addresses are dropped on order');
+  await rpc('anon', 'update_card_by_token', [r.edit_token, { first_name: 'P', phone: '9812366666', photo_url: ok, extras: { og_image: okJpg } }]);
+  c = await one(`select photo_url, extras->>'og_image' as og from cards where slug = 'photome'`);
+  assert.deepEqual([c.photo_url, c.og], [ok, okJpg], 'own R2 addresses are kept on edit');
+});
+
+test('refunds through the Worker: worker only, paid → refunded once, card goes offline', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  const secret = 'r'.repeat(32);
+  await db.query(`insert into app_secrets values ('worker', $1) on conflict (key) do update set value = excluded.value`, [secret]);
+  const worker = { 'x-nbr-secret': secret, 'cf-connecting-ip': '198.51.100.2' };
+  const call = (h, no) => anonWithHeaders(h, `select public.mark_order_refunded($1, 'razorpay', 'rfnd_1') as r`, [no]).then(r => r[0].r);
+  try {
+    const o = await anonWithHeaders(worker, `select public.place_order($1) as r`, [order({ card: { slug: 'refund2', first_name: 'R', phone: '9812377777' } })]).then(r => r[0].r);
+    await assert.rejects(call({ 'cf-connecting-ip': '198.51.100.2' }, o.order_no), /not allowed/);
+    assert.equal((await call(worker, o.order_no)).changed, false, 'an unpaid order is not marked refunded');
+    await anonWithHeaders(worker, `select public.mark_order_paid($1, 'razorpay', 'pay_2', $2, 'INR')`, [o.order_no, Math.round(Number(o.total) * 100)]);
+    assert.equal((await one(`select active from cards where slug = 'refund2'`)).active, true);
+    const first = await call(worker, o.order_no);
+    assert.equal(first.changed, true); assert.equal(first.customer_email, 'cust@example.com'); assert.equal(first.slug, 'refund2');
+    assert.equal((await call(worker, o.order_no)).changed, false, 'a replayed refund webhook changes nothing');
+    const row = await one(`select pay_status, notes from orders where order_no = $1`, [o.order_no]);
+    assert.equal(row.pay_status, 'refunded'); assert.match(row.notes, /Refunded via razorpay rfnd_1/);
+    assert.equal((await one(`select active from cards where slug = 'refund2'`)).active, false);
+    await assert.rejects(call(worker, 'NBR-NOPE00'), /order not found/);
+  } finally { await db.exec(`delete from app_secrets where key = 'worker'`); }
+});
+
+test('contact form: phone optional, but checked when given', async () => {
+  await db.exec('delete from rate_hits'); // each test starts with fresh rate limits
+  const lead = over => ({ name: 'Asha', business_name: 'Asha Co', email: 'asha@example.com', message: 'We need cards for 20 people.', ...over });
+  assert.equal((await rpc('anon', 'submit_site_lead', [lead()])).ok, true);
+  await assert.rejects(rpc('anon', 'submit_site_lead', [lead({ email: 'asha2@example.com', phone: '123' })]), /invalid phone/);
+  assert.equal((await rpc('anon', 'submit_site_lead', [lead({ email: 'asha3@example.com', phone: '+91 98123 88888' })])).ok, true);
+  await assert.rejects(rpc('anon', 'submit_site_lead', [lead({ email: 'bad' })]), /invalid email/);
+  await assert.rejects(rpc('anon', 'submit_site_lead', [lead({ email: 'asha4@example.com', message: 'hi' })]), /missing fields/);
+});
+
+test('verify.sql runs, and its native API check passes once both files are applied', async () => {
+  const rows = (await db.query(await live('verify.sql'))).rows;
+  assert.equal(rows.length, 17);
+  assert.equal(rows.find(r => r.check_name.startsWith('17')).status, 'PASS');
 });

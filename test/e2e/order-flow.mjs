@@ -27,13 +27,17 @@ async function newPage(taken) {
     const slug = JSON.parse(route.request().postData() || '{}').p_slug || '';
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ slug, available: !state.taken.has(slug) }) });
   });
-  await page.route('**/rest/v1/rpc/place_order', route => {
-    const { payload } = JSON.parse(route.request().postData() || '{}');
+  // The order goes to the database directly (proxy mode) or through the Worker's /api/order (native mode,
+  // body { ts, body: { payload } }); both are answered the same way here.
+  const placeOrder = route => {
+    const sent = JSON.parse(route.request().postData() || '{}'), payload = sent.payload || (sent.body && sent.body.payload) || {};
     // The database refuses a claimed name someone else got first (supabase/live/partners.sql).
     if (payload.strict_slug === 'true' && state.serverTaken.has(payload.card.slug)) return route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: 'link taken' }) });
     state.orders.push(payload);
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ slug: payload.card.slug, order_no: 'LC-E2E001', public_id: 'nbr_e2e001', edit_token: TOKEN, pay_status: 'paid', total: payload.total }) });
-  });
+  };
+  await page.route('**/rest/v1/rpc/place_order', placeOrder);
+  await page.route('**/api/order', placeOrder);
   await page.route(/fonts\.(googleapis|gstatic)\.com|challenges\.cloudflare\.com/, r => r.abort());
   return { page, state, ctx };
 }

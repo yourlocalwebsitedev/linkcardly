@@ -6,8 +6,12 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      staging:
+        description: Deploy this branch to staging after the checks pass
+        type: boolean
+        default: false
       deploy:
-        description: Deploy to production after the checks pass
+        description: Deploy to production after the checks pass (main only)
         type: boolean
         default: false
 
@@ -35,11 +39,12 @@ jobs:
           npx wrangler deploy --dry-run --outdir dist
           npx wrangler deploy --dry-run --env staging --outdir dist-staging
 
-  # Every push to main goes to staging. Needs the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
-  # repository secrets (token scope: Workers Scripts Edit); skipped until they exist.
+  # Every push to main goes to staging, and any branch can be sent there by hand (Actions → CI → Run
+  # workflow → pick the branch → tick "staging"). Needs the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
+  # repository secrets (token: "Edit Cloudflare Workers"); skipped until they exist.
   staging:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.staging)
     runs-on: ubuntu-latest
     environment: staging
     env:

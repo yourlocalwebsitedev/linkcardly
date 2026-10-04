@@ -19,14 +19,15 @@ export const errorPage = (status = 503) => new Response(`<!doctype html><html la
 // Content-Security-Policy for pages this repo renders (marketing pages, native card page).
 // The vendored app (public/app) and proxied responses are excluded: they use inline scripts,
 // unpkg, Babel and payment SDKs, and are kept identical to NexBizRise.
-export const CSP = [
+// `db` is the one database origin the browser may call in this environment (src/routes/app-config.js).
+export const CSP = db => [
   "default-src 'self'",
   "script-src 'self' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https:",
   "media-src 'self' https:",
-  "connect-src 'self' https://*.supabase.co",
+  `connect-src 'self' ${db}`,
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
@@ -37,14 +38,14 @@ export const CSP = [
 // Report-only policy for the vendored app (/create, /app, proxy-mode card and edit links), DEF-42.
 // It needs inline scripts and eval (in-browser Babel), Turnstile, Razorpay and Supabase. Violations
 // are logged by /api/csp-report; once the logs are quiet, tighten it and switch to enforcing.
-export const APP_CSP = [
+export const APP_CSP = db => [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://challenges.cloudflare.com https://checkout.razorpay.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   "media-src 'self' data: blob: https:",
-  "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://lumberjack.razorpay.com",
+  `connect-src 'self' ${db} https://api.razorpay.com https://lumberjack.razorpay.com`,
   "frame-src 'self' https://challenges.cloudflare.com https://api.razorpay.com https://checkout.razorpay.com",
   "worker-src 'self' blob:",
   "frame-ancestors 'self'",
@@ -55,7 +56,7 @@ export const APP_CSP = [
 ].join('; ');
 
 // Adds security headers. Responses from fetch/ASSETS have immutable headers, so copy first.
-export function secure(res, { csp = false, appCsp = false, editLink = false } = {}) {
+export function secure(res, { csp = false, appCsp = false, editLink = false, db } = {}) {
   const out = new Response(res.body, res);
   const h = out.headers;
   h.set('X-Content-Type-Options', 'nosniff');
@@ -64,8 +65,8 @@ export function secure(res, { csp = false, appCsp = false, editLink = false } = 
   h.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com")');
   if (!h.has('X-Frame-Options')) h.set('X-Frame-Options', 'SAMEORIGIN');
   const html = /text\/html/.test(h.get('Content-Type') || '');
-  if (csp && html) h.set('Content-Security-Policy', CSP);
-  if (appCsp && html) h.set('Content-Security-Policy-Report-Only', APP_CSP);
+  if (csp && html) h.set('Content-Security-Policy', CSP(db));
+  if (appCsp && html) h.set('Content-Security-Policy-Report-Only', APP_CSP(db));
   if (editLink) h.set('Cache-Control', 'private, no-store');
   return out;
 }

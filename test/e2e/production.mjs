@@ -7,15 +7,22 @@
 // failure (offline, 500, slow network) say so. Test mode is on, so a placed order is marked paid by the database
 // (provider 'test'), the same as production with test mode on.
 //   BASE=http://127.0.0.1:8787 node test/e2e/production.mjs
+// LOCAL NATIVE: the same, with the Worker running the native API (MODE = "native"). The Worker reaches the same PGlite
+// database over HTTP on port 54329 (started here), with a known worker secret, and keeps photos in its local R2:
+//   npx wrangler dev --port 8787 --ip 127.0.0.1 --var MODE:native --var SUPABASE_URL:http://127.0.0.1:54329 \
+//     --var SUPABASE_ANON_KEY:local --var TURNSTILE_SITE_KEY: --var WORKER_SECRET:e2e-worker-secret-0123456789abcdef \
+//     --var SERVE_IMG:1 --var CRON_KEY:e2e-cron-key
+//   BASE=http://127.0.0.1:8787 node test/e2e/production.mjs
 // STAGING: a deployed Worker and a real Supabase project (one that is NOT production, with test mode on). Checks that
 // need direct database access are reported as Blocked.
-//   STAGING=1 BASE=https://staging.example.workers.dev node test/e2e/production.mjs
+//   STAGING=1 BASE=https://linkcardly-staging.yourlocalwebsitedev.workers.dev node test/e2e/production.mjs
 //
 // Payments are not integrated yet (PAYMENTS_ON = false), so every payment and webhook scenario is listed as
 // Not tested. Add them here when payments are switched on (docs/ARCHITECTURE.md, "Known debt").
 import { chromium, devices } from 'playwright';
 import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { createServer } from 'node:http';
 import { createLiveDb } from '../support/live-db.mjs';
 import { createPostgrest } from '../support/postgrest.mjs';
 
@@ -23,9 +30,9 @@ const BASE = (process.env.BASE || 'http://127.0.0.1:8787').replace(/\/$/, '');
 const STAGING = !!process.env.STAGING;
 const OUT = new URL('./report/', import.meta.url);
 const VIEW = { width: 390, height: 844 };
-const orderHtml = await readFile(new URL('../../public/app/order.html', import.meta.url), 'utf8');
-const SUPABASE_URL = orderHtml.match(/const SUPABASE_URL = '([^']+)'/)[1];
-const SUPABASE_KEY = orderHtml.match(/const SUPABASE_KEY = '([^']+)'/)[1];
+// The database the app under test talks to: the Worker's /app/config.js (native: Linkcardly's own; proxy: NexBizRise).
+const APP_CONFIG = await fetch(BASE + '/app/config.js').then(r => r.text()).then(t => { const w = {}; new Function('window', t)(w); return w.LC_CONFIG; });
+const { supabaseUrl: SUPABASE_URL, supabaseKey: SUPABASE_KEY, native: NATIVE } = APP_CONFIG;
 const RUN = Date.now().toString(36).slice(-5); // keeps names unique when run against a shared staging database
 
 // ---------- results ----------
@@ -57,6 +64,20 @@ const finding = (severity, area, text) => findings.push({ severity, area, text }
 // ---------- backend ----------
 let db = null, api = null;
 if (!STAGING) { db = await createLiveDb(); await db.exec(`insert into public.app_flags (key) values ('test_mode')`); api = createPostgrest(db); }
+// Local native run: the Worker calls the database itself, so serve the same PGlite database over HTTP at the
+// address /app/config.js gave, and give it the worker secret the dev server was started with.
+let dbServer = null;
+if (api && NATIVE) {
+  const u = new URL(SUPABASE_URL);
+  if (!/^(127\.0\.0\.1|localhost)$/.test(u.hostname)) throw new Error('local native run: start wrangler dev with SUPABASE_URL=http://127.0.0.1:54329 (see the top of this file)');
+  await db.query(`insert into public.app_secrets values ('worker', $1), ('cron', $2) on conflict (key) do update set value = excluded.value`, [process.env.E2E_WORKER_SECRET || 'e2e-worker-secret-0123456789abcdef', process.env.E2E_CRON_KEY || 'e2e-cron-key']);
+  dbServer = createServer(async (req, res) => {
+    const chunks = []; for await (const c of req) chunks.push(c);
+    const r = await api.handle({ method: req.method, url: SUPABASE_URL.replace(/\/$/, '') + req.url, headers: { ...req.headers, 'x-forwarded-for': '127.0.0.1' }, body: chunks.length ? Buffer.concat(chunks).toString() : undefined });
+    res.writeHead(r.status, { 'Content-Type': 'application/json' }); res.end(r.body == null ? '' : JSON.stringify(r.body));
+  });
+  await new Promise(ok => dbServer.listen(Number(u.port), u.hostname, ok));
+}
 const needDb = () => { if (!db) throw new Blocked('needs direct database access (local run only)'); return db; };
 const sql = async (q, p) => (await needDb().query(q, p)).rows;
 const testMode = on => sql(on ? `insert into public.app_flags (key) values ('test_mode') on conflict do nothing` : `delete from public.app_flags where key = 'test_mode'`);
@@ -71,6 +92,16 @@ async function rest(method, path, body, ip = '198.51.100.7', extra = {}) {
   return { status: r.status, body: j };
 }
 const rpc = (fn, args, ip, extra) => rest('POST', 'rpc/' + fn, args, ip, extra);
+// Places an order the way the order page does: through the Worker's /api/order in native mode (the database refuses
+// direct calls there), straight to the database in proxy mode.
+async function placeOrder(payload, ip) {
+  if (!NATIVE) return rpc('place_order', { payload }, ip);
+  const r = await fetch(BASE + '/api/order', { method: 'POST', headers: { Origin: BASE, 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: '', body: { payload } }) });
+  const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (_) { j = t; }
+  return { status: r.status, body: j };
+}
+// What the order page calls when it places an order (for routes that fail or slow it down).
+const ORDER_ROUTE = NATIVE ? '**/api/order' : '**/rest/v1/rpc/place_order';
 const orderPayload = (slug, over = {}) => ({ mode: 'builder', plan: 'basic', region: 'US', customer_name: 'Test Person', customer_email: `${slug}@example.com`, customer_phone: '3125550100', strict_slug: 'true',
   card: { slug, first_name: 'Test', last_name: 'Person', phone: '+13125550100', email: `${slug}@example.com` }, ...over });
 
@@ -91,6 +122,11 @@ async function customer(ip, opts = {}) {
     const r = route.request();
     const res = await api.handle({ method: r.method(), url: r.url(), headers: { ...r.headers(), 'x-forwarded-for': ip }, body: r.postData() });
     await route.fulfill({ status: res.status, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: res.body == null ? '' : JSON.stringify(res.body) });
+  });
+  // Local native run: photos are in the dev server's local R2, served at /img/p/* (SERVE_IMG).
+  if (api && NATIVE) await ctx.route(/^https:\/\/img(-staging)?\.linkcardly\.com\/p\//, async route => {
+    const r = await fetch(BASE + '/img' + new URL(route.request().url()).pathname);
+    await route.fulfill({ status: r.status, contentType: r.headers.get('content-type') || 'application/octet-stream', body: Buffer.from(await r.arrayBuffer()) });
   });
   // Third-party fonts and the payment/bot-check scripts are not part of these tests (recorded in `offsite`).
   await ctx.route(/fonts\.(googleapis|gstatic)\.com|challenges\.cloudflare\.com|checkout\.razorpay\.com|js\.stripe\.com/, r => r.abort());
@@ -242,7 +278,8 @@ try {
     assert.equal(r[0].pay_status, 'paid'); assert.equal(r[0].pay_provider, 'test'); assert.equal(r[0].active, true);
     assert.equal(r[0].currency, 'USD'); assert.equal(r[0].total, 49, 'price comes from the server');
     A.pid = r[0].public_id;
-    if (!r[0].photo_url) finding('High', 'Lifecycle', 'The photo the customer uploaded is not on the card. Locally this is expected: photos are stored through /api/upload on the deployed Worker, and the database only accepts photo links from its own storage. In production the same upload goes through the proxy to the old NexBizRise worker, whose origin check was parked in the audit, so an order with a photo may fail there ("Your photo could not be uploaded"). Must be checked on staging before launch.');
+    if (NATIVE) assert.match(r[0].photo_url || '', /^https:\/\/img(-staging)?\.linkcardly\.com\/p\/[a-f0-9]{24}\./, 'photo stored in R2 through /api/upload');
+    else if (!r[0].photo_url) finding('High', 'Lifecycle', 'The photo the customer uploaded is not on the card. Locally this is expected: photos are stored through /api/upload on the deployed Worker, and the database only accepts photo links from its own storage. In production the same upload goes through the proxy to the old NexBizRise worker, whose origin check was parked in the audit, so an order with a photo may fail there ("Your photo could not be uploaded"). Must be checked on staging before launch.');
     return `order ${A.orderNo}, ${r[0].currency} ${r[0].total}, provider ${r[0].pay_provider}`;
   }, { needs: [() => ok.done] });
   await check('Server-side state', 'Exactly one order was created for the customer', async () => { assert.equal(await orderCount(A.email), 1); }, { needs: [() => ok.done] });
@@ -323,7 +360,8 @@ try {
     await a.page.waitForFunction(() => document.body.innerText.includes('Head of Brand'), null, { timeout: 10000 });
   }, { page: pa, needs: [() => ok.edit] });
   await check('Edit link', 'Changing the photo from the edit link', async () => {
-    if (!STAGING) throw new Blocked('photo storage needs /api/upload on the deployed Worker (staging run)');
+    if (!STAGING && !NATIVE) throw new Blocked('photo storage needs /api/upload on the Worker (native or staging run)');
+    throw new NotTested('changing the photo from the edit link is not automated yet; the upload itself is covered by the order above');
   });
   await check('Edit link', 'The edit token is not sent to other websites (Referer)', async () => {
     const leaks = a.offsite.filter(x => A.token && (x.referer.includes(A.token) || x.url.includes(A.token)));
@@ -411,7 +449,7 @@ try {
   ok.off = await check('Server-side state', 'With test mode off, an order stays UNPAID and the card stays offline, whatever the browser sends', async () => {
     await testMode(false); await resetLimits();
     const slug = 'free' + RUN;
-    const r = await rpc('place_order', { payload: orderPayload(slug, { pay_status: 'paid', paid: true, total: 0, price: 0, tax: 0, discount: 999, status: 'paid', pay_provider: 'test', card: { ...orderPayload(slug).card, active: true, plan: 'motion', renewal: '2099-01-01' } }) }, '198.51.100.30');
+    const r = await placeOrder(orderPayload(slug, { pay_status: 'paid', paid: true, total: 0, price: 0, tax: 0, discount: 999, status: 'paid', pay_provider: 'test', card: { ...orderPayload(slug).card, active: true, plan: 'motion', renewal: '2099-01-01' } }), '198.51.100.30');
     assert.equal(r.status, 200, JSON.stringify(r.body));
     assert.equal(r.body.pay_status, 'unpaid');
     assert.equal(Number(r.body.total), 49, 'server price, not the browser\'s');
@@ -435,12 +473,15 @@ try {
     const c = await customer('203.0.113.31');
     await orderViaUrl(c, { ...B, handle: 'unpaid' + RUN, email: `unpaid.${RUN}@example.com` });
     await c.page.locator('.lc-cta').click();
-    await c.page.waitForFunction(() => /couldn.t finish your order|couldn.t place your order/i.test(document.body.innerText), null, { timeout: 15000 });
+    // Proxy mode: an error. Native mode: the Worker saved the order without a checkout (no payment keys), so the
+    // page says a payment link will be emailed. Either way, no "your card is live" celebration.
+    const expected = NATIVE ? /order is saved.*payment link/is : /couldn.t finish your order|couldn.t place your order/i;
+    await c.page.waitForFunction(re => new RegExp(re[0], re[1]).test(document.body.innerText), [expected.source, expected.flags], { timeout: 15000 });
     assert.equal(await c.page.locator('.lcd').count(), 0);
     await c.ctx.close();
   }, { needs: [() => ok.off] });
   await check('Server-side state', 'A made-up coupon is refused by the server', async () => {
-    const r = await rpc('place_order', { payload: orderPayload('coupon' + RUN, { coupon: 'FREE100' }) }, '198.51.100.32');
+    const r = await placeOrder(orderPayload('coupon' + RUN, { coupon: 'FREE100' }), '198.51.100.32');
     assert.ok(r.status >= 400 && /coupon/i.test(r.body.message || ''), JSON.stringify(r.body));
   });
   if (db) { await testMode(true); await resetLimits(); }
@@ -460,7 +501,13 @@ try {
     const d = { ...B, handle: 'lost' + RUN, email: `lost.${RUN}@example.com` }, c = await customer('203.0.113.42');
     await orderViaUrl(c, d);
     let first = true;
-    await c.page.route('**/rest/v1/rpc/place_order', async route => { if (!first) return route.fallback(); first = false; const r = route.request(); await api.handle({ method: 'POST', url: r.url(), headers: { ...r.headers(), 'x-forwarded-for': c.ip }, body: r.postData() }); await route.abort('connectionreset'); });
+    await c.page.route(ORDER_ROUTE, async route => {
+      if (!first) return route.fallback(); first = false;
+      const r = route.request();
+      if (NATIVE) await route.fetch(); // the Worker saves the order...
+      else await api.handle({ method: 'POST', url: r.url(), headers: { ...r.headers(), 'x-forwarded-for': c.ip }, body: r.postData() });
+      await route.abort('connectionreset'); // ...and the answer never arrives
+    });
     await c.page.locator('.lc-cta').click();
     await c.page.waitForFunction(() => /couldn.t place your order/i.test(document.body.innerText), null, { timeout: 10000 });
     await c.page.locator('.lc-cta').click();
@@ -488,7 +535,7 @@ try {
   await check('Robustness', 'Server error (500) at Place order: friendly message, no crash (simulated)', async () => {
     const d = { ...B, handle: 'err' + RUN, email: `err.${RUN}@example.com` }, c = await customer('203.0.113.44');
     await orderViaUrl(c, d);
-    await c.page.route('**/rest/v1/rpc/place_order', r => r.fulfill({ status: 500, contentType: 'application/json', body: '{"message":"boom"}' }));
+    await c.page.route(ORDER_ROUTE, r => r.fulfill({ status: 500, contentType: 'application/json', body: '{"message":"boom"}' }));
     await c.page.locator('.lc-cta').click();
     await c.page.waitForFunction(() => /couldn.t place your order/i.test(document.body.innerText), null, { timeout: 10000 });
     assert.ok(!(await c.page.content()).includes('boom'), 'raw server message shown');
@@ -498,7 +545,7 @@ try {
   await check('Robustness', 'Slow network (4 s): button shows it is working and extra taps do nothing', async () => {
     const d = { ...B, handle: 'slow' + RUN, email: `slow.${RUN}@example.com` }, c = await customer('203.0.113.45');
     await orderViaUrl(c, d);
-    await c.page.route('**/rest/v1/rpc/place_order', async r => { await new Promise(res => setTimeout(res, 4000)); await r.fallback(); });
+    await c.page.route(ORDER_ROUTE, async r => { await new Promise(res => setTimeout(res, 4000)); await r.fallback(); });
     await c.page.locator('.lc-cta').click();
     await c.page.waitForTimeout(600);
     const busy = await c.page.locator('.lc-cta').evaluate(b => b.disabled || b.getAttribute('aria-busy') === 'true' || /placing|working|wait|…/i.test(b.innerText));
@@ -537,13 +584,16 @@ try {
   await check('Robustness', 'Card page: database down shows a message, slow network still loads', async () => {
     if (!ok.pub) throw new Blocked('no live card');
     const c = await customer('203.0.113.48');
-    await c.page.route('**/rest/v1/public_cards**', r => r.fulfill({ status: 500, body: '{}' }));
+    // The card reads /api/card (native) and falls back to the database view, so "down" fails both.
+    const reads = NATIVE ? ['**/api/card/**', '**/rest/v1/public_cards**'] : ['**/rest/v1/public_cards**'];
+    for (const u of reads) await c.page.route(u, r => r.fulfill({ status: 500, body: '{}' }));
     await c.page.goto(`${BASE}/${A.handle}`);
     await c.page.waitForTimeout(2500);
     const t = await c.page.evaluate(() => document.body.innerText.trim());
-    assert.ok(t.length > 20 && !t.includes('Ryan Collins'), 'blank page');
-    await c.page.unroute('**/rest/v1/public_cards**');
-    await c.page.route('**/rest/v1/public_cards**', async r => { await new Promise(res => setTimeout(res, 3000)); await r.fallback(); });
+    assert.ok(t.length > 20, 'blank page');
+    assert.ok(!t.includes('Ryan Collins'), 'the card showed although its data could not be read');
+    for (const u of reads) await c.page.unroute(u);
+    await c.page.route(reads[0], async r => { await new Promise(res => setTimeout(res, 3000)); await r.fallback(); });
     await c.page.goto(`${BASE}/${A.handle}`);
     await c.page.waitForFunction(() => document.body.innerText.includes('Ryan Collins'), null, { timeout: 12000 });
     await c.ctx.close();
@@ -567,10 +617,10 @@ try {
   });
   await check('Security', 'Stored XSS: script in name, job, bio, website and social links does not run on the card', async () => {
     const slug = 'xss' + RUN, x = n => `<img src=x onerror="window.__xss=${n}">`;
-    const r = await rpc('place_order', { payload: orderPayload(slug, { region: 'IN', customer_phone: '9876500000', card: {
+    const r = await placeOrder(orderPayload(slug, { region: 'IN', customer_phone: '9876500000', card: {
       slug, first_name: x(1), last_name: '<script>window.__xss=2</script>', title: '"><svg onload=window.__xss=3>', company: x(4), bio: '</div><script>window.__xss=5</script>' + x(6),
       phone: '+919876500000', email: 'x@example.com', website: 'javascript:window.__xss=7', linkedin: 'javascript:window.__xss=8', instagram: 'javascript:window.__xss=9',
-      photo_url: 'javascript:window.__xss=10', extras: { booking_url: 'javascript:window.__xss=11', listings_url: 'javascript:window.__xss=12', meeting_url: 'javascript:window.__xss=13', facebook: 'javascript:window.__xss=14', x_url: 'javascript:window.__xss=15' } } }) }, '198.51.100.40');
+      photo_url: 'javascript:window.__xss=10', extras: { booking_url: 'javascript:window.__xss=11', listings_url: 'javascript:window.__xss=12', meeting_url: 'javascript:window.__xss=13', facebook: 'javascript:window.__xss=14', x_url: 'javascript:window.__xss=15' } } }), '198.51.100.40');
     if (r.status >= 400) return 'server refused the payload: ' + (r.body.message || r.status);
     const c = await customer('203.0.113.50');
     await c.page.goto(`${BASE}/${r.body.slug}`);
@@ -591,6 +641,7 @@ try {
   });
   await check('Security', 'No secret keys in anything the browser downloads', async () => {
     const urls = new Set(['/', '/create', '/app/order.html', '/app/card.html', '/app/support.js', '/assets/js/site.js', '/assets/js/rules.js', '/app/vendor/resources.js', '/app/estate-styles.js', '/app/scene-styles.js']);
+    const orderHtml = await readFile(new URL('../../public/app/order.html', import.meta.url), 'utf8');
     for (const m of orderHtml.matchAll(/src="(\/app\/components\/[^"]+\.js)"/g)) urls.add(m[1]);
     const bad = [];
     const pats = [/sk_(live|test)_[A-Za-z0-9]{10,}/, /rk_(live|test)_[A-Za-z0-9]{10,}/, /whsec_[A-Za-z0-9]{10,}/, /sb_secret_[A-Za-z0-9_-]{10,}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/, /service_role/, /SUPABASE_SERVICE_KEY\s*[:=]\s*['"][^'"]+/, /NBR_WORKER_SECRET\s*[:=]\s*['"][^'"]+/, /RAZORPAY_KEY_SECRET\s*[:=]\s*['"][^'"]+/];
@@ -615,9 +666,16 @@ try {
   });
   await check('Security', 'Rate limit: one address can place at most 20 orders an hour, and a forged x-nbr-ip header does not get around it', async () => {
     needDb(); await resetLimits();
+    if (NATIVE) {
+      // Native: the database refuses direct orders outright (bot gate: only the Worker, with its secret, may call).
+      // Test mode skips the bot gate on purpose, so this part runs with it off.
+      await testMode(false);
+      const d = await rpc('place_order', { payload: orderPayload(`direct${RUN}`) }, '198.51.100.60', { 'x-nbr-ip': '10.0.0.1' }).finally(() => testMode(true));
+      assert.ok(d.status >= 400 && /bot check/i.test(d.body.message || ''), 'a direct order with a forged x-nbr-ip was accepted: ' + JSON.stringify(d.body));
+    }
     let limited = 0;
     for (let i = 0; i < 24; i++) {
-      const r = await rpc('place_order', { payload: orderPayload(`rl${i}x${RUN}`) }, '198.51.100.60', { 'x-nbr-ip': '10.0.0.' + i });
+      const r = NATIVE ? await placeOrder(orderPayload(`rl${i}x${RUN}`)) : await rpc('place_order', { payload: orderPayload(`rl${i}x${RUN}`) }, '198.51.100.60', { 'x-nbr-ip': '10.0.0.' + i });
       if (r.status >= 400 && /too many/i.test(r.body.message || '')) limited++;
     }
     await resetLimits();
@@ -625,14 +683,15 @@ try {
     return `${24 - limited} accepted, ${limited} refused`;
   });
   await check('Security', 'Database errors don\'t reveal internals to the browser', async () => {
-    const r = await rpc('place_order', { payload: { card: 'nope' } }, '198.51.100.61');
+    const r = await placeOrder({ card: 'nope' }, '198.51.100.61');
     const body = JSON.stringify(r.body);
-    if (/relation|column|function public\.|syntax|line \d+|PL\/pgSQL/i.test(body)) finding('Low', 'Security', 'With payments off the order page calls Supabase directly, so database error text (function and column names) reaches the browser. The Worker\'s cleanError() only applies to /api/*. Fine for testing; route orders through the Worker when payments go live.');
+    if (NATIVE) assert.doesNotMatch(body, /relation|column|function public\.|syntax|line \d+|PL\/pgSQL/i, 'the Worker passes database internals to the browser');
+    else if (/relation|column|function public\.|syntax|line \d+|PL\/pgSQL/i.test(body)) finding('Low', 'Security', 'With payments off the order page calls Supabase directly, so database error text (function and column names) reaches the browser. The Worker\'s cleanError() only applies to /api/*. Fine for testing; route orders through the Worker when payments go live.');
     assert.ok(r.status >= 400);
     return 'status ' + r.status + ': ' + (r.body.message || '').slice(0, 60);
   });
   notTested('Security', 'OWASP ZAP baseline scan of the deployed test environment', 'ZAP is not available in this environment and the deployed site is not reachable from here. Run: docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://<staging-url>');
-  notTested('Security', 'Production proxy: /api/* from linkcardly.com accepted by the old NexBizRise worker (origin check, worker secret)', 'Parked in the audit. Blocks photo upload, edit saves and payments in production. Needs a staging run.');
+  if (!NATIVE) notTested('Security', 'Production proxy: /api/* from linkcardly.com accepted by the old NexBizRise worker (origin check, worker secret)', 'Parked in the audit. Blocks photo upload, edit saves and payments in production. Needs a staging run.');
 
   // ======================= 8. Payments (deferred) =======================
   for (const s of ['Successful payment → order PAID → card active', 'Failed payment → order stays unpaid', 'Cancelled checkout → order stays unpaid', 'Customer closes checkout → no activation', 'Refresh after payment → no duplicate order',
@@ -646,11 +705,12 @@ try {
 } finally {
   for (const c of contexts) await c.close().catch(() => {});
   await browser.close();
+  if (dbServer) dbServer.close();
 }
 
 // ---------- report ----------
 const count = s => results.filter(r => r.status === s).length;
-const env = STAGING ? `staging: ${BASE} with the real Supabase project` : `local: ${BASE} (wrangler dev) with the live SQL in PGlite`;
+const env = (STAGING ? `staging: ${BASE} with the real Supabase project` : `local: ${BASE} (wrangler dev) with the live SQL in PGlite`) + (NATIVE ? ', native API' : ', proxy mode');
 const md = [`# Linkcardly E2E report`, '', `Run ${new Date().toISOString()} · ${env} · Chromium ${browserVersion} at 390 × 844`, '',
   `**${count('PASS')} passed · ${count('FAIL')} failed · ${count('BLOCKED')} blocked · ${count('NOT TESTED')} not tested**`, '',
   '| Area | Check | Result | Notes |', '|---|---|---|---|',

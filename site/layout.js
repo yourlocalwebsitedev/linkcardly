@@ -46,7 +46,6 @@ ${header(p)}
 ${body}</main>
 ${footer(p)}
 ${p.sticky ? stickyBar : ''}
-${p.turnstile ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}
-<script src="/assets/js/config.js"></script><script src="/assets/js/rules.js"></script><script src="/assets/js/catalogue.js"></script><script src="/assets/js/icons.js"></script><script src="/assets/js/site.js" defer></script>
+<script src="/app/config.js"></script><script src="/assets/js/rules.js"></script><script src="/assets/js/catalogue.js"></script><script src="/assets/js/icons.js"></script><script src="/assets/js/site.js" defer></script>
 </body></html>
 `;
