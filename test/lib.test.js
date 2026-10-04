@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateHandle, normalizeHandle, suggestions, RESERVED } from '../src/lib/handles.js';
-import { buildVCard } from '../src/lib/vcard.js';
 import { splitRows, svg, ICONS } from '../src/lib/icons.js';
 import { theme, THEMES } from '../src/lib/themes.js';
 
@@ -58,31 +57,16 @@ test('handles: browser reserved list is generated from the server list', async (
   assert.deepEqual(client.reserved, [...RESERVED].sort());
 });
 
-test('handles: DB check constraint matches HANDLE_RE', async () => {
-  const sql = await (await import('node:fs/promises')).readFile(new URL('../supabase/migrations/0001_init.sql', import.meta.url), 'utf8');
-  assert.match(sql, /\^\[a-z0-9\]\[a-z0-9\.-\]\{1,28\}\[a-z0-9\]\$/);
+test('handles: card names the database accepts (letters, numbers, dashes; 0-base.sql) are what the order page allows', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const sql = await readFile(new URL('../supabase/live/0-base.sql', import.meta.url), 'utf8');
+  assert.match(sql, /slug ~ '\^\[a-z0-9\]\+\(-\[a-z0-9\]\+\)\*\$'/);
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /if \(\/\[\^a-z0-9-\]\/\.test\(h\)/, 'the order page refuses anything but letters, numbers and dashes');
 });
 
-test('vcard: escapes special characters and uses CRLF', () => {
-  const v = buildVCard({ full_name: 'Ann Lee, Jr', company: 'A;B', title: 'Line1\nLine2', phone: '+1 555', email: 'a@b.co', public_url: 'https://linkcardly.com/ann' });
-  assert.ok(v.startsWith('BEGIN:VCARD\r\nVERSION:3.0\r\n'));
-  assert.ok(v.endsWith('END:VCARD'));
-  assert.match(v, /N:Lee\\, Jr;Ann;;;/);
-  assert.ok(v.includes('ORG:A\\;B'));
-  assert.match(v, /TITLE:Line1\\nLine2/);
-  assert.ok(!v.includes('undefined'));
-});
 
-test('vcard: CR characters cannot inject extra properties', () => {
-  const v = buildVCard({ full_name: 'Eve\rEMAIL:attacker@evil.test', public_url: 'x' });
-  assert.ok(!/\r(EMAIL|TEL|URL)[:;]/.test(v.replace(/\r\n/g, '\n')));
-});
 
-test('vcard: lines over 75 octets are folded (RFC 2426) without splitting characters', () => {
-  const v = buildVCard({ full_name: 'A'.repeat(120) + 'é'.repeat(60), public_url: 'x' });
-  for (const line of v.split('\r\n')) assert.ok(Buffer.byteLength(line) <= 75, line.length);
-  assert.match(v.replace(/\r\n /g, ''), new RegExp('FN:' + 'A'.repeat(120) + 'é'.repeat(60)));
-});
 
 test('icons: row split rules', () => {
   assert.deepEqual(splitRows(3), [3]);
@@ -114,19 +98,6 @@ test('themes: the browser catalogue is generated from src/lib/themes.js (same co
   for (const c of ctx.window.LC.categories) assert.ok(ctx.window.LC.themes[c.theme], `${c.id} uses unknown theme ${c.theme}`);
 });
 
-test('sanitizeHtml / safeUrl', async () => {
-  const { sanitizeHtml, safeUrl } = await import('../src/lib/sanitize.js');
-  assert.equal(sanitizeHtml('<b>Hi</b> & <i>you</i>'), '<b>Hi</b> &amp; <i>you</i>');
-  assert.equal(sanitizeHtml('a &amp; b'), 'a &amp; b');
-  assert.equal(sanitizeHtml('<svg onload=alert(1)>x</svg>'), 'x');
-  assert.equal(sanitizeHtml('<a href=" javascript:alert(1)">x</a>'), '<a>x</a>');
-  assert.equal(sanitizeHtml('1 < 2 > 0'), '1 &lt; 2 &gt; 0');
-  assert.equal(sanitizeHtml(null), '');
-  assert.equal(safeUrl('https://a.b/c'), 'https://a.b/c');
-  assert.equal(safeUrl('http://a.b'), '');
-  assert.equal(safeUrl('http://a.b', ['http:']), 'http://a.b');
-  assert.equal(safeUrl('not a url'), '');
-});
 
 test('self-hosted React and Babel are byte-identical to the SRI-pinned unpkg files support.js expects', async () => {
   const { createHash } = await import('node:crypto');

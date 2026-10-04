@@ -25,6 +25,14 @@ alter table public.cards
   add column if not exists photo_zoom numeric default 1,
   add column if not exists extras jsonb not null default '{}'::jsonb;  -- per-profession fields (brokerage, license, listings, booking, office, lead_capture…)
 
+-- Linkcardly: photo, video and link-preview addresses the database accepts. Media is uploaded through the Worker
+-- to Cloudflare R2 and served from img.linkcardly.com (img-staging.linkcardly.com on staging); any other address,
+-- including data: URLs and javascript:, is dropped. `jpg_only` is for the square link-preview image.
+create or replace function public.media_url_ok(u text, jpg_only boolean default false) returns boolean
+language sql immutable set search_path = public as $$
+  select coalesce(u, '') ~ case when jpg_only then '^https://img(-staging)?\.linkcardly\.com/p/[a-f0-9]{24}\.jpg$'
+                                else '^https://img(-staging)?\.linkcardly\.com/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' end $$;
+
 -- Permanent card IDs for QR codes (/c/nbr_xxxxxx). Never change once set, so printed QRs keep working if the name link changes.
 create or replace function public.new_public_id() returns text language plpgsql volatile set search_path = public as $$
 declare v text;
@@ -280,14 +288,13 @@ begin
   -- Business-specific fields (health, beauty, legal, trades, corporate)
   v_ex := v_ex || jsonb_build_object('meeting_url', case when v_ex->>'meeting_url' ~* '^https://[^\s<>"'']+$' then left(v_ex->>'meeting_url', 500) else '' end, 'reg_no', left(coalesce(v_ex->>'reg_no', ''), 60), 'quals', left(coalesce(v_ex->>'quals', ''), 120), 'hours', left(coalesce(v_ex->>'hours', ''), 80), 'services', left(coalesce(v_ex->>'services', ''), 300), 'practice', left(coalesce(v_ex->>'practice', ''), 200), 'service_area', left(coalesce(v_ex->>'service_area', ''), 120), 'insured', left(coalesce(v_ex->>'insured', ''), 20), 'emergency', left(coalesce(v_ex->>'emergency', ''), 20));
   -- Link-preview image (square JPG made in the browser from the photo or a video frame)
-  v_ex := v_ex || jsonb_build_object('og_image', case when coalesce(v_ex->>'og_image', '') ~ '^https://((img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}|hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+)\.jpg$' then v_ex->>'og_image' else '' end);
+  v_ex := v_ex || jsonb_build_object('og_image', case when public.media_url_ok(v_ex->>'og_image', true) then v_ex->>'og_image' else '' end);
   v_card := v_card || jsonb_build_object(
     'extras', v_ex,
     'website',   case when v_card->>'website'   ~* '^https?://[^\s<>"'']+$' then left(v_card->>'website', 500)   else '' end,
     'instagram', case when v_card->>'instagram' ~* '^https://[^\s<>"'']+$'  then left(v_card->>'instagram', 500) else '' end,
     'linkedin',  case when v_card->>'linkedin'  ~* '^https://[^\s<>"'']+$'  then left(v_card->>'linkedin', 500)  else '' end,
-    'photo_url', case when v_card->>'photo_url' ~ '^https://hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+$'
-                        or v_card->>'photo_url' ~ '^https://(img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' then v_card->>'photo_url' else '' end,
+    'photo_url', case when public.media_url_ok(v_card->>'photo_url') then v_card->>'photo_url' else '' end,
     'contact_photo_url', '',
     'email',     case when v_card->>'email' ~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then left(v_card->>'email', 200) else '' end,
     'phone',     left(regexp_replace(coalesce(v_card->>'phone',''), '[^0-9+ ()-]', '', 'g'), 30),
@@ -577,11 +584,10 @@ begin
     'meeting_url', safe_https(v_in->>'meeting_url', 500), 'reg_no', left(coalesce(v_in->>'reg_no', ''), 60), 'quals', left(coalesce(v_in->>'quals', ''), 120), 'hours', left(coalesce(v_in->>'hours', ''), 80), 'services', left(coalesce(v_in->>'services', ''), 300), 'practice', left(coalesce(v_in->>'practice', ''), 200), 'service_area', left(coalesce(v_in->>'service_area', ''), 120), 'insured', left(coalesce(v_in->>'insured', ''), 20), 'emergency', left(coalesce(v_in->>'emergency', ''), 20));
   v_photo := case when coalesce(v->>'photo_url', '') = '' then ''
     when v->>'photo_url' = r.photo_url then r.photo_url
-    when v->>'photo_url' ~ '^https://hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+$'
-      or v->>'photo_url' ~ '^https://(img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' then v->>'photo_url'
+    when public.media_url_ok(v->>'photo_url') then v->>'photo_url'
     else r.photo_url end;
   v_ex := v_ex || jsonb_build_object('og_image', case when v_photo = '' then ''
-    when coalesce(v_in->>'og_image', '') ~ '^https://((img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}|hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+)\.jpg$' then v_in->>'og_image'
+    when public.media_url_ok(v_in->>'og_image', true) then v_in->>'og_image'
     when v_photo = r.photo_url then coalesce(r.extras->>'og_image', '') else '' end);
   update cards set
     first_name = left(trim(v->>'first_name'), 60), last_name = left(coalesce(v->>'last_name', ''), 60),

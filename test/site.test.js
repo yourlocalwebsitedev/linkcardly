@@ -51,12 +51,14 @@ test('form inputs on marketing pages have accessible names', async () => {
   }
 });
 
-test('production config: no placeholder Turnstile site key is shipped', async () => {
+test('production config: forms get their Turnstile key at runtime from /app/config.js, never baked into pages', async () => {
   const html = await read('contact/index.html');
-  assert.ok(!/YOUR_TURNSTILE_SITE_KEY|\{\{/.test(html));
-  assert.match(html, /data-sitekey="0x[0-9A-Za-z_-]+"/);
+  assert.ok(!/YOUR_TURNSTILE_SITE_KEY|\{\{|data-sitekey=/.test(html));
+  assert.match(html, /data-turnstile/);
+  assert.match(html, /<script src="\/app\/config\.js"><\/script>/);
   const toml = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
   assert.ok(!toml.includes('YOUR_TURNSTILE_SITE_KEY'));
+  for (const k of toml.match(/^TURNSTILE_SITE_KEY = "([^"]*)"/gm)) assert.match(k, /"0x[0-9A-Za-z_-]+"/);
 });
 
 test('production content: legal pages have real policy text', async () => {

@@ -21,6 +21,7 @@
 <meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <script src="/app/vendor/resources.js"></script>
+<script src="/app/config.js"></script>
 <script src="/app/support.js"></script>
 <script src="/app/estate-styles.js"></script>
 <script src="/app/scene-styles.js"></script>
@@ -898,11 +899,14 @@ const CARD = {
 /* Client cards are loaded from Supabase by link: /rahul-sharma or /?c=rahul-sharma
    The home page (no link) loads DEFAULT_SLUG from Supabase; the CARD block above is the offline fallback. */
 const DEFAULT_SLUG = 'sandeep3649';
-/* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
-const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
-const VIA_WORKER = () => /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
-const SUPABASE_URL = 'https://hyaqvmrtqafqhbhcdecd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV';
+/* Settings for this environment from /app/config.js (see order.html); the NexBizRise values only when it isn't there. */
+const LC = window.LC_CONFIG || { native: false, supabaseUrl: 'https://hyaqvmrtqafqhbhcdecd.supabase.co', supabaseKey: 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV', turnstileSiteKey: '0x4AAAAAAFIAJl64rp47Hazn' };
+const SUPABASE_URL = LC.supabaseUrl;
+const SUPABASE_KEY = LC.supabaseKey;
+/* Cloudflare Turnstile site key (public). '' switches the bot check off. */
+const TURNSTILE_SITE_KEY = LC.turnstileSiteKey || '';
+/* True when this page is served by the Linkcardly Worker, which answers /api/* (always so in native mode). */
+const VIA_WORKER = () => !!LC.native || /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
 /* Video portraits: photo divs (data-ph) get a muted looping <video> layered inside. */
 const NBR_VID = /\.(mp4|webm)(\?|#|$)|#video$|^data:video\//i;
 const nbrSyncVids = (src, root) => {
@@ -1317,7 +1321,7 @@ class Component extends DCLogic {
     if (!isDefault) this.setState({ remoteStatus: 'loading' });
     try {
       let row = null, viaEdge = false;
-      if (/(^|\.)linkcardly\.com$/.test(location.hostname)) {
+      if (VIA_WORKER()) {
         try { const er = await fetch('/api/card/' + encodeURIComponent(slug)); if (er.ok) { const ej = await er.json(); row = ej.row || null; viaEdge = true; } } catch (e) {}
       }
       if (!viaEdge) {

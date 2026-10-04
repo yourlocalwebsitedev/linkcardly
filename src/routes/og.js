@@ -1,7 +1,8 @@
-// Per-card share previews in proxy mode (QA.md D). Link-preview bots don't run JavaScript, so they
+// Per-card share previews (QA.md D). Link-preview bots don't run JavaScript, so they
 // only ever saw the generic Linkcardly title and image. For those bots (and only them, so people
 // never wait on an extra request) the card's name, role and photo go into the page's meta tags.
 import { TIMEOUTS } from '../config.js';
+import { cardData } from './native.js';
 
 export const PREVIEW_BOT = /facebookexternalhit|facebot|twitterbot|whatsapp|linkedinbot|slackbot|telegrambot|discordbot|skypeuripreview|pinterest|applebot|googlebot|bingbot|redditbot|embedly|vkshare|iframely|snapchat|viber|line\//i;
 
@@ -46,13 +47,17 @@ export function applyMeta(html, m) {
   return html;
 }
 
-// key: the slug or nbr_ public id the card app looks up; path: the card's URL path.
-export async function withCardPreview(res, req, env, key, path) {
+// key: the slug or nbr_ public id the card app looks up; path: the card's URL path. Native mode reads the card
+// itself (cached like /api/card); proxy mode asks the old worker.
+export async function withCardPreview(res, req, env, key, path, ctx) {
   if (req.method !== 'GET' || !res.ok || !PREVIEW_BOT.test(req.headers.get('User-Agent') || '')) return res;
   let row = null;
   try {
-    const r = await fetch(new URL('/api/card/' + encodeURIComponent(key), env.LEGACY_ORIGIN), { headers: { 'X-Brand': 'linkcardly' }, signal: AbortSignal.timeout(TIMEOUTS.og) });
-    if (r.ok) row = ((await r.json()) || {}).row || null;
+    if (env.MODE === 'native') row = await cardData(env, key, ctx);
+    else {
+      const r = await fetch(new URL('/api/card/' + encodeURIComponent(key), env.LEGACY_ORIGIN), { headers: { 'X-Brand': 'linkcardly' }, signal: AbortSignal.timeout(TIMEOUTS.og) });
+      if (r.ok) row = ((await r.json()) || {}).row || null;
+    }
   } catch (e) {
     console.error(JSON.stringify({ t: 'og', key, error: String(e && e.message || e) }));
   }

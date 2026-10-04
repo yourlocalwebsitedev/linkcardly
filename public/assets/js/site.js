@@ -159,6 +159,15 @@
     $('[data-next]').onclick = () => { i = (i + 1) % list.length; show(); };
   }
 
+  // Turnstile on forms ([data-turnstile]) with this environment's site key from /app/config.js; none → no widget.
+  const tsBoxes = $$('[data-turnstile]');
+  if (tsBoxes.length && C.turnstileSiteKey) {
+    window.lcTurnstile = () => tsBoxes.forEach(el => { if (!el.childElementCount) turnstile.render(el, { sitekey: C.turnstileSiteKey }); });
+    const s = document.createElement('script');
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=lcTurnstile'; s.async = true;
+    document.head.appendChild(s);
+  }
+
   // forms with Turnstile → JSON API
   const token = f => (f.querySelector('[name="cf-turnstile-response"]') || {}).value || '';
   const orderForm = $('#order');

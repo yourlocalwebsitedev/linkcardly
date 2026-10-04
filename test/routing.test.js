@@ -1,7 +1,7 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.js';
-import { env, request, stubFetch, json } from './helpers.js';
+import { assets, env, request, stubFetch, json } from './helpers.js';
 
 let f;
 afterEach(() => f && f.restore());
@@ -125,11 +125,12 @@ test('proxy mode: upstream network failure degrades to a JSON 502', async () => 
   assert.ok((await r.json()).message);
 });
 
-test('a valid handle containing a dot reaches the card route', async () => {
-  f = stubFetch(url => url.includes('/cards?') ? json([{ id: '1', handle: 'sandeep.k', full_name: 'S K', status: 'live', links: [] }]) : undefined);
-  const r = await worker.fetch(request('/sandeep.k'), env());
-  assert.equal(r.status, 200);
-  assert.match(await r.text(), /<h1>S K<\/h1>/);
+test('native mode: card and edit links serve the card and order app, same as proxy mode', async () => {
+  for (const [p, marker] of [['/sandeep-k', 'card'], ['/c/nbr_ab12cd', 'card'], ['/e/' + 'a'.repeat(40), 'order']]) {
+    const r = await worker.fetch(request(p), env());
+    assert.equal(r.status, 200, p);
+    assert.equal(assets.calls.at(-1), '/app/' + marker, p);
+  }
 });
 
 test('security headers on every response; CSP only on pages this repo renders', async () => {
@@ -213,4 +214,14 @@ test('proxy mode: share preview falls back to the default page when the card loo
   const r = await worker.fetch(request('/alexmorgan', { headers: { 'User-Agent': 'facebookexternalhit/1.1' } }), env({ MODE: 'proxy' }));
   assert.equal(r.status, 200);
   assert.match(await r.text(), /<meta property="og:title" content="Digital business card \| Linkcardly">/);
+});
+
+test('CSP lets the browser reach only this environment\'s database (the one in /app/config.js)', async () => {
+  for (const [e, origin] of [[env(), 'https://db.test'], [env({ MODE: 'proxy' }), 'https://hyaqvmrtqafqhbhcdecd.supabase.co']]) {
+    const page = await worker.fetch(request('/contact'), e);
+    assert.match(page.headers.get('content-security-policy'), new RegExp(`connect-src 'self' ${origin.replace(/\./g, '\\.')};`));
+    assert.doesNotMatch(page.headers.get('content-security-policy'), /\*\.supabase\.co/);
+    const app = await worker.fetch(request('/create'), e);
+    assert.match(app.headers.get('content-security-policy-report-only'), new RegExp(`connect-src 'self' ${origin.replace(/\./g, '\\.')} `));
+  }
 });

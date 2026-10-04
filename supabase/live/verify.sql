@@ -17,6 +17,10 @@ from (values
   ('14 Order, link and edit functions exist',             (select count(distinct proname) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                                                             where n.nspname = 'public' and proname in ('place_order', 'slug_available', 'get_card_for_edit', 'update_card_by_token', 'mark_order_paid'))::text, '5'),
   ('15 Partner programme installed',                      (select count(*) from pg_tables where schemaname = 'partner')::text, '6'),
+  ('17 Native API functions installed (re-run ALL-IN-ONE.sql + linkcardly.sql if not)',
+                                                          (select count(distinct proname) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+                                                            where n.nspname = 'public' and proname in ('media_url_ok', 'mark_order_refunded'))::text
+                                                          || '/' || (select (pg_get_functiondef('public.place_order_core(jsonb)'::regprocedure) like '%media_url_ok%')::text), '2/true'),
   ('16 No orders or cards yet (clean start)',             ((select count(*) from public.orders) + (select count(*) from public.cards))::text, '0')
 ) as t(check_name, result, expected)
 order by check_name;

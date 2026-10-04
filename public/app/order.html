@@ -22,6 +22,7 @@
 <meta name="twitter:image" content="https://linkcardly.com/assets/img/brand/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/app/vendor/resources.js"></script>
+<script src="/app/config.js"></script>
 <script src="/assets/js/rules.js"></script>
 <script src="/app/support.js"></script>
 <script src="/app/estate-styles.js"></script>
@@ -439,22 +440,29 @@ select option{background:var(--surface);color:var(--ink-2);}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const SUPABASE_URL = 'https://hyaqvmrtqafqhbhcdecd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV';
+/* Settings for this environment come from /app/config.js (served by the Linkcardly Worker: production, staging or a
+   preview). The NexBizRise values below are used only when that file isn't there (the page opened without the Worker). */
+const LC = window.LC_CONFIG || { native: false, supabaseUrl: 'https://hyaqvmrtqafqhbhcdecd.supabase.co', supabaseKey: 'sb_publishable_bqmJ-YGyd6h1UEnpM3RryA_eTWdpNbV', turnstileSiteKey: '0x4AAAAAAFIAJl64rp47Hazn' };
+const NATIVE = !!LC.native; /* the Worker serves the API itself (MODE = "native"), not the old NexBizRise worker */
+const SUPABASE_URL = LC.supabaseUrl;
+const SUPABASE_KEY = LC.supabaseKey;
 const CARD_BASE = 'https://linkcardly.com';
 const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
 const LOCAL_KEY = 'nbr-orders';
 /* Cloudflare Turnstile site key (public). Leave '' to switch the bot check off. */
-const TURNSTILE_SITE_KEY = '0x4AAAAAAFIAJl64rp47Hazn';
-/* TEST MODE (Linkcardly): payments and the Cloudflare Turnstile check are OFF so the product can be tested end to end.
-   With PAYMENTS_ON = false the order goes straight to the database (place_order) without Turnstile, Stripe or Razorpay,
-   the Payment step shows a "no payment" placeholder, and the database must be in test mode (supabase/live/README.md),
-   which marks the order paid (pay_provider 'test') and puts the card live.
-   TO TURN PAYMENTS BACK ON: set PAYMENTS_ON = true here, turn test mode off in the database, and check that the
-   Stripe/Razorpay webhooks, NBR_WORKER_SECRET and TURNSTILE_SECRET are set on the worker that serves /api/*.
-   Everything below that handles payment (startPayment, checkPayReturn, retryPay, /api/pay/*) is kept for that day. */
-const PAYMENTS_ON = false;
-const VIA_WORKER = () => /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
+const TURNSTILE_SITE_KEY = LC.turnstileSiteKey || '';
+/* PAYMENTS.
+   Native mode (Linkcardly's own Worker): the Worker decides. Orders always go through /api/order with the Turnstile
+   check. Payments are on as soon as the Worker has Razorpay or Stripe keys (`payments` in /app/config.js); then the
+   order opens that checkout, otherwise the order is saved and the customer is told a payment link will be emailed.
+   On a database in test mode orders come back already paid (provider 'test') and the card goes live.
+   Proxy mode (the old NexBizRise worker): payments stay off. The order goes straight to the database, which must be
+   in test mode (supabase/live/README.md), and the Payment step shows a "no payment" placeholder.
+   All payment code (startPayment, checkPayReturn, retryPay, /api/pay/*) is used by native mode. */
+const PAYMENTS_ON = NATIVE ? !!LC.payments : false; /* native: on when the Worker has payment keys (/app/config.js) */
+/* True when this page is served by the Linkcardly Worker, which answers /api/* (always so in native mode). */
+const VIA_WORKER = () => !!LC.native || /(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname);
+const ORDER_VIA_WORKER = () => VIA_WORKER() && (PAYMENTS_ON || NATIVE);
 
 const PRICING = {
   IN: { label: 'India · ₹', cur: '₹', code: 'INR', locale: 'en-IN', basic: 799, basicWas: 999, motion: 1799, motionWas: 2499, phone: '+91 98765 43210', city: 'Hyderabad' },
@@ -747,7 +755,7 @@ const nbrShareJpg = (src, px, py, zoom) => new Promise(res => {
 /* Upload to Cloudflare R2 via the site's /api/upload. Returns '' when R2 isn't available (caller falls back to Supabase storage). */
 const nbrUpload = async blob => {
   window.__nbrUpErr = '';
-  if (!/(^|\.)linkcardly\.com$|\.pages\.dev$|\.workers\.dev$/.test(location.hostname)) { window.__nbrUpErr = 'preview'; return ''; }
+  if (!VIA_WORKER()) { window.__nbrUpErr = 'preview'; return ''; }
   try {
     const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type || 'application/octet-stream' }, body: blob });
     const j = await r.json().catch(() => ({}));
@@ -779,7 +787,7 @@ class Component extends DCLogic {
   doneRef = React.createRef();
   tsRef = React.createRef();
   renderTs = () => {
-    if (!TURNSTILE_SITE_KEY || !PAYMENTS_ON) return; // Turnstile is off in test mode
+    if (!TURNSTILE_SITE_KEY || !ORDER_VIA_WORKER()) return; // checked only by the Worker's /api/order
     const go = () => { const el = this.tsRef.current; if (!el || !window.turnstile || el.childElementCount) return; this.tsToken = ''; this.tsWidget = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, size: 'flexible', callback: t => { this.tsToken = t; }, 'expired-callback': () => { this.tsToken = ''; } }); };
     if (window.turnstile) { setTimeout(go, 50); return; }
     if (!document.getElementById('cf-ts')) { const s = document.createElement('script'); s.id = 'cf-ts'; s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = () => setTimeout(go, 50); document.head.appendChild(s); } else setTimeout(go, 800);
@@ -1056,7 +1064,7 @@ class Component extends DCLogic {
     if (String(order.card.photo_url).startsWith('data:') && VIA_WORKER()) { this.setState({ busy: false, submitError: 'Your photo could not be uploaded. Please try again, or remove the photo and add it later with your edit link.' + (window.__nbrUpErr ? ' (' + window.__nbrUpErr + ')' : '') }); return; }
     let remote = false;
     try {
-      const r = VIA_WORKER() && PAYMENTS_ON ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
+      const r = ORDER_VIA_WORKER() ? await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ts: this.tsToken || '', body: { payload: order } }) }) : await fetch(SUPABASE_URL + '/rest/v1/rpc/place_order', { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: order }) });
       if (r.ok) { const j = await r.json(); if (j && j.slug) { this.orderKey = ''; order.order_no = j.order_no || order.order_no; order.card.slug = j.slug; order.card.public_id = j.public_id || ''; order.edit_token = j.edit_token || ''; if (j.total != null) { order.total = j.total; order.discount = j.discount; } order.pay = j.pay || null; order.pay_status = j.pay_status || 'unpaid'; remote = true; } }
       else { const j = await r.json().catch(() => ({})); if (/link taken/i.test(j.message || '') && strict) { this.resetTs(); const alts = await this.freeAlts(slug, d, () => true); this.__lastH = slug; this.setState(s => ({ busy: false, step: 2, hCheck: { h: slug, status: 'taken', alts }, errors: { ...s.errors, handle: 'linkcardly.com/' + slug + ' was just taken. Pick another name.' } }), () => window.scrollTo(0, 0)); return; } if (/bot check/i.test(j.message || '')) { this.resetTs(); this.setState({ busy: false, submitError: 'Please complete the security check above, then place your order.' }); return; } if (/invalid coupon/i.test(j.message || '')) { this.setState({ busy: false, coupon: null, couponMsg: 'This coupon is no longer valid. It has been removed; check the new total and try again.', couponOk: false }); return; } if (/invalid phone/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Please check your mobile number. It needs the full ' + (this.state.region === 'IN' ? '10-digit Indian' : '10-digit US') + ' number.' }); return; } if (/too many/i.test(j.message || '')) { this.setState({ busy: false, submitError: 'Too many orders from this connection in the last hour. For team orders, message us on WhatsApp and we will set up everyone at once.' }); return; } }
     } catch (err) {}
@@ -1068,7 +1076,9 @@ class Component extends DCLogic {
     const base = { orderNo: order.order_no, slug: order.card.slug, pid: order.card.public_id || '', tok: order.edit_token || '', remote, mode: S.mode, idem: order.idem || '', total: order.total, region: S.region || 'US' };
     this.orderKey = '';
     if (order.pay_status === 'paid' || order.pay_status === 'waived') { this.showDone({ ...base, paid: true }); return; }
-    if (!PAYMENTS_ON) { console.warn('Order ' + order.order_no + ' is unpaid but PAYMENTS_ON is false: turn on test mode in the database (supabase/live/README.md).'); this.setState({ busy: false, submitError: 'We couldn’t finish your order just now. Please try again in a few minutes, or message us and we’ll set it up for you.' }); return; }
+    // Native: the Worker decides. It sent a checkout (pay) if payments are set up, otherwise startPayment() says
+    // "we'll email a payment link", which is what the Worker's email to the customer says too.
+    if (!PAYMENTS_ON && !NATIVE) { console.warn('Order ' + order.order_no + ' is unpaid but PAYMENTS_ON is false: turn on test mode in the database (supabase/live/README.md).'); this.setState({ busy: false, submitError: 'We couldn’t finish your order just now. Please try again in a few minutes, or message us and we’ll set it up for you.' }); return; }
     this.startPayment(order.pay, base);
   };
   showDone = (done) => { this.setState({ busy: false, done }, () => { window.scrollTo(0, 0); this.doneRef.current && this.doneRef.current.focus(); }); };

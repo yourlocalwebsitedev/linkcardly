@@ -1,0 +1,63 @@
+name: Database backup
+
+# Nightly backup of the production database (Supabase linkcardly-prod) to the private R2 bucket
+# linkcardly-backups. Supabase Free has no backups of its own; this is ours. The bucket's lifecycle
+# rule deletes files after 14 days. Setup and restore steps: docs/INFRASTRUCTURE.md, "Backups".
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_PROD_DB_URL         Supabase → linkcardly-prod → Connect → Session pooler URI, with the database password
+#   R2_BACKUP_ACCESS_KEY_ID      R2 API token "linkcardly-backups-write" (Object Read & Write, bucket linkcardly-backups only)
+#   R2_BACKUP_SECRET_ACCESS_KEY  same token
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # 21:00 UTC = 02:30 India, the quietest hour
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DB_URL: ${{ secrets.SUPABASE_PROD_DB_URL }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      R2_ENDPOINT: https://56bb7259aae8956fc8e82826ee95e7cb.r2.cloudflarestorage.com
+      BUCKET: linkcardly-backups
+    steps:
+      # A backup that silently does nothing is worse than a red run: fail until the secrets are set.
+      - name: Check secrets
+        run: |
+          for v in DB_URL AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::Missing repository secret for $v (see the top of this file)"; exit 1; fi
+          done
+
+      # Pinned (this job holds the database password): action by commit, CLI by version. Update both together.
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb   # v1.7.3
+        with:
+          version: 2.119.0
+
+      - name: Dump roles, schema and data
+        run: |
+          mkdir dump
+          supabase db dump --db-url "$DB_URL" -f dump/roles.sql --role-only
+          supabase db dump --db-url "$DB_URL" -f dump/schema.sql
+          supabase db dump --db-url "$DB_URL" -f dump/data.sql --use-copy --data-only
+          for f in dump/*.sql; do test -s "$f" || { echo "::error::$f is empty"; exit 1; }; done
+          ls -l dump
+
+      - name: Upload to R2
+        run: |
+          name="prod/$(date -u +%Y-%m-%d).tar.gz"
+          tar -czf backup.tar.gz -C dump .
+          aws s3 cp backup.tar.gz "s3://$BUCKET/$name" --endpoint-url "$R2_ENDPOINT" --only-show-errors
+          aws s3 ls "s3://$BUCKET/prod/" --endpoint-url "$R2_ENDPOINT" | tail -n 3
+          echo "Uploaded $name ($(du -h backup.tar.gz | cut -f1))" >> "$GITHUB_STEP_SUMMARY"

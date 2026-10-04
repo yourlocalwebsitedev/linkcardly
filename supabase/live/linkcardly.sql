@@ -106,6 +106,46 @@ revoke all on function public.on_order_refunded() from public, anon, authenticat
 drop trigger if exists orders_refund_card_off on public.orders;
 create trigger orders_refund_card_off after update of pay_status on public.orders for each row execute function public.on_order_refunded();
 
+-- Website contact form (linkcardly.com contact and teams pages, through the Worker's /api/contact). Same as
+-- ALL-IN-ONE.sql except the phone is optional (the form doesn't require one); if given, it must be 10-15 digits.
+create or replace function public.submit_site_lead(p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_phone text := left(regexp_replace(coalesce(p->>'phone',''), '[^0-9+]', '', 'g'), 20); v_email text := lower(trim(coalesce(p->>'email','')));
+begin
+  perform bot_gate(); perform rate_check('site_lead', 5, interval '1 hour');
+  if length(trim(coalesce(p->>'name',''))) < 2 or length(trim(coalesce(p->>'business_name',''))) < 2 then raise exception 'missing fields'; end if;
+  if v_email !~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then raise exception 'invalid email'; end if;
+  if v_phone <> '' and length(regexp_replace(v_phone, '\D', '', 'g')) not between 10 and 15 then raise exception 'invalid phone'; end if;
+  if length(trim(coalesce(p->>'message',''))) < 10 then raise exception 'missing fields'; end if;
+  if (select count(*) from site_leads where email = v_email and created_at > now() - interval '1 day') >= 3 then raise exception 'too many'; end if;
+  insert into site_leads (name, business_name, email, phone, business_type, website_url, message, preferred_contact, page)
+  values (left(trim(p->>'name'), 120), left(trim(p->>'business_name'), 160), left(v_email, 200), v_phone, left(coalesce(p->>'business_type',''), 60),
+    left(coalesce(p->>'website_url',''), 300), left(trim(p->>'message'), 2000), left(coalesce(p->>'preferred_contact_method',''), 20), left(coalesce(p->>'page',''), 80));
+  return jsonb_build_object('ok', true);
+end $$;
+revoke all on function public.submit_site_lead(jsonb) from public;
+grant execute on function public.submit_site_lead(jsonb) to anon, authenticated;
+
+-- Refund webhooks (Razorpay refund.processed, Stripe charge.refunded) mark a paid order refunded. Worker only;
+-- only paid → refunded, so a replayed webhook changes nothing. The trigger above then takes the card offline and
+-- the partner trigger reverses any commission.
+create or replace function public.mark_order_refunded(p_order_no text, p_provider text, p_ref text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare o record; c record;
+begin
+  if not from_worker() then raise exception 'not allowed'; end if;
+  select * into o from orders where order_no = p_order_no for update;
+  if not found then raise exception 'order not found'; end if;
+  if o.pay_status <> 'paid' then return jsonb_build_object('ok', true, 'changed', false, 'pay_status', o.pay_status); end if;
+  update orders set pay_status = 'refunded', notes = left(coalesce(notes, '') || case when coalesce(notes, '') = '' then '' else E'\n' end
+    || 'Refunded via ' || left(coalesce(p_provider, ''), 20) || ' ' || left(coalesce(p_ref, ''), 120), 2000) where id = o.id;
+  select slug, public_id into c from cards where id = o.card_id;   -- so the Worker can drop the card from its cache
+  return jsonb_build_object('ok', true, 'changed', true, 'order_no', o.order_no, 'customer_email', o.customer_email, 'customer_name', o.customer_name,
+    'slug', c.slug, 'public_id', c.public_id);
+end $$;
+revoke all on function public.mark_order_refunded(text, text, text) from public;
+grant execute on function public.mark_order_refunded(text, text, text) to anon, authenticated;
+
 -- ----------------------------------------------------------------
 -- 0) TEST MODE: payments and the bot check off, so the product can be tested end to end
 -- ----------------------------------------------------------------
@@ -222,11 +262,10 @@ begin
     'meeting_url', safe_https(v_in->>'meeting_url', 500), 'reg_no', left(coalesce(v_in->>'reg_no', ''), 60), 'quals', left(coalesce(v_in->>'quals', ''), 120), 'hours', left(coalesce(v_in->>'hours', ''), 80), 'services', left(coalesce(v_in->>'services', ''), 300), 'practice', left(coalesce(v_in->>'practice', ''), 200), 'service_area', left(coalesce(v_in->>'service_area', ''), 120), 'insured', left(coalesce(v_in->>'insured', ''), 20), 'emergency', left(coalesce(v_in->>'emergency', ''), 20));
   v_photo := case when coalesce(v->>'photo_url', '') = '' then ''
     when v->>'photo_url' = r.photo_url then r.photo_url
-    when v->>'photo_url' ~ '^https://hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+$'
-      or v->>'photo_url' ~ '^https://(img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' then v->>'photo_url'
+    when public.media_url_ok(v->>'photo_url') then v->>'photo_url'
     else r.photo_url end;
   v_ex := v_ex || jsonb_build_object('og_image', case when v_photo = '' then ''
-    when coalesce(v_in->>'og_image', '') ~ '^https://((img\.nexbizrise\.com|(www\.|card\.)?nexbizrise\.com/img)/p/[a-f0-9]{24}|hyaqvmrtqafqhbhcdecd\.supabase\.co/storage/v1/object/public/photos/orders/[A-Za-z0-9._-]+)\.jpg$' then v_in->>'og_image'
+    when public.media_url_ok(v_in->>'og_image', true) then v_in->>'og_image'
     when v_photo = r.photo_url then coalesce(r.extras->>'og_image', '') else '' end);
   update cards set
     first_name = left(trim(v->>'first_name'), 60), last_name = left(coalesce(v->>'last_name', ''), 60),
