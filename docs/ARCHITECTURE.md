@@ -34,7 +34,8 @@ linkcardly/
 │                          support/ (live database in PGlite + PostgREST stand-in)
 ├── .github/workflows/     ci.yml: audit, tests, dry-run; deploys main to staging; manual production deploy.
 │                          backup.yml: nightly production database backup to R2
-└── docs/                  ARCHITECTURE.md, INFRASTRUCTURE.md (accounts, services, secrets, setup log), QA.md, SDLC_VALIDATION.md
+└── docs/                  ARCHITECTURE.md, INFRASTRUCTURE.md (accounts, services, secrets, setup log), TODO.md (what's left),
+                           QA.md, SDLC_VALIDATION.md
 ```
 
 ## Modes

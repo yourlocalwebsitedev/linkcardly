@@ -7,7 +7,10 @@ See `docs/ARCHITECTURE.md`. In short, edit marketing pages in `site/`, the serve
 
 ## Infrastructure
 Everything Linkcardly runs on (Cloudflare Worker, R2 photos, Turnstile, Supabase, Resend, email forwarding), how each
-piece was set up, the secret names and where their values come from, and what's still to do: **`docs/INFRASTRUCTURE.md`**.
+piece was set up, the secret names and where their values come from: **`docs/INFRASTRUCTURE.md`**.
+
+## To-do
+What's left before and after launch, and who does each item: **`docs/TODO.md`**.
 
 ## Setup
 ```bash

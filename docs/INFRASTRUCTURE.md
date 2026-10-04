@@ -287,16 +287,7 @@ Still running and still doing linkcardly.com's ordering until cutover: Cloudflar
 
 ## Still to do
 
-1. **Database updates** on staging and production (section above).
-2. **Staging** (section above), then the hand tests on it.
-3. **Backups** set up and one manual run green (section above).
-4. **Razorpay** (owner's PAN, Aadhaar and Indian bank account; KYC), test keys and webhook on staging, then live keys
-   on production. Online payment turns on by itself once the keys are set; then run the payment tests (deferred).
-5. **Before go-live**: privacy and terms pages updated (business name, Supabase, Resend, Razorpay), HSTS on.
-6. **Switch-over** (production is set to native in the code): run the database updates on linkcardly-prod, then merge.
-   On linkcardly.com check `/health?deep=1` (`"mode":"native"`, all ok), place an order, edit it, send the contact
-   form, check the emails. After 30 quiet days, retire NexBizRise (section above) and remove `LEGACY_ORIGIN`.
-7. Optional: delete `SUPABASE_SERVICE_KEY` from the production Worker (unused).
+The to-do list is **[docs/TODO.md](TODO.md)** (launch steps, legal and money, safety, running it, later).
 
 The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
 
