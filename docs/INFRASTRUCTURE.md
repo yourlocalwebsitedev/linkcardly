@@ -8,7 +8,7 @@ manager vault "Linkcardly" and, where the code needs them, as encrypted secrets 
 
 | Service | What it does for Linkcardly | Name / address | Login |
 |---|---|---|---|
-| Cloudflare Worker | Serves linkcardly.com: pages, card pages, `/api/*`, daily job | Worker `linkcardly` (production, proxy mode), `linkcardly-staging` (native mode; see "Staging") | Cloudflare account "Linkcardly" (`56bb7259aae8956fc8e82826ee95e7cb`) |
+| Cloudflare Worker | Serves linkcardly.com: pages, card pages, `/api/*`, daily job | Worker `linkcardly` (production, native mode), `linkcardly-staging` (native mode; see "Staging") | Cloudflare account "Linkcardly" (`56bb7259aae8956fc8e82826ee95e7cb`) |
 | Cloudflare DNS | `linkcardly.com`, `www`, `img`, `img-staging`, email records | Zone `linkcardly.com` | same |
 | Cloudflare Email Routing | Receives `hello@linkcardly.com`, forwards to the owner's Gmail | Rule `hello@` → Gmail | same |
 | Cloudflare R2 | Card photos and videos; database backups | `linkcardly-photos` → `img.linkcardly.com`; `linkcardly-photos-staging` → `img-staging.linkcardly.com`; `linkcardly-backups` (private, see "Backups") | same |
@@ -19,10 +19,15 @@ manager vault "Linkcardly" and, where the code needs them, as encrypted secrets 
 | Razorpay | India payments | In progress | — |
 | GitHub | Code; every merge to `main` deploys production (Workers Builds); CI deploys staging; nightly backup | `yourlocalwebsitedev/linkcardly` | — |
 
-Mode today: production **proxy**, staging **native**. linkcardly.com serves its own pages but still forwards `/api/*`
-(ordering, uploads, edits, payments) to the old NexBizRise worker. The native API (the same routes, in this Worker,
-on Linkcardly's own services) is built and tested; it runs on staging first, then production at cutover. The daily
-job already runs in production (it keeps the new database active). See "Still to do".
+Mode: **native** in production and staging (set 2026-10-03, live once that change is merged). linkcardly.com's
+whole back office (orders, photos, edits, emails, payments) runs in this Worker on Linkcardly's own services; nothing
+goes to NexBizRise. **Before merging**, run the database updates on linkcardly-prod (see "Database updates"),
+or edit saves and photo orders fail. Emergency rollback: `MODE = "proxy"` in `wrangler.toml` sends `/api/*` to
+the old NexBizRise worker again (works only while it still exists).
+
+Until Razorpay is set up, production takes orders without online payment: the order is saved unpaid, the customer is
+emailed "we'll send a secure payment link", hello@ gets the order, and the card goes live once the order is marked
+paid. Production's test mode stays **off**.
 
 ## Cloudflare
 
@@ -269,12 +274,12 @@ Still running and still doing linkcardly.com's ordering until cutover: Cloudflar
 1. **Database updates** on staging and production (section above).
 2. **Staging** (section above), then the hand tests on it.
 3. **Backups** set up and one manual run green (section above).
-4. **Razorpay** (owner's PAN, Aadhaar and Indian bank account; KYC), test keys and webhook on staging, then live keys.
-   Then turn `PAYMENTS_ON` on in `public/app/order.html` and run the payment tests (deferred until then).
+4. **Razorpay** (owner's PAN, Aadhaar and Indian bank account; KYC), test keys and webhook on staging, then live keys
+   on production. Online payment turns on by itself once the keys are set; then run the payment tests (deferred).
 5. **Before go-live**: privacy and terms pages updated (business name, Supabase, Resend, Razorpay), HSTS on.
-6. **Cutover**: production `MODE = "native"` in `wrangler.toml` (merge → deploy), then on linkcardly.com: order,
-   edit, contact form, emails, `/health?deep=1`. Rollback = `MODE = "proxy"` again. After 30 quiet days, retire
-   NexBizRise (section above).
+6. **Switch-over** (production is set to native in the code): run the database updates on linkcardly-prod, then merge.
+   On linkcardly.com check `/health?deep=1` (`"mode":"native"`, all ok), place an order, edit it, send the contact
+   form, check the emails. After 30 quiet days, retire NexBizRise (section above) and remove `LEGACY_ORIGIN`.
 7. Optional: delete `SUPABASE_SERVICE_KEY` from the production Worker (unused).
 
 The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
@@ -290,3 +295,4 @@ The step-by-step plan is the doc "Linkcardly: move off NexBizRise".
 | 2026-10-03 | Resend domain verified; API keys made |
 | 2026-10-03 | Old NexBizRise analytics token rolled after exposure |
 | 2026-10-03 | Native API built (all `/api/*` routes, emails, payments, daily job); `/app/config.js`; staging set to native; nightly backup workflow; database updates `media_url_ok`, `mark_order_refunded`, contact form phone optional |
+| 2026-10-03 | Production switched to native mode in `wrangler.toml` (NexBizRise kept only as emergency rollback) |

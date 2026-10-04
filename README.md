@@ -14,7 +14,7 @@ piece was set up, the secret names and where their values come from, and what's 
 npm ci
 npx wrangler login     # the Linkcardly Cloudflare account
 npm test               # build + unit, integration and database tests
-npm run dev            # build + http://localhost:8787
+npm run dev            # build + http://localhost:8787, native mode on the STAGING database (never production)
 ```
 Production deploys come from merging to `main` (Workers Builds). Public settings for each environment are in
 `wrangler.toml`; secrets are set on the Worker (`npx wrangler secret put <NAME> [--env staging]`), never in the repo.
@@ -32,7 +32,7 @@ them hard-coded.
 - `BASE=http://127.0.0.1:8787 node test/e2e/smoke.mjs`: browser smoke test against `npm run dev` (needs Playwright).
 - `BASE=http://127.0.0.1:8787 node test/e2e/order-flow.mjs`: the order flow's screens at 390 × 844 with a mocked backend.
 - `BASE=http://127.0.0.1:8787 node test/e2e/production.mjs`: production E2E suite. The browser runs against the real database SQL (`supabase/live/*.sql` in PGlite behind a PostgREST stand-in, `test/support/`), with test mode on. Covers the customer lifecycle, preview and live-card actions, the edit link, customers A and B (authorization), that only the server can mark an order paid, failures (double click, lost response, offline, 500, slow network, refresh, bad file) and security (headers, XSS, secrets, CORS, rate limits). Writes `test/e2e/report/report.md` (Passed / Failed / Blocked / Not tested, findings, screenshots). Payment and webhook scenarios are listed as Not tested until payments are integrated.
-  - **Proxy mode** (production's setting): start the server with `npm run dev`.
+  - **Proxy mode** (the emergency rollback): start the server with `npx wrangler dev --port 8787 --ip 127.0.0.1 --var MODE:proxy`.
   - **Native mode**: start the server with the native API pointed at the suite's database (the suite serves it on port 54329), then run the same command. Wait a minute between runs (the Worker's per-minute rate limit sees every local browser as one address).
     ```bash
     npx wrangler dev --port 8787 --ip 127.0.0.1 --var MODE:native --var SUPABASE_URL:http://127.0.0.1:54329 \
@@ -56,8 +56,8 @@ them hard-coded.
 - **Rollback:** `npx wrangler deployments list`, then `npx wrangler rollback <version-id>`. From native back to proxy: set `MODE = "proxy"`. Database changes are forward-only; run the backup workflow (Actions → Database backup → Run workflow) before changing the database.
 
 ## Modes
-- **proxy** (production until cutover): `MODE = "proxy"`. Linkcardly serves its pages and the order and card app; every `/api/*` call is forwarded to the NexBizRise worker (`LEGACY_ORIGIN`), so the NexBizRise database, Turnstile and payments are used. Nothing else is forwarded.
-- **native** (staging now, production at cutover): `MODE = "native"`. `/api/*` is this Worker (`src/routes/native.js`) with Linkcardly's own Supabase, R2, Turnstile, Resend and payment accounts. Routes: `docs/ARCHITECTURE.md`.
+- **native** (production and staging): `MODE = "native"`. `/api/*` is this Worker (`src/routes/native.js`) with Linkcardly's own Supabase, R2, Turnstile, Resend and payment accounts. Routes: `docs/ARCHITECTURE.md`.
+- **proxy** (emergency rollback only, until NexBizRise is retired): `MODE = "proxy"`. Linkcardly serves its pages and the order and card app; every `/api/*` call is forwarded to the NexBizRise worker (`LEGACY_ORIGIN`), so the NexBizRise database, Turnstile and payments are used. Nothing else is forwarded.
 
 ## Ordering and pricing
 `/create` serves `public/app/order.html` (the vendored order flow); `/order` and `/pricing` redirect to it. Its preview uses `public/app/card.html`. Linkcardly's changes to the app are listed in `public/app/README.md`. Prices are in `order.html` (`PRICING`) for display; the database prices every order (`place_order`).

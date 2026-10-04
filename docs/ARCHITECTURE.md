@@ -38,8 +38,8 @@ linkcardly/
 ```
 
 ## Modes
-`MODE` in `wrangler.toml`. Production is **proxy** until cutover; staging is **native**. Rollback from native is setting `MODE = "proxy"` again.
-- **proxy** (production today): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404. `/app/config.js` gives the browser the NexBizRise database and Turnstile key, so the app keeps working against the old worker.
+`MODE` in `wrangler.toml`. Production and staging are **native**; **proxy** is kept only as an emergency rollback until NexBizRise is retired. Rollback is setting `MODE = "proxy"` again.
+- **proxy** (emergency rollback only): only `/api/*` goes to the NexBizRise worker, without cookies or `Authorization`, and `Set-Cookie` is dropped on the way back. Other unknown paths (including `/admin`) are a local 404. `/app/config.js` gives the browser the NexBizRise database and Turnstile key, so the app keeps working against the old worker.
 - **native**: `/api/*` is `src/routes/native.js`, against Linkcardly's own Supabase project (`supabase/live/*.sql`), R2 bucket, Turnstile widget, Resend and payment accounts. `/app/config.js` gives the browser this environment's database and Turnstile key (`wrangler.toml`).
 - **Both modes:** marketing pages, the order app (`/create`), card pages (`/<name>`, `/c/<id>`) and edit links (`/e/<token>`) are served from `public/`; the app loads React and Babel from `public/app/vendor/`. Link-preview bots get the card's name, role and photo in the meta tags (`routes/og.js`). The daily job (`scheduled()` in native.js, 09:00 India) sends renewal reminders and keeps the Supabase Free project active.
 
@@ -85,7 +85,7 @@ Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from oth
   - Payment and webhook scenarios aren't tested (payments are off). Add them to `test/e2e/production.mjs` when they're on.
 - `order.html` keeps its old done markup for the unpaid and verifying states; the rest of the done screen is `components/order-done.js`. Move those two states into the component when they are next changed.
 - Production audit (2026-10), still open:
-  - Proxy mode (production until cutover): the proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so photo uploads, edit saves and payments may answer 403 there. Native mode fixes this (the routes are in this Worker); cutover is the fix.
+  - Proxy mode (rollback only): the proxy passes the browser's `Origin` (linkcardly.com) to the NexBizRise worker, whose `ORIGIN_OK` only allows nexbizrise origins, so photo uploads, edit saves and payments may answer 403 there. Native mode fixes this (the routes are in this Worker); cutover is the fix.
   - Region is chosen by the buyer: a US buyer can pick India and pay the INR price. Turn off international cards in Razorpay, or check the region server-side when payments go live.
   - Coupons are counted when an order is placed, not when it's paid; unpaid orders can use them up.
   - No retention or deletion: unpaid orders, inactive cards and `admin_log` snapshots are kept forever.

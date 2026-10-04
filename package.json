@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "dev": "npm run build && wrangler dev",
+    "dev": "npm run build && wrangler dev --env staging --var TURNSTILE_SITE_KEY:",
     "deploy": "npm run build && wrangler deploy",
     "test": "npm run build && node --test test/*.test.js"
   },

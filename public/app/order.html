@@ -810,7 +810,7 @@ class Component extends DCLogic {
     else try {
       const sa = !/Linkcardly%20Website|Linkcardly Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)\/?$/.test(location.pathname));
       const q = new URLSearchParams(location.search), plan = q.get('plan');
-      const dd = !VIA_WORKER() && q.get('demoDone');
+      const dd = (!VIA_WORKER() || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) && q.get('demoDone'); // QA previews: never on the live site
       if (dd) { const ireg = q.get('region') === 'IN' ? 'IN' : 'US'; document.documentElement.setAttribute('data-skin', 'card');
         this.setState({ standalone: true, region: ireg, regionTouched: true, mode: dd === 'dfm' ? 'dfm' : 'builder', d: { ...this.state.d, firstName: 'Alex', lastName: 'Morgan', title: 'Realtor', company: 'Skyline Realty', phone: ireg === 'IN' ? '+91 98765 43210' : '+1 (816) 555-0123', email: 'alex@skylinerealty.com', profession: 'Real Estate', colour: 're-poster' } },
           () => this.showDone({ orderNo: 'LC-K7Q2XP', slug: 'alexmorgan0123', pid: 'nbr_7f3a91', tok: '', remote: false, mode: dd === 'dfm' ? 'dfm' : 'builder', idem: '', total: priceOf(ireg, 'basic').total, region: ireg, paid: dd === 'paid' || dd === 'dfm', unpaid: dd === 'unpaid', online: true }));
