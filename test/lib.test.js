@@ -194,7 +194,8 @@ test('CardStyleControls: renders trigger, next button, selector and options from
   // Several collections: one tab each, and the row shows only the current style's collection.
   assert.deepEqual(cls('lcs-tab').map(t => t.props['data-group']), ['Personal', 'Luxury']);
   assert.equal(cls('lcs-tab').find(t => t.props['aria-selected'] === 'true').props['data-group'], 'Personal');
-  assert.equal(cls('lcs-trigger__sub')[0].children[0], 'Personal', 'trigger names the collection');
+  assert.equal(cls('lcs-trigger__label')[0].children[0], 'Change style', 'trigger says what it does');
+  assert.equal(cls('lcs-trigger__sub')[0].children[0], 'Emerald · Personal', 'trigger names the current style and collection');
   trigger.props.onClick(); next.props.onClick(); opts[0].props.onClick();
   assert.deepEqual(calls, ['toggle', 'next', 'select:a']);
   const open = all(render(el(C, { options, value: 'a', open: true, onToggle() {}, onSelect() {}, onNext() {}, nextIcon: 'check', busy: true })));
