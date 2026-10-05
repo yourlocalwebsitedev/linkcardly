@@ -7,11 +7,11 @@ const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=de
 <title>${p.title}</title><meta name="description" content="${p.description}">
 <link rel="canonical" href="${SITE_URL}${p.path}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Linkcardly"><meta property="og:title" content="${p.title}"><meta property="og:description" content="${p.description}"><meta property="og:url" content="${SITE_URL}${p.path}"><meta property="og:image" content="${SITE_URL}/assets/img/brand/og-image.png">
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#f5ead8">
+<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="${p.theme === 'gold' ? '#070604' : '#f5ead8'}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">`;
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,800${p.theme === 'gold' ? '&family=DM+Serif+Display:ital@0;1' : ''}&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">${p.theme === 'gold' ? '<link rel="stylesheet" href="/assets/css/gold.css">' : ''}`;
 
 const header = p => `<header class="top">
   <nav class="nav" aria-label="Main">
@@ -39,7 +39,7 @@ const stickyBar = '<div class="sticky"><span>From $49 a year</span><a class="btn
 export const layout = (p, body) => `<!doctype html>
 <html lang="en"><head>
 ${head(p)}
-</head><body>
+</head><body${p.theme ? ` class="${p.theme}"` : ''}>
 <a class="skip" href="#main">Skip to content</a>
 ${header(p)}
 <main id="main">

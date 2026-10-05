@@ -607,7 +607,7 @@ begin
     photo_url = v_photo,
     photo_x = least(100, greatest(0, coalesce((v->>'photo_x')::numeric, 50))),
     photo_y = least(100, greatest(0, coalesce((v->>'photo_y')::numeric, 50))),
-    photo_zoom = least(3, greatest(1, coalesce((v->>'photo_zoom')::numeric, 1))),
+    photo_zoom = least(3, greatest(0.6, coalesce((v->>'photo_zoom')::numeric, 1))),
     extras = v_ex, edited_at = now(), edit_seen = false
   where id = r.id;
   return jsonb_build_object('ok', true, 'slug', r.slug, 'public_id', r.public_id);
