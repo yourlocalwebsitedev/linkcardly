@@ -95,7 +95,7 @@ test('design tokens: one source (tokens.css) loaded before site.css and the app 
   assert.ok(!/#[0-9a-f]{6}/i.test(skin), 'app/skin.css uses tokens, not hex colours');
   const html = await read('index.html'), order = await css('app/order.html');
   assert.ok(html.indexOf('tokens.css') < html.indexOf('site.css'));
-  assert.ok(order.indexOf('tokens.css') > 0 && order.indexOf('tokens.css') < order.indexOf('skin.css'));
+  assert.ok(order.indexOf('tokens.css') > 0 && order.indexOf('tokens.css') < order.indexOf('skin-gold.css'));
 });
 
 test('text pages use the shared page header instead of inline styles', async () => {
@@ -104,4 +104,13 @@ test('text pages use the shared page header instead of inline styles', async () 
     assert.match(html, /<div class="page-head">/, n);
     assert.ok(!html.includes('clamp(40px,5.6vw,72px)'), n);
   }
+});
+
+test('home uses the Black & Gold theme: gold.css after site.css, one claim form, FAQ as native details', async () => {
+  const html = await read('index.html');
+  assert.match(html, /<body class="gold">/);
+  assert.ok(html.indexOf('site.css') < html.indexOf('gold.css'));
+  assert.equal((html.match(/<form class="claim" data-claim>/g) || []).length, 1);
+  assert.ok((html.match(/<details/g) || []).length >= 3);
+  for (const img of ['people', 'share', 'cta']) await read('assets/img/home/' + img + '.png');
 });

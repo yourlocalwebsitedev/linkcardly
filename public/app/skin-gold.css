@@ -1,0 +1,92 @@
+/* Linkcardly Black & Gold skin for the order app (/create). Visual only, no behaviour.
+   Drop-in replacement for skin.css: loads after tokens.css, re-points the brand tokens to the Black & Gold
+   palette (warm near-black, champagne gold), then maps the app's own tokens onto them. */
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Figtree:wght@400;500;600;700;800&display=swap");
+
+/* Palette: Background #070604 · Secondary #0F0C08 · Surface #13100B · Elevated #18140D · Border #302819
+   Gold #ECC48F · Highlight #F2C985 · Darker #D8A56F · Gold text #E6BA7A · Text #F7F7F7 · Secondary #B8B3AA · Muted #817B70 */
+:root{
+  --lc-bg:#070604!important;--lc-surface:#0F0C08!important;--lc-text:#F7F7F7!important;--lc-accent:#ECC48F!important;--lc-danger:#FF9A8A!important;
+  --lc-terracotta:#ECC48F!important;
+  --n100:#13100B!important;--n200:#18140D!important;--n300:#302819!important;--n400:#4A4234!important;--n500:#655E52!important;--n600:#817B70!important;--n700:#B8B3AA!important;--n800:#DAD6CF!important;--n900:#F7F7F7!important;
+  --a100:#17130C!important;--a200:#221C11!important;--a300:#3A2F1C!important;--a400:#F2C985!important;--a600:#ECC48F!important;--a700:#E6BA7A!important;--a800:#F2C985!important;
+  --font-h:"DM Serif Display",Georgia,serif!important;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.5)!important;--shadow-md:0 4px 12px rgba(0,0,0,.5)!important;--shadow-lg:0 16px 40px rgba(0,0,0,.6)!important;
+  color-scheme:dark;
+}
+
+nav[aria-label="Breadcrumb"]{display:none!important}
+
+html[data-theme="light"],html[data-skin="card"],html[data-skin="card"][data-theme="light"]{
+  --gold:var(--a700)!important;--mint:var(--n100)!important;--mint-2:var(--a200)!important;
+  --sand:var(--lc-surface)!important;--sand-2:var(--n300)!important;--sand-ink:var(--n700)!important;
+  --bg:var(--lc-bg)!important;--bg-2:var(--lc-surface)!important;--surface:var(--lc-surface)!important;--surface-1:var(--n100)!important;--surface-hi:var(--n200)!important;
+  --ink:var(--lc-text)!important;--ink-2:var(--n900)!important;--ink-3:var(--n800)!important;--body:var(--n800)!important;
+  --muted:var(--n700)!important;--faint:var(--n600)!important;
+  --accent:var(--a600)!important;--accent-hover:var(--a400)!important;--accent-2:var(--a600)!important;
+  --danger:var(--lc-danger)!important;
+  --btn:var(--a600)!important;--btn-hover:var(--a400)!important;--btn-ink:#0A0805!important;
+  --fg-rgb:247,247,247!important;--acc-rgb:236,196,143!important;
+  color-scheme:dark!important;
+}
+html[data-theme="light"] body,html body{background:var(--lc-bg)!important;color:var(--n900)}
+
+/* Wordmark: white "link", champagne "card" */
+nbr-logo,nbr-logo>span{color:var(--lc-text)!important}
+nbr-logo>span{font-family:"DM Serif Display",Georgia,serif!important;letter-spacing:-.015em!important}
+nbr-logo>span>span{color:var(--a600)!important}
+
+/* Type: Figtree for UI, DM Serif Display for headings */
+[data-screen-label="Order Card"],[data-screen-label="Order Card"] *:not(svg):not(path){font-family:var(--font-b)!important}
+html body [data-screen-label="Order Card"] h1,html body [data-screen-label="Order Card"] h2{font-family:var(--font-h)!important;font-weight:400!important;letter-spacing:-.005em!important}
+[data-screen-label="Order Card"] h3{font-weight:700!important;letter-spacing:-.01em!important}
+header[style*="position:sticky"]{font-family:var(--font-b)!important;background:rgba(7,6,4,.88)!important}
+header[style*="position:sticky"] a[aria-label^="Close"],header[style*="position:sticky"] a[aria-label^="Leave"]{opacity:.7}
+
+/* Primary button: champagne gold */
+[data-screen-label="Order Card"] .lc-cta{border:0!important;background:linear-gradient(180deg,#F2C985 0%,#ECC48F 100%)!important;color:#0A0805!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.45)!important}
+[data-screen-label="Order Card"] .lc-cta:disabled{opacity:.6}
+[data-screen-label="Order Card"] .lc-back{border:1px solid #302819!important;background:rgba(19,16,11,.9)!important;color:var(--n900)!important;box-shadow:0 8px 24px rgba(0,0,0,.45)!important}
+[data-screen-label="Order Card"] :is(.lc-cta,.lc-back):focus-visible{outline:2px solid var(--a600);outline-offset:3px}
+
+/* Step nav: the active step is a state (champagne tint, gold text); inactive steps stay quiet */
+ol[aria-label="Steps"]{background:#0F0C08!important;border-color:#302819!important}
+ol[aria-label="Steps"]>li[aria-hidden="true"]{background:rgba(236,196,143,.13)!important;box-shadow:inset 0 0 0 1px rgba(236,196,143,.42)!important}
+ol[aria-label="Steps"] button{color:var(--n600)!important}
+ol[aria-label="Steps"] button[aria-current="step"]{color:var(--a700)!important}
+
+/* Plan cards: selected = surface + gold hairline + soft champagne light from the top left; unselected = quiet */
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="false"]{background:#0F0C08!important;border:1px solid #302819!important;box-shadow:none!important}
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="true"]{background:radial-gradient(130% 90% at 0% 0%,rgba(242,201,133,.11) 0%,rgba(242,201,133,0) 55%),#13100B!important;border:1px solid #ECC48F!important;box-shadow:0 0 18px rgba(236,196,143,.16),inset 0 1px 0 rgba(242,201,133,.16)!important}
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="true"] > span:last-child > span[aria-hidden="true"]{border-color:rgba(236,196,143,.55)!important}
+
+/* "Your link" field (link-claim.css hard-codes a white input) */
+.lcl{color:var(--n900)!important}
+.lcl__field{background:#0F0C08!important;border:1px solid #302819!important}
+.lcl__field:focus-within{border-color:#ECC48F!important;box-shadow:0 0 0 3px rgba(236,196,143,.16)!important}
+.lcl__field.is-ok{border:1px solid #ECC48F!important;box-shadow:0 0 0 3px rgba(236,196,143,.14)!important}
+.lcl__prefix{color:var(--n700)!important}
+.lcl__input{color:var(--n900)!important}
+.lcl__mark--ok{background:linear-gradient(180deg,#F2C985,#ECC48F)!important;color:#0A0805!important}
+.lcl__note{background:#13100B!important;color:var(--n800)!important;border:1px solid #302819}
+.lcl__note-dot{background:rgba(236,196,143,.14)!important;color:#ECC48F!important}
+.lcl__alt{background:#13100B!important;border-color:#302819!important;color:var(--n900)!important}
+.lcl__alt:hover{border-color:#ECC48F!important}
+.lcl__spin{border-color:#302819!important;border-top-color:#ECC48F!important}
+/* Payment summary: same treatment as the selected plan */
+[data-pay-summary]{background:radial-gradient(130% 90% at 0% 0%,rgba(242,201,133,.10) 0%,rgba(242,201,133,0) 55%),#13100B!important;border:1px solid #ECC48F!important;box-shadow:0 0 18px rgba(236,196,143,.14),inset 0 1px 0 rgba(242,201,133,.14)!important}
+/* Your card groups: card #13100B with #0F0C08 inputs */
+[data-group]{border-color:#302819}
+/* Done screen (order-done.css hard-codes light fills) */
+.lcd{--lcd-glass:linear-gradient(180deg,#F2C985,#ECC48F)}
+.lcd__pill{background:#13100B!important;border:1px solid #302819!important;color:#F7F7F7!important}
+.lcd__act{border-color:#302819!important}
+.lcd__act--main{border-color:transparent!important;color:#0A0805!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.4)!important}
+.lcd__act--main::before{display:none}
+.lcd__tick{color:#0A0805!important;border-color:rgba(236,196,143,.6)!important}
+.lcd__dark{background:linear-gradient(180deg,#F2C985,#ECC48F)!important;color:#0A0805!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.4)!important}
+.lcd__glass{background:#13100B!important;border:1px solid #302819!important;color:#F7F7F7!important;box-shadow:none!important}
+.lcd__card::before{background:radial-gradient(closest-side,rgba(236,196,143,.22),rgba(236,196,143,0))!important}
+.lcd__qr{border-color:#302819!important}
+input,textarea,select{color-scheme:dark}
+@media (prefers-reduced-motion:reduce){[role="radiogroup"][aria-label="Plan"] *{transition:none!important}}

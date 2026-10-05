@@ -96,9 +96,10 @@
       'aria-label': (props.open ? 'Hide styles. ' : 'Change style. ') + 'Current style: ' + (opt.name || '') + (props.sub ? ', ' + props.sub : ''),
       onClick: props.onToggle
     }, h(Thumb, { thumb: opt.thumb, size: 36, className: 'lcs-trigger__thumb' }),
-      props.sub
-        ? h('span', { className: 'lcs-trigger__text' }, h('span', { className: 'lcs-trigger__label' }, opt.name || 'Style'), h('span', { className: 'lcs-trigger__sub' }, props.sub))
-        : h('span', { className: 'lcs-trigger__label' }, opt.name || 'Style'),
+      /* Linkcardly: say what the button does ("Change style" / "Done"), with the current style under it */
+      h('span', { className: 'lcs-trigger__text' },
+        h('span', { className: 'lcs-trigger__label' }, props.open ? 'Done' : 'Change style'),
+        h('span', { className: 'lcs-trigger__sub' }, [opt.name, props.sub].filter(Boolean).join(' · ') || 'Style')),
       h('span', { className: 'lcs-trigger__chevron' }, Icon(ICONS.chevron, 16)));
   }
 
@@ -274,8 +275,8 @@
             tabIndex: on ? 0 : -1, 'data-id': o.id, className: 'lcr__swatch' + (on ? ' is-selected' : ''), style: { background: t.bg },
             onClick: function () { if (props.onSelect) props.onSelect(o.id); } },
             h('span', { className: 'lcr__dot', style: { background: t.dot || '#fff' } }));
-        })),
-      h('span', { className: 'lcr__name lcs-glass', 'aria-hidden': 'true', style: { top: (5 + i * 36 + 2) + 'px' } }, current.name));
+        })));
+      /* Linkcardly: no floating colour-name label beside the strip; each swatch keeps its name as title/aria-label */
   }
   window.LcCardColourRail = CardColourRail;
 })();

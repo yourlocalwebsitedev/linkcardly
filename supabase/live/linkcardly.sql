@@ -239,7 +239,7 @@ begin
     'preset', case when c->>'preset' ~ '^[A-Za-z]{2,30}$' then c->>'preset' else 'entrepreneur' end,
     'photo_x', case when c->>'photo_x' ~ n then least(100, greatest(0, (c->>'photo_x')::numeric)) else 50 end,
     'photo_y', case when c->>'photo_y' ~ n then least(100, greatest(0, (c->>'photo_y')::numeric)) else 50 end,
-    'photo_zoom', case when c->>'photo_zoom' ~ n then least(3, greatest(1, (c->>'photo_zoom')::numeric)) else 1 end,
+    'photo_zoom', case when c->>'photo_zoom' ~ n then least(3, greatest(0.6, (c->>'photo_zoom')::numeric)) else 1 end,
     'signature', '', 'titles', '', 'contact_photo_url', '', 'show_powered_by', true,
     'extras', jsonb_build_object(
       'brokerage', left(coalesce(x->>'brokerage', ''), 120), 'license_no', left(coalesce(x->>'license_no', ''), 40),
@@ -300,7 +300,7 @@ begin
     photo_url = v_photo,
     photo_x = least(100, greatest(0, coalesce((v->>'photo_x')::numeric, 50))),
     photo_y = least(100, greatest(0, coalesce((v->>'photo_y')::numeric, 50))),
-    photo_zoom = least(3, greatest(1, coalesce((v->>'photo_zoom')::numeric, 1))),
+    photo_zoom = least(3, greatest(0.6, coalesce((v->>'photo_zoom')::numeric, 1))),
     extras = v_ex, edited_at = now(), edit_seen = false
   where id = r.id;
   return jsonb_build_object('ok', true, 'slug', r.slug, 'public_id', r.public_id);
