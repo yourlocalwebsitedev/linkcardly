@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
 <link rel="canonical" href="https://linkcardly.com/create">
-<meta name="theme-color" content="#070604">
+<meta name="theme-color" content="#EEDFD4">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Linkcardly">
 <meta property="og:title" content="Order your digital business card | Linkcardly">
@@ -28,7 +28,7 @@
 <script src="/app/estate-styles.js"></script>
 <script src="/app/scene-styles.js"></script>
 <link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/app/skin-gold.css">
+<link rel="stylesheet" href="/app/skin-v13.css">
 <!-- Linkcardly: load the confirmation screen and "Your link" field up front, so a dropped connection at the moment
      of ordering can't leave the confirmation unstyled. The components skip loading these again (same ids). -->
 <link rel="stylesheet" id="lc-order-done-css" href="/app/components/order-done.css">
@@ -42,7 +42,7 @@
 <title>Order your digital business card | Linkcardly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;family=Figtree:wght@400;500;600;700&amp;family=DM+Serif+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <script src="/app/qrcode.js"></script>
 <script>try{var t='light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
@@ -50,7 +50,7 @@
 [data-theme="light"]{--gold:#B7893E;--mint:#EEF6F4;--mint-2:#D6ECE8;--sand:#F3E9D8;--sand-2:#EAD7B4;--sand-ink:#6B4A1C;--bg:#F7F3EC;--bg-2:#EDE7DC;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E7E1D6;--ink:#101820;--ink-2:#1A222B;--ink-3:#2E3440;--body:#2E3440;--muted:#5A6068;--faint:#6B7078;--accent:#0B7C86;--accent-hover:#086670;--accent-2:#0B7C86;--danger:#A1281C;--fg-rgb:16,24,32;--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;color-scheme:light;}
 :root{--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;}
 html[data-skin="card"]{--gold:#B7893E;--mint:#EEF6F4;--mint-2:#D6ECE8;--sand:#F3E9D8;--sand-2:#EAD7B4;--sand-ink:#6B4A1C;--bg:#F7F3EC;--bg-2:#EDE7DC;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E7E1D6;--ink:#101820;--ink-2:#1A222B;--ink-3:#2E3440;--body:#2E3440;--muted:#5A6068;--faint:#6B7078;--accent:#0B7C86;--accent-hover:#086670;--accent-2:#0B7C86;--danger:#A1281C;--fg-rgb:16,24,32;--btn:#101820;--btn-hover:#2A333D;--btn-ink:#F5F2EC;--acc-rgb:11,124,134;color-scheme:light;}
-body{margin:0;background:var(--bg);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+body{margin:0;background:var(--bg);color:var(--ink-2);font-family:Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
 @keyframes nbrSpin{to{transform:rotate(360deg);}}
 a{color:var(--accent);text-decoration:none;}
 a:hover{color:var(--accent-hover);}
@@ -60,33 +60,30 @@ select option{background:var(--surface);color:var(--ink-2);}
 </helmet>
 
 <sc-if value="{{ showSaHeader }}" hint-placeholder-val="{{ false }}">
-  <header style="position:sticky;top:0;z-index:20;height:{{ hdrH }};transform:{{ hdrY }};transition:transform .25s ease;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);font-family:'Plus Jakarta Sans',system-ui,sans-serif;">
-    <a href="{{ homeHref }}" aria-label="Linkcardly home" style="display:flex;align-items:center;gap:6px;color:var(--ink);"><x-import component-from-global-scope="nbr-logo" from="/app/brand.js" height="{{ hdrLogoN }}" font="{{ hdrFontN }}" hint-size="150px,36px"></x-import></a>
+  <header style="position:sticky;top:0;z-index:20;transform:{{ hdrY }};transition:transform .25s ease,box-shadow .25s;box-shadow:{{ hdrShadow }};background:#EEDFD4;font-family:Inter,system-ui,sans-serif;">
+    <div style="max-width:1560px;height:{{ hdrH }};margin:0 auto;padding:0 {{ hdrPadX }};display:flex;align-items:center;justify-content:space-between;gap:{{ hdrGap }};">
+    <a href="{{ homeHref }}" aria-label="Linkcardly home" style="display:flex;flex:none;text-decoration:none;"><span style="font-family:'DM Serif Display',Georgia,serif;font-size:{{ hdrLogo }};line-height:1;letter-spacing:-.035em;color:#11100F;-webkit-text-stroke:.6px currentColor;">Link<span style="color:#B04E22;">card</span>ly</span></a>
     <sc-if value="{{ hdrWide }}" hint-placeholder-val="{{ true }}">
-    <span style="display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:999px;background:var(--bg-2);border:1px solid rgba(var(--fg-rgb),0.06);font-size:12.5px;font-weight:600;color:var(--ink-3);white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6.5 16c.6-1.3 1.5-2 2.5-2s1.9.7 2.5 2M14 10h4M14 13.5h3"></path></svg>{{ headerChip }}</span>
+    <div style="flex:1;display:flex;justify-content:flex-start;gap:40px;">
+      <a href="/#features" style="font-size:16px;font-weight:500;color:#11100F;white-space:nowrap;padding:8px 0;">Features</a><a href="/designs" style="font-size:16px;font-weight:500;color:#11100F;white-space:nowrap;padding:8px 0;">Designs</a><a href="/pricing" style="font-size:16px;font-weight:500;color:#11100F;white-space:nowrap;padding:8px 0;">Pricing</a><a href="/teams" style="font-size:16px;font-weight:500;color:#11100F;white-space:nowrap;padding:8px 0;">Teams</a><a href="/contact" style="font-size:16px;font-weight:500;color:#11100F;white-space:nowrap;padding:8px 0;">Contact</a></div>
     </sc-if>
     <sc-if value="{{ hdrNarrow }}" hint-placeholder-val="{{ false }}">
-      <a href="{{ closeHref }}" aria-label="{{ closeLabel }}" style="width:34px;height:34px;flex:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1.5px solid rgba(32,30,29,0.14);color:#201e1d;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></a>
+      <button type="button" onClick="{{ toggleMenu }}" aria-label="{{ menuLabel }}" aria-expanded="{{ menuOpenAttr }}" aria-controls="order-menu" style="margin-left:auto;width:44px;height:44px;flex:none;padding:0;border:0;border-radius:50%;background:#11100F;color:#FDFDFC;display:grid;place-items:center;cursor:pointer;"><sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"></path></svg></sc-if><sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></sc-if></button>
+    </sc-if>
+    </div>
+    <sc-if value="{{ menuShown }}" hint-placeholder-val="{{ false }}">
+    <nav id="order-menu" aria-label="Main" style="position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;padding:0 20px 20px;background:#EEDFD4;border-radius:0 0 28px 28px;box-shadow:0 24px 48px -16px rgba(17,16,15,.28);max-height:calc(100dvh - 68px);overflow-y:auto;overscroll-behavior:contain;">
+      <a href="/#features" style="height:56px;display:flex;align-items:center;border-bottom:1px solid rgba(17,16,15,.1);font-size:17px;font-weight:500;color:#11100F;text-decoration:none;">Features</a><a href="/designs" style="height:56px;display:flex;align-items:center;border-bottom:1px solid rgba(17,16,15,.1);font-size:17px;font-weight:500;color:#11100F;text-decoration:none;">Designs</a><a href="/pricing" style="height:56px;display:flex;align-items:center;border-bottom:1px solid rgba(17,16,15,.1);font-size:17px;font-weight:500;color:#11100F;text-decoration:none;">Pricing</a><a href="/teams" style="height:56px;display:flex;align-items:center;border-bottom:1px solid rgba(17,16,15,.1);font-size:17px;font-weight:500;color:#11100F;text-decoration:none;">Teams</a><a href="/contact" style="height:56px;display:flex;align-items:center;border-bottom:1px solid rgba(17,16,15,.1);font-size:17px;font-weight:500;color:#11100F;text-decoration:none;">Contact</a>
+    </nav>
     </sc-if>
   </header>
 </sc-if>
-<div data-screen-label="Order Card" style="max-width:1200px;margin:0 auto;padding:{{ rootPad }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink-2);">
+<h1 style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;">Create your Linkcardly card</h1>
+
+<div data-screen-label="Order Card" style="max-width:1240px;margin:0 auto;padding:{{ rootPad }};font-family:Figtree,system-ui,sans-serif;color:var(--ink-2);">
 
 <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
-  <sc-if value="{{ showIntro }}" hint-placeholder-val="{{ true }}">
-  <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:var(--faint);">
-    <a href="#/services" style="color:var(--muted);">Services</a><span aria-hidden="true">/</span>
-    <a href="#/services/tap-card" style="color:var(--muted);">Digital Business Card</a><span aria-hidden="true">/</span>
-    <span style="color:var(--ink-2);" aria-current="page">Order</span>
-  </nav>
-  <div style="margin-top:28px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;">
-    <div style="max-width:620px;">
-      <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;color:var(--accent);">ORDER YOUR CARD</p>
-      <h1 style="margin:0;font-size:clamp(34px,4.8vw,54px);line-height:1.05;font-weight:800;letter-spacing:-0.03em;color:var(--ink);text-wrap:balance;">Your digital card, ready to share.</h1>
-      <p style="margin:16px 0 0;font-size:17px;line-height:1.6;color:var(--body);text-wrap:pretty;">Build it yourself and watch the preview update as you type, or send us your details and we'll design it for you.</p>
-    </div>
-  </div>
-  </sc-if>
+
 
 
   <sc-if value="{{ editMsgShow }}" hint-placeholder-val="{{ false }}">
@@ -99,7 +96,7 @@ select option{background:var(--surface);color:var(--ink-2);}
   <div style="margin-top:{{ modesGap }};display:flex;flex-wrap:wrap;gap:{{ bodyGap }};align-items:flex-start;">
     <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:20px;">
       <sc-if value="{{ isMock }}" hint-placeholder-val="{{ false }}"><div role="note" style="align-self:flex-start;display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px dashed rgba(var(--acc-rgb),0.6);color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.08em;">TEST MODE · orders aren't saved or charged</div></sc-if>
-      <sc-if value="{{ showSteps }}" hint-placeholder-val="{{ true }}"><ol aria-label="Steps" style="position:sticky;top:{{ stepTop }};z-index:15;transition:top .25s ease;box-shadow:0 8px 20px -14px rgba(0,0,0,0.45);list-style:none;margin:0;padding:4px;display:grid;grid-template-columns:{{ stepCols }};border-radius:999px;background:var(--bg-2);border:1px solid rgba(var(--fg-rgb),0.06);">
+      <sc-if value="{{ showSteps }}" hint-placeholder-val="{{ true }}"><ol aria-label="Steps" style="position:relative;z-index:15;box-shadow:0 8px 20px -14px rgba(0,0,0,0.45);list-style:none;margin:0;padding:4px;display:grid;grid-template-columns:{{ stepCols }};border-radius:999px;background:var(--bg-2);border:1px solid rgba(var(--fg-rgb),0.06);">
         <li aria-hidden="true" style="position:absolute;top:4px;bottom:4px;left:4px;width:{{ stepW }};border-radius:999px;background:var(--btn);box-shadow:0 2px 8px rgba(16,24,32,0.18);transform:translateX({{ stepX }});transition:transform .35s cubic-bezier(.3,.7,.2,1);"></li>
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
           <li style="position:relative;z-index:1;display:flex;min-width:0;">
@@ -116,7 +113,7 @@ select option{background:var(--surface);color:var(--ink-2);}
         <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;">
             <span style="font-size:11px;font-weight:800;letter-spacing:0.18em;color:var(--gold);">{{ stepEyebrow }}</span>
-            <h2 style="margin:0;font-size:clamp(30px,4vw,40px);line-height:1.05;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">Choose a plan</h2>
+            <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-size:clamp(32px,3.6vw,46px);line-height:1.02;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">Choose a plan</h2>
             <p style="margin:0;font-size:15px;line-height:1.5;color:var(--muted);">Link, QR code &amp; socials. Restyle free, anytime.</p>
           </div>
                     <div role="radiogroup" aria-label="Plan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));grid-auto-rows:1fr;gap:12px;">
@@ -133,13 +130,13 @@ select option{background:var(--surface);color:var(--ink-2);}
                     <span style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;"><sc-if value="{{ p.hasWas }}"><s style="font-size:18px;color:var(--faint);">{{ p.was }}</s></sc-if><span style="font-size:{{ p.priceFs }};line-height:1;font-weight:800;letter-spacing:-0.035em;color:var(--ink);">{{ p.price }}</span><span style="font-size:13px;font-weight:500;color:var(--faint);">{{ perYear }}</span></span>
                     <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;">
                       <sc-for list="{{ p.features }}" as="f">
-                        <li style="display:flex;gap:8px;font-size:{{ p.featFs }};line-height:1.4;color:{{ p.featInk }};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ p.tickInk }}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px;"><path d="M20 6L9 17l-5-5"></path></svg>{{ f }}</li>
+                        <li style="display:flex;gap:8px;font-size:{{ p.featFs }};line-height:1.4;color:{{ p.featInk }};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ p.tickInk }}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px;"><path d="M20 6L9 17l-5-5"></path></svg><span style="flex:1;min-width:0;">{{ f }}</span></li>
                       </sc-for>
                     </ul>
                   </span>
                   <sc-if value="{{ p.thumb }}" hint-placeholder-val="{{ false }}">
                     <span aria-hidden="true" style="position:relative;width:96px;height:150px;flex:none;margin-top:-4px;border-radius:12px;overflow:hidden;background:#101820;border:1px solid rgba(255,255,255,0.10);box-shadow:{{ p.thumbSh }};transform:{{ p.thumbTf }};transition:transform .25s ease-out,box-shadow .25s ease-out;display:flex;flex-direction:column;">
-                      <span style="position:relative;height:84px;flex:none;background-image:url('{{ p.img }}');background-size:cover;background-position:center 25%;">
+                      <span style="position:relative;height:84px;flex:none;background-image:url('{{ p.img }}');background-size:cover;background-position:center 8%;">
                         <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,24,32,0) 40%,#101820 100%);"></span>
                         <sc-if value="{{ p.motion }}"><span style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:rgba(10,10,10,0.55);border:1.5px solid rgba(255,255,255,0.85);display:grid;place-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="{{ p.playIcon }}"></path></svg></span></sc-if>
                         
@@ -239,7 +236,6 @@ select option{background:var(--surface);color:var(--ink-2);}
                     <div onPointerDown="{{ adjDown }}" aria-label="Drag to position the photo" style="position:relative;width:100%;aspect-ratio:1 / 1;max-width:420px;align-self:center;border-radius:20px;overflow:hidden;background:{{ adjBgColor }};cursor:grab;touch-action:none;user-select:none;">
                 <div data-ph="1" style="position:absolute;inset:0;background-image:{{ adjBg }};background-size:cover;background-position:{{ adjPos }};transform:scale({{ adjZoom }});transform-origin:{{ adjPos }};pointer-events:none;"></div>
                 <div aria-hidden="true" style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);background-size:33.33% 33.33%;pointer-events:none;"></div>
-                <div aria-hidden="true" style="position:absolute;left:50%;top:50%;width:76.8%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,0.42),inset 0 0 0 1.5px rgba(var(--acc-rgb),0.9);pointer-events:none;"></div>
                 <span style="position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,0.55);color:#fff;font-size:12.5px;font-weight:700;pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3"></path></svg>Drag to move</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:8px;">
@@ -306,16 +302,11 @@ select option{background:var(--surface);color:var(--ink-2);}
         <sc-if value="{{ isStep5 }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:6px;">
             <span style="font-size:11.5px;font-weight:800;letter-spacing:0.16em;color:var(--gold);">{{ stepEyebrow }}</span>
-            <h2 style="margin:0;font-size:clamp(30px,4vw,40px);line-height:1.05;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">Complete your card</h2>
+            <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-size:clamp(32px,3.6vw,46px);line-height:1.02;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">Complete your card</h2>
           </div>
           <div data-pay-summary="" style="display:flex;flex-direction:column;border-radius:18px;border:1px solid var(--accent);background:var(--surface-hi);box-shadow:0 0 18px rgba(var(--acc-rgb),0.12);overflow:hidden;">
             <div style="display:flex;gap:14px;padding:16px;align-items:flex-start;">
-              <span aria-hidden="true" style="position:relative;width:96px;height:150px;flex:none;border-radius:12px;overflow:hidden;background:#101820;border:1px solid rgba(255,255,255,0.10);box-shadow:0 10px 22px -12px rgba(0,0,0,0.55);transform:rotate(-3deg);display:flex;flex-direction:column;">
-                <span style="position:relative;height:84px;flex:none;background-image:url('{{ payImg }}');background-size:cover;background-position:center 25%;"><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,24,32,0) 40%,#101820 100%);"></span></span>
-                <span style="padding:0 8px;display:flex;flex-direction:column;gap:1px;margin-top:-10px;position:relative;"><span style="font-size:10px;font-weight:700;color:#fff;line-height:1.2;">{{ thumbName }}</span><span style="font-size:8px;color:rgba(255,255,255,0.72);">{{ thumbTitle }}</span></span>
-                <span style="padding:6px 8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;"><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Call</span><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Text</span><span style="height:16px;border-radius:5px;background:rgba(255,255,255,0.14);color:#fff;font-size:6px;font-weight:700;display:grid;place-items:center;">Email</span></span>
-                <span style="padding:4px 8px 0;"><span style="height:16px;border-radius:999px;background:#F5F2EC;color:#101820;font-size:6px;font-weight:800;display:grid;place-items:center;">Save contact</span></span>
-              </span>
+              <span aria-hidden="true" style="position:relative;display:block;width:96px;height:132px;flex:none;border-radius:16px;overflow:hidden;background:{{ payCard.bg }};box-shadow:0 12px 24px -14px rgba(17,16,15,.45),inset 0 0 0 1px rgba(17,16,15,.08);"><sc-for list="{{ payCard.blocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for></span>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                   <div style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">{{ payPlanName }}</span><span style="font-size:13px;color:var(--muted);overflow-wrap:anywhere;">{{ payLinkLine }}</span></div>
@@ -361,10 +352,10 @@ select option{background:var(--surface);color:var(--ink-2);}
       </section>
     </div>
 
-    <aside aria-label="Live preview" style="display:{{ pv.display }};flex:{{ pv.flex }};order:{{ pv.order }};margin:0 auto;position:sticky;top:{{ pv.top }};z-index:5;flex-direction:column;align-items:center;gap:10px;padding:{{ pv.pad }};background:{{ pv.bg }};">
+    <aside aria-label="Live preview" style="border-radius:32px;display:{{ pv.display }};flex:{{ pv.flex }};order:{{ pv.order }};margin:0 auto;position:sticky;top:{{ pv.top }};z-index:5;flex-direction:column;align-items:center;gap:10px;padding:{{ pv.pad }};background:{{ pv.bg }};">
       
       <div style="position:relative;width:{{ pv.w }};height:{{ pv.h }};border-radius:{{ pv.radius }};overflow:hidden;background:#06120d;transition:height .3s ease;box-shadow:{{ pv.cardShadow }};">
-        <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><div role="note" aria-label="Preview: this is how people will see your card" style="position:absolute;top:calc(20px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:4;pointer-events:none;display:flex;align-items:center;gap:8px;height:30px;padding:0 13px 0 11px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,.10) 52%,rgba(255,255,255,.16) 100%);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -1px 0 rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.28);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);font-size:11px;font-weight:800;letter-spacing:.16em;white-space:nowrap;"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:#ECC48F;box-shadow:0 0 0 3px rgba(236,196,143,.28),0 0 8px rgba(236,196,143,.8);"></span>LIVE PREVIEW</div></sc-if>
+        <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><div role="note" aria-label="Preview: this is how people will see your card" style="position:absolute;top:calc(20px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:4;pointer-events:none;display:flex;align-items:center;gap:8px;height:30px;padding:0 13px 0 11px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,.10) 52%,rgba(255,255,255,.16) 100%);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -1px 0 rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.28);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);font-size:11px;font-weight:800;letter-spacing:.16em;white-space:nowrap;"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:#B04E22;box-shadow:0 0 0 3px rgba(176,78,34,.2);"></span>LIVE PREVIEW</div></sc-if>
         <sc-if value="{{ pv.showBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ back }}" aria-label="Back to your details" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:8;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,0.22);background:rgba(11,27,43,0.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if>
         <iframe ref="{{ previewRef }}" onLoad="{{ onPreviewLoad }}" src="/app/card.html?preview=1" title="Live preview of your card" scrolling="{{ pv.scrolling }}" style="position:absolute;top:0;left:0;width:390px;height:{{ pv.ih }};border:0;transform:scale({{ pv.scale }});transform-origin:0 0;"></iframe>
         <sc-if value="{{ showSeaPv }}" hint-placeholder-val="{{ false }}">
@@ -372,37 +363,19 @@ select option{background:var(--surface);color:var(--ink-2);}
             <sc-for list="{{ seaPv }}" as="sp"><button type="button" role="radio" aria-checked="{{ sp.checked }}" aria-label="{{ sp.label }}" title="{{ sp.label }}" onClick="{{ sp.pick }}" style="width:34px;height:34px;padding:0;border:0;border-radius:50%;background:{{ sp.bg }};color:{{ sp.fg }};display:grid;place-items:center;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ sp.icon }}"></path></svg></button></sc-for>
           </div>
         </sc-if>
+        <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" on-select="{{ scs.select }}" offset="{{ scs.railTopDesk }}" inline="{{ true }}" hint-size="44px,230px"></x-import></sc-if>
+        <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="LcCardStyleControls" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" open="{{ scs.open }}" on-toggle="{{ scs.toggle }}" on-select="{{ scs.select }}" inline="{{ true }}" hide-next="{{ true }}" max-width="100%" hint-size="370px,80px"></x-import></sc-if>
       </div>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="flex:none;width:100%;height:{{ pv.barSpace }};"></div></sc-if>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" on-select="{{ scs.select }}" offset="{{ scs.railTop }}" hint-size="44px,230px"></x-import></sc-if>
       <sc-if value="{{ pv.fixedBar }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LcCardStyleControls" from="/app/components/card-style-controls.js" options="{{ scs.options }}" value="{{ scs.value }}" open="{{ scs.open }}" on-toggle="{{ scs.toggle }}" on-select="{{ scs.select }}" on-next="{{ next }}" next-label="{{ pv.nextText }}" next-icon="{{ scs.nextIcon }}" busy="{{ busy }}" max-width="{{ scs.maxWidth }}" hint-size="390px,80px"></x-import></sc-if>
-      <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}"><div ref="{{ barRef }}" style="position:{{ pv.barPos }};left:0;right:0;bottom:0;z-index:40;width:{{ pv.barW }};box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;padding:{{ pv.barPad }};background:var(--bg);border-radius:{{ pv.barRadius }};box-shadow:{{ pv.barShadow }};">
-        <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;"><sc-if value="{{ showCollSw }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.10);box-shadow:0 1px 2px rgba(10,15,26,0.06);">
-          <button type="button" onClick="{{ collPrev }}" aria-label="Previous collection" style="width:40px;height:40px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--bg-2);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
-          <div aria-live="polite" aria-label="{{ collPos }}" style="min-width:150px;display:flex;flex-direction:column;align-items:center;gap:5px;">
-            <span style="font-size:15px;font-weight:800;color:var(--ink);line-height:1;">{{ collName }}</span>
-            <span aria-hidden="true" style="display:flex;gap:4px;"><sc-for list="{{ collDots }}" as="cd" hint-placeholder-count="3"><span style="height:4px;width:{{ cd.w }};border-radius:2px;background:{{ cd.bg }};transition:all .25s;"></span></sc-for></span>
-          </div>
-          <button type="button" onClick="{{ collNext }}" aria-label="Next collection" style="width:40px;height:40px;flex:none;border:0;border-radius:50%;background:var(--btn);color:var(--btn-ink);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--btn-hover);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button>
-        </div></sc-if>
-        <div style="position:relative;width:100%;"><div role="radiogroup" aria-label="Colour palette" onScroll="{{ onSwScroll }}" style="display:flex;justify-content:{{ swJustify }};gap:{{ swGap }};overflow-x:auto;scrollbar-width:none;padding:6px 0;"><span aria-hidden="true" style="width:0;flex:none;"></span>
-          <sc-for list="{{ colours }}" as="c" hint-placeholder-count="6">
-            <sc-if value="{{ c.isDot }}" hint-placeholder-val="{{ true }}"><button type="button" role="radio" aria-checked="{{ c.checked }}" aria-label="{{ c.name }}" title="{{ c.name }}" onClick="{{ c.pick }}" style="width:44px;height:44px;flex:none;border-radius:50%;border:0;cursor:pointer;background:{{ c.bg }};box-shadow:{{ c.ring }};display:grid;place-items:center;">
-              <span aria-hidden="true" style="width:16px;height:16px;border-radius:50%;background:{{ c.accent }};"></span>
-            </button></sc-if>
-            <sc-if value="{{ c.isThumb }}" hint-placeholder-val="{{ false }}"><button type="button" role="radio" aria-checked="{{ c.checked }}" aria-label="{{ c.name }}" onClick="{{ c.pick }}" style="flex:none;padding:0;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;font-size:11.5px;font-weight:700;color:{{ c.labelInk }};cursor:pointer;">
-              <span aria-hidden="true" style="position:relative;display:block;width:58px;height:80px;border-radius:10px;overflow:hidden;background:{{ c.bg }};box-shadow:{{ c.ring2 }};"><sc-for list="{{ c.blocks }}" as="b"><span style="position:absolute;left:{{ b.l }};top:{{ b.t }};width:{{ b.w }};height:{{ b.h }};border-radius:{{ b.r }};background:{{ b.bg }};box-shadow:{{ b.sh }};"></span></sc-for><sc-if value="{{ c.rec }}"><span style="position:absolute;left:3px;top:3px;padding:2px 5px;border-radius:999px;background:#FFFFFF;color:#101820;font-size:8px;font-weight:800;letter-spacing:0.04em;box-shadow:0 1px 3px rgba(0,0,0,0.25);">BEST</span></sc-if></span>{{ c.name }}
-            </button></sc-if>
-          </sc-for><span aria-hidden="true" style="width:0;flex:none;"></span></div><sc-if value="{{ swFade }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="position:absolute;top:0;right:0;bottom:0;width:24px;background:linear-gradient(90deg, rgba(var(--bg-rgb,245,242,236),0) 0%, var(--bg) 100%);pointer-events:none;"></div></sc-if></div>
-</div>
-      </div></sc-if>
       <sc-if value="{{ pv.mobile }}" hint-placeholder-val="{{ false }}">
         <button type="button" onClick="{{ pv.toggle }}" aria-expanded="{{ pv.expanded }}" style="min-height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--surface);color:var(--ink-2);font:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pv.icon }}"></path></svg>{{ pv.toggleLabel }}
         </button>
       </sc-if>
       <sc-if value="{{ pv.desktop }}" hint-placeholder-val="{{ true }}">
-        <p style="margin:0;font-size:13px;text-align:center;color:var(--muted);max-width:300px;">{{ previewNote }}</p>
+        <p style="margin:0;font-size:13px;text-align:center;color:var(--muted);max-width:360px;">{{ previewNote }}</p>
       </sc-if>
     </aside>
   </div>
@@ -474,6 +447,15 @@ select option{background:var(--surface);color:var(--ink-2);}
 </sc-if>
 
 </div>
+<sc-if value="{{ showSaFooter }}" hint-placeholder-val="{{ false }}">
+<footer style="background:#EEDFD4;font-family:Inter,system-ui,sans-serif;color:#11100F;">
+  <div style="max-width:1560px;margin:0 auto;padding:32px clamp(20px,5vw,72px);display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;">
+    <a href="/" aria-label="Linkcardly home" style="margin-right:auto;font-family:'DM Serif Display',Georgia,serif;font-size:30px;line-height:1;letter-spacing:-.035em;color:#11100F;-webkit-text-stroke:.6px currentColor;">Link<span style="color:#B04E22;">card</span>ly</a>
+    <nav aria-label="Footer" style="display:flex;flex-wrap:wrap;gap:0 24px;font-size:15px;font-weight:500;"><a href="/how-it-works" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">How it works</a><a href="/designs" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Designs</a><a href="/pricing" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Pricing</a><a href="/claim" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Claim your link</a><a href="/teams" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Teams</a><a href="/contact" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Contact</a><a href="/privacy" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Privacy</a><a href="/terms" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Terms</a><a href="/refunds" style="min-height:44px;display:inline-flex;align-items:center;color:#11100F;">Refunds</a></nav>
+    <small style="width:100%;font-size:14px;color:#837867;">© 2026 Linkcardly</small>
+  </div>
+</footer>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 /* Settings for this environment come from /app/config.js (served by the Linkcardly Worker: production, staging or a
@@ -589,6 +571,8 @@ const BUSINESSES = [
 const VISIBLE_BIZ = BUSINESSES.filter(b => !b.hidden);
 /* Mini card previews only where designs differ in layout (Real Estate and business collections). Personal, Professional and Luxury differ by colour, so they use round swatches. */
 const isTh = c => c.layout === 'estate' && !!c.mode;
+/* Template styles are split on ";", so a data: URL (which contains one) can't go in a style hole. Turn it into a blob: URL (cached). */
+const cssSrc = (() => { const m = new Map(); return u => { if (!/^data:/.test(u || '')) return u; if (m.has(u)) return m.get(u); let r = ''; try { const i = u.indexOf(','), meta = u.slice(5, i), b = atob(u.slice(i + 1)), a = new Uint8Array(b.length); for (let k = 0; k < b.length; k++) a[k] = b.charCodeAt(k); r = URL.createObjectURL(new Blob([a], { type: meta.split(';')[0] })); } catch (e) {} m.set(u, r); return r; }; })();
 const thumbBlocks = (c, w, h, ph) => { const s = w / 58, px = n => (n * s).toFixed(1) + 'px', bg = c.bg, ink = c.ink, acc = c.accent, mix = p => 'color-mix(in srgb, ' + ink + ' ' + p + '%, ' + bg + ')', B = (l, t, ww, hh, r, b, sh) => ({ l: px(l), t: px(t), w: px(ww), h: px(hh), r: px(r), bg: b, sh: sh || 'none' });
   if (!c.mode) { const dark = (() => { const x = String(bg).replace('#', ''); if (x.length < 6) return true; const n = parseInt(x.slice(0, 6), 16); return (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) < 140; })(), fg = dark ? '#FFFFFF' : '#101820', soft = dark ? 'rgba(255,255,255,0.16)' : 'rgba(16,24,32,0.10)';
     return [B(0, 0, 58, 42, 0, ph || ('color-mix(in srgb, ' + acc + ' 30%, ' + bg + ')')), B(0, 26, 58, 16, 0, 'linear-gradient(180deg, transparent, ' + bg + ')'), B(6, 45, 32, 5, 2, fg), B(6, 53, 20, 3, 2, acc), B(6, 60, 14, 7, 2, soft), B(22, 60, 14, 7, 2, soft), B(38, 60, 14, 7, 2, soft), B(6, 70, 46, 6, 3, acc)]; }
@@ -807,7 +791,6 @@ const nbrUpload = async blob => {
 class Component extends DCLogic {
   state = { region: 'US', vw: 1280, vh: 800, pvOpen: false, mode: 'builder', step: 1, maxStep: 1, plan: 'basic', d: { ...EMPTY }, errors: {}, busy: false, done: null, copied: false, submitError: '' };
   previewRef = React.createRef();
-  barRef = React.createRef();
   formBarRef = React.createRef();
   watchFormBar() {
     const el = this.formBarRef.current; if (!el || this._fbEl === el || typeof ResizeObserver === 'undefined') return;
@@ -816,13 +799,7 @@ class Component extends DCLogic {
     this._fbRO = new ResizeObserver(() => { const h = Math.round(el.getBoundingClientRect().height); if (h && Math.abs(h - (this.state.fbH || 0)) > 2) this.setState({ fbH: h }); });
     this._fbRO.observe(el);
   }
-  watchBar() {
-    const el = this.barRef.current; if (!el || this._barEl === el || typeof ResizeObserver === 'undefined') return;
-    try { this._barRO && this._barRO.disconnect(); } catch (e) {}
-    this._barEl = el;
-    this._barRO = new ResizeObserver(() => { const h = Math.round(el.getBoundingClientRect().height); if (h && Math.abs(h - (this.state.barH || 0)) > 2) this.setState({ barH: h }); });
-    this._barRO.observe(el);
-  }
+
   fileRef = React.createRef();
   doneRef = React.createRef();
   tsRef = React.createRef();
@@ -834,7 +811,7 @@ class Component extends DCLogic {
   };
   resetTs = () => { try { if (window.turnstile && this.tsWidget != null) window.turnstile.reset(this.tsWidget); } catch (e) {} this.tsToken = ''; };
 
-  componentDidUpdate() { try { nbrSyncVids(this.state.d.photo); } catch (e) {} this.watchBar(); this.watchFormBar(); }
+  componentDidUpdate() { try { nbrSyncVids(this.state.d.photo); } catch (e) {} this.watchFormBar(); }
   componentDidMount() {
     this.onMsg = ev => { if (ev.origin === location.origin && ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
     window.addEventListener('message', this.onMsg);
@@ -848,7 +825,7 @@ class Component extends DCLogic {
     const tok = this.editTokenFromUrl();
     if (tok) { document.documentElement.setAttribute('data-skin', 'card'); this.setState({ standalone: true, editToken: tok, editLoading: true, step: 2, maxStep: 3 }); this.loadEdit(tok); }
     else try {
-      const sa = !/Linkcardly%20Website|Linkcardly Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)\/?$/.test(location.pathname));
+      const sa = !/Linkcardly%20Website|Linkcardly Website/.test(location.pathname) && !(location.hash || '').startsWith('#/order') && (/Order(%20| )Card|\/(order|create)(\/|\.html)?$/.test(location.pathname));
       const q = new URLSearchParams(location.search), plan = q.get('plan');
       const dd = (!VIA_WORKER() || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) && q.get('demoDone'); // QA previews: never on the live site
       if (dd) { const ireg = q.get('region') === 'IN' ? 'IN' : 'US'; document.documentElement.setAttribute('data-skin', 'card');
@@ -872,6 +849,8 @@ class Component extends DCLogic {
     this.lastY = window.scrollY || 0;
     this.onScrollHdr = () => { const y = window.scrollY || 0, dy = y - this.lastY; if (Math.abs(dy) < 6) return; this.lastY = y; const hide = this.state.vw < 960 && y > 80 && dy > 0; if (hide !== !!this.state.hdrHidden) this.setState({ hdrHidden: hide }); };
     window.addEventListener('scroll', this.onScrollHdr, { passive: true });
+    this.onScrollShadow = () => { const s = (window.scrollY || 0) > 4; if (s !== !!this.state.scrolled) this.setState({ scrolled: s }); };
+    window.addEventListener('scroll', this.onScrollShadow, { passive: true }); this.onScrollShadow();
   }
   backToCard = () => {
     const local = /\.dc\.html$/.test(decodeURIComponent(location.pathname));
@@ -1289,22 +1268,19 @@ class Component extends DCLogic {
   renderVals() {
     const v = this.renderValsBase();
     v.fieldGroups = this.groupFields(v.fields || [], v.fieldCols);
-    v.stepTop = v.showSaHeader && !(this.state.hdrHidden && this.state.vw < 960) ? 'calc(' + v.hdrH + ' + 8px)' : '8px';
     v.isMock = MOCK_ORDER() && !this.state.done;
     v.yourPhotoLabel = this.state.plan === 'motion' ? 'Your moving portrait' : 'Your photo';
     v.adjKey = e => { if (e.key === 'Escape' && v.cancelEdit) v.cancelEdit(); };
     return v;
   }
   renderValsBase() {
-    const _d = this.state.d || {}, thumbPh = _d.photo && !NBR_VID.test(_d.photo) && !/^data:video\//.test(_d.photoData || '') ? 'url("' + _d.photo + '") ' + (_d.photoX ?? 50) + '% ' + (_d.photoY ?? 50) + '% / cover' : '';
+    const _d = this.state.d || {}, thumbPh = _d.photo && !NBR_VID.test(_d.photo) && !/^data:video\//.test(_d.photoData || '') ? 'url("' + cssSrc(_d.photo) + '") ' + (_d.photoX ?? 50) + '% ' + (_d.photoY ?? 50) + '% / cover' : '';
     this.saveDraft();
     const S = this.state, d = S.d, dfm = S.mode === 'dfm', err = S.errors || {};
     if (d !== this.__pvD || S.plan !== this.__pvPlan) { this.__pvD = d; this.__pvPlan = S.plan; clearTimeout(this.pvT2); this.pvT2 = setTimeout(() => this.postPreview(), 120); }
     const col = COLOURS.find(c => c.id === d.colour) || STYLE_BY_ID[d.colour] || COLOURS[0];
     const COLLS = bizOf(d.profession).colls.map(id => COLLECTIONS.find(c => c.id === id)).filter(Boolean);
-    const collId = collOf(d.colour), ci = Math.max(0, COLLS.findIndex(c => c.id === collId));
     const listFor = id => id === 'professional' ? PRO_STYLES : id === 'luxury' ? LUX_STYLES : id === 'realestate' ? RE_STYLES : BIZ_PAL[id] ? BIZ_STYLES.filter(s => s.biz === id) : COLOURS.concat(SCENE_STYLES);
-    const goColl = step => { const n = COLLS[(ci + step + COLLS.length) % COLLS.length]; this.set('colour', listFor(n.id)[0].id); };
     const plan = PLANS.find(p => p.id === S.plan) || PLANS[0];
     const layout = LAYOUTS[0];
     const on = (x, a, b) => (x ? a : b);
@@ -1314,25 +1290,26 @@ class Component extends DCLogic {
       orderHref: /\.dc\.html$/.test(decodeURIComponent(location.pathname)) ? './Order%20Card.dc.html' : 'https://linkcardly.com/order',
       ...(() => { const mob = S.vw < 960, imm = mob && S.step === 3 && !S.done && !(S.editToken && (S.editLoading || S.editError));
         if (imm !== this.__imm || !!S.hdrHidden !== this.__hh) { this.__imm = imm; this.__hh = !!S.hdrHidden; setTimeout(() => { try { window.dispatchEvent(new CustomEvent('nbr-order-ui', { detail: { immersive: imm, hideHeader: !!S.hdrHidden && mob } })); } catch (e) {} }, 0); }
-        return { showSaHeader: !!S.standalone && !imm, hdrH: mob ? '60px' : '66px', hdrY: mob && S.hdrHidden ? 'translateY(-100%)' : 'none', hdrLogo: mob ? '28px' : '34px', hdrLogoH: mob ? '32px' : '38px', hdrLogoN: mob ? 32 : 38, hdrFontN: mob ? 30 : 32, hdrFont: mob ? '18px' : '20px', hdrWide: !mob, hdrNarrow: mob && !S.done }; })(), // the done screen has its own "Back to home"
+        return { showSaHeader: !!S.standalone && !imm, showSaFooter: !!S.standalone && !mob, // phones: no footer in the order steps
+           hdrH: S.vw < 1000 ? '68px' : '96px', hdrY: mob && S.hdrHidden ? 'translateY(-100%)' : 'none', hdrLogo: S.vw < 1000 ? '30px' : '40px', hdrPadX: S.vw < 1000 ? '20px' : '72px', hdrGap: S.vw < 1000 ? '16px' : '56px', hdrLogoH: mob ? '32px' : '38px', hdrLogoN: mob ? 32 : 38, hdrFontN: mob ? 30 : 32, hdrFont: mob ? '18px' : '20px', hdrShadow: S.scrolled ? '0 1px 0 rgba(17,16,15,.08),0 8px 24px -12px rgba(17,16,15,.18)' : 'none', hdrWide: S.vw >= 1000, hdrNarrow: S.vw < 1000, menuShown: S.vw < 1000 && !!S.menuOpen, menuOpen: !!S.menuOpen, menuClosed: !S.menuOpen, menuOpenAttr: S.menuOpen ? 'true' : 'false', menuLabel: S.menuOpen ? 'Close menu' : 'Menu', toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })) }; })(), // the done screen has its own "Back to home"
       ...(() => { const r = S.ref || '', local = /\.dc\.html$/.test(decodeURIComponent(location.pathname));
         const path = /^nbr_[a-f0-9]{6}$/.test(r) ? '/c/' + r : /^[a-z0-9]+(-[a-z0-9]+)*$/.test(r) ? '/' + r : '';
         if (!path) return { closeHref: local ? '/' : '/', closeLabel: 'Leave and go to the Linkcardly home page' };
         return { closeHref: local ? '/app/card.html' : (/^card\./.test(location.hostname) ? '' : 'https://linkcardly.com') + path, closeLabel: 'Close and go back to the card' }; })(),
       standalone: !!S.standalone, homeHref: (() => { const local = /\.dc\.html$/.test(decodeURIComponent(location.pathname)); const slug = S.ref && /^[a-z0-9-]+$/.test(S.ref) ? S.ref : '';
         return local ? '/' : '/'; })(),
-      showIntro: S.vw >= 960 && !S.editToken,
-      headerChip: S.editToken ? 'Edit your card' : 'Create your card', showSteps: !S.editToken && !(S.step === 3 && S.vw < 960),
+      showIntro: S.vw >= 960 && !S.editToken, orderHero: !S.editToken && !(S.vw < 960 && S.step === 3),
+      showSteps: !S.editToken && !(S.step === 3 && S.vw < 960),
       showForm: !(S.editToken && (S.editLoading || S.editError)), editMsgShow: !!(S.editToken && (S.editLoading || S.editError)),
       editMsgTitle: S.editLoading ? 'Loading your card…' : S.editError === 'invalid' ? 'This edit link isn’t valid' : S.editError === 'expired' ? 'Your card plan has ended' : 'Couldn’t load your card',
       editMsgText: S.editLoading ? 'One moment.' : S.editError === 'invalid' ? 'It may have been reset. Message us and we’ll send you a new one.' : S.editError === 'expired' ? 'Renew your card to make changes. Message us and we’ll help.' : S.editError === 'busy' ? 'Too many tries from this connection. Please wait an hour and try again.' : 'Check your connection and refresh the page.',
       hasEditLink: false, changesNote: 'Need a change? Send us what you want changed and we’ll update your card.', changeHref: done ? changeLink('Hi Linkcardly, I’d like a change to my card ' + this.urlOf(done) + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '#', editLinkLabel: done && done.tok ? BASE_HOST + '/e/' + done.tok : '', copyEditLink: this.copyEditLink, copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy edit link',
       notEditDone: !(done && done.edit), isEditDone: !!(done && done.edit), keepEditing: this.keepEditing,
-      rootPad: S.vw < 960 && S.step === 3 ? '0' : S.vw < 960 ? '2px 16px 40px' : 'clamp(32px,5vw,56px) 24px clamp(64px,8vw,104px)',
+      rootPad: S.vw < 960 && S.step === 3 ? '0' : S.vw < 960 ? '2px 16px 40px' : '8px clamp(20px,4vw,48px) clamp(64px,8vw,104px)',
       modesGap: S.vw < 960 ? (S.step === 3 ? '0' : '12px') : '32px', modesCols: S.vw < 960 ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(100%,280px),1fr))', modesColGap: S.vw < 960 ? '8px' : '12px', bodyGap: S.vw < 960 ? '12px' : '40px',
       pv: (() => {
         const mobile = S.vw < 960;
-        if (!mobile) return { seaTop: '52px', seaLeft: 'auto', seaRight: '8px', barPos: 'sticky', barW: '318px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 318px', order: '0', top: '88px', pad: '0', bg: 'transparent', w: '318px', h: '657px', scale: '0.8154' };
+        if (!mobile) return { seaTop: '14px', seaLeft: '14px', seaRight: 'auto', barPos: 'sticky', barW: '370px', barPad: '16px', barRadius: '16px 16px 0 0', barShadow: 'none', radius: '20px', cardShadow: '0 18px 40px -18px rgba(0,0,0,0.6)', fixedBar: false, barSpace: '0px', display: 'flex', scrolling: 'auto', ih: '806px', showNext: false, mobile: false, desktop: true, flex: '0 0 418px', order: '0', top: S.vw < 1000 ? '84px' : '112px', pad: '24px 24px 18px', bg: '#EEDFD4', w: '370px', h: '765px', scale: '0.9487' };
         const fx = S.step === 3;
         // The Preview step shows the card full-bleed; other steps never show it on phones.
         const docH = S.pvDocH || 806, w = fx ? S.vw : Math.min(390, S.vw - 32), sc = w / 390, full = Math.round(docH * sc);
@@ -1344,7 +1321,7 @@ class Component extends DCLogic {
           expanded: S.pvOpen ? 'true' : 'false', toggleLabel: S.pvOpen ? 'Collapse preview' : 'See full card', icon: S.pvOpen ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6',
           toggle: () => this.setState(s => ({ pvOpen: !s.pvOpen })) };
       })(),
-      barRef: this.barRef, formBarRef: this.formBarRef,
+      formBarRef: this.formBarRef,
       fb: (() => { const fx = S.vw < 960 && (S.step === 1 || S.step === 4); return fx
         ? { fixed: true, pos: 'fixed', margin: '0', pad: '12px 16px calc(12px + env(safe-area-inset-bottom))', radius: '18px 18px 0 0', space: (S.fbH || 80) + 'px' }
         : { fixed: false, pos: 'relative', margin: '0 -4px -4px', pad: '16px 4px 4px', radius: '0', space: '0px' }; })(),
@@ -1359,7 +1336,7 @@ class Component extends DCLogic {
       showLinkClaim: !S.editToken, lc: (() => { const h = this.handleOf(S), c = S.hCheck && S.hCheck.h === h ? S.hCheck : null; return { value: h, status: c ? c.status : 'idle', message: c ? c.message || '' : '', alts: c ? c.alts || [] : [], fromHome: !S.hTouched && !S.d.handle && !!claimedSlug() && h === claimedSlug(), error: (S.errors || {}).handle || '', onChange: this.setHandle, onPick: this.pickHandle }; })(),
       reviewSub: S.vw < 960 ? 'This is how people will see it. Pick a design below, then continue to payment.' : 'Check the preview on the right and pick a design. You can restyle anytime after, free.',
       changesIncl: CHANGES_INCLUDED[S.plan] || 2, planLine: plan.name + ' · 1 year', madeByLine: dfm ? 'Designed by our team' : 'Card setup, link and QR code', payEmail: d.email || 'your email', payNote: S.region === 'IN' ? 'You pay securely with Razorpay: UPI, cards, netbanking or wallets. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.') : 'You pay securely on Stripe: card, Apple Pay or Google Pay. ' + (dfm ? 'We start your design as soon as payment is confirmed.' : 'Your card goes live the moment payment is confirmed.'),
-      plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '1.5px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.09)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.28)', radioDot: c ? '1' : '0', tickBg: c ? 'var(--accent)' : 'transparent', shadow: c ? '0 0 0 3px rgba(var(--acc-rgb),0.09), 0 12px 28px -22px rgba(var(--acc-rgb),0.45)' : 'none', dim: c ? '1' : '0.86', scale: c ? 'none' : 'scale(0.99)', featInk: c ? 'var(--ink-3)' : 'var(--muted)', tickInk: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)', thumbTf: c ? 'rotate(-3deg) translateY(-2px)' : 'none', thumbSh: c ? '0 14px 26px -12px rgba(0,0,0,0.6)' : '0 8px 18px -10px rgba(0,0,0,0.45)', playIcon: c && p.id === 'motion' ? 'M7 5h3v14H7zM14 5h3v14h-3z' : 'M8 5v14l11-7z', features: p.features.slice(0, 3), thumb: S.vw < 960, motion: p.id === 'motion', img: p.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '16px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '26px' : '28px') : '34px', featFs: S.vw < 960 ? '13px' : '14px' }; }),
+      plans: PLANS.map(p => { const c = p.id === S.plan; return { ...p, popular: !!p.popular, price: money(S.region, (PRICING[S.region] || PRICING.US)[p.id]), hasWas: !!(PRICING[S.region] || PRICING.US)[p.id + 'Was'], was: money(S.region, (PRICING[S.region] || PRICING.US)[p.id + 'Was'] || 0), checked: c ? 'true' : 'false', pick: () => this.setState(s => (p.id === 'basic' && isGifSrc(s.d)) ? { plan: p.id, d: { ...s.d, photo: '', photoData: '' }, photoMsg: 'Digital Card uses a still photo, so we removed your moving portrait. Please add a photo (JPG, PNG or WebP).' } : { plan: p.id }), border: c ? '1.5px solid var(--accent)' : '1px solid rgba(var(--fg-rgb),0.09)', bg: c ? 'var(--mint)' : 'var(--surface)', radioRing: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.28)', radioDot: c ? '1' : '0', tickBg: c ? 'var(--accent)' : 'transparent', shadow: c ? '0 0 0 3px rgba(var(--acc-rgb),0.09), 0 12px 28px -22px rgba(var(--acc-rgb),0.45)' : 'none', dim: c ? '1' : '0.86', scale: c ? 'none' : 'scale(0.99)', featInk: c ? 'var(--ink-3)' : 'var(--muted)', tickInk: c ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)', thumbTf: c ? 'rotate(-3deg) translateY(-2px)' : 'none', thumbSh: c ? '0 14px 26px -12px rgba(0,0,0,0.6)' : '0 8px 18px -10px rgba(0,0,0,0.45)', playIcon: c && p.id === 'motion' ? 'M7 5h3v14H7zM14 5h3v14h-3z' : 'M8 5v14l11-7z', features: p.features.slice(0, 3), thumb: S.vw < 720, motion: p.id === 'motion', img: '/assets/img/samples/portrait.jpg', pad: S.vw < 960 ? '16px' : '22px', priceFs: S.vw < 960 ? (S.region === 'IN' ? '26px' : '28px') : '34px', featFs: S.vw < 960 ? '13px' : '14px' }; }),
       addPhotoTitle: S.plan === 'motion' ? 'Add your moving portrait' : 'Add your photo', uploadLabel: S.vidBusy ? 'Preparing video…' : S.plan === 'motion' ? 'Upload video or GIF' : 'Upload photo',
       addPhotoHint: S.vidBusy ? 'Preparing your video… ' + (S.vidPct || 0) + '%. Keep this page open.' : S.plan === 'motion' ? 'Record a short selfie video (3 to 10 seconds), or upload a video or GIF. We keep the first 10 seconds. A still photo also works.' : 'A clear, front-facing photo works best.',
       photoAccept: S.plan === 'motion' ? 'video/*,image/png,image/jpeg,image/webp,image/gif' : 'image/png,image/jpeg,image/webp',
@@ -1368,26 +1345,22 @@ class Component extends DCLogic {
       designSub: dfm ? 'Tell us what you like. Our designer uses this as the starting point.' : (S.vw < 960 ? "Pick your colours. You'll see the full card after your details." : 'The preview updates as you choose.'),
       bizHint: bizOf(d.profession).sub + '.',
       ...(() => { const cur = BUSINESSES.find(b => b.prof === d.profession), open = !!S.bizOpen, ic = cur ? BIZ_ICON[cur.prof] || [cur.name, ''] : null; return { bizPicked: !!cur, bizNeedPick: !cur && !S.editToken, showBizForm: !!cur || !!S.editToken, bizLabel: cur ? cur.name : 'Pick the category that fits you best', bizIcon: ic ? ic[1] : '', bizFs: cur ? '16px' : '15px', bizFw: cur ? '700' : '500', bizInk: cur ? 'var(--ink)' : 'var(--faint)', bizBorder: err.profession ? '1.5px solid var(--danger)' : open ? '1.5px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.15)', hasBizErr: !!err.profession, bizErr: err.profession || '', bizOpen: open, bizOpenStr: open ? 'true' : 'false', bizChevron: open ? 'rotate(180deg)' : 'none', toggleBiz: () => this.setState(s => ({ bizOpen: !s.bizOpen })), closeBiz: () => this.setState({ bizOpen: false }),
-        bizItems: VISIBLE_BIZ.map(b => { const on = b === cur; return { short: b.name, sub: b.sub, icon: (BIZ_ICON[b.prof] || [])[1] || '', tileBg: on ? 'var(--btn)' : 'var(--bg-2)', tileInk: on ? 'var(--btn-ink)' : 'var(--ink)', rowBg: on ? 'var(--bg-2)' : 'transparent', selected: on ? 'true' : 'false', checkOp: on ? '1' : '0', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ bizOpen: false, swEnd: false, errors: { ...(s.errors || {}), profession: undefined }, d: { ...s.d, profession: b.prof, colour: first } })); } }; }) }; })(),
+        bizItems: VISIBLE_BIZ.map(b => { const on = b === cur; return { short: b.name, sub: b.sub, icon: (BIZ_ICON[b.prof] || [])[1] || '', tileBg: on ? 'var(--btn)' : 'var(--bg-2)', tileInk: on ? 'var(--btn-ink)' : 'var(--ink)', rowBg: on ? 'var(--bg-2)' : 'transparent', selected: on ? 'true' : 'false', checkOp: on ? '1' : '0', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ bizOpen: false, errors: { ...(s.errors || {}), profession: undefined }, d: { ...s.d, profession: b.prof, colour: first } })); } }; }) }; })(),
       bizValue: bizOf(d.profession).prof, bizOptions: BUSINESSES.map(b => ({ value: b.prof, label: b.name + ' · ' + b.sub })),
       onBiz: e => { const b = BUSINESSES.find(x => x.prof === e.target.value) || BUSINESSES[0]; const first = listFor(b.colls[0])[0].id; this.setState(s => ({ d: { ...s.d, profession: b.prof, colour: first } })); },
       bizTiles: BUSINESSES.map(b => { const on = b.prof === d.profession || (b === BUSINESSES[0] && !BUSINESSES.some(x => x.prof === d.profession)); return { name: b.name, sub: b.sub, pressed: on ? 'true' : 'false', border: on ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.12)', bg: on ? 'var(--btn)' : 'var(--surface)', ink: on ? 'var(--btn-ink)' : 'var(--ink)', shadow: on ? '0 8px 18px -10px rgba(0,0,0,0.5)' : 'none', pick: () => { const first = listFor(b.colls[0])[0].id; this.setState(s => ({ d: { ...s.d, profession: b.prof, colour: first } })); } }; }),
       profession: d.profession, professionOptions: PROFESSIONS, onProfession: e => this.set('profession', e.target.value),
       layouts: LAYOUTS.map(l => { const c = l.id === d.layout; return { ...l, checked: c ? 'true' : 'false', border: c ? '2px solid var(--btn)' : '1px solid rgba(var(--fg-rgb),0.10)', pick: () => this.set('layout', l.id) }; }),
       pickHint: (isTh(col) ? 'Tap a design to try it on your card.' : col.name + '. Tap a colour to try it on your card.') + ' You can restyle anytime, free.',
-      swGap: listFor(collId).some(isTh) ? '12px' : '16px',
       // Phone style picker (CardStyleControls): every style of every collection for this profession, in one row.
       scs: { options: COLLS.flatMap(cl => listFor(cl.id).map(c => ({ id: c.id, name: c.name, group: cl.name, ...(c.layout === 'scene' ? { family: c.family, design: c.family.name, swatch: { bg: c.layers[2], dot: c.accent } } : cl.id === 'personal' ? { family: PERSONAL_FAMILY } : familyOf(c) ? { family: familyOf(c), swatch: swatchOf(c) } : {}), thumb: c.layout === 'scene' ? { bg: c.bg, image: window.LC_SCENES.thumb(c) } : isTh(c) ? { bg: c.bg, blocks: thumbBlocks(c, 56, 56, thumbPh), size: 56 } : { bg: c.bg, dot: c.accent } }))),
         value: d.colour || col.id, open: S.swOpen === true, toggle: () => this.setState(s => ({ swOpen: s.swOpen !== true })), select: id => this.set('colour', id),
         nextIcon: S.editToken ? 'check' : 'arrow', maxWidth: S.vw + 'px',
         // Scene cards show their QR code at the top right: the colour strip starts below it.
-        railTop: (STYLE_BY_ID[d.colour] || {}).layout === 'scene' ? 'calc(' + Math.round(108 * Math.min(1, S.vw / 390)) + 'px + env(safe-area-inset-top))' : '' },
-      showCollSw: COLLS.length > 1, swJustify: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) ? 'flex-start' : 'center', swFade: listFor(collId).length > (listFor(collId).some(isTh) ? 4 : 5) && !S.swEnd, onSwScroll: e => { const el = e.currentTarget, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4; if (end !== !!this.state.swEnd) this.setState({ swEnd: end }); },
-      collName: COLLS[ci].name, collPrev: () => goColl(-1), collNext: () => goColl(1), collPos: (ci + 1) + ' of ' + COLLS.length, collDots: COLLS.map((_, i) => ({ w: i === ci ? '16px' : '4px', bg: i === ci ? 'var(--btn)' : 'rgba(var(--fg-rgb),0.18)' })),
-      colours: listFor(collId).map((c, ci) => { const s = c.id === d.colour, th = isTh(c); return { ...c, isDot: !th, isThumb: th, rec: th && ci === 0, blocks: th ? thumbBlocks(c, 58, 80, thumbPh) : [], labelInk: s ? 'var(--ink)' : 'var(--muted)', checked: s ? 'true' : 'false', ring: s ? '0 0 0 3px var(--bg), 0 0 0 5px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.12)', ring2: s ? '0 0 0 2px var(--bg), 0 0 0 4px var(--btn)' : '0 0 0 1px rgba(var(--fg-rgb),0.14)', pick: () => this.set('colour', c.id) }; }),
+        railTopDesk: (STYLE_BY_ID[d.colour] || {}).layout === 'scene' ? '102px' : '', railTop: (STYLE_BY_ID[d.colour] || {}).layout === 'scene' ? 'calc(' + Math.round(108 * Math.min(1, S.vw / 390)) + 'px + env(safe-area-inset-top))' : '' },
       hasDetailsSub: !!(S.editToken || dfm), detailsTitle: S.editToken ? 'Edit your card' : 'Your details', detailsSub: S.editToken ? 'Update anything below, then save. Changes go live straight away.' : dfm ? 'Only name, mobile and email are required. Add anything else you want on the card.' : (S.vw < 960 ? "Fields marked * are required. You'll preview your card next." : 'Fields marked * are required. Everything shows on your card as you type.'),
-      avatarBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : col.bg, accent: col.accent, initials: d.photo ? '' : (((d.firstName || '')[0] || '') + ((d.lastName || '')[0] || '')).toUpperCase() || '+',
-      adjDown: this.adjDown, adjBgColor: col.bg, adjBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + d.photo + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),
+      avatarBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + cssSrc(d.photo) + '")' : col.bg, accent: col.accent, initials: d.photo ? '' : (((d.firstName || '')[0] || '') + ((d.lastName || '')[0] || '')).toUpperCase() || '+',
+      adjDown: this.adjDown, adjBgColor: col.bg, adjBg: d.photo && !NBR_VID.test(d.photo) ? 'url("' + cssSrc(d.photo) + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),
       zoomLabel: Math.round((d.photoZoom || 1) * 100) + '%', onZoom: e => this.set('photoZoom', Number(e.target.value)),
       noPhotoAdj: !d.photo, focusPresets: [['Top', 50, 15, null], ['Centre', 50, 50, null], ['Bottom', 50, 85, null], ['Reset', 50, 50, 1]].map(([label, x, y, z]) => ({ label, icon: { Top: 'M12 19V5M5 12l7-7 7 7', Centre: 'M12 3v18M3 12h18', Bottom: 'M12 5v14M5 12l7 7 7-7', Reset: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5' }[label], bg: z == null && Math.round(d.photoY ?? 50) === y ? 'var(--bg-2)' : 'var(--surface)', bd: z == null && Math.round(d.photoY ?? 50) === y ? 'rgba(var(--fg-rgb),0.22)' : 'rgba(var(--fg-rgb),0.13)', pick: () => this.setState(s => ({ d: { ...s.d, photoX: x, photoY: y, photoZoom: z || s.d.photoZoom } })) })),
       phPad: d.photo ? '16px' : '28px 16px 24px', phBorder: d.photo ? '1px solid rgba(var(--fg-rgb),0.10)' : '1px dashed rgba(var(--fg-rgb),0.18)', hasPhoto: !!d.photo, photoLabel: d.photo ? 'Change photo' : 'Upload photo', hasPhotoMsg: !!S.photoMsg, noPhotoMsg: !S.photoMsg, editOpen: !!S.editOpen,
@@ -1430,7 +1403,7 @@ class Component extends DCLogic {
       doneRef: this.doneRef, orderNo: done ? done.orderNo : '',
       showNewDone: !!(done && !done.unpaid && !done.verifying), showOldDone: !!(done && (done.unpaid || done.verifying)),
       dn: (() => { if (!done) return {}; const ph = d.photo && !NBR_VID.test(d.photo) && !/^data:video\//.test(d.photoData || '') ? (d.photoData || d.photo) : '', nm = [d.firstName, d.lastName].filter(Boolean).join(' '), tok = !done.edit && done.tok ? done.tok : '';
-        return { card: nm ? { img: ph, name: nm, title: d.title || '' } : null, qrSvg: this.qrSvg(url),
+        return { card: nm ? { img: cssSrc(ph), name: nm, title: d.title || '' } : null, qrSvg: this.qrSvg(url),
           linkNote: done.edit ? 'Same link and QR code as before.' : done.mode === 'dfm' ? 'Goes live when your design is finished.' : 'Your QR code keeps working, even after edits.',
           copyLabel: S.copied ? 'Copied ✓' : 'Copy link', editLabel: tok ? BASE_HOST + '/e/' + tok.slice(0, 6) + '…' + tok.slice(-4) : '', editHref: tok ? this.editUrlOf(tok) : '', copyEditLabel: S.editCopied ? 'Copied ✓' : 'Copy', editNote: !tok && !done.edit ? 'Your private edit link is in your email. Keep it safe: anyone with it can edit your card.' : '',
           changeHref: !done.edit ? changeLink('Hi Linkcardly, I’d like a change to my card ' + url + (done.orderNo ? ' (order ' + done.orderNo + ')' : '') + ':\n', 'Card change request' + (done.orderNo ? ' · ' + done.orderNo : '')) : '',
@@ -1451,8 +1424,8 @@ class Component extends DCLogic {
       copyOrder: () => { try { navigator.clipboard.writeText(done ? done.orderNo : ''); } catch (e) {} this.setState({ orderCopied: true }); setTimeout(() => this.setState({ orderCopied: false }), 1600); }, copyOrderLabel: S.orderCopied ? 'Copied ✓' : 'Copy',
       copyLink: this.copyLink, copyLabel: S.copied ? 'Copied ✓' : 'Copy link', downloadQR: this.downloadQR, reset: this.reset,
       ...(() => { const pl = PLANS.find(p => p.id === S.plan) || PLANS[0], pr = PRICING[S.region] || PRICING.US, vid = /^data:video\//.test(d.photoData || '') || NBR_VID.test(d.photo || '');
-        return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payImg: d.photo && !vid ? d.photo : (pl.id === 'motion' ? '/portrait.gif' : '/assets/img/samples/portrait.jpg') }; })(),
-      panelBg: S.vw < 960 ? 'transparent' : 'var(--surface)', panelBd: S.vw < 960 ? '0' : '1px solid rgba(var(--fg-rgb),0.06)', panelSh: S.vw < 960 ? 'none' : '0 16px 40px -30px rgba(90,60,20,0.35)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
+        return { payPlanName: pl.name, payFeatures: pl.id === 'motion' ? ['Moving portrait', 'Link & QR code', 'One-tap save contact', 'Restyle anytime, free'] : ['Link & QR code', 'One-tap save contact', 'Call, WhatsApp, email', 'Restyle anytime, free'], payHasWas: !!pr[pl.id + 'Was'], payWas: money(S.region, pr[pl.id + 'Was'] || 0), payCard: (() => { const st = STYLE_BY_ID[d.colour] || COLOURS.find(c => c.id === d.colour) || COLOURS[0]; /* the sample sits under the customer's photo, so a stale draft URL still shows a face */ const okSrc = u => /^(https?:|blob:)/.test(u || '') || /^data:image\/[a-z+]+;base64,.{200}/.test(u || ''), own = cssSrc(!vid && okSrc(d.photo) ? d.photo : okSrc(d.photoData) ? d.photoData : ''), pos = (d.photoX ?? 50) + '% ' + (d.photoY ?? 30) + '% / cover', ph = (own ? 'url("' + own + '") ' + pos + ', ' : '') + 'url("/assets/img/samples/portrait.jpg") 50% 30% / cover'; try { return { bg: st.bg, blocks: thumbBlocks(st, 96, 132, ph) }; } catch (e) { return { bg: st.bg || '#11100F', blocks: [] }; } })() }; })(),
+      panelBg: S.vw < 960 ? 'transparent' : '#FDFDFC', panelBd: S.vw < 960 ? '0' : '1px solid #EEDFD4', panelSh: S.vw < 960 ? 'none' : '0 12px 32px rgba(17,16,15,.07)', panelPad: S.vw < 960 ? '4px 0 0' : 'clamp(20px,3vw,32px)',
       secureTitle: !PAYMENTS_ON ? 'Payments are off while we test' : S.region === 'IN' ? 'Secure checkout with Razorpay' : 'Secure checkout with Stripe', secureSub: !PAYMENTS_ON ? 'Your order goes through without paying. Payment comes back before launch.' : S.region === 'IN' ? 'UPI, cards, netbanking or wallets' : 'Card, Apple Pay or Google Pay',
       stepEyebrow: S.vw >= 960 ? 'STEP ' + Math.min(S.step >= 3 ? S.step - 1 : S.step, 3) + ' OF 3' : 'STEP ' + Math.min(S.step, 4) + ' OF 4',
       qrNode: done ? React.createElement('div', { style: { width: '100%', height: '100%' }, dangerouslySetInnerHTML: { __html: this.qrSvg(url).replace('<svg', '<svg style="width:100%;height:100%;display:block"') } }) : null,

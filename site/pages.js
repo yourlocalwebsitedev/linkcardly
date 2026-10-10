@@ -1,12 +1,15 @@
 // One entry per marketing page. Body markup lives in site/pages/<name>.html.
-// active: which nav item is highlighted · cta: footer claim block · sticky: mobile claim bar · theme: body class + its stylesheet (gold → assets/css/gold.css)
+// active: highlighted nav key · preload: hero image · scripts: page scripts
 export const pages = [
-  { name: 'home', out: 'index.html', path: '/', title: "Linkcardly · Your business card, in a link", description: "Your business card, in a link. Phone, WhatsApp, socials, booking and Save contact on one card. Share it by QR or link.", active: 'how', cta: false, sticky: true, sitemap: true, theme: 'gold' },
-  { name: 'designs', out: 'designs/index.html', path: '/designs', title: "Designs · Linkcardly", description: "Digital business card designs for every trade, each in several colourways.", active: 'designs', cta: true, sticky: true, sitemap: true },
-  { name: 'teams', out: 'teams/index.html', path: '/teams', title: "Teams · Linkcardly", description: "On-brand digital business cards for your whole team, run from one admin panel.", active: 'teams', cta: true, sticky: true, sitemap: true },
-  { name: 'contact', out: 'contact/index.html', path: '/contact', title: "Contact · Linkcardly", description: "Questions about Linkcardly? We reply within one business day.", active: 'contact', cta: false, sticky: false, sitemap: true },
-  { name: 'privacy', out: 'privacy/index.html', path: '/privacy', title: "Privacy Policy · Linkcardly", description: "Linkcardly privacy policy.", active: '', cta: true, sticky: true, sitemap: true },
-  { name: 'terms', out: 'terms/index.html', path: '/terms', title: "Terms of Service · Linkcardly", description: "Linkcardly terms of service.", active: '', cta: true, sticky: true, sitemap: true },
-  { name: 'refunds', out: 'refunds/index.html', path: '/refunds', title: "Refund Policy · Linkcardly", description: "Linkcardly refund policy.", active: '', cta: true, sticky: true, sitemap: true },
-  { name: 'not-found', out: '404.html', path: '/404', title: "Page not found · Linkcardly", description: "Page not found.", active: '', cta: true, sticky: true, sitemap: false }
+  { name: 'home', out: 'index.html', path: '/', title: "Linkcardly | Your identity. One simple link.", description: "Your business card, in a link. Phone, WhatsApp, socials, booking and Save contact on one card. Share it by QR or link.", active: 'features', sitemap: true, preload: '/assets/img/home/hero-product-photo.webp' },
+  { name: 'how-it-works', out: 'how-it-works/index.html', path: '/how-it-works', title: "How it works · Linkcardly", description: "Claim your link, add your details and share your card by QR or message. Ready in minutes.", active: '', sitemap: true },
+  { name: 'pricing', out: 'pricing/index.html', path: '/pricing', title: "Pricing · Linkcardly", description: "Digital Card from $49 a year. Motion Card from $79 a year. Teams of 20+ get a quote.", active: 'pricing', sitemap: true },
+  { name: 'claim', out: 'claim/index.html', path: '/claim', title: "Claim your link · Linkcardly", description: "Check if your name is free and claim linkcardly.com/yourname.", active: '', sitemap: true },
+  { name: 'designs', out: 'designs/index.html', path: '/designs', title: "Designs · Linkcardly", description: "Try every Linkcardly design and colour on a live card preview.", active: 'designs', sitemap: true, scripts: ['/assets/js/catalogue.js', '/app/estate-styles.js', '/app/scene-styles.js', '/assets/js/designs.js'] },
+  { name: 'teams', out: 'teams/index.html', path: '/teams', title: "Teams · Linkcardly", description: "On-brand digital business cards for your whole team, run from one admin panel.", active: 'teams', sitemap: true },
+  { name: 'contact', out: 'contact/index.html', path: '/contact', title: "Contact · Linkcardly", description: "Questions about Linkcardly? We reply within one business day.", active: 'contact', sitemap: true },
+  { name: 'privacy', out: 'privacy/index.html', path: '/privacy', title: "Privacy Policy · Linkcardly", description: "What Linkcardly collects, why, who processes it, how long we keep it and how to ask for a copy or deletion.", active: '', sitemap: true },
+  { name: 'terms', out: 'terms/index.html', path: '/terms', title: "Terms of Service · Linkcardly", description: "The terms for buying and using a Linkcardly digital business card: your plan, your content, payments and renewals.", active: '', sitemap: true },
+  { name: 'refunds', out: 'refunds/index.html', path: '/refunds', title: "Refund Policy · Linkcardly", description: "Full refund within 14 days of paying, for any reason. How to ask, and how refunds work after that.", active: '', sitemap: true },
+  { name: 'not-found', out: '404.html', path: '/404', title: "Page not found · Linkcardly", description: "This page doesn't exist. Go to the Linkcardly home page or browse card designs.", active: '', sitemap: false }
 ];

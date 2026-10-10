@@ -28,7 +28,7 @@ export const CSP = db => [
   "img-src 'self' data: https:",
   "media-src 'self' https:",
   `connect-src 'self' ${db}`,
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src 'self' https://challenges.cloudflare.com", // 'self': /designs shows the real card page in preview mode
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",

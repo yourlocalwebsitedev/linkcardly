@@ -1,34 +1,28 @@
-<section class="wrap" style="padding-top:clamp(24px,5vw,56px);padding-bottom:var(--sec)">
-  <div class="sec-head"><div class="stack" style="--g:14px"><span class="kicker">Designs</span><h1 class="h1" style="font-size:clamp(40px,5.6vw,76px)">Find the card that fits your trade.</h1></div><p class="lead" style="max-width:400px">Every design below is the real card your clients will see. Try one live, then start with it in one click.</p></div>
-  <div class="row" style="justify-content:space-between;gap:12px 24px;margin-bottom:28px">
-    <div class="chips" role="group" aria-label="Filter by trade" data-filter>
-      <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
-      <button class="chip" type="button" data-f="realestate" aria-pressed="false">Real estate</button>
-      <button class="chip" type="button" data-f="health" aria-pressed="false">Health &amp; clinics</button>
-      <button class="chip" type="button" data-f="beauty" aria-pressed="false">Beauty &amp; wellness</button>
-      <button class="chip" type="button" data-f="legal" aria-pressed="false">Legal &amp; finance</button>
-      <button class="chip" type="button" data-f="home" aria-pressed="false">Home services</button>
-      <button class="chip" type="button" data-f="corporate" aria-pressed="false">Corporate</button>
-      <button class="chip" type="button" data-f="personal" aria-pressed="false">Personal</button>
-    </div>
-    <span class="muted" style="font-size:14px">Switch family or colourway any time</span>
-  </div>
-  <div class="prices" style="--min:300px">
-    <div class="famcard" data-trades="all realestate health beauty legal home corporate personal">
-      {{phone:original:md}}
-      <div class="info"><div class="row"><b>Original</b><span class="badge">All professions</span></div><span class="muted" style="font-size:15px">Big photo, dark and confident. Our most chosen card.</span><div class="sw" style="color:var(--text)"><i style="background:#134a33" title="Forest Green"></i><i style="background:#5c1f2b" title="Burgundy Rose"></i><i style="background:#0f3b3b" title="Deep Teal"></i><i style="background:#3b2350" title="Royal Plum"></i><i style="background:#3a2a20" title="Espresso"></i><i style="background:#e8c4c4" title="Blush Pink"></i></div>
-      <div class="btns"><a class="btn btn-line" href="/app/card.html?demo=realtor&amp;layout=original&amp;season=off" target="_blank" rel="noopener">Try it live</a><a class="btn btn-accent" href="/create">Start with this</a></div></div>
-    </div>
-    <div class="famcard" data-trades="all realestate">
-      {{phone:luxury:md}}
-      <div class="info"><div class="row"><b>Luxury Estate</b><span class="badge t">Real estate · premium</span></div><span class="muted" style="font-size:15px">Arch portrait, serif type and gold hairlines. Stationery-grade.</span><div class="sw" style="color:var(--text)"><i style="background:#f4efe6"></i></div>
-      <div class="btns"><a class="btn btn-line" href="/app/card.html?demo=realestate&amp;layout=luxuryEstate&amp;season=off" target="_blank" rel="noopener">Try it live</a><a class="btn btn-accent" href="/create">Start with this</a></div></div>
-    </div>
-    <div class="famcard" data-trades="all realestate">
-      {{phone:listing:md}}
-      <div class="info"><div class="row"><b>Listing Showcase</b><span class="badge t">Real estate · big photo</span></div><span class="muted" style="font-size:15px">Big photo up top, listings one tap away. Built for agents.</span><div class="sw" style="color:var(--text)"><i style="background:#13233f"></i></div>
-      <div class="btns"><a class="btn btn-line" href="/app/card.html?demo=realestate&amp;layout=listingShowcase&amp;season=off" target="_blank" rel="noopener">Try it live</a><a class="btn btn-accent" href="/create">Start with this</a></div></div>
+<section class="sheet">
+  <div class="sheet-in">
+    <div class="copy">
+      <span class="kicker rise">Designs</span>
+      <h1 class="h1 rise rise-1">Designs made for your trade.</h1>
+      <p class="lead rise rise-2">Every card below is a real design, shown with a sample person. Open one to try it live, then start your card with it.</p>
     </div>
   </div>
-  <div class="help" style="margin-top:48px"><div class="stack" style="--g:6px"><b>Not sure which one?</b><span style="font-size:17px;color:var(--n800)">Send us your details and we'll design it for you. Switch any time from your edit link.</span></div><a class="btn btn-dark btn-lg" href="/create">Have us design it →</a></div>
+</section>
+<section class="band">
+  <div class="band-in band-in--roomy">
+    <div class="chips" role="group" aria-label="Business type" data-biz></div>
+    <div class="gallery" data-gallery></div>
+    <p class="note">More Personal colours are inside the builder. You can switch design any time after you order, free.</p>
+  </div>
+</section>
+<dialog class="viewer" data-viewer aria-labelledby="viewer-title">
+  <button class="viewer-close" type="button" aria-label="Close" data-viewer-close><i class="ic ic-x" aria-hidden="true"></i></button>
+  <div class="viewer-in">
+    <div class="phone"><div class="phone-screen"><iframe src="/app/card.html?preview=1" title="Live card preview" loading="lazy" data-card-frame></iframe></div></div>
+    <div class="viewer-copy"><span class="kicker" data-viewer-trade></span><h2 id="viewer-title" data-viewer-name></h2><p class="lead">This is the real card. Tap around inside the phone.</p><a class="btn" href="/create" data-viewer-cta>Use this design<i class="ic ic-arrow" aria-hidden="true"></i></a></div>
+  </div>
+</dialog>
+<section class="band band--paper">
+  <div class="band-in band-in--roomy">
+    <div class="cta"><div><h2 class="h2">Found one you like?</h2><p class="lead">Start with it now and change it later if you want.</p></div><a class="btn" href="/create">Create my card<i class="ic ic-arrow" aria-hidden="true"></i></a></div>
+  </div>
 </section>

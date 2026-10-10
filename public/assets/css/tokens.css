@@ -1,20 +1,25 @@
-/* Linkcardly design tokens: the single source for brand colour, type and elevation.
-   Loaded first by every surface: marketing pages (site.css), the order and card app (app/skin.css).
-   Base colours use an --lc- prefix because the vendored app has its own --bg, --accent, … with
-   different meanings; the ramps and fonts have no such clash. */
+/* Linkcardly design tokens (Home v13). The single source for colour, type and elevation.
+   Loaded first by every surface: marketing pages (site.css) and the order app (app/skin-v13.css). */
 :root{
-  /* Base */
-  --lc-bg:#f5ead8;--lc-surface:#ebddc5;--lc-text:#201e1d;--lc-accent:#c67139;--lc-olive:#7a8a5e;--lc-danger:#a1281c;
+  /* Palette */
+  --lc-paper:#FAF5ED;      /* page */
+  --lc-sand:#EEDFD4;       /* header, sheet edge, borders, icon discs */
+  --lc-white:#FDFDFC;      /* surfaces, text on accent */
+  --lc-ink:#11100F;        /* text, dark controls */
+  --lc-muted:#837867;      /* secondary text */
+  --lc-accent:#B04E22;     /* terracotta: CTAs, highlights, focus */
+  --lc-accent-hover:#963F19;
+  /* Roles used by the order app (older names, same palette) */
+  --lc-bg:var(--lc-paper);--lc-surface:var(--lc-white);--lc-text:var(--lc-ink);--lc-terracotta:var(--lc-accent);--lc-danger:#B3261E;
   /* Card UI (order flow preview, editor and card controls) */
-  --lc-navy:#0B1B2B;--lc-cream:#F3E7D7;--lc-terracotta:#C8552D;
-  /* Neutral ramp */
-  --n100:#f9f4ed;--n200:#eee7db;--n300:#dcd3c4;--n400:#c0b6a5;--n500:#a19786;--n600:#82796a;--n700:#645c50;--n800:#474238;--n900:#2e2b25;
-  /* Accent (terracotta) ramp */
-  --a100:#fff2eb;--a200:#ffe1d0;--a300:#ffc6a5;--a400:#f6a06b;--a600:#b2622d;--a700:#8c491a;--a800:#643312;
-  /* Sage (olive) ramp */
-  --s100:#f0fae1;--s200:#e1eecc;--s300:#ccdbb2;--s500:#8fa073;--s700:#56633f;--s800:#3d472b;
+  --lc-navy:#0B1B2B;--lc-cream:#F3E7D7;
+  /* Neutral and accent ramps (order app) */
+  --n100:#FDFDFC;--n200:#F4EBE2;--n300:#EEDFD4;--n400:#CDBBAA;--n500:#A8998A;--n600:#837867;--n700:#6A5F52;--n800:#4A4139;--n900:#11100F;
+  --a100:#FBEDE5;--a200:#F4D6C6;--a300:#E8B79C;--a400:#D0754A;--a600:#B04E22;--a700:#963F19;--a800:#6B2E13;
   /* Type */
-  --font-h:"Caprasimo",Georgia,serif;--font-b:"Figtree",system-ui,sans-serif;
+  --font-h:"DM Serif Display",Georgia,serif;--font-b:"Inter",system-ui,sans-serif;
   /* Elevation */
-  --shadow-sm:0 1px 2px rgba(46,43,37,.14);--shadow-md:0 3px 10px rgba(46,43,37,.16);--shadow-lg:0 12px 32px rgba(46,43,37,.22);
+  --shadow-field:0 12px 32px rgba(17,16,15,.07);--shadow-lift:0 8px 24px rgba(17,16,15,.14);
+  /* Motion */
+  --ease-out:cubic-bezier(.16,1,.3,1);
 }

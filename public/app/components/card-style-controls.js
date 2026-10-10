@@ -43,6 +43,8 @@
  *   busy       disables the next button
  *   maxWidth   CSS max-width of the controls, to line them up with the card (default 100%)
  *   tone       'dark' | 'light' to override the tone read from the selected style's thumb.bg
+ *   inline     sit inside the nearest positioned box (a desktop phone frame) instead of the screen
+ *   hideNext   leave out the next button (the page shows its own)
  */
 (function () {
   var CSS_ID = 'lc-card-style-controls-css';
@@ -230,14 +232,14 @@
     var tone = props.tone === 'light' || props.tone === 'dark' ? props.tone : toneOf(card);
     var style = { maxWidth: props.maxWidth || '100%' };
     if (/^#[0-9a-f]{3,8}$/i.test(String(card || ''))) style['--lcs-card'] = card;
-    return h('div', { className: 'lcs lcs--' + tone + (props.open ? ' is-open' : ''), style: style, onKeyDown: onKeyDown },
+    return h('div', { className: 'lcs lcs--' + tone + (props.inline ? ' lcs--inline' : '') + (props.open ? ' is-open' : ''), style: style, onKeyDown: onKeyDown },
       h('span', { className: 'lcs__fade', 'aria-hidden': 'true' }),
       h('span', { className: 'lcs__dim', 'aria-hidden': 'true', onClick: close }),
       h('span', { className: 'lcs__panel', 'aria-hidden': 'true' }),
       h(StyleSelector, { id: idRef.current, options: options, value: current && current.id, open: !!props.open, onSelect: function (id) { if (props.onSelect) props.onSelect(id); }, onClose: close }),
       h('div', { className: 'lcs__bar' },
         h(StyleTrigger, { option: current, sub: current ? [current.design, groupsOf(options).length > 1 ? current.group : ''].filter(Boolean).join(' · ') : '', open: !!props.open, controls: idRef.current, onToggle: toggle, buttonRef: triggerRef }),
-        h(NextButton, { label: props.nextLabel, icon: props.nextIcon, busy: props.busy, onNext: props.onNext })));
+        props.hideNext ? null : h(NextButton, { label: props.nextLabel, icon: props.nextIcon, busy: props.busy, onNext: props.onNext })));
   }
 
   CardStyleControls.parts = { StyleTrigger: StyleTrigger, NextButton: NextButton, StyleSelector: StyleSelector, GroupTabs: GroupTabs, StyleOption: StyleOption, Thumb: Thumb };
@@ -249,7 +251,7 @@
    * has no family (or only one colour). Used through
    *   <x-import component-from-global-scope="LcCardColourRail" from="/app/components/card-style-controls.js" …>
    * Props: options, value, onSelect (as CardStyleControls), tone (optional override), offset (optional CSS
-   * top, to clear something the card shows at the top right, e.g. a scene card's QR code). */
+   * top, to clear something the card shows at the top right, e.g. a scene card's QR code), inline (as CardStyleControls). */
   function CardColourRail(props) {
     ensureCss();
     var options = props.options || [];
@@ -267,7 +269,7 @@
       if (props.onSelect) props.onSelect(n.id);
       var b = e.currentTarget.querySelector('[data-id="' + String(n.id).replace(/"/g, '\\"') + '"]'); if (b) b.focus();
     }
-    return h('div', { className: 'lcr lcs--' + tone, style: props.offset ? { top: props.offset } : undefined },
+    return h('div', { className: 'lcr lcs--' + tone + (props.inline ? ' lcr--inline' : ''), style: props.offset ? { top: props.offset } : undefined },
       h('div', { className: 'lcr__strip lcs-glass', role: 'radiogroup', 'aria-label': (current.family.name || 'Card') + ' colour', onKeyDown: move },
         colours.map(function (o) {
           var on = o === current, t = o.swatch || { bg: (o.thumb || {}).bg, dot: (o.thumb || {}).dot };

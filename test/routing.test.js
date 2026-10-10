@@ -42,8 +42,8 @@ test('empty LEGACY_HOSTS does not redirect anything', async () => {
   assert.equal((await worker.fetch(raw('https://linkcardly.com/health'), env({ LEGACY_HOSTS: '' }))).status, 200);
 });
 
-test('/order and /pricing redirect to /create keeping the query', async () => {
-  for (const p of ['/order?colour=x', '/pricing?colour=x']) {
+test('/order redirects to /create keeping the query', async () => {
+  for (const p of ['/order?colour=x']) {
     const r = await worker.fetch(request(p), env());
     assert.equal(r.status, 301);
     assert.equal(r.headers.get('Location'), 'https://linkcardly.com/create?colour=x');
@@ -57,7 +57,7 @@ test('/create serves the vendored order app in place (no redirect)', async () =>
 });
 
 test('every marketing page and asset is served at its canonical URL', async () => {
-  for (const p of ['/', '/designs', '/teams', '/contact', '/privacy', '/terms', '/refunds', '/robots.txt', '/sitemap.xml', '/favicon.svg', '/assets/css/site.css', '/assets/js/icons.js', '/assets/js/rules.js']) {
+  for (const p of ['/', '/how-it-works', '/pricing', '/claim', '/designs', '/teams', '/contact', '/privacy', '/terms', '/refunds', '/robots.txt', '/sitemap.xml', '/favicon.svg', '/assets/css/site.css', '/assets/js/icons.js', '/assets/js/rules.js']) {
     assert.equal((await worker.fetch(request(p), env())).status, 200, p);
   }
 });

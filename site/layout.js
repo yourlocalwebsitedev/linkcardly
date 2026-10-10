@@ -1,51 +1,46 @@
-// Shared page shell for every marketing page: <head>, header, footer and scripts.
+// Shared page shell for every marketing page: <head>, header, footer and scripts. Design: Linkcardly Home v13.
 import { SITE_URL, NAV, FOOTER_LINKS } from './site.config.js';
 
-const logo = '<a class="logo" href="/" aria-label="Linkcardly home">link<span>card</span>ly</a>';
+const logo = '<a class="logo" href="/" aria-label="Linkcardly home">Link<span>card</span>ly</a>';
+const arrow = '<i class="ic ic-arrow" aria-hidden="true"></i>';
 
 const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${p.title}</title><meta name="description" content="${p.description}">
 <link rel="canonical" href="${SITE_URL}${p.path}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Linkcardly"><meta property="og:title" content="${p.title}"><meta property="og:description" content="${p.description}"><meta property="og:url" content="${SITE_URL}${p.path}"><meta property="og:image" content="${SITE_URL}/assets/img/brand/og-image.png">
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="${p.theme === 'gold' ? '#070604' : '#f5ead8'}">
+<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#EEDFD4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/img/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,800${p.theme === 'gold' ? '&family=DM+Serif+Display:ital@0;1' : ''}&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">${p.theme === 'gold' ? '<link rel="stylesheet" href="/assets/css/gold.css">' : ''}`;
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">${p.preload ? `<link rel="preload" as="image" href="${p.preload}" fetchpriority="high">` : ''}`;
 
 const header = p => `<header class="top">
   <nav class="nav" aria-label="Main">
     ${logo}
     <div class="nav-links">${NAV.map(([label, href, key]) => `<a href="${href}"${key === p.active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</div>
-    <a class="btn btn-dark" href="/create">Create my card</a>
-    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+    <a class="btn nav-cta" href="/create">Create my card${arrow}</a>
+    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu"><i class="ic ic-menu" aria-hidden="true"></i></button>
   </nav>
-  <div class="menu">${NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}</div>
+  <div class="menu" id="menu">${NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}<a class="btn" href="/create">Create my card →</a></div>
 </header>`;
 
-const claimCta = `<h2 style="font-size:clamp(38px,6vw,80px);line-height:1;max-width:820px">Next time someone asks for your card, send a link.</h2>
-    <form class="claim" data-claim style="box-shadow:none"><span>linkcardly.com/</span><input name="h" placeholder="yourname" aria-label="Your link name" autocomplete="off"><button class="btn btn-accent" type="submit">Claim it →</button></form>`;
-
-const footer = p => `<footer class="foot${p.cta ? '' : ' slim'}">
-  <div class="wrap stack" style="--g:24px;align-items:flex-start">
-    ${p.cta ? claimCta : ''}
-    <nav aria-label="Footer" style="width:100%">${logo}${FOOTER_LINKS.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}</nav>
-    <p style="font-size:13px">© ${new Date().getFullYear()} Linkcardly</p>
+const footer = () => `<footer class="foot">
+  <div class="foot-in">
+    ${logo}
+    <nav aria-label="Footer">${FOOTER_LINKS.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}</nav>
+    <small>© ${new Date().getFullYear()} Linkcardly</small>
   </div>
 </footer>`;
-
-const stickyBar = '<div class="sticky"><span>From $49 a year</span><a class="btn btn-accent" href="/create" style="font-size:15px">Claim my link →</a></div>';
 
 export const layout = (p, body) => `<!doctype html>
 <html lang="en"><head>
 ${head(p)}
-</head><body${p.theme ? ` class="${p.theme}"` : ''}>
+</head><body>
 <a class="skip" href="#main">Skip to content</a>
 ${header(p)}
 <main id="main">
 ${body}</main>
-${footer(p)}
-${p.sticky ? stickyBar : ''}
-<script src="/app/config.js"></script><script src="/assets/js/rules.js"></script><script src="/assets/js/catalogue.js"></script><script src="/assets/js/icons.js"></script><script src="/assets/js/site.js" defer></script>
+${footer()}
+<script src="/app/config.js"></script><script src="/assets/js/rules.js"></script><script src="/assets/js/site.js" defer></script>${(p.scripts || []).map(s => `<script src="${s}" defer></script>`).join('')}
 </body></html>
 `;
