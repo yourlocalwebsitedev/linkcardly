@@ -25,9 +25,9 @@ linkcardly/
 │   │   ├── scene-styles.js   Personal scene styles (Summit, Tide) and their art, shared the same way (window.LC_SCENES)
 │   │   └── components/    Linkcardly UI components for the app: card-style-controls, link-claim ("Your link"), order-done (done screen)
 │   ├── assets/css/        tokens.css (Home v13 tokens, loaded first everywhere), site.css (marketing components)
-│   ├── assets/js/         site.js (menu, claim field, reveal, forms), designs.js; generated: catalogue.js, icons.js, rules.js
+│   ├── assets/js/         site.js (menu, claim field, reveal, in-view motion, forms), designs.js; generated: catalogue.js, icons.js, rules.js
 │   ├── assets/img/brand/  favicon companions, OG image
-│   ├── assets/img/samples/ sample portrait used by the app
+│   ├── assets/img/samples/ sample photos: portrait.jpg (Indian sample people), people/<slug>.jpg (one per catalogue person; licence in people/README.md)
 │   └── favicon.svg, robots.txt
 ├── supabase/live/         The database: 0-base.sql + ALL-IN-ONE.sql (from NexBizRise) + linkcardly.sql (Linkcardly changes); see its README
 ├── test/                  node:test suites (native.test.js: the native API); e2e/ (smoke, order-flow, production suite);
@@ -63,6 +63,9 @@ linkcardly/
 Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from other origins. Every database call carries the Worker secret (`x-nbr-secret`, checked by `from_worker()`) and the visitor's address (`x-nbr-ip`), so the database's bot gate and rate limits apply per visitor; without the secret it refuses direct orders. Only errors the SQL raises on purpose (`link taken`, `invalid email`) reach the browser.
 
 ## Rules
+- Prices on marketing pages: one currency per visitor. Elements carry `data-us` and `data-in`; site.js picks one from the visitor's country (Cloudflare `/cdn-cgi/trace`, falling back to time zone and language), the same rule the order flow uses. `?region=IN|US` forces one for testing. The amounts themselves still repeat `PRICING` in `app/order.html` (see Known debt).
+- Home motion: blocks marked `data-inview` get `.is-in` from site.js when a quarter is visible; site.css keeps the hidden start states under `html.motion`, which site.js only sets when motion is allowed. Without JS or with reduced motion every block shows its final state.
+- Sample people: each category in `site/catalogue.js` names its person and `photo`. The 61 gallery renders in `assets/img/designs/` are screenshots of the card page with those photos (250 × 540 WebP, card at 390 × 844 scaled to 64 %). Re-render them when a sample photo or a design changes.
 - Single sources of truth (full table in `CLAUDE.md`): brand tokens `public/assets/css/tokens.css`; pages and their routes `site/pages.js` (`STATIC_PAGES` and reserved handles are derived from it); colourways `src/lib/themes.js` (the browser catalogue is generated with copy from `site/catalogue.js`); icons `src/lib/icons.js`; handle rules `src/lib/handles.js`; nav and footer `site/site.config.js`; the browser's environment settings (database, publishable key, Turnstile site key) `wrangler.toml` vars, served as `/app/config.js` to every page; QR generator `public/app/qrcode.js`. Generated copies are git-ignored and rebuilt by every `npm test`, `wrangler dev` and `wrangler deploy`.
 - Pages this repo renders get an enforced Content-Security-Policy (`src/http.js`). The vendored app gets a report-only one (`APP_CSP`), because it relies on inline scripts, in-browser Babel and payment SDKs. Both allow only this environment's database origin (the one in `/app/config.js`).
 - Every request and failure is logged as one JSON line. Never log edit tokens or personal data.
@@ -72,11 +75,13 @@ Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from oth
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. The Worker route and the handle reservation follow from the registry.
 
 ## Known debt
+- Marketing prices (`data-us`/`data-in` in site/pages/home.html and pricing.html, and the pricing meta description in site/pages.js) repeat `PRICING` from `public/app/order.html`. Generate them from one price file at build time.
+- `package.json` `overrides` pins `sharp` to `^0.35.5` (CVE-2026-96889, high; dev-only, pulled in by wrangler → miniflare). Remove the override once a wrangler release depends on a patched sharp and `npm audit --audit-level=high` passes without it.
 - Button text on five estate styles outside Real Estate and Home Services is slightly under 4.5:1 (`hc-home-sky`, `bw-menu`, `bw-home`, `bw-home-blush`, `cc-list`, 4.2–4.49). The contrast test enforces 4.5:1 only for categories with colour families; fix these when those categories get families.
 - `site/pages/home.html`, `designs.html` and `teams.html` still use one-off inline styles (layout tweaks such as `--g` gaps). Move a pattern into `site.css` when it repeats.
 - The vendored app (`public/app/`) has its own markup and inline styles. `skin.css` aligns its colours and type with the tokens, but its components (buttons, inputs, cards) are not the `site.css` components. The real fix is native order, editor and card pages built on `site.css`, which is part of DEF-28 (native parity).
 - `public/app/card.html` and `order.html` are 270 KB and 180 KB single files, and the app compiles JSX in the browser (Babel, 3 MB). Fine to keep while it's vendored; a native rebuild should precompile.
-- The Motion Card plan preview on the Plan step points at `/portrait.gif`, which isn't in the repo (inherited from NexBizRise), so that preview is an empty tile. Needs a licensed moving-portrait sample in `public/assets/img/samples/`.
+- `assets/img/samples/portrait.gif` (the Motion Card sample, 6 MB) is heavy for the Plan step. Convert it to a short muted MP4/WebM loop and play it with the card page's existing video support.
 - Three Google Fonts requests (marketing layout, `skin.css` `@import`, the app's own link). Self-hosting the two brand fonts would remove a third-party dependency and the render-blocking `@import`.
 - Card link names: the browser asks `slug_available` (supabase/live/linkcardly.sql), which sees every card including unpaid orders, and the order sends `strict_slug` so the database answers "link taken" instead of adding digits. Names held by unpaid orders older than 24 hours are released. Until linkcardly.sql is run, the browser falls back to the live-cards view and the database still adds digits.
 - From the production E2E run (2026-10), open:

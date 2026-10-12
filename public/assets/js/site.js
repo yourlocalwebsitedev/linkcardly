@@ -45,7 +45,7 @@
     return '';
   };
   let timer, seq = 0;
-  const setStatus = (out, state, html) => { out.dataset.state = state; out.innerHTML = html; };
+  const setStatus = (out, state, html) => { out.dataset.state = state; out.innerHTML = html; const f = out.previousElementSibling; if (f && f.matches('.claim')) f.dataset.state = state; };
   const check = (input, out) => {
     clearTimeout(timer);
     const h = clean(input.value), id = ++seq;
@@ -57,9 +57,9 @@
     timer = setTimeout(async () => {
       try {
         const taken = await isTaken(h); if (id !== seq) return;
-        if (!taken) return setStatus(out, 'ok', `✓ <b>linkcardly.com/${esc(h)}</b> is available`);
+        if (!taken) return setStatus(out, 'ok', `<b>linkcardly.com/${esc(h)}</b> is available`);
         const alt = await freeAlternative(h); if (id !== seq) return;
-        setStatus(out, 'bad', `✕ <b>linkcardly.com/${esc(h)}</b> is taken.${alt ? ` <button type="button" class="status-alt" data-alt="${esc(alt)}">Try ${esc(alt)}</button>` : ''}`);
+        setStatus(out, 'bad', `<b>linkcardly.com/${esc(h)}</b> is taken.${alt ? ` <button type="button" class="status-alt" data-alt="${esc(alt)}">Try ${esc(alt)}</button>` : ''}`);
       } catch (_) { if (id === seq) setStatus(out, '', ''); }
     }, 350);
   };
@@ -74,15 +74,55 @@
     const els = $$('[data-reveal]').filter(el => el.getBoundingClientRect().top > innerHeight);
     const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.style.opacity = '1'; e.target.style.transform = 'none'; io.unobserve(e.target); }), { rootMargin: '0px 0px -8% 0px' });
     els.forEach((el, i) => { el.style.transitionDelay = (i % 4) * 80 + 'ms'; el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; io.observe(el); });
+    // in-view motion (home perks, flow, ways): .motion on <html> arms the CSS; .is-in plays it once the block is a quarter visible
+    const blocks = $$('[data-inview]');
+    if (blocks.length) {
+      document.documentElement.classList.add('motion');
+      const seen = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add('is-in'); seen.unobserve(e.target); }), { threshold: .25 });
+      blocks.forEach(el => seen.observe(el));
+    }
   }
 
-  // pricing: currency toggle swaps every [data-us]/[data-in] text
-  $$('[data-region]').forEach(g => g.addEventListener('click', e => {
-    const b = e.target.closest('[data-r]'); if (!b) return;
-    $$('[data-r]', g).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    const k = b.dataset.r === 'IN' ? 'in' : 'us';
-    $$('[data-us]').forEach(el => { el.textContent = el.dataset[k]; });
-  }));
+  // trades slider (home): swipe or scroll-snap; arrows, dots and a slow autoplay that pauses on hover, focus or touch
+  $$('[data-slider]').forEach(sl => {
+    const track = $('.trades', sl), cards = $$('.trade', track), dots = $('[data-dots]', sl); if (!cards.length) return;
+    let cur = 0, auto;
+    dots.innerHTML = cards.map((c, i) => `<button type="button" aria-label="Show ${esc($('b', c).textContent)}" aria-controls="trade-track"></button>`).join('');
+    const dotEls = $$('button', dots);
+    const mark = i => { cur = i; cards.forEach((c, k) => c.classList.toggle('is-active', k === i)); dotEls.forEach((d, k) => d.setAttribute('aria-current', String(k === i))); };
+    const go = i => { i = (i + cards.length) % cards.length; const c = cards[i]; track.scrollTo({ left: c.offsetLeft - (track.clientWidth - c.clientWidth) / 2, behavior: reduce ? 'auto' : 'smooth' }); mark(i); };
+    const near = () => { const mid = track.scrollLeft + track.clientWidth / 2; let best = 0, d = Infinity; cards.forEach((c, k) => { const m = Math.abs(c.offsetLeft + c.clientWidth / 2 - mid); if (m < d) { d = m; best = k; } }); return best; };
+    let t; track.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(() => mark(near()), 80); }, { passive: true });
+    $('[data-prev]', sl).addEventListener('click', () => go(cur - 1));
+    $('[data-next]', sl).addEventListener('click', () => go(cur + 1));
+    dots.addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(dotEls.indexOf(b)); });
+    const stop = () => clearInterval(auto), start = () => { stop(); if (!reduce) auto = setInterval(() => go(cur + 1), 4500); };
+    ['pointerenter', 'focusin', 'touchstart'].forEach(ev => sl.addEventListener(ev, stop, { passive: true }));
+    ['pointerleave', 'focusout'].forEach(ev => sl.addEventListener(ev, start));
+    // start on the card marked data-start (Real Estate on home), placed instantly so the page doesn't scroll on load
+    const first = Math.max(0, cards.findIndex(c => c.hasAttribute('data-start')));
+    sl.classList.add('is-live'); mark(first);
+    requestAnimationFrame(() => { const c = cards[first]; track.style.scrollBehavior = 'auto'; track.scrollLeft = c.offsetLeft - (track.clientWidth - c.clientWidth) / 2; track.style.scrollBehavior = ''; });
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? start() : stop()), { threshold: .4 }).observe(sl); else start();
+  });
+
+  // prices by location: India sees rupees, everyone else US dollars (same rule as the order flow, app/order.html
+  // detectRegion). ?region=IN|US overrides for testing. Only one currency is ever shown.
+  const priced = $$('[data-us]');
+  if (priced.length) {
+    const root = document.documentElement, apply = reg => { const k = reg === 'IN' ? 'in' : 'us'; priced.forEach(el => { el.textContent = el.dataset[k]; }); root.dataset.region = reg; root.classList.remove('region-wait'); };
+    const fallback = () => { try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; return /Kolkata|Calcutta/.test(tz) || /-IN$/i.test(navigator.language || '') ? 'IN' : 'US'; } catch (_) { return 'US'; } };
+    let q = ''; try { q = (new URLSearchParams(location.search).get('region') || '').toUpperCase(); } catch (_) {}
+    let saved = ''; try { saved = sessionStorage.getItem('lc-region') || ''; } catch (_) {}
+    if (q === 'IN' || q === 'US') apply(q);
+    else if (saved === 'IN' || saved === 'US') apply(saved);
+    else {
+      root.classList.add('region-wait');
+      const done = reg => { try { sessionStorage.setItem('lc-region', reg); } catch (_) {} apply(reg); };
+      const t = setTimeout(() => done(fallback()), 1500);
+      fetch('/cdn-cgi/trace', { cache: 'no-store' }).then(r => r.ok ? r.text() : '').then(x => { const m = x.match(/loc=([A-Z]{2})/); clearTimeout(t); done(m ? (m[1] === 'IN' ? 'IN' : 'US') : fallback()); }).catch(() => { clearTimeout(t); done(fallback()); });
+    }
+  }
 
   // Turnstile on forms ([data-turnstile]) with this environment's site key from /app/config.js; none → no widget.
   const tsBoxes = $$('[data-turnstile]');

@@ -10,7 +10,7 @@
   --lc-accent:#B04E22;     /* terracotta: CTAs, highlights, focus */
   --lc-accent-hover:#963F19;
   /* Roles used by the order app (older names, same palette) */
-  --lc-bg:var(--lc-paper);--lc-surface:var(--lc-white);--lc-text:var(--lc-ink);--lc-terracotta:var(--lc-accent);--lc-danger:#B3261E;
+  --lc-bg:var(--lc-paper);--lc-surface:var(--lc-white);--lc-text:var(--lc-ink);--lc-terracotta:var(--lc-accent);--lc-danger:#B3261E;--lc-success:#2E7D4F;
   /* Card UI (order flow preview, editor and card controls) */
   --lc-navy:#0B1B2B;--lc-cream:#F3E7D7;
   /* Neutral and accent ramps (order app) */
