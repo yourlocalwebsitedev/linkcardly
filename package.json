@@ -6,7 +6,8 @@
     "build": "node scripts/build.mjs",
     "dev": "npm run build && wrangler dev --env staging --var TURNSTILE_SITE_KEY:",
     "deploy": "npm run build && wrangler deploy",
-    "test": "npm run build && node --test test/*.test.js"
+    "test": "npm run build && node --test test/lib.test.js test/native.test.js test/routing.test.js test/site.test.js",
+    "test:db": "npm run build && node --test test/live-db.test.js"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
