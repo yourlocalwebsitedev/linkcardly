@@ -114,7 +114,11 @@ test('home is Home v13: one claim form, hero copy, photos, features, site footer
   const html = await read('index.html');
   assert.equal((html.match(/<form class="claim[ "][^>]*data-claim>/g) || []).length, 1);
   assert.match(html, /Your identity\.<br><span>One simple link\.<\/span>/);
-  assert.ok((html.match(/class="feature"/g) || []).length >= 4);
+  assert.equal((html.match(/class="perk"/g) || []).length, 4, 'perks under the hero');
+  assert.equal((html.match(/class="flow-step"/g) || []).length, 4, 'create-your-card steps');
+  assert.equal((html.match(/class="way"/g) || []).length, 4, 'share methods');
+  assert.ok(!/samples\/portrait\.svg|ic ic-users/.test(html));
+  for (const f of ['arjun', 'meera', 'priya', 'alex']) await read('assets/img/home/face-' + f + '.webp');
   assert.ok((html.match(/<details>/g) || []).length >= 4, 'home FAQ');
   assert.match(html, /<footer class="foot">/);
   for (const img of ['hero-product-photo.webp', 'hero-avatars.png']) await read('assets/img/home/' + img);
@@ -137,4 +141,16 @@ test('design renders exist for every shared estate and scene style', async () =>
   runInNewContext(await read('app/estate-styles.js'), ctx); runInNewContext(await read('app/scene-styles.js'), ctx);
   const ids = [...Object.values(ctx.window.LC_ESTATE.rows).flat().map(r => r[0]), ...ctx.window.LC_SCENES.styles.map(s => s.id)];
   for (const id of ids) await read('assets/img/designs/' + id + '.webp');
+});
+
+test('prices: one currency per visitor, picked from location (no currency toggle, no both-currency copy)', async () => {
+  for (const f of ['index.html', 'pricing/index.html']) {
+    const html = await read(f);
+    assert.ok(!/data-region|USA · \$|India · ₹/.test(html), f + ': no currency toggle');
+    assert.ok(!/In India, Digital Card is/.test(html), f + ': no copy that lists both currencies');
+    for (const m of html.matchAll(/<b data-us="([^"]+)" data-in="([^"]+)">([^<]+)<\/b>/g)) assert.equal(m[3], m[1], 'US amount is the no-JS default');
+  }
+  const js = await read('assets/js/site.js');
+  assert.match(js, /cdn-cgi\/trace/);
+  assert.match(js, /el\.dataset\[k\]/);
 });
