@@ -8,7 +8,7 @@ export const STATIC_PAGES = new Set(pages.filter(p => p.path !== '/404').map(p =
 export const STATIC_PREFIXES = new Set(['assets', 'app']);
 
 // /create serves the vendored order app (opens on Plan). Old paths redirect there.
-export const ORDER_ALIASES = new Set(['order', 'pricing']);
+export const ORDER_ALIASES = new Set(['order']);
 
 // Asset paths without ".html": the assets binding redirects *.html URLs, which would drop the
 // card handle or edit token from the address bar (the vendored app reads them from location).

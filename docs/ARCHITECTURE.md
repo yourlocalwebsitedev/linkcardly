@@ -9,7 +9,7 @@ linkcardly/
 │   ├── site.config.js     Site URL, header nav, footer links
 │   ├── layout.js          Shared shell: <head>, header, footer, sticky bar, scripts
 │   ├── pages.js           Page registry: path, title, description, flags (also drives Worker routes and reserved handles)
-│   ├── catalogue.js       Design-catalogue copy (categories, colourway names, sample people)
+│   ├── catalogue.js       Design-catalogue copy (read by scripts/build.mjs for the order app catalogue)
 │   └── pages/*.html       Page bodies (inside <main>)
 ├── scripts/build.mjs      site/ → public/*.html, sitemap.xml, assets/js/{icons,rules,catalogue}.js
 ├── src/                   Worker (server)
@@ -24,8 +24,8 @@ linkcardly/
 │   │   ├── estate-styles.js  Estate card styles shared by order.html and card.html (window.LC_ESTATE)
 │   │   ├── scene-styles.js   Personal scene styles (Summit, Tide) and their art, shared the same way (window.LC_SCENES)
 │   │   └── components/    Linkcardly UI components for the app: card-style-controls, link-claim ("Your link"), order-done (done screen)
-│   ├── assets/css/        tokens.css (brand tokens, loaded first everywhere), site.css (marketing)
-│   ├── assets/js/         site.js (marketing behaviour); generated: catalogue.js, icons.js, rules.js
+│   ├── assets/css/        tokens.css (Home v13 tokens, loaded first everywhere), site.css (marketing components)
+│   ├── assets/js/         site.js (menu, claim field, reveal, forms), designs.js; generated: catalogue.js, icons.js, rules.js
 │   ├── assets/img/brand/  favicon companions, OG image
 │   ├── assets/img/samples/ sample portrait used by the app
 │   └── favicon.svg, robots.txt

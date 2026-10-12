@@ -1,15 +1,15 @@
 export const SITE_URL = 'https://linkcardly.com';
 
-// [label, href, key]
+// Header navigation, as in Home v13: [label, href, key]
 export const NAV = [
-  ['How it works', '/#how', 'how'],
+  ['Features', '/#features', 'features'],
   ['Designs', '/designs', 'designs'],
-  ['Pricing', '/#pricing', 'pricing'],
+  ['Pricing', '/pricing', 'pricing'],
   ['Teams', '/teams', 'teams'],
   ['Contact', '/contact', 'contact']
 ];
 
 export const FOOTER_LINKS = [
-  ['Designs', '/designs'], ['Pricing', '/#pricing'], ['Create', '/create'], ['Teams', '/teams'], ['Contact', '/contact'],
+  ['How it works', '/how-it-works'], ['Designs', '/designs'], ['Pricing', '/pricing'], ['Claim your link', '/claim'], ['Teams', '/teams'], ['Contact', '/contact'],
   ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refunds']
 ];

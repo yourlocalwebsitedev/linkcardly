@@ -1,0 +1,74 @@
+/* Order app (/create) skin: maps the vendored app's own variables and inline-styled parts onto the
+   Home v13 tokens in /assets/css/tokens.css (loaded just before this file). Visual only, no behaviour.
+   !important is needed because the vendored app sets these values inline and in [data-theme] rules. */
+
+nav[aria-label="Breadcrumb"]{display:none!important}
+
+/* App variables → v13 tokens (the app keeps its own variable names). */
+html[data-theme="light"],html[data-skin="card"],html[data-skin="card"][data-theme="light"]{
+  --gold:var(--lc-accent)!important;--mint:var(--lc-paper)!important;--mint-2:var(--a200)!important;
+  --sand:var(--lc-paper)!important;--sand-2:var(--lc-sand)!important;--sand-ink:var(--lc-ink)!important;
+  --bg:var(--lc-paper)!important;--bg-2:var(--lc-sand)!important;--surface:var(--lc-white)!important;--surface-1:var(--lc-white)!important;--surface-hi:var(--lc-paper)!important;
+  --ink:var(--lc-ink)!important;--ink-2:var(--lc-ink)!important;--ink-3:var(--lc-ink)!important;--body:var(--lc-ink)!important;
+  --muted:var(--lc-muted)!important;--faint:var(--lc-muted)!important;
+  --accent:var(--lc-accent)!important;--accent-hover:var(--lc-accent-hover)!important;--accent-2:var(--lc-accent)!important;
+  --danger:var(--lc-danger)!important;
+  --btn:var(--lc-accent)!important;--btn-hover:var(--lc-accent-hover)!important;--btn-ink:var(--lc-white)!important;
+  --fg-rgb:17,16,15!important;--acc-rgb:176,78,34!important;
+  color-scheme:light!important;
+}
+html body{background:var(--lc-paper)!important;color:var(--lc-ink)}
+input,textarea,select{color-scheme:light}
+
+/* Type: Inter throughout, DM Serif Display headings */
+[data-screen-label="Order Card"],[data-screen-label="Order Card"] *:not(svg):not(path):not(h1):not(h2){font-family:var(--font-b)!important}
+html body [data-screen-label="Order Card"] :is(h1,h2){font-family:var(--font-h)!important;font-weight:400!important;letter-spacing:-.02em!important}
+[data-screen-label="Order Card"] h3{font-weight:600!important;letter-spacing:-.01em!important}
+
+/* Buttons: v13 pill */
+[data-screen-label="Order Card"] .lc-cta{border:0!important;border-radius:999px!important;background:var(--lc-accent)!important;color:var(--lc-white)!important;box-shadow:none!important;transition:background .25s,transform .25s,box-shadow .25s}
+[data-screen-label="Order Card"] .lc-cta:hover{background:var(--lc-accent-hover)!important;transform:translateY(-1px);box-shadow:var(--shadow-lift)!important}
+[data-screen-label="Order Card"] .lc-cta:active{transform:scale(.98)}
+[data-screen-label="Order Card"] .lc-cta:disabled{opacity:.55;transform:none;box-shadow:none!important}
+[data-screen-label="Order Card"] .lc-back{border:0!important;border-radius:999px!important;background:var(--lc-white)!important;color:var(--lc-ink)!important;box-shadow:inset 0 0 0 1px var(--lc-sand)!important}
+[data-screen-label="Order Card"] :is(.lc-cta,.lc-back):focus-visible{outline:2px solid var(--lc-accent);outline-offset:3px}
+
+/* Step nav */
+ol[aria-label="Steps"]{background:var(--lc-sand)!important;border-color:var(--lc-sand)!important;box-shadow:none!important}
+ol[aria-label="Steps"]>li[aria-hidden="true"]{background:var(--lc-white)!important;box-shadow:var(--shadow-field)!important}
+ol[aria-label="Steps"] button{color:var(--lc-muted)!important}
+ol[aria-label="Steps"] button[aria-current="step"]{color:var(--lc-accent)!important}
+
+/* Plan cards: v13 surface; selected gets the accent edge */
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="false"]{background:var(--lc-white)!important;border:0!important;box-shadow:inset 0 0 0 1px var(--lc-sand)!important}
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="true"]{background:var(--lc-white)!important;border:0!important;box-shadow:var(--shadow-field),inset 0 0 0 2px var(--lc-accent)!important}
+[role="radiogroup"][aria-label="Plan"] button[aria-checked="true"] > span:last-child > span[aria-hidden="true"]{border-color:var(--lc-accent)!important}
+
+/* "Your link" field: v13 claim field */
+.lcl{color:var(--lc-ink)!important}
+.lcl__field{background:var(--lc-white)!important;border:0!important;border-radius:999px!important;box-shadow:var(--shadow-field),inset 0 0 0 1px var(--lc-sand)!important}
+.lcl__field:focus-within{outline:2px solid var(--lc-accent);outline-offset:3px}
+.lcl__field.is-ok{box-shadow:var(--shadow-field),inset 0 0 0 2px var(--lc-ink)!important}
+.lcl__prefix{color:var(--lc-ink)!important;font-weight:600!important;font-family:var(--font-b)!important}
+.lcl__input{color:var(--lc-ink)!important;font-family:var(--font-b)!important}
+.lcl__mark--ok{background:var(--lc-ink)!important;color:var(--lc-white)!important}
+.lcl__note{background:var(--lc-paper)!important;color:var(--lc-ink)!important;border:0;box-shadow:inset 0 0 0 1px var(--lc-sand)}
+.lcl__note-dot{background:var(--lc-sand)!important;color:var(--lc-ink)!important}
+.lcl__alt{background:var(--lc-white)!important;border-color:var(--lc-sand)!important;color:var(--lc-ink)!important}
+.lcl__alt:hover{border-color:var(--lc-ink)!important}
+.lcl__spin{border-color:var(--lc-sand)!important;border-top-color:var(--lc-ink)!important}
+
+/* Payment summary and grouped fields */
+[data-pay-summary]{background:var(--lc-white)!important;border:0!important;border-radius:28px!important;box-shadow:var(--shadow-field),inset 0 0 0 1px var(--lc-sand)!important}
+[data-group]{border-color:var(--lc-sand)}
+
+/* Done screen */
+.lcd{--lcd-glass:var(--lc-ink)}
+.lcd__pill,.lcd__glass{background:var(--lc-white)!important;border:0!important;color:var(--lc-ink)!important;box-shadow:inset 0 0 0 1px var(--lc-sand)!important}
+.lcd__act,.lcd__qr{border-color:var(--lc-sand)!important}
+.lcd__act--main{border-color:transparent!important;color:var(--lc-white)!important;box-shadow:none!important}
+.lcd__act--main::before{display:none}
+.lcd__tick{color:var(--lc-white)!important;border-color:var(--lc-ink)!important}
+.lcd__dark{background:var(--lc-ink)!important;color:var(--lc-white)!important;box-shadow:none!important}
+.lcd__card::before{background:none!important}
+@media (prefers-reduced-motion:reduce){[data-screen-label="Order Card"] *{transition:none!important;animation:none!important}}

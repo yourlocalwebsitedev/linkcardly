@@ -71,11 +71,6 @@ test('claim form passes the typed handle to /create', async () => {
   assert.match(block, /'h=' \+ encodeURIComponent\(h\)/);
 });
 
-test('site.js: marquee state is declared before the chip strip uses it (no TDZ crash on home)', async () => {
-  const js = await read('assets/js/site.js');
-  assert.ok(js.indexOf('let x = 0') < js.indexOf('if (loop) x = 0'));
-});
-
 test('skip link becomes visible on focus', async () => {
   assert.match(await read('index.html'), /<a class="skip" href="#main">/);
   assert.match(await read('assets/css/site.css'), /\.skip:focus\{left:/);
@@ -86,31 +81,60 @@ test('vendored app README and legacy images are not published', async () => {
   await assert.rejects(read('assets/img/legacy/nexbizrise-logo.png'));
 });
 
-test('design tokens: one source (tokens.css) loaded before site.css and the app skin; no brand hex in the skin', async () => {
+test('design tokens: one source (tokens.css) loaded before site.css and the app skin; no hex colours in the skin', async () => {
   const css = p => readFile(new URL('../public/' + p, import.meta.url), 'utf8');
   const tokens = await css('assets/css/tokens.css');
-  for (const t of ['--lc-bg', '--lc-text', '--lc-accent', '--n100', '--a600', '--s800', '--font-h', '--font-b']) assert.match(tokens, new RegExp(t + ':'), t);
-  const site = await css('assets/css/site.css'), skin = await css('app/skin.css');
-  for (const t of ['--n100', '--a600', '--font-h']) assert.ok(!site.includes(t + ':') && !skin.includes(t + ':'), `${t} is redefined outside tokens.css`);
-  assert.ok(!/#[0-9a-f]{6}/i.test(skin), 'app/skin.css uses tokens, not hex colours');
+  for (const t of ['--lc-paper', '--lc-sand', '--lc-white', '--lc-ink', '--lc-muted', '--lc-accent', '--lc-accent-hover', '--font-h', '--font-b']) assert.match(tokens, new RegExp(t + ':'), t);
+  const site = await css('assets/css/site.css'), skin = await css('app/skin-v13.css');
+  for (const t of ['--lc-paper', '--lc-accent', '--n100', '--a600', '--font-h']) assert.ok(!site.includes(t + ':') && !skin.includes(t + ':'), `${t} is redefined outside tokens.css`);
+  assert.ok(!/#[0-9a-f]{3,6}\b/i.test(skin), 'app/skin-v13.css uses tokens, not hex colours');
   const html = await read('index.html'), order = await css('app/order.html');
   assert.ok(html.indexOf('tokens.css') < html.indexOf('site.css'));
-  assert.ok(order.indexOf('tokens.css') > 0 && order.indexOf('tokens.css') < order.indexOf('skin-gold.css'));
+  assert.ok(order.indexOf('tokens.css') > 0 && order.indexOf('tokens.css') < order.indexOf('skin-v13.css'));
 });
 
-test('text pages use the shared page header instead of inline styles', async () => {
-  for (const n of ['contact', 'privacy', 'terms', 'refunds']) {
-    const html = await read(n + '/index.html');
-    assert.match(html, /<div class="page-head">/, n);
-    assert.ok(!html.includes('clamp(40px,5.6vw,72px)'), n);
+test('every page uses the v13 sheet header and no inline layout styles', async () => {
+  for (const p of pages) {
+    const html = await read(p.out), main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+    assert.match(main, /<section class="sheet[ "]/, p.name);
+    assert.ok(!/style="/.test(main), `${p.name}: inline style in page body`);
   }
 });
 
-test('home uses the Black & Gold theme: gold.css after site.css, one claim form, FAQ as native details', async () => {
+test('no previous-design leftovers: gold theme, old fonts, old stylesheets', async () => {
+  for (const p of pages) {
+    const html = await read(p.out);
+    assert.ok(!/gold|Caprasimo|Figtree|Bricolage|theme\.css|icons\.js/i.test(html), p.name);
+  }
+  for (const f of ['assets/css/site.css', 'assets/css/tokens.css', 'assets/js/site.js', 'assets/js/designs.js', 'app/skin-v13.css']) assert.ok(!/gold|#ECC48F|Caprasimo/i.test((await read(f)).replace(/--gold:/g, '')), f);
+  for (const f of ['assets/css/gold.css', 'assets/css/theme.css', 'app/skin-gold.css', 'app/skin.css', 'app/skin-paper.css', 'app/skin-warm.css', 'app/brand.js']) await assert.rejects(read(f), f);
+});
+
+test('home is Home v13: one claim form, hero copy, photos, features, site footer', async () => {
   const html = await read('index.html');
-  assert.match(html, /<body class="gold">/);
-  assert.ok(html.indexOf('site.css') < html.indexOf('gold.css'));
-  assert.equal((html.match(/<form class="claim" data-claim>/g) || []).length, 1);
-  assert.ok((html.match(/<details/g) || []).length >= 3);
-  for (const img of ['people', 'share', 'cta']) await read('assets/img/home/' + img + '.png');
+  assert.equal((html.match(/<form class="claim[ "][^>]*data-claim>/g) || []).length, 1);
+  assert.match(html, /Your identity\.<br><span>One simple link\.<\/span>/);
+  assert.ok((html.match(/class="feature"/g) || []).length >= 4);
+  assert.ok((html.match(/<details>/g) || []).length >= 4, 'home FAQ');
+  assert.match(html, /<footer class="foot">/);
+  for (const img of ['hero-product-photo.webp', 'hero-avatars.png']) await read('assets/img/home/' + img);
+  assert.ok(!html.includes('hero-product-photo.png'));
+});
+
+test('designs shows the real card page in preview mode, fed by the shared style lists', async () => {
+  const html = await read('designs/index.html');
+  assert.match(html, /<iframe src="\/app\/card\.html\?preview=1"/);
+  assert.match(html, /<dialog class="viewer"/);
+  for (const s of ['/assets/js/catalogue.js', '/app/estate-styles.js', '/app/scene-styles.js', '/assets/js/designs.js']) assert.ok(html.includes(`<script src="${s}"`), s);
+  const js = await read('assets/js/designs.js');
+  assert.match(js, /type: 'nbr-preview'/);
+  assert.ok(!/#[0-9a-f]{6}/i.test(js), 'designs.js has no colours of its own');
+});
+
+test('design renders exist for every shared estate and scene style', async () => {
+  const { runInNewContext } = await import('node:vm');
+  const ctx = { window: {} };
+  runInNewContext(await read('app/estate-styles.js'), ctx); runInNewContext(await read('app/scene-styles.js'), ctx);
+  const ids = [...Object.values(ctx.window.LC_ESTATE.rows).flat().map(r => r[0]), ...ctx.window.LC_SCENES.styles.map(s => s.id)];
+  for (const id of ids) await read('assets/img/designs/' + id + '.webp');
 });

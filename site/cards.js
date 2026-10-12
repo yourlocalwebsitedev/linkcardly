@@ -21,7 +21,7 @@ const original = `<div class="lc-card v-original" aria-hidden="true">
 <div class="o-head"><span class="o-cat">Real estate · Skyline Realty</span><b class="o-name">Alex Morgan</b><span class="o-role">REALTOR® · Buy, sell and invest</span></div>
 <div class="o-body"><span class="o-save">${i.save}Save contact</span>
 <div class="o-grid"><span>${i.call}Call</span><span>${i.wa}WhatsApp</span><span>${i.mail}Email</span><span>${i.pin}Office</span></div>
-<span class="o-row gold">${i.cal}Schedule a showing<em>→</em></span><span class="o-row">${i.home}View my listings<em>↗</em></span></div>
+<span class="o-row hl">${i.cal}Schedule a showing<em>→</em></span><span class="o-row">${i.home}View my listings<em>↗</em></span></div>
 <div class="o-foot"><span>linkcardly.com/alexmorgan</span><b>Share · Show QR</b></div></div>`;
 
 const luxury = `<div class="lc-card v-luxury" aria-hidden="true">

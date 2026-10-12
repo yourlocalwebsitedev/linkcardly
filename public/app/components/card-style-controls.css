@@ -135,6 +135,11 @@
   color:var(--lcs-ink);font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;transition:top 200ms ease-out}
 .lcr__name::before{border-radius:13px 13px 0 0}
 
+/* Inline (desktop): the same controls inside the phone frame; the frame clips the dim and the sheet */
+.lcs--inline{position:absolute;padding-bottom:16px}
+.lcs--inline .lcs__dim{position:absolute}
+.lcr--inline{position:absolute;top:52px}
+
 /* Thumbnail */
 .lcs-thumb{position:relative;display:block;flex:none;overflow:hidden}
 .lcs-thumb__art{position:absolute;left:0;top:0;transform-origin:0 0}
