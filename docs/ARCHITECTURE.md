@@ -75,6 +75,7 @@ Forms (`upload`, `order`, `edit`, `lead`, `contact`, `pay`) are refused from oth
 - New marketing page: add an entry to `site/pages.js` and a body in `site/pages/<name>.html`. The Worker route and the handle reservation follow from the registry.
 
 ## Known debt
+- `test/live-db.test.js` (real SQL in PGlite) is out of `npm test` for now because it fails as a whole file on load; run it with `npm run test:db`, fix it, then add it back to `npm test`.
 - Marketing prices (`data-us`/`data-in` in site/pages/home.html and pricing.html, and the pricing meta description in site/pages.js) repeat `PRICING` from `public/app/order.html`. Generate them from one price file at build time.
 - `package.json` `overrides` pins `sharp` to `^0.35.5` (CVE-2026-96889, high; dev-only, pulled in by wrangler → miniflare). Remove the override once a wrangler release depends on a patched sharp and `npm audit --audit-level=high` passes without it.
 - Button text on five estate styles outside Real Estate and Home Services is slightly under 4.5:1 (`hc-home-sky`, `bw-menu`, `bw-home`, `bw-home-blush`, `cc-list`, 4.2–4.49). The contrast test enforces 4.5:1 only for categories with colour families; fix these when those categories get families.

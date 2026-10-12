@@ -152,12 +152,13 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
 test('order app, phone Preview step: uses the CardStyleControls component; desktop keeps its panel', async () => {
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
-  const use = html.match(/<x-import component-from-global-scope="LcCardStyleControls"[^>]*>/);
+  // the phone controls sit in the fixed bar (pv.fixedBar); the desktop copy (pv.desktop) has no Next button of its own
+  const use = html.match(/<sc-if value="\{\{ pv\.fixedBar \}\}"[^>]*><x-import component-from-global-scope="LcCardStyleControls"[^>]*>/);
   assert.ok(use, 'phone preview renders the component');
   for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'open="{{ scs.open }}"', 'on-toggle="{{ scs.toggle }}"', 'on-select="{{ scs.select }}"', 'on-next="{{ next }}"', 'next-label="{{ pv.nextText }}"']) assert.ok(use[0].includes(a), a);
   // Props must not collide with the runtime's host-style names or its style-* pseudo-class prefix.
   for (const [, name] of use[0].matchAll(/\s([a-z-]+)="/g)) assert.ok(!/^(position|left|right|top|bottom|inset|width|height|z-index|transform|style-.*)$/.test(name), name);
-  assert.match(html, /<sc-if value="\{\{ pv\.desktop \}\}"[^>]*><div ref="\{\{ barRef \}\}"/, 'desktop bar only on desktop');
+  assert.match(html, /<sc-if value="\{\{ pv\.desktop \}\}"[^>]*><x-import component-from-global-scope="LcCardStyleControls"/, 'desktop keeps its own style picker');
   assert.ok(!/pillBlocks|swPillBd|handleTouchStart|lc-rise/.test(html), 'no phone-only leftovers in the shared bar');
 });
 
