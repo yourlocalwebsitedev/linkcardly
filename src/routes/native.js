@@ -198,11 +198,19 @@ async function lead(req, env, ctx) {
 async function contact(req, env, ctx) {
   const b = await readJson(req, 20000);
   if (!(await botOk(env, b.turnstile, ipOf(req)))) return json({ error: 'Please complete the security check and try again.' }, 403, noStore);
-  const name = String(b.name || '').trim();
-  const res = await rpc(env, 'submit_site_lead', { p: { name, business_name: String(b.company || name).trim(), email: String(b.email || '').trim(), phone: String(b.phone || '').trim(), message: String(b.message || '').slice(0, 4000), preferred_contact_method: 'email' } }, { ip: ipOf(req) });
-  if (env.ADMIN_EMAIL) later(ctx, sendMail(env, env.ADMIN_EMAIL, 'Website enquiry: ' + name.slice(0, 60), mailHtml('New enquiry from linkcardly.com', [
-    `<b>${esc(name)}</b> · <a href="mailto:${esc(b.email)}">${esc(b.email)}</a>${b.phone ? ' · ' + esc(b.phone) : ''}`, esc(String(b.message || '').slice(0, 4000)).replace(/\n/g, '<br>')])));
-  return json({ ok: true, ...(res && typeof res === 'object' ? { id: res.id } : {}) }, 200, noStore);
+  const name = String(b.name || '').trim(), nfc = b.kind === 'nfc';
+  // NFC orders (sold in person with a token amount) get a reference the customer keeps as proof of their order.
+  const ref = nfc ? 'NFC-' + [...crypto.getRandomValues(new Uint8Array(6))].map(x => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x % 32]).join('') : '';
+  const message = (ref ? 'Ref: ' + ref + ' · ' : '') + String(b.message || '');
+  const res = await rpc(env, 'submit_site_lead', { p: { name, business_name: String(b.company || name).trim(), email: String(b.email || '').trim(), phone: String(b.phone || '').trim(), message: message.slice(0, 4000), preferred_contact_method: 'email' } }, { ip: ipOf(req) });
+  if (env.ADMIN_EMAIL) later(ctx, sendMail(env, env.ADMIN_EMAIL, (nfc ? 'NFC order ' + ref + ': ' : 'Website enquiry: ') + name.slice(0, 60), mailHtml(nfc ? 'New NFC order' : 'New enquiry from linkcardly.com', [
+    `<b>${esc(name)}</b> · <a href="mailto:${esc(b.email)}">${esc(b.email)}</a>${b.phone ? ' · ' + esc(b.phone) : ''}`, esc(message.slice(0, 4000)).replace(/\n/g, '<br>')])));
+  if (nfc) later(ctx, sendMail(env, String(b.email).trim(), `Your NFC order ${ref}`, mailHtml('Order received', [
+    `Hi ${esc(firstName(name))}, thanks for your order. Your reference is <b>${esc(ref)}</b>.`,
+    esc(String(b.message || '').split('\n')[0].replace(/^NFC order · /, '')),
+    'Keep this email. Any token amount you paid comes off your final price, and you pay the rest when you get your stand.',
+    'Our team will call you to confirm the details. Questions? Just reply to this email.'])));
+  return json({ ok: true, ...(ref ? { ref } : {}), ...(res && typeof res === 'object' ? { id: res.id } : {}) }, 200, noStore);
 }
 
 async function payStart(req, env) {

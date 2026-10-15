@@ -69,7 +69,7 @@ them hard-coded.
 ## Routes
 | Path | What |
 |---|---|
-| `/`, `/designs`, `/teams`, `/contact`, `/privacy`, `/terms`, `/refunds` | Static marketing pages (`/designs/` redirects to `/designs`) |
+| `/`, `/designs`, `/nfc-cards`, `/teams`, `/contact`, `/privacy`, `/terms`, `/refunds` | Static marketing pages (`/designs/` redirects to `/designs`) |
 | `/create` | Order app; `/order` and `/pricing` 301 here |
 | `/<name>`, `/c/<nbr_id>` | Live card (card app; link previews get the card's name and photo) |
 | `/e/<token>` | Private edit link (order app in edit mode; never cached, no referrer) |
