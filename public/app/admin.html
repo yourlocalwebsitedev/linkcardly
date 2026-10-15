@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <script src="/app/vendor/resources.js"></script>
 <script src="/app/config.js"></script>
+<script src="/app/card-fields.js"></script>
 <script src="/app/support.js"></script>
 <script src="/app/vendor/supabase-js-2.45.4/supabase.js"></script>
 </head>
@@ -15,36 +16,53 @@
 <title>Linkcardly Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/tokens.css">
 <script src="/app/qrcode.js"></script>
-<script>try{var t=localStorage.getItem('nbr-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem('lc-admin-theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
-:root,[data-theme="dark"]{--bg:#070B14;--bg-2:#0A0F1A;--surface:#0F1624;--surface-1:#0C121E;--surface-hi:#1B2536;--header-bg:rgba(7,11,20,0.82);--ink:#FFFFFF;--ink-2:var(--ink-2);--ink-3:var(--ink-3);--body:#B4C0CF;--muted:var(--muted);--faint:#7D8CA1;--accent:#00E5FF;--accent-hover:#7DF3FF;--accent-2:#00D6B3;--danger:#FF8A8A;--fg-rgb:255,255,255;--shadow:rgba(0,0,0,0.45);color-scheme:dark;}
-[data-theme="light"]{--bg:#F6F8FB;--bg-2:#EDF1F6;--surface:#FFFFFF;--surface-1:#FFFFFF;--surface-hi:#E6ECF3;--header-bg:rgba(246,248,251,0.86);--ink:#0A0F1A;--ink-2:#1E293B;--ink-3:#334155;--body:#3F4B5C;--muted:#4F5D70;--faint:#64748B;--accent:#0E7490;--accent-hover:#0B5E75;--accent-2:#0F766E;--danger:#B42318;--fg-rgb:10,15,26;--shadow:rgba(15,23,42,0.12);color-scheme:light;}
-html,:root{--brand:#00E5FF;--brand-hi:#7DF3FF;--brand-rgb:0,229,255;--row-pad:14px 16px;--av:48px;--row-gap:14px 18px;}
+:root,[data-theme="dark"]{--bg:var(--n900);--bg-2:#1A1714;--surface:#211C18;--surface-1:#1D1915;--surface-hi:#2E2722;--header-bg:rgba(17,16,15,0.86);--ink:var(--lc-paper);--ink-2:var(--n200);--ink-3:var(--n300);--body:var(--n400);--muted:var(--n400);--faint:var(--n500);--accent:var(--a400);--accent-hover:var(--a300);--accent-2:#7CC79A;--danger:#F2A39B;--warn:#F2C98A;--warn-rgb:242,201,138;--ok-rgb:124,199,154;--bad-rgb:242,163,155;--fg-rgb:250,245,237;--shadow:rgba(0,0,0,0.45);--logo-accent:var(--a400);color-scheme:dark;}
+[data-theme="light"]{--bg:var(--lc-paper);--bg-2:var(--n200);--surface:var(--lc-white);--surface-1:var(--lc-white);--surface-hi:var(--lc-sand);--header-bg:color-mix(in srgb,var(--lc-sand) 92%,transparent);--ink:var(--lc-ink);--ink-2:var(--n900);--ink-3:var(--n800);--body:var(--n700);--muted:var(--n700);--faint:var(--n600);--accent:var(--lc-accent);--accent-hover:var(--lc-accent-hover);--accent-2:var(--lc-success);--danger:var(--lc-danger);--warn:#8A5A12;--warn-rgb:200,140,30;--ok-rgb:46,125,79;--bad-rgb:179,38,30;--fg-rgb:17,16,15;--shadow:rgba(17,16,15,0.12);--logo-accent:var(--lc-accent);color-scheme:light;}
+html,:root{--brand:var(--lc-accent);--brand-hi:var(--lc-accent-hover);--brand-rgb:176,78,34;--row-pad:14px 16px;--av:48px;--row-gap:14px 18px;}
 body{margin:0;background:var(--bg);}
 *{box-sizing:border-box;}
-body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink-2);-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font-b);color:var(--ink-2);-webkit-font-smoothing:antialiased;}
 a{color:var(--accent);text-decoration:none;}
 a:hover{color:var(--accent-hover);}
 input::placeholder,textarea::placeholder{color:var(--faint);}
 select option{background:var(--surface);color:var(--ink-2);}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 input,textarea,select{font:inherit;}
+button{white-space:nowrap;}
+.adm-t{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);}
+.adm-h{display:none;}
+.adm-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:var(--row-pad);border-top:1px solid rgba(var(--fg-rgb),0.06);}
+.adm-r:first-of-type{border-top:0;}
+.adm-r>*{min-width:0;}
+.adm-full{flex:1 1 100%;}
+.adm-end{margin-left:auto;display:flex;gap:6px;align-items:center;}
+.adm-1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media (min-width:960px){
+.adm-h,.adm-r{display:grid;grid-template-columns:var(--cols);gap:16px;align-items:center;}
+.adm-h{padding:10px 16px;background:var(--bg-2);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.adm-r{border-top:1px solid rgba(var(--fg-rgb),0.06);}
+.adm-full{flex:none;}
+.adm-end{margin-left:0;justify-content:flex-end;}
+.adm-span{grid-column:1/-1;}
+}
 </style>
 </helmet>
 
 <div style="min-height:100vh;display:flex;flex-direction:column;">
   <header style="position:sticky;top:0;z-index:20;background:var(--header-bg);backdrop-filter:blur(12px);border-bottom:1px solid rgba(var(--fg-rgb),0.07);color:var(--ink-2);padding:0 24px;min-height:64px;display:flex;align-items:center;gap:16px;">
     <div style="display:flex;align-items:baseline;gap:10px;flex:1;min-width:0;">
-      <a href="#/" style="display:flex;align-items:center;gap:8px;color:var(--ink);"><span style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">link<span style="color:var(--accent);">card</span>ly</span></a>
-      <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);padding:3px 8px;border:1px solid rgba(var(--brand-rgb),0.35);border-radius:6px;">Tap Card Admin</span>
+      <a href="#/" aria-label="Linkcardly admin home" style="display:flex;align-items:center;min-height:44px;color:var(--ink);"><span style="font-family:var(--font-h);font-size:28px;font-weight:400;letter-spacing:-0.035em;line-height:1;-webkit-text-stroke:0.6px currentColor;">Link<span style="color:var(--logo-accent);">card</span>ly</span></a>
     </div>
     <button type="button" onClick="{{ toggleTheme }}" aria-label="{{ themeLabel }}" title="{{ themeLabel }}" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(var(--fg-rgb),0.16);border-radius:10px;color:var(--ink-2);cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ themeIcon }}"></path></svg></button>
     <sc-if value="{{ signedIn }}">
       <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:13px;color:rgba(232,238,245,0.75);">{{ userEmail }}</span>
-        <button type="button" onClick="{{ logout }}" style="height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(232,238,245,0.3);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Sign out</button>
+        <span style="font-size:13px;color:var(--muted);">{{ userEmail }}</span>
+        <button type="button" onClick="{{ logout }}" style="height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(var(--fg-rgb),0.2);background:transparent;color:var(--ink-2);font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;">Sign out</button>
       </div>
     </sc-if>
   </header>
@@ -57,7 +75,7 @@ input,textarea,select{font:inherit;}
     <div style="flex:1;display:grid;place-items:center;padding:48px 20px;">
       <div style="width:100%;max-width:380px;background:var(--surface);border-radius:20px;border:1px solid rgba(var(--fg-rgb),0.07);padding:28px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);">
         <div style="display:flex;flex-direction:column;gap:4px;">
-          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:30px;">Sign in</h1>
+          <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:30px;">Sign in</h1>
           <p style="margin:0;font-size:14px;color:var(--muted);">Admin access for Linkcardly cards.</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
@@ -69,7 +87,7 @@ input,textarea,select{font:inherit;}
           <input id="l-pass" type="password" autoComplete="current-password" value="{{ loginPassword }}" onChange="{{ onLoginPassword }}" onKeyDown="{{ loginKey }}" style="height:48px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:16px;color:var(--ink-2);outline:none;">
         </div>
         <sc-if value="{{ hasLoginError }}"><p role="alert" style="margin:0;font-size:13px;font-weight:600;color:var(--danger);">{{ loginError }}</p></sc-if>
-        <button type="button" onClick="{{ login }}" style="height:50px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ loginLabel }}</button>
+        <button type="button" onClick="{{ login }}" style="height:50px;border:0;border-radius:12px;background:var(--brand);color:var(--lc-white);font-family:var(--font-b);font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ loginLabel }}</button>
       </div>
     </div>
   </sc-if>
@@ -77,7 +95,7 @@ input,textarea,select{font:inherit;}
   <sc-if value="{{ isNotAdmin }}" hint-placeholder-val="{{ false }}">
     <div style="flex:1;display:grid;place-items:center;padding:48px 20px;">
       <div style="width:100%;max-width:520px;background:var(--surface);border-radius:20px;border:1px solid rgba(var(--fg-rgb),0.07);padding:28px;display:flex;flex-direction:column;gap:12px;">
-        <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:28px;">Not an admin yet</h1>
+        <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:28px;">Not an admin yet</h1>
         <p style="margin:0;font-size:15px;line-height:1.5;color:var(--ink-3);">You're signed in as {{ userEmail }}, but this account isn't in the admins table. Run this in Supabase → SQL Editor, then reload:</p>
         <code style="display:block;padding:12px;border-radius:10px;background:var(--bg-2);font-size:13px;line-height:1.5;overflow-wrap:anywhere;">{{ adminSql }}</code>
       </div>
@@ -86,18 +104,18 @@ input,textarea,select{font:inherit;}
 
   <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
     <main style="width:100%;max-width:1120px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px;">
-      <div role="tablist" aria-label="Admin sections" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;">
+      <div role="tablist" aria-label="Admin sections" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;">
         <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="2">
-          <button type="button" role="tab" aria-selected="{{ tb.selected }}" onClick="{{ tb.pick }}" style="min-height:40px;padding:0 18px;border:0;border-radius:999px;background:{{ tb.bg }};color:{{ tb.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;">{{ tb.label }}<sc-if value="{{ tb.hasBadge }}"><span style="min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--brand);color:#04121A;font-size:12px;font-weight:800;display:grid;place-items:center;">{{ tb.badge }}</span></sc-if></button>
+          <button type="button" role="tab" aria-selected="{{ tb.selected }}" onClick="{{ tb.pick }}" style="min-height:40px;padding:0 18px;border:0;border-radius:999px;background:{{ tb.bg }};color:{{ tb.ink }};font-family:var(--font-b);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;">{{ tb.label }}<sc-if value="{{ tb.hasBadge }}"><span style="min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--brand);color:var(--lc-white);font-size:12px;font-weight:800;display:grid;place-items:center;">{{ tb.badge }}</span></sc-if></button>
         </sc-for>
       </div>
       <sc-if value="{{ tabClients }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Clients</h1>
+          <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:40px;line-height:1.05;">Clients</h1>
           <p style="margin:0;font-size:15px;color:var(--muted);">{{ summary }}</p>
         </div>
-        <button type="button" onClick="{{ newClient }}" style="height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
+        <button type="button" onClick="{{ newClient }}" style="height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:var(--lc-white);font-family:var(--font-b);font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
           New client
         </button>
@@ -110,37 +128,36 @@ input,textarea,select{font:inherit;}
         </label>
         <div role="tablist" aria-label="Filter" style="display:flex;gap:6px;flex-wrap:wrap;">
           <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
-            <button type="button" role="tab" aria-selected="{{ fl.selected }}" onClick="{{ fl.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ fl.border }};background:{{ fl.bg }};color:{{ fl.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ fl.label }}</button>
+            <button type="button" role="tab" aria-selected="{{ fl.selected }}" onClick="{{ fl.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ fl.border }};background:{{ fl.bg }};color:{{ fl.ink }};font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">{{ fl.label }}</button>
           </sc-for>
         </div>
       </div>
 
-      <sc-if value="{{ hasLoadError }}"><p role="alert" style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(255,90,90,0.1);color:#FFB4B4;font-size:14px;font-weight:600;">Couldn't load clients: {{ loadError }}</p></sc-if>
-      <div style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.07);">
+      <sc-if value="{{ hasLoadError }}"><p role="alert" style="margin:0;padding:12px 14px;border-radius:12px;background:rgba(var(--bad-rgb),0.1);color:var(--danger);font-size:14px;font-weight:600;">Couldn't load clients: {{ loadError }}</p></sc-if>
+      <div class="adm-t" style="--cols:minmax(0,1.8fr) minmax(0,1.3fr) minmax(130px,1fr) 120px 100px 100px;">
+        <div class="adm-h" aria-hidden="true"><span>Client</span><span>Card link</span><span>Plan</span><span>Status</span><span>Last 30 days</span><span></span></div>
         <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
-          <div style="padding:var(--row-pad);display:flex;flex-wrap:wrap;align-items:center;gap:var(--row-gap);border-top:1px solid rgba(var(--fg-rgb),0.06);">
-            <div style="display:flex;align-items:center;gap:12px;flex:1 1 240px;min-width:0;">
-              <div aria-hidden="true" style="width:var(--av);height:var(--av);border-radius:50%;flex:none;background:{{ r.avatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:18px;color:{{ r.accent }};">{{ r.initialsShown }}</div>
+          <div class="adm-r">
+            <div class="adm-full" style="display:flex;align-items:center;gap:12px;">
+              <div aria-hidden="true" style="width:var(--av);height:var(--av);border-radius:50%;flex:none;background:{{ r.avatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:var(--font-h);font-size:18px;color:{{ r.accent }};">{{ r.initialsShown }}</div>
               <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
-                <span style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.name }}</span>
-                <span style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.role }}</span>
+                <span class="adm-1" style="font-size:15px;font-weight:700;color:var(--ink);">{{ r.name }}</span>
+                <span class="adm-1" style="font-size:13px;color:var(--muted);">{{ r.role }}</span>
               </div>
             </div>
-            <a href="{{ r.url }}" target="_blank" rel="noopener" style="flex:1 1 200px;min-width:0;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.urlLabel }}</a>
-            <div style="display:flex;align-items:center;gap:8px;flex:0 0 150px;">
-              <span aria-hidden="true" style="width:22px;height:22px;border-radius:6px;background:{{ r.bg }};box-shadow:inset 0 0 0 5px {{ r.bg }}, inset 0 0 0 11px {{ r.accent }};flex:none;"></span>
-              <span style="font-size:13px;color:var(--ink-3);">{{ r.colourName }}</span>
+            <a class="adm-full adm-1" href="{{ r.url }}" target="_blank" rel="noopener" style="font-size:14px;font-weight:500;">{{ r.urlLabel }}</a>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="font-size:14px;font-weight:600;color:var(--ink-2);">{{ r.plan }}</span>
+              <span style="font-size:13px;color:var(--muted);">Renews {{ r.renewal }}</span>
             </div>
-            <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 130px;">
-              <span style="font-size:13px;font-weight:600;">{{ r.plan }}</span>
-              <span style="font-size:12px;color:var(--muted);">Renews {{ r.renewal }}</span>
-              <sc-if value="{{ r.hasStats }}"><span title="Last 30 days" style="font-size:12px;color:var(--muted);">{{ r.stats }}</span></sc-if>
+            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
+              <span style="justify-self:start;width:max-content;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ r.statusBg }};color:{{ r.statusInk }};">{{ r.status }}</span>
+              <sc-if value="{{ r.edited }}"><span title="The client changed this card with their edit link. Open it to clear." style="justify-self:start;width:max-content;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(var(--warn-rgb),0.14);color:var(--warn);">Edited by client</span></sc-if>
             </div>
-            <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ r.statusBg }};color:{{ r.statusInk }};font-size:12px;font-weight:700;">{{ r.status }}</span>
-            <sc-if value="{{ r.edited }}"><span title="The client changed this card with their edit link. Open it to clear." style="flex:none;padding:4px 10px;border-radius:999px;background:rgba(250,204,21,0.14);color:#FDE68A;font-size:12px;font-weight:700;">Edited by client</span></sc-if>
-            <div style="display:flex;gap:6px;flex:none;margin-left:auto;">
-              <button type="button" onClick="{{ r.onQR }}" aria-label="{{ r.qrAria }}" style="width:40px;height:40px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--surface-hi);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"></path></svg></button>
-              <button type="button" onClick="{{ r.onEdit }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit</button>
+            <div title="Last 30 days" style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;font-weight:600;color:var(--ink-2);">{{ r.statsShown }}</span><span style="font-size:12px;color:var(--muted);">{{ r.statsSub }}</span></div>
+            <div class="adm-end">
+              <button type="button" onClick="{{ r.onQR }}" aria-label="{{ r.qrAria }}" style="width:40px;height:40px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.12);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;" style-hover="background:var(--surface-hi);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3M21 14v.01M14 21h.01M17 21h4v-4"></path></svg></button>
+              <button type="button" onClick="{{ r.onEdit }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.12);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit</button>
             </div>
           </div>
         </sc-for>
@@ -153,29 +170,33 @@ input,textarea,select{font:inherit;}
       <sc-if value="{{ tabLeads }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;">
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Leads</h1>
+            <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:40px;line-height:1.05;">Leads</h1>
             <p style="margin:0;font-size:15px;color:var(--muted);">{{ leadsSummary }}</p>
           </div>
-          <button type="button" onClick="{{ refreshLeads }}" style="height:40px;padding:0 16px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
+          <button type="button" onClick="{{ refreshLeads }}" style="height:40px;padding:0 16px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
         </div>
         <sc-if value="{{ leadsEmpty }}"><p style="margin:0;padding:20px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);font-size:15px;color:var(--muted);">No leads yet. When someone taps “Share your contact” on a card, it appears here.</p></sc-if>
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="adm-t" style="--cols:minmax(0,1.1fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,2fr) 130px;">
+          <div class="adm-h" aria-hidden="true"><span>Lead</span><span>Contact</span><span>From card</span><span>Message</span><span>Status</span></div>
           <sc-for list="{{ leadRows }}" as="l" hint-placeholder-count="3">
-            <div style="padding:16px 18px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;">
-                <span style="font-size:16px;font-weight:700;">{{ l.name }}</span>
-                <span style="font-size:13px;color:var(--muted);">For {{ l.card }} · {{ l.when }}</span>
+            <div class="adm-r">
+              <div class="adm-full" style="display:flex;flex-direction:column;gap:2px;">
+                <span class="adm-1" style="font-size:15px;font-weight:700;color:var(--ink);">{{ l.name }}</span>
+                <span style="font-size:13px;color:var(--muted);">{{ l.when }}</span>
               </div>
-              <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;">
-                <a href="{{ l.telHref }}">{{ l.phone }}</a>
-                <a href="{{ l.waHref }}" target="_blank" rel="noopener">WhatsApp</a>
-                <sc-if value="{{ l.hasEmail }}"><a href="{{ l.mailHref }}">{{ l.email }}</a></sc-if>
-                <sc-if value="{{ l.hasTopic }}"><span style="color:var(--ink-3);">{{ l.topic }}</span></sc-if>
+              <div class="adm-full" style="display:flex;flex-direction:column;gap:2px;font-size:14px;">
+                <span style="display:flex;flex-wrap:wrap;gap:4px 12px;"><a href="{{ l.telHref }}">{{ l.phone }}</a><a href="{{ l.waHref }}" target="_blank" rel="noopener">WhatsApp</a></span>
+                <sc-if value="{{ l.hasEmail }}"><a class="adm-1" href="{{ l.mailHref }}">{{ l.email }}</a></sc-if>
               </div>
-              <sc-if value="{{ l.hasMessage }}"><p style="margin:0;font-size:14px;line-height:1.5;color:var(--ink-3);white-space:pre-wrap;">{{ l.message }}</p></sc-if>
-              <div role="group" aria-label="Lead status" style="display:flex;gap:6px;flex-wrap:wrap;">
-                <sc-for list="{{ l.statuses }}" as="ls"><button type="button" aria-pressed="{{ ls.pressed }}" onClick="{{ ls.pick }}" style="height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),0.14);background:{{ ls.bg }};color:{{ ls.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ ls.label }}</button></sc-for>
+              <span class="adm-1" style="font-size:14px;color:var(--ink-3);">{{ l.card }}</span>
+              <div class="adm-full" title="{{ l.message }}" style="display:flex;flex-direction:column;gap:2px;">
+                <sc-if value="{{ l.hasTopic }}"><span style="font-size:13px;font-weight:600;color:var(--ink-2);">{{ l.topic }}</span></sc-if>
+                <sc-if value="{{ l.hasMessage }}"><span style="font-size:14px;line-height:1.45;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ l.message }}</span></sc-if>
               </div>
+              <label class="adm-end" style="display:flex;">
+                <span style="position:absolute;left:-9999px;">Status for {{ l.name }}</span>
+                <select value="{{ l.status }}" onChange="{{ l.onStatus }}" style="height:40px;width:130px;padding:0 10px;border-radius:10px;border:1px solid {{ l.statusBorder }};background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;"><option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option></select>
+              </label>
             </div>
           </sc-for>
         </div>
@@ -183,24 +204,24 @@ input,textarea,select{font:inherit;}
 
       <sc-if value="{{ tabCoupons }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Coupons</h1>
+          <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:40px;line-height:1.05;">Coupons</h1>
           <p style="margin:0;font-size:15px;color:var(--muted);">{{ couponsSummary }}</p>
         </div>
         <div style="padding:20px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);display:flex;flex-direction:column;gap:14px;">
           <h2 style="margin:0;font-size:17px;font-weight:800;">New coupon</h2>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:12px;">
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Code<input value="{{ cf.code }}" onInput="{{ cf.onCode }}" maxlength="32" placeholder="LAUNCH20" autocomplete="off" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;"></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Type<select value="{{ cf.kind }}" onChange="{{ cf.onKind }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="percent">% off</option><option value="amount">Fixed amount off</option></select></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">{{ cf.valueLabel }}<input type="number" min="1" step="1" value="{{ cf.value }}" onInput="{{ cf.onValue }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Country<select value="{{ cf.region }}" onChange="{{ cf.onRegion }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="IN">India (₹)</option><option value="US">USA ($)</option></select></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Plan<select value="{{ cf.plan }}" onChange="{{ cf.onPlan }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="basic">Digital Card</option><option value="motion">Motion Card</option></select></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Total uses (blank = unlimited)<input type="number" min="1" step="1" value="{{ cf.maxUses }}" onInput="{{ cf.onMax }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Uses per email<input type="number" min="1" step="1" value="{{ cf.perEmail }}" onInput="{{ cf.onPer }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
-            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Expires (optional)<input type="date" value="{{ cf.expires }}" onInput="{{ cf.onExp }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Code<input value="{{ cf.code }}" onInput="{{ cf.onCode }}" maxlength="32" placeholder="LAUNCH20" autocomplete="off" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Type<select value="{{ cf.kind }}" onChange="{{ cf.onKind }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"><option value="percent">% off</option><option value="amount">Fixed amount off</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">{{ cf.valueLabel }}<input type="number" min="1" step="1" value="{{ cf.value }}" onInput="{{ cf.onValue }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Country<select value="{{ cf.region }}" onChange="{{ cf.onRegion }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="IN">India (₹)</option><option value="US">USA ($)</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Plan<select value="{{ cf.plan }}" onChange="{{ cf.onPlan }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"><option value="">Any</option><option value="basic">Digital Card</option><option value="motion">Motion Card</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Total uses (blank = unlimited)<input type="number" min="1" step="1" value="{{ cf.maxUses }}" onInput="{{ cf.onMax }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Uses per email<input type="number" min="1" step="1" value="{{ cf.perEmail }}" onInput="{{ cf.onPer }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3);">Expires (optional)<input type="date" value="{{ cf.expires }}" onInput="{{ cf.onExp }}" style="height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.16);background:var(--bg-2);color:var(--ink);font-family:var(--font-b);font-size:14px;box-sizing:border-box;width:100%;"></label>
           </div>
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
-            <button type="button" onClick="{{ cf.save }}" disabled="{{ cf.busy }}" style="height:44px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">{{ cf.saveLabel }}</button>
-            <button type="button" onClick="{{ cf.random }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Generate random code</button>
+            <button type="button" onClick="{{ cf.save }}" disabled="{{ cf.busy }}" style="height:44px;padding:0 20px;border:0;border-radius:12px;background:var(--brand);color:var(--lc-white);font-family:var(--font-b);font-size:15px;font-weight:700;cursor:pointer;">{{ cf.saveLabel }}</button>
+            <button type="button" onClick="{{ cf.random }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">Generate random code</button>
             <sc-if value="{{ cf.hasMsg }}"><span role="status" style="font-size:14px;font-weight:600;color:{{ cf.msgColor }};">{{ cf.msg }}</span></sc-if>
           </div>
           <p style="margin:0;font-size:13px;line-height:1.5;color:var(--muted);">Codes are 4–32 letters, numbers, - or _. Use 8+ random characters for high-value codes. Fixed-amount coupons need a country so the currency is clear.</p>
@@ -212,8 +233,8 @@ input,textarea,select{font:inherit;}
               <span style="flex:0 0 150px;font-size:15px;font-weight:800;letter-spacing:0.05em;color:{{ cr.codeInk }};">{{ cr.code }}</span>
               <span style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;font-weight:600;color:var(--ink-2);">{{ cr.offer }}</span><span style="font-size:13px;color:var(--muted);">{{ cr.rules }}</span></span>
               <span style="flex:0 0 90px;font-size:13px;font-weight:600;color:var(--ink-3);">{{ cr.usage }}</span>
-              <button type="button" onClick="{{ cr.toggle }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ cr.toggleLabel }}</button>
-              <button type="button" onClick="{{ cr.remove }}" aria-label="{{ cr.removeAria }}" style="height:36px;padding:0 12px;border-radius:10px;border:0;background:transparent;color:var(--danger);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Delete</button>
+              <button type="button" onClick="{{ cr.toggle }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;">{{ cr.toggleLabel }}</button>
+              <button type="button" onClick="{{ cr.remove }}" aria-label="{{ cr.removeAria }}" style="height:36px;padding:0 12px;border-radius:10px;border:0;background:transparent;color:var(--danger);font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;">Delete</button>
             </div>
           </sc-for>
         </div>
@@ -222,17 +243,17 @@ input,textarea,select{font:inherit;}
       <sc-if value="{{ tabOrders }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:40px;line-height:1.05;">Orders</h1>
+            <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:40px;line-height:1.05;">Orders</h1>
             <p style="margin:0;font-size:15px;color:var(--muted);">{{ ordersSummary }}</p>
           </div>
-          <button type="button" onClick="{{ refreshOrders }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
+          <button type="button" onClick="{{ refreshOrders }}" style="height:44px;padding:0 16px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">Refresh</button>
         </div>
         <sc-if value="{{ ordersNeedSetup }}" hint-placeholder-val="{{ false }}">
-          <div role="status" style="padding:14px 16px;border-radius:12px;background:rgba(250,204,21,0.10);border:1px solid rgba(250,204,21,0.3);font-size:14px;line-height:1.5;color:var(--ink-2);">The orders table isn't set up yet. Run <code style="font-weight:700;">supabase/orders.sql</code> in Supabase → SQL Editor. Until then, only orders placed in this browser show here. They're saved as client cards when you open this tab.</div>
+          <div role="status" style="padding:14px 16px;border-radius:12px;background:rgba(var(--warn-rgb),0.10);border:1px solid rgba(var(--warn-rgb),0.3);font-size:14px;line-height:1.5;color:var(--ink-2);">The orders table isn't set up yet. Run <code style="font-weight:700;">supabase/orders.sql</code> in Supabase → SQL Editor. Until then, only orders placed in this browser show here. They're saved as client cards when you open this tab.</div>
         </sc-if>
         <div role="tablist" aria-label="Country" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;">
           <sc-for list="{{ regionTabs }}" as="rt" hint-placeholder-count="3">
-            <button type="button" role="tab" aria-selected="{{ rt.selected }}" onClick="{{ rt.pick }}" style="text-align:left;display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;border:{{ rt.border }};background:{{ rt.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;">
+            <button type="button" role="tab" aria-selected="{{ rt.selected }}" onClick="{{ rt.pick }}" style="text-align:left;display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;border:{{ rt.border }};background:{{ rt.bg }};color:var(--ink-2);font-family:var(--font-b);cursor:pointer;">
               <span style="font-size:15px;font-weight:700;color:var(--ink);">{{ rt.label }}</span>
               <span style="font-size:13px;color:var(--muted);">{{ rt.sub }}</span>
             </button>
@@ -240,40 +261,39 @@ input,textarea,select{font:inherit;}
         </div>
         <div role="tablist" aria-label="Order status" style="display:flex;gap:6px;flex-wrap:wrap;">
           <sc-for list="{{ orderFilters }}" as="of" hint-placeholder-count="4">
-            <button type="button" role="tab" aria-selected="{{ of.selected }}" onClick="{{ of.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ of.border }};background:{{ of.bg }};color:{{ of.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ of.label }}</button>
+            <button type="button" role="tab" aria-selected="{{ of.selected }}" onClick="{{ of.pick }}" style="height:40px;padding:0 14px;border-radius:999px;border:1px solid {{ of.border }};background:{{ of.bg }};color:{{ of.ink }};font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">{{ of.label }}</button>
           </sc-for>
         </div>
-        <div style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.07);">
+        <div class="adm-t" style="--cols:110px minmax(0,1.5fr) minmax(150px,1.2fr) 90px 140px 204px;">
+          <div class="adm-h" aria-hidden="true"><span>Order</span><span>Customer</span><span>Plan</span><span>Payment</span><span>Status</span><span></span></div>
           <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="3">
-            <div style="padding:var(--row-pad);display:flex;flex-wrap:wrap;align-items:center;gap:var(--row-gap);border-top:1px solid rgba(var(--fg-rgb),0.06);">
-              <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 130px;">
-                <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:700;color:var(--ink);">{{ o.no }}</span>
-                <span style="font-size:12px;color:var(--muted);">{{ o.date }}</span>
+            <div class="adm-r">
+              <div class="adm-full" style="display:flex;flex-direction:column;gap:2px;">
+                <span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--ink);">{{ o.no }}</span>
+                <span style="font-size:13px;color:var(--muted);">{{ o.date }}</span>
               </div>
-              <div style="display:flex;flex-direction:column;gap:2px;flex:1 1 220px;min-width:0;">
-                <span style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ o.name }}</span>
-                <span style="font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ o.contact }}</span>
+              <div class="adm-full" style="display:flex;flex-direction:column;gap:2px;">
+                <span class="adm-1" style="font-size:15px;font-weight:700;color:var(--ink);">{{ o.name }}</span>
+                <span class="adm-1" style="font-size:13px;color:var(--muted);">{{ o.contact }}</span>
               </div>
-              <span style="flex:none;padding:4px 10px;border-radius:999px;background:rgba(var(--fg-rgb),0.08);color:var(--ink-2);font-size:12px;font-weight:700;">{{ o.regionLabel }}</span>
-              <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ o.modeBg }};color:{{ o.modeInk }};font-size:12px;font-weight:700;">{{ o.mode }}</span>
-              <span style="flex:none;padding:4px 10px;border-radius:999px;background:{{ o.payBg }};color:var(--ink);font-size:12px;font-weight:700;">{{ o.payLabel }}</span>
-              <div style="display:flex;flex-direction:column;gap:2px;flex:0 0 120px;">
-                <span style="font-size:13px;font-weight:600;">{{ o.plan }}</span>
-                <span style="font-size:12px;color:var(--muted);">{{ o.price }}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="font-size:14px;font-weight:600;color:var(--ink-2);display:flex;flex-wrap:wrap;align-items:center;gap:6px;">{{ o.plan }}<sc-if value="{{ o.isDfm }}"><span style="padding:2px 8px;border-radius:999px;background:rgba(var(--brand-rgb),0.12);color:var(--accent);font-size:11px;font-weight:700;">Design for me</span></sc-if></span>
+                <span style="font-size:13px;color:var(--muted);">{{ o.price }}</span>
               </div>
-              <label style="display:flex;flex-direction:column;gap:4px;flex:0 0 150px;">
+              <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;"><span style="justify-self:start;width:max-content;white-space:nowrap;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ o.payBg }};color:var(--ink);">{{ o.payLabel }}</span><sc-if value="{{ o.hasPaySub }}"><span title="{{ o.paySubTitle }}" style="font-size:12px;color:var(--muted);white-space:nowrap;">{{ o.paySub }}</span></sc-if></div>
+              <label style="display:flex;">
                 <span style="position:absolute;left:-9999px;">Status for {{ o.no }}</span>
-                <select value="{{ o.status }}" onChange="{{ o.onStatus }}" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid {{ o.statusBorder }};background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;">
+                <select value="{{ o.status }}" onChange="{{ o.onStatus }}" style="height:40px;width:140px;padding:0 10px;border-radius:10px;border:1px solid {{ o.statusBorder }};background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;">
                   <option value="new">New</option>
                   <option value="in_progress">In progress</option>
                   <option value="delivered">Delivered</option>
                 </select>
               </label>
-              <div style="display:flex;gap:6px;flex:none;margin-left:auto;">
-                <sc-if value="{{ o.canMarkPaid }}"><button type="button" onClick="{{ o.onMarkPaid }}" disabled="{{ o.payBusy }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(0,214,179,0.55);background:var(--surface);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;" style-hover="background:var(--surface-hi);">Mark paid</button></sc-if>
-                <sc-if value="{{ o.hasCard }}"><button type="button" onClick="{{ o.onOpen }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit card</button></sc-if>
+              <div class="adm-end">
+                <sc-if value="{{ o.canMarkPaid }}"><button type="button" onClick="{{ o.onMarkPaid }}" disabled="{{ o.payBusy }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.12);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;border-color:rgba(var(--ok-rgb),0.55);color:var(--ink);font-weight:700;" style-hover="background:var(--surface-hi);">Mark paid</button></sc-if>
+                <sc-if value="{{ o.hasCard }}"><button type="button" onClick="{{ o.onOpen }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.12);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:var(--surface-hi);">Edit card</button></sc-if>
               </div>
-              <sc-if value="{{ o.hasNotes }}"><p style="margin:0;flex:1 1 100%;padding:10px 12px;border-radius:10px;background:var(--bg-2);font-size:13px;line-height:1.5;color:var(--ink-3);">{{ o.notes }}</p></sc-if>
+              <sc-if value="{{ o.hasNotes }}"><p class="adm-full adm-span" style="margin:0;padding:10px 12px;border-radius:10px;background:var(--bg-2);font-size:13px;line-height:1.5;color:var(--ink-3);">{{ o.notes }}</p></sc-if>
             </div>
           </sc-for>
           <sc-if value="{{ noOrderRows }}" hint-placeholder-val="{{ false }}">
@@ -289,22 +309,22 @@ input,textarea,select{font:inherit;}
       <div style="display:flex;flex-direction:column;gap:20px;min-width:0;grid-column:span 1;">
         <div style="display:flex;align-items:center;gap:12px;">
           <button type="button" onClick="{{ backToList }}" aria-label="Back to clients" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(var(--fg-rgb),0.10);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
-          <h1 style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:32px;line-height:1.1;">{{ editTitle }}</h1>
+          <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:32px;line-height:1.1;">{{ editTitle }}</h1>
         </div>
 
         <section onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="background:var(--surface);border-radius:16px;border:{{ dropBorder }};padding:20px;display:flex;flex-direction:column;gap:14px;">
           <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Photo or GIF</h2>
           <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <div aria-hidden="true" onClick="{{ pickPhoto }}" style="cursor:pointer;width:88px;height:88px;border-radius:18px;flex:none;background:{{ pvAvatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:32px;color:{{ pvAccent }};">{{ pvInitialsShown }}</div>
+            <div aria-hidden="true" onClick="{{ pickPhoto }}" style="cursor:pointer;width:88px;height:88px;border-radius:18px;flex:none;background:{{ pvAvatarBg }};background-size:cover;background-position:50% 18%;display:grid;place-items:center;font-family:var(--font-h);font-weight:400;font-size:32px;color:{{ pvAccent }};">{{ pvInitialsShown }}</div>
             <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:180px;">
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button type="button" onClick="{{ pickPhoto }}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
+                <button type="button" onClick="{{ pickPhoto }}" style="height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--brand);color:var(--lc-white);font-family:var(--font-b);font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:var(--brand-hi);">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>
                   {{ uploadLabel }}
                 </button>
                 <input ref="{{ fileRef }}" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange="{{ onPhoto }}" tabindex="-1" aria-hidden="true" style="display:none;">
                 <sc-if value="{{ hasPhoto }}">
-                  <button type="button" onClick="{{ removePhoto }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Remove</button>
+                  <button type="button" onClick="{{ removePhoto }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">Remove</button>
                 </sc-if>
               </div>
               <p style="margin:0;font-size:13px;line-height:1.4;color:var(--muted);">{{ photoNote }}</p>
@@ -325,7 +345,7 @@ input,textarea,select{font:inherit;}
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:6px;">
                   <sc-for list="{{ focusPresets }}" as="fp">
-                    <button type="button" onClick="{{ fp.pick }}" style="height:38px;border-radius:9px;border:1px solid rgba(var(--fg-rgb),0.13);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">{{ fp.label }}</button>
+                    <button type="button" onClick="{{ fp.pick }}" style="height:38px;border-radius:9px;border:1px solid rgba(var(--fg-rgb),0.13);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;">{{ fp.label }}</button>
                   </sc-for>
                 </div>
                 <p style="margin:0;font-size:13px;line-height:1.4;color:var(--muted);">The square is the top of the card. Drag the photo and zoom until the face sits well above the name.</p>
@@ -364,12 +384,12 @@ input,textarea,select{font:inherit;}
             <span style="font-size:14px;font-weight:600;">Collection · {{ collName }}</span>
             <div role="radiogroup" aria-label="Collection" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;flex-wrap:wrap;">
               <sc-for list="{{ collOptions }}" as="co" hint-placeholder-count="3">
-                <button type="button" role="radio" aria-checked="{{ co.selected }}" onClick="{{ co.pick }}" style="min-height:38px;padding:0 16px;border:0;border-radius:999px;background:{{ co.bg }};color:{{ co.ink }};font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">{{ co.label }}</button>
+                <button type="button" role="radio" aria-checked="{{ co.selected }}" onClick="{{ co.pick }}" style="min-height:38px;padding:0 16px;border:0;border-radius:999px;background:{{ co.bg }};color:{{ co.ink }};font-family:var(--font-b);font-size:14px;font-weight:700;cursor:pointer;">{{ co.label }}</button>
               </sc-for>
             </div>
             <div hidden="" style="display:none;">
               <sc-for list="{{ layoutOptions }}" as="l" hint-placeholder-count="0">
-                <button type="button" role="radio" aria-checked="{{ l.selected }}" onClick="{{ l.pick }}" style="padding:8px;border-radius:12px;border:{{ l.border }};background:var(--surface);display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-width:0;">
+                <button type="button" role="radio" aria-checked="{{ l.selected }}" onClick="{{ l.pick }}" style="padding:8px;border-radius:12px;border:{{ l.border }};background:var(--surface);display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;font-family:var(--font-b);min-width:0;">
                   <span aria-hidden="true" style="height:70px;border-radius:8px;background:{{ l.thumb }};box-shadow:inset 0 0 0 1px rgba(var(--fg-rgb),0.06);"></span>
                   <span style="font-size:13px;font-weight:700;color:var(--ink-2);">{{ l.name }}</span>
                   <span style="font-size:11px;color:var(--muted);">{{ l.tag }}</span>
@@ -393,6 +413,9 @@ input,textarea,select{font:inherit;}
                   <sc-if value="{{ f.isArea }}">
                     <textarea id="{{ f.id }}" rows="3" placeholder="{{ f.placeholder }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;line-height:1.45;color:var(--ink-2);resize:vertical;outline:none;"></textarea>
                   </sc-if>
+                  <sc-if value="{{ f.isYn }}">
+                    <select id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:46px;width:100%;padding:0 10px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;color:var(--ink-2);"><option value="">Not set</option><option value="Yes">Yes</option><option value="No">No</option></select>
+                  </sc-if>
                   <sc-if value="{{ f.hasError }}"><span style="font-size:13px;font-weight:600;color:var(--danger);">{{ f.error }}</span></sc-if>
                 </div>
               </sc-for>
@@ -413,12 +436,12 @@ input,textarea,select{font:inherit;}
           </div>
           <div role="radiogroup" aria-label="Region" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(var(--fg-rgb),0.06);align-self:flex-start;">
             <sc-for list="{{ regionOptions }}" as="rg">
-              <button type="button" role="radio" aria-checked="{{ rg.selected }}" onClick="{{ rg.pick }}" style="min-height:40px;padding:0 16px;border:0;border-radius:999px;background:{{ rg.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:{{ rg.weight }};box-shadow:{{ rg.shadow }};cursor:pointer;">{{ rg.label }}</button>
+              <button type="button" role="radio" aria-checked="{{ rg.selected }}" onClick="{{ rg.pick }}" style="min-height:40px;padding:0 16px;border:0;border-radius:999px;background:{{ rg.bg }};color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:{{ rg.weight }};box-shadow:{{ rg.shadow }};cursor:pointer;">{{ rg.label }}</button>
             </sc-for>
           </div>
           <div role="radiogroup" aria-label="Plan" style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
             <sc-for list="{{ planOptions }}" as="p">
-              <button type="button" role="radio" aria-checked="{{ p.selected }}" onClick="{{ p.pick }}" style="min-height:58px;padding:8px 12px;border-radius:12px;border:{{ p.border }};background:{{ p.bg }};color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:2px;cursor:pointer;"><span style="font-size:14px;font-weight:700;">{{ p.name }}</span><span style="font-size:13px;color:var(--muted);">{{ p.price }}</span></button>
+              <button type="button" role="radio" aria-checked="{{ p.selected }}" onClick="{{ p.pick }}" style="min-height:58px;padding:8px 12px;border-radius:12px;border:{{ p.border }};background:{{ p.bg }};color:var(--ink-2);font-family:var(--font-b);text-align:left;display:flex;flex-direction:column;justify-content:center;gap:2px;cursor:pointer;"><span style="font-size:14px;font-weight:700;">{{ p.name }}</span><span style="font-size:13px;color:var(--muted);">{{ p.price }}</span></button>
             </sc-for>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">
@@ -426,15 +449,15 @@ input,textarea,select{font:inherit;}
               <label for="f-renew" style="font-size:14px;font-weight:600;">Renews on</label>
               <input id="f-renew" type="date" value="{{ draftRenewal }}" onChange="{{ onRenewal }}" style="height:46px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);font-size:15px;color:var(--ink-2);">
             </div>
-            <button type="button" role="switch" aria-checked="{{ activeStr }}" onClick="{{ toggleActive }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+            <button type="button" role="switch" aria-checked="{{ activeStr }}" onClick="{{ toggleActive }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
               <span>{{ activeLabel }}</span>
               <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ switchBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ knobLeft }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
             </button>
-            <button type="button" role="switch" aria-checked="{{ pbStr }}" onClick="{{ togglePB }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+            <button type="button" role="switch" aria-checked="{{ pbStr }}" onClick="{{ togglePB }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
               <span>Show plans &amp; “Powered by”</span>
               <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ pbBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ pbKnob }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
             </button>
-            <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+            <button type="button" role="switch" aria-checked="{{ seaStr }}" onClick="{{ toggleSea }}" style="flex:1 1 180px;min-height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
               <span>{{ seaLabel }}</span>
               <span aria-hidden="true" style="width:40px;height:24px;border-radius:999px;background:{{ seaBg }};position:relative;flex:none;transition:background .15s ease;"><span style="position:absolute;top:3px;left:{{ seaKnob }};width:18px;height:18px;border-radius:50%;background:var(--surface);transition:left .15s ease;"></span></span>
             </button>
@@ -442,14 +465,14 @@ input,textarea,select{font:inherit;}
           <sc-if value="{{ showGreeting }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:6px;">
               <label for="a-greeting" style="font-size:14px;font-weight:600;color:var(--ink-2);">Holiday greeting</label>
-              <input id="a-greeting" type="text" maxLength="60" value="{{ greetingVal }}" onChange="{{ onGreeting }}" placeholder="{{ greetingPh }}" style="height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;">
+              <input id="a-greeting" type="text" maxLength="60" value="{{ greetingVal }}" onChange="{{ onGreeting }}" placeholder="{{ greetingPh }}" style="height:46px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.15);background:var(--surface);color:var(--ink);font-family:var(--font-b);font-size:15px;">
               <span style="font-size:13px;color:var(--muted);">Leave blank to use “Happy Holidays from {{ greetingName }}”. Motion cards also get snowfall, New Year sparkle and Thanksgiving.</span>
             </div>
           </sc-if>
         </section>
 
         <sc-if value="{{ canDelete }}">
-          <button type="button" onClick="{{ deleteClient }}" style="align-self:flex-start;height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,138,138,0.4);background:transparent;color:var(--danger);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ deleteLabel }}</button>
+          <button type="button" onClick="{{ deleteClient }}" style="align-self:flex-start;height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(var(--bad-rgb),0.4);background:transparent;color:var(--danger);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">{{ deleteLabel }}</button>
         </sc-if>
       </div>
 
@@ -458,55 +481,55 @@ input,textarea,select{font:inherit;}
           <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);">Live preview</span>
           <span style="font-size:12px;color:var(--muted);">· scroll and tap inside</span>
         </div>
-        <div style="width:336px;max-width:100%;padding:8px;border-radius:44px;background:#1A2232;box-shadow:0 30px 60px -24px rgba(0,0,0,0.7),0 0 0 1px rgba(var(--fg-rgb),0.08);">
-          <div style="position:relative;width:320px;height:660px;border-radius:36px;overflow:hidden;background:#06120d;">
-            <iframe ref="{{ previewRef }}" src="{{ previewSrc }}" title="Live card preview" onLoad="{{ onPreviewLoad }}" style="position:absolute;top:0;left:0;width:390px;height:804px;border:0;transform:scale(0.8205);transform-origin:0 0;background:#06120d;"></iframe>
+        <div style="width:{{ pvFrameW }};max-width:100%;padding:8px;border-radius:44px;background:var(--lc-ink);box-shadow:0 30px 60px -24px rgba(0,0,0,0.7),0 0 0 1px rgba(var(--fg-rgb),0.08);">
+          <div style="position:relative;width:{{ pvW }};height:{{ pvH }};border-radius:36px;overflow:hidden;background:#06120d;">
+            <iframe ref="{{ previewRef }}" src="{{ previewSrc }}" title="Live card preview" onLoad="{{ onPreviewLoad }}" style="position:absolute;top:0;left:0;width:390px;height:804px;border:0;transform:scale({{ pvScale }});transform-origin:0 0;background:#06120d;"></iframe>
           </div>
         </div>
         <span style="font-size:13px;color:var(--muted);">{{ pvUrl }}</span>
       </aside>
 
       <div style="position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--header-bg);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid rgba(var(--fg-rgb),0.07);padding:12px 24px max(12px, env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;">
-        <button type="button" onClick="{{ backToList }}" style="height:48px;padding:0 18px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;">Cancel</button>
-        <button type="button" onClick="{{ publish }}" style="height:48px;padding:0 22px;border:0;border-radius:12px;background:var(--brand);color:#04121A;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ publishLabel }}</button>
+        <button type="button" onClick="{{ backToList }}" style="height:48px;padding:0 18px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:15px;font-weight:600;cursor:pointer;">Cancel</button>
+        <button type="button" onClick="{{ publish }}" style="height:48px;padding:0 22px;border:0;border-radius:12px;background:var(--brand);color:var(--lc-white);font-family:var(--font-b);font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:var(--brand-hi);">{{ publishLabel }}</button>
       </div>
     </main>
   </sc-if>
 
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:40;background:rgba(3,10,7,0.6);display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:40;background:rgba(17,16,15,0.55);display:flex;align-items:center;justify-content:center;padding:20px;">
       <div role="dialog" aria-modal="true" aria-labelledby="pub-h" onClick="{{ stop }}" style="width:100%;max-width:400px;max-height:92vh;overflow-y:auto;background:var(--bg-2);border-radius:20px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,0.6);">
         <sc-if value="{{ modalIsPublish }}">
-          <span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:50%;background:rgba(0,214,179,0.15);color:var(--accent-2);display:grid;place-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"></path></svg></span>
+          <span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:50%;background:rgba(var(--ok-rgb),0.15);color:var(--accent-2);display:grid;place-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"></path></svg></span>
         </sc-if>
         <div style="flex:none;display:flex;flex-direction:column;gap:4px;">
-          <h2 id="pub-h" style="margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:26px;">{{ modalTitle }}</h2>
+          <h2 id="pub-h" style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:26px;">{{ modalTitle }}</h2>
           <p style="margin:0;font-size:14px;color:var(--muted);">{{ modalSub }}</p>
         </div>
         <div style="flex:none;width:220px;height:220px;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#FFFFFF;">{{ qrNode }}</div>
         <div style="flex:none;width:100%;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);font-size:14px;font-weight:600;overflow-wrap:anywhere;">{{ modalUrl }}</div>
         <div style="flex:none;width:100%;display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px;">
-          <button type="button" onClick="{{ copyLink }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ copyLabel }}</button>
-          <sc-if value="{{ hasEditToken }}"><a href="{{ sendHref }}" target="_blank" rel="noopener" style="height:46px;border-radius:12px;background:var(--brand);color:#04121A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;">Send on WhatsApp</a></sc-if>
-          <sc-if value="{{ noEditToken }}"><button type="button" onClick="{{ resetEditLink }}" style="height:46px;border-radius:12px;background:var(--brand);color:#04121A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;">Send to client</button></sc-if>
+          <button type="button" onClick="{{ copyLink }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">{{ copyLabel }}</button>
+          <sc-if value="{{ hasEditToken }}"><a href="{{ sendHref }}" target="_blank" rel="noopener" style="height:46px;border-radius:12px;background:var(--brand);color:var(--lc-white);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;">Send on WhatsApp</a></sc-if>
+          <sc-if value="{{ noEditToken }}"><button type="button" onClick="{{ resetEditLink }}" style="height:46px;border-radius:12px;background:var(--brand);color:var(--lc-white);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;font-family:var(--font-b);cursor:pointer;">Send to client</button></sc-if>
         </div>
         <div style="flex:none;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),0.08);">
           <span style="font-size:13.5px;font-weight:600;color:var(--ink-2);">{{ changesLabel }}</span>
           <div style="display:flex;gap:6px;">
             <button type="button" onClick="{{ undoChange }}" aria-label="Remove one change" style="width:36px;height:36px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-size:18px;font-weight:700;cursor:pointer;">−</button>
-            <button type="button" onClick="{{ addChange }}" aria-label="Add one change" style="width:36px;height:36px;border-radius:10px;border:0;background:var(--brand);color:#04121A;font-size:18px;font-weight:700;cursor:pointer;">+</button>
+            <button type="button" onClick="{{ addChange }}" aria-label="Add one change" style="width:36px;height:36px;border-radius:10px;border:0;background:var(--brand);color:var(--lc-white);font-size:18px;font-weight:700;cursor:pointer;">+</button>
           </div>
         </div>
-        <button type="button" onClick="{{ downloadQR }}" style="flex:none;height:44px;width:100%;border:0;border-radius:12px;background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;">Download QR (SVG)</button>
+        <button type="button" onClick="{{ downloadQR }}" style="flex:none;height:44px;width:100%;border:0;border-radius:12px;background:transparent;color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;">Download QR (SVG)</button>
         <sc-if value="{{ hasEditLink }}">
           <div style="flex:none;width:100%;display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid rgba(var(--fg-rgb),0.08);">
             <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:8px;">
-              <button type="button" onClick="{{ editBtn }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">{{ copyEditLabel }}</button>
+              <button type="button" onClick="{{ editBtn }}" style="height:46px;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:var(--surface);color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">{{ copyEditLabel }}</button>
             </div>
             <p style="margin:0;font-size:12.5px;line-height:1.45;color:var(--muted);">{{ editNote }}</p>
           </div>
         </sc-if>
-        <button type="button" ref="{{ doneRef }}" onClick="{{ closeModal }}" style="flex:none;height:44px;width:100%;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Done</button>
+        <button type="button" ref="{{ doneRef }}" onClick="{{ closeModal }}" style="flex:none;height:44px;width:100%;border-radius:12px;border:1px solid rgba(var(--fg-rgb),0.14);background:transparent;color:var(--ink-2);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;">Done</button>
       </div>
     </div>
   </sc-if>
@@ -518,7 +541,7 @@ input,textarea,select{font:inherit;}
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comfortable&quot;,&quot;Standard&quot;,&quot;Compact&quot;],&quot;default&quot;:&quot;Standard&quot;,&quot;tsType&quot;:&quot;'Comfortable'|'Standard'|'Compact'&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cyan&quot;,&quot;Emerald&quot;,&quot;Amber&quot;],&quot;default&quot;:&quot;Cyan&quot;,&quot;tsType&quot;:&quot;'Cyan'|'Emerald'|'Amber'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;showRevenue&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Privacy&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comfortable&quot;,&quot;Standard&quot;,&quot;Compact&quot;],&quot;default&quot;:&quot;Standard&quot;,&quot;tsType&quot;:&quot;'Comfortable'|'Standard'|'Compact'&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Terracotta&quot;,&quot;Ink&quot;],&quot;default&quot;:&quot;Terracotta&quot;,&quot;tsType&quot;:&quot;'Terracotta'|'Ink'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;showRevenue&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Privacy&quot;}}">
 const CF_EMPTY = { code: '', kind: 'percent', value: '', region: '', plan: '', maxUses: '', perEmail: '1', expires: '' };
 /* Linkcardly: this environment's database and publishable key from /app/config.js (served by the Worker). */
 const LC = window.LC_CONFIG || {};
@@ -531,9 +554,9 @@ const LINK_STYLE = 'path';   // 'path' → /rahul-sharma · 'query' → /?c=rahu
 const BASE_HOST = CARD_BASE.replace(/^https?:\/\//, '');
 const CHANGES_INCLUDED = { basic: 2, motion: 4 };
 const TODAY = new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00');
-const toRow = c => ({ region: c.region || 'IN', layout: c.layout || 'original', photo_x: Math.round(c.photoX ?? 50), photo_y: Math.round(c.photoY ?? 50), photo_zoom: Number(c.photoZoom || 1), phone_display: c.phoneDisplay || '', signature: c.signature || '', titles: c.titles || '', contact_photo_url: c.contactPhoto || '', show_powered_by: c.showPoweredBy !== false, profession: c.profession || '', profession_other: c.professionOther || '', city: c.city || '', notes: c.notes || '', slug: c.slug, prefix: c.prefix || '', first_name: c.firstName, last_name: c.lastName || '', title: c.title, company: c.company || '', preset: c.preset, colour: c.colour, category: c.category || '', tagline: c.tagline || '', phone: c.phone, whatsapp: c.whatsapp || '', email: c.email || '', linkedin: c.linkedin || '', instagram: c.instagram || '', website: c.website || '', quote: c.quote || '', bio: c.bio || '', photo_url: c.photo || '', plan: c.plan, renewal: c.renewal, active: !!c.active, extras: { ...(c.extras || {}), seasonal: c.seasonal !== false, seasonal_addon: c.plan !== 'motion' && !!c.seasonAddon, greeting: String(c.greeting || '').trim().slice(0, 60) } });
+const toRow = c => ({ region: c.region || 'IN', layout: c.layout || 'original', photo_x: Math.round(c.photoX ?? 50), photo_y: Math.round(c.photoY ?? 50), photo_zoom: Number(c.photoZoom || 1), phone_display: c.phoneDisplay || '', signature: c.signature || '', titles: c.titles || '', contact_photo_url: c.contactPhoto || '', show_powered_by: c.showPoweredBy !== false, profession: c.profession || '', profession_other: c.professionOther || '', city: c.city || '', notes: c.notes || '', slug: c.slug, prefix: c.prefix || '', first_name: c.firstName, last_name: c.lastName || '', title: c.title, company: (c.profession === 'Real Estate' ? (c.brokerage || c.company) : c.company) || '', preset: c.preset, colour: c.colour, category: c.category || '', tagline: c.tagline || '', phone: c.phone, whatsapp: c.whatsapp || '', email: c.email || '', linkedin: c.linkedin || '', instagram: c.instagram || '', website: c.website || '', quote: c.quote || '', bio: c.bio || '', photo_url: c.photo || '', plan: c.plan, renewal: c.renewal, active: !!c.active, extras: { ...(c.extras || {}), ...Object.fromEntries(Object.entries(window.LC_FIELDS.EXTRAS).map(([k, ek]) => [ek, String(c[k] || '').trim()])), seasonal: c.seasonal !== false, seasonal_addon: c.plan !== 'motion' && !!c.seasonAddon, greeting: String(c.greeting || '').trim().slice(0, 60) } });
 const dataToBlobUrl = p => { if (!String(p || '').startsWith('data:')) return p || ''; try { const [m, b64] = p.split(','); const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return URL.createObjectURL(new Blob([u], { type: m.slice(5).split(';')[0] })); } catch (e) { return ''; } };
-const fromRow = r => ({ changesUsed: Number(r.changes_used) || 0, publicId: r.public_id || '', editUnseen: r.edit_seen === false, region: r.region || (/^\+1/.test(String(r.phone || '').replace(/[^\d+]/g, '')) ? 'US' : 'IN'), layout: r.layout || 'original', photoX: r.photo_x ?? 50, photoY: r.photo_y ?? 50, photoZoom: Number(r.photo_zoom || 1), phoneDisplay: r.phone_display || '', signature: r.signature || '', titles: r.titles || '', contactPhoto: r.contact_photo_url || '', showPoweredBy: r.show_powered_by !== false, profession: r.profession || 'Entrepreneur / Business owner', professionOther: r.profession_other || '', city: r.city || '', notes: r.notes || '', id: r.id, slug: r.slug, prefix: r.prefix || '', firstName: r.first_name || '', lastName: r.last_name || '', title: r.title || '', company: r.company || '', preset: r.preset, colour: r.colour, category: r.category || '', tagline: r.tagline || '', phone: r.phone || '', whatsapp: r.whatsapp || '', email: r.email || '', linkedin: r.linkedin || '', instagram: r.instagram || '', website: r.website || '', quote: r.quote || '', bio: r.bio || '', photo: dataToBlobUrl(r.photo_url), plan: r.plan, renewal: r.renewal, active: r.active, extras: r.extras || {}, seasonal: (r.extras || {}).seasonal !== false, seasonAddon: (r.extras || {}).seasonal_addon === true, greeting: (r.extras || {}).greeting || '' });
+const fromRow = r => ({ ...Object.fromEntries(Object.entries(window.LC_FIELDS.EXTRAS).map(([k, ek]) => [k, (r.extras || {})[ek] || ''])), changesUsed: Number(r.changes_used) || 0, publicId: r.public_id || '', editUnseen: r.edit_seen === false, region: r.region || (/^\+1/.test(String(r.phone || '').replace(/[^\d+]/g, '')) ? 'US' : 'IN'), layout: r.layout || 'original', photoX: r.photo_x ?? 50, photoY: r.photo_y ?? 50, photoZoom: Number(r.photo_zoom || 1), phoneDisplay: r.phone_display || '', signature: r.signature || '', titles: r.titles || '', contactPhoto: r.contact_photo_url || '', showPoweredBy: r.show_powered_by !== false, profession: r.profession || 'Entrepreneur / Business owner', professionOther: r.profession_other || '', city: r.city || '', notes: r.notes || '', id: r.id, slug: r.slug, prefix: r.prefix || '', firstName: r.first_name || '', lastName: r.last_name || '', title: r.title || '', company: r.company || '', preset: r.preset, colour: r.colour, category: r.category || '', tagline: r.tagline || '', phone: r.phone || '', whatsapp: r.whatsapp || '', email: r.email || '', linkedin: r.linkedin || '', instagram: r.instagram || '', website: r.website || '', quote: r.quote || '', bio: r.bio || '', photo: dataToBlobUrl(r.photo_url), plan: r.plan, renewal: r.renewal, active: r.active, extras: r.extras || {}, seasonal: (r.extras || {}).seasonal !== false, seasonAddon: (r.extras || {}).seasonal_addon === true, greeting: (r.extras || {}).greeting || '' });
 
 const COLOURS = [
   { id: 'forest',   name: 'Forest Green',  bg: '#06120d', accent: '#f2c98a', bgTop: '#0b2a1d', bgBack: '#134a33' },
@@ -549,8 +572,8 @@ const PRESETS = {
   services:     { label: 'Services', category: 'Services', tagline: 'Design · Style · Transform' },
   healthcare:   { label: 'Healthcare', category: 'Healthcare', tagline: 'Care · Treat · Smile' },
 };
-const PROFESSIONS = ['Entrepreneur / Business owner', 'Real Estate', 'Healthcare', 'Interior / Design services', 'Consultant / Coach', 'Legal / Finance', 'Retail / Shop', 'Other'];
-const PROF_PRESET = { 'Entrepreneur / Business owner': 'entrepreneur', 'Real Estate': 'realEstate', 'Healthcare': 'healthcare', 'Interior / Design services': 'services', 'Consultant / Coach': 'entrepreneur', 'Legal / Finance': 'entrepreneur', 'Retail / Shop': 'services', 'Other': 'entrepreneur' };
+/* Card categories and their presets come from /app/card-fields.js, like the order form. */
+const { PROFESSIONS, PROF_PRESET } = window.LC_FIELDS;
 const PRO_STYLES = [
   { id: 'pro-executive', name: 'Executive', layout: 'professional', mode: 'banner', bg: '#0f1a2e', ink: '#f1ece2', card: '#17243d', accent: '#d8b36a', on: '#15120a', font: "'Cormorant Garamond',Georgia,serif", rad: '12px', align: 'left', boxed: true },
   { id: 'pro-minimal', name: 'Minimal', layout: 'professional', mode: 'side', bg: '#ffffff', ink: '#111418', card: '#f3f4f6', accent: '#111418', on: '#ffffff', font: "Figtree,system-ui,sans-serif", rad: '10px', align: 'left', boxed: false },
@@ -589,38 +612,41 @@ const SEED = [
   { id: 'c4', slug: 'dr-kavya-menon', prefix: 'Dr.', firstName: 'Kavya', lastName: 'Menon', title: 'Dental Surgeon', company: 'SmileCare Dental Clinic', preset: 'healthcare', colour: 'teal', category: 'Healthcare', tagline: 'Care · Treat · Smile', phone: '+919988776655', whatsapp: '919988776655', email: 'care@smilecaredental.in', linkedin: '', instagram: '', website: 'https://example.com', quote: '“Healthy smiles, gentle care.”', bio: 'Preventive, restorative and cosmetic dental care.', photo: '', plan: 'basic', renewal: '2026-09-20', active: true },
 ];
 
-const SECTIONS = [
-  { title: 'Name & role', fields: [
-    { key: 'firstName', label: 'First name *', placeholder: 'Rahul', span: 1, required: 'Enter a first name' },
-    { key: 'lastName', label: 'Last name', placeholder: 'Sharma', span: 1 },
-    { key: 'prefix', label: 'Prefix', placeholder: 'Dr., Adv. (optional)', span: 2 },
-    { key: 'title', label: 'Job title *', placeholder: 'Senior Property Consultant', span: 2, required: 'Enter a job title' },
-    { key: 'company', label: 'Business name', placeholder: 'Skyline Realty', span: 2 },
-    { key: 'category', label: 'Label above name', placeholder: "Let's connect", span: 1 },
-    { key: 'tagline', label: 'Tagline', placeholder: 'Buy · Sell · Rent', span: 1 },
-  ] },
-  { title: 'Contact', fields: [
-    { key: 'phone', label: 'Mobile *', placeholder: '+91 98765 43210', type: 'tel', inputMode: 'tel', span: 1, required: 'Enter a mobile number' },
-    { key: 'phoneDisplay', label: 'Mobile as shown', placeholder: '+1 (816) 772-3649 (optional)', type: 'tel', inputMode: 'tel', span: 2 },
-    { key: 'whatsapp', label: 'WhatsApp', placeholder: 'Blank = no WhatsApp button', type: 'tel', inputMode: 'tel', span: 1 },
-    { key: 'email', label: 'Email', placeholder: 'name@business.com', type: 'email', inputMode: 'email', span: 2 },
-    { key: 'city', label: 'City', placeholder: 'e.g. Hyderabad', span: 2 },
-  ] },
-  { title: 'Links', fields: [
-    { key: 'linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/…', type: 'url', inputMode: 'url', span: 2 },
-    { key: 'instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/…', type: 'url', inputMode: 'url', span: 2 },
-    { key: 'website', label: 'Website', placeholder: 'https://…', type: 'url', inputMode: 'url', span: 2 },
-  ] },
-  { title: 'Flip side', fields: [
-    { key: 'quote', label: 'Quote', placeholder: '“The right home changes everything.”', span: 2 },
-    { key: 'signature', label: 'Signature', placeholder: 'e.g. Alex M (default: full name)', span: 1 },
-    { key: 'titles', label: 'Titles line', placeholder: 'Founder · Strategist (default: title · company)', span: 1 },
-    { key: 'bio', label: 'Short bio', placeholder: 'One or two sentences about what they do.', area: true, span: 2 },
-  ] },
-  { title: 'Internal notes (not shown on card)', fields: [
-    { key: 'notes', label: 'Notes', placeholder: 'Anything from the order form: services, colours they like, tagline ideas…', area: true, span: 2 },
-  ] },
+/* Customer fields come from /app/card-fields.js, the list the order form uses, so admin edits the same
+   details for each category and country. These are the admin-only extras and the section layout. */
+const ADMIN_FIELDS = {
+  prefix: { label: 'Prefix', placeholder: 'Dr., Adv. (optional)', span: 1 },
+  category: { label: 'Label above name', placeholder: "Let's connect", span: 1 },
+  tagline: { label: 'Tagline', placeholder: 'Buy · Sell · Rent', span: 1 },
+  phoneDisplay: { label: 'Mobile as shown', placeholder: '+1 (816) 772-3649 (optional)', type: 'tel', inputMode: 'tel', span: 1 },
+  quote: { label: 'Quote', placeholder: '“The right home changes everything.”', span: 2 },
+  signature: { label: 'Signature', placeholder: 'e.g. Alex M (default: full name)', span: 1 },
+  titles: { label: 'Titles line', placeholder: 'Founder · Strategist (default: title · company)', span: 1 },
+  notes: { label: 'Notes', placeholder: 'Anything from the order form: services, colours they like, tagline ideas…', area: true, span: 2 },
+};
+const ADMIN_REQ = { firstName: 'Enter a first name', title: 'Enter a job title', phone: 'Enter a mobile number' };
+const FORM_LAYOUT = [
+  ['Name & business', ['firstName', 'lastName', 'prefix', 'title', 'company', 'brokerage', 'category', 'tagline']],
+  ['Contact', ['phone', 'whatsapp', 'phoneDisplay', 'email', 'city']],
+  ['Links', ['website', 'instagram', 'linkedin', 'facebook', 'xHandle']],
+  ['', null],
+  ['Flip side', ['bio', 'quote', 'signature', 'titles']],
+  ['Internal notes (not shown on card)', ['notes']],
 ];
+const HANDLE_URL = { 'ig/': 'instagram.com/', 'in/': 'linkedin.com/in/', 'fb/': 'facebook.com/', 'x/': 'x.com/' };
+const formSections = d => {
+  const F = window.LC_FIELDS, prof = d.profession || PROFESSIONS[0], region = d.region || 'IN';
+  const shared = F.FIELDS.filter(f => f.k !== 'notes' && F.shown(f, { prof, region, dfm: false, licenseState: d.licenseState }));
+  const byK = Object.fromEntries(shared.map(f => [f.k, f])), placed = new Set(FORM_LAYOUT.flatMap(s => s[1] || []));
+  const mk = k => {
+    if (ADMIN_FIELDS[k]) return { key: k, ...ADMIN_FIELDS[k] };
+    const f = byK[k]; if (!f) return null;
+    const [l, ph] = F.label(f, prof, region), kind = f.type === 'tel' ? 'tel' : f.type === 'email' ? 'email' : f.url || f.handle ? 'url' : 'text';
+    return { key: k, label: (l || f.label) + (ADMIN_REQ[k] ? ' *' : ''), placeholder: f.handle ? 'https://' + HANDLE_URL[f.handle] + '…' : (ph || (region !== 'IN' && f.phUS) || f.ph || ''),
+      span: f.span, type: kind, inputMode: kind, area: !!f.area, yn: !!f.yn, required: ADMIN_REQ[k] };
+  };
+  return FORM_LAYOUT.map(([title, keys]) => keys ? { title, fields: keys.map(mk).filter(Boolean) } : { title: prof + ' details', fields: shared.filter(f => !placed.has(f.k)).map(f => mk(f.k)) }).filter(s => s.fields.length);
+};
 
 const autoSlug = d => (slugify(d.firstName || '').replace(/-/g, '') + String(d.phone || '').replace(/\D/g, '').slice(-4)).slice(0, 40);
 const slugify = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
@@ -690,24 +716,27 @@ class Component extends DCLogic {
   };
 
   applyTweaks() {
-    const BR = { Cyan: ['#00E5FF', '#7DF3FF', '0,229,255'], Emerald: ['#2EE59D', '#8FF5C8', '46,229,157'], Amber: ['#FFB547', '#FFD591', '255,181,71'] };
+    const BR = { Terracotta: ['var(--lc-accent)', 'var(--lc-accent-hover)', '176,78,34'], Ink: ['var(--lc-ink)', 'var(--n800)', '17,16,15'] };
     const DEN = { Comfortable: ['18px 20px', '56px', '14px 22px'], Standard: ['14px 16px', '48px', '14px 18px'], Compact: ['8px 14px', '34px', '8px 14px'] };
-    const b = BR[this.props.accent] || BR.Cyan, d = DEN[this.props.density] || DEN.Standard, s = document.documentElement.style;
+    const b = BR[this.props.accent] || BR.Terracotta, d = DEN[this.props.density] || DEN.Standard, s = document.documentElement.style;
     s.setProperty('--brand', b[0]); s.setProperty('--brand-hi', b[1]); s.setProperty('--brand-rgb', b[2]);
     s.setProperty('--row-pad', d[0]); s.setProperty('--av', d[1]); s.setProperty('--row-gap', d[2]);
   }
   componentDidUpdate(prev) { if (prev.accent !== this.props.accent || prev.density !== this.props.density) this.applyTweaks(); }
   componentDidMount() {
     this.applyTweaks();
-    this.setState({ theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark' });
+    this.setState({ theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light' });
     this.initSb();
     this.onKey = e => { if (e.key === 'Escape' && this.state.modal) this.closeModal(); };
     window.addEventListener('keydown', this.onKey);
+    /* Linkcardly: the phone preview shrinks to fit the window height, so the whole card shows above the Save bar. */
+    this.onFit = () => this.setState({ pvFit: Math.max(0.5, Math.min(0.8205, (window.innerHeight - 84 - 96 - 48) / 804)) });
+    this.onFit(); window.addEventListener('resize', this.onFit);
     this.onReady = ev => { if (ev.data && ev.data.type === 'nbr-preview-ready') this.postPreview(); };
     window.addEventListener('message', this.onReady);
   }
   queuePreview = () => { clearTimeout(this.pvT); this.pvT = setTimeout(this.postPreview, 120); };
-  componentWillUnmount() { clearInterval(this.ordT); if (this.onFocus) window.removeEventListener('focus', this.onFocus); window.removeEventListener('message', this.onReady); window.removeEventListener('keydown', this.onKey); clearTimeout(this.tt); }
+  componentWillUnmount() { clearInterval(this.ordT); if (this.onFocus) window.removeEventListener('focus', this.onFocus); window.removeEventListener('message', this.onReady); window.removeEventListener('keydown', this.onKey); window.removeEventListener('resize', this.onFit); clearTimeout(this.tt); }
 
   async initSb() {
     try {
@@ -823,7 +852,7 @@ class Component extends DCLogic {
   /* Linkcardly: payment received outside the website (UPI, bank transfer). The Worker marks the order paid, puts the
      card live and emails the customer their card and private edit link; the edit link is also copied here. */
   markPaid = async (o) => {
-    const ref = window.prompt('Mark ' + o.order_no + ' as paid (' + (o.customer_name || 'customer') + ').\n\nPayment reference (UPI or bank reference):', '');
+    const ref = window.prompt('Mark ' + o.order_no + ' as paid (' + (o.customer_name || 'customer') + ').' + (o.upi_utr ? '\n\nThe customer says they paid by UPI. Check this reference (UTR) against the credit in your bank or UPI app first.' : '') + '\n\nPayment reference (UPI or bank reference):', o.upi_utr || '');
     if (ref === null) return;
     const { data } = await this.sb.auth.getSession(); const t = data && data.session && data.session.access_token;
     if (!t) { this.toastMsg('Please sign in again'); return; }
@@ -872,11 +901,11 @@ class Component extends DCLogic {
   initialsOf(c) { return ((c.firstName || '')[0] || '') + ((c.lastName || '')[0] || '') || '+'; }
   urlOf(c) { if (c.slug) return CARD_BASE + '/' + c.slug; return c.publicId ? CARD_BASE + '/c/' + c.publicId : CARD_BASE; } /* Linkcardly: the claimed name first, like the rest of the site */
   statusOf(c) {
-    if (!c.active) return { label: 'Paused', bg: 'rgba(160,174,192,0.15)', ink: 'var(--ink-3)' };
+    if (!c.active) return { label: 'Paused', bg: 'rgba(var(--fg-rgb),0.08)', ink: 'var(--ink-3)' };
     const days = (new Date(c.renewal + 'T00:00:00') - TODAY) / 864e5;
-    if (days < 0) return { label: 'Expired', bg: 'rgba(255,90,90,0.14)', ink: '#FFB4B4' };
-    if (days <= 30) return { label: 'Renews soon', bg: 'rgba(250,204,21,0.14)', ink: '#FDE68A' };
-    return { label: 'Active', bg: 'rgba(0,214,179,0.15)', ink: '#5EEAD4' };
+    if (days < 0) return { label: 'Expired', bg: 'rgba(var(--bad-rgb),0.14)', ink: 'var(--danger)' };
+    if (days <= 30) return { label: 'Renews soon', bg: 'rgba(var(--warn-rgb),0.14)', ink: 'var(--warn)' };
+    return { label: 'Active', bg: 'rgba(var(--ok-rgb),0.15)', ink: 'var(--accent-2)' };
   }
 
   newClient = () => this.setState({ view: 'edit', editingId: null, errors: {}, slugTouched: false,
@@ -902,7 +931,7 @@ class Component extends DCLogic {
 
   publish = async () => {
     const d = this.state.draft, errors = {};
-    SECTIONS.forEach(s => s.fields.forEach(f => { if (f.required && !String(d[f.key] || '').trim()) errors[f.key] = f.required; }));
+    formSections(d).forEach(s => s.fields.forEach(f => { if (f.required && !String(d[f.key] || '').trim()) errors[f.key] = f.required; }));
     if (d.profession === 'Other' && !String(d.professionOther || '').trim()) errors.professionOther = 'Enter their profession';
     const slug = slugify(d.slug);
     if (!slug) errors.slug = 'Enter a link';
@@ -1028,22 +1057,24 @@ class Component extends DCLogic {
     const mUrl = modalClient ? this.urlOf(modalClient) : '';
     const editing = !!S.editingId;
 
-    const PAY_ST = { unpaid: ['Unpaid', 'rgba(250,204,21,0.22)'], paid: ['Paid', 'rgba(0,214,179,0.22)'], waived: ['Free', 'rgba(0,214,179,0.22)'], refunded: ['Refunded', 'rgba(255,99,99,0.22)'] };
-    const ORD_ST = { new: ['New', 'rgba(var(--brand-rgb),0.55)'], in_progress: ['In progress', 'rgba(250,204,21,0.55)'], delivered: ['Delivered', 'rgba(0,214,179,0.55)'] };
+    const PAY_ST = { unpaid: ['Unpaid', 'rgba(var(--warn-rgb),0.22)'], paid: ['Paid', 'rgba(var(--ok-rgb),0.22)'], waived: ['Free', 'rgba(var(--ok-rgb),0.22)'], refunded: ['Refunded', 'rgba(var(--bad-rgb),0.22)'] };
+    const ORD_ST = { new: ['New', 'rgba(var(--brand-rgb),0.55)'], in_progress: ['In progress', 'rgba(var(--warn-rgb),0.55)'], delivered: ['Delivered', 'rgba(var(--ok-rgb),0.55)'] };
     const ocount = st => S.orders.filter(o => (S.oregion === 'all' || o.region === S.oregion) && (o.status || 'new') === st).length;
-    const regStat = reg => { const l = S.orders.filter(o => o.region === reg); return l.length + ' orders · ' + l.filter(o => (o.status || 'new') === 'new').length + ' new · ' + money(reg, l.reduce((n, o) => n + Number(o.price || 0), 0)) + (reg === 'IN' ? ' + GST' : ''); };
+    const regStat = reg => { const l = S.orders.filter(o => o.region === reg); return l.length + ' orders · ' + l.filter(o => (o.status || 'new') === 'new').length + ' new · ' + money(reg, l.reduce((n, o) => n + Number(o.price || 0), 0)); };
     const inRegion = S.orders.filter(o => S.oregion === 'all' || o.region === S.oregion);
     const orderRows = inRegion.filter(o => S.ofilter === 'all' || (o.status || 'new') === S.ofilter).map(o => {
       const client = S.clients.find(c => c.id === o.card_id) || S.clients.find(c => o.card && c.slug === o.card.slug);
       const st = o.status || 'new';
       return { no: o.order_no, date: (() => { try { return new Date(o.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } })(),
         name: o.customer_name || 'Customer', contact: [o.customer_phone, o.customer_email].filter(Boolean).join(' · '),
-        mode: o.mode === 'dfm' ? 'Design for me' : 'Self-built', modeBg: o.mode === 'dfm' ? 'rgba(214,180,238,0.16)' : 'rgba(var(--brand-rgb),0.12)', modeInk: o.mode === 'dfm' ? '#D6B4EE' : 'var(--accent)',
-        plan: (PLANS[o.plan] || PLANS.basic).name, price: money(o.region === 'IN' ? 'IN' : 'US', o.total || (Number(o.price || 0) + Number(o.tax || 0))) + (o.region === 'IN' ? ' incl. GST' : '') + ' / year' + (o.local ? ' · this browser only' : ''), regionLabel: o.region === 'IN' ? '🇮🇳 India' : '🇺🇸 USA',
+        mode: o.mode === 'dfm' ? 'Design for me' : 'Self-built', modeBg: o.mode === 'dfm' ? 'rgba(var(--brand-rgb),0.12)' : 'rgba(var(--fg-rgb),0.07)', modeInk: o.mode === 'dfm' ? 'var(--accent)' : 'var(--ink-3)',
+        plan: (PLANS[o.plan] || PLANS.basic).name, price: money(o.region === 'IN' ? 'IN' : 'US', o.total || (Number(o.price || 0) + Number(o.tax || 0))) + ' / year' + (o.local ? ' · this browser only' : ''), regionLabel: o.region === 'IN' ? '🇮🇳 India' : '🇺🇸 USA',
         status: st, statusBorder: ORD_ST[st][1], onStatus: e => this.setOrderStatus(o, e.target.value),
-        payLabel: (PAY_ST[o.pay_status] || PAY_ST.unpaid)[0], payBg: (PAY_ST[o.pay_status] || PAY_ST.unpaid)[1],
+        ...(() => { const ps = o.pay_status || 'unpaid', claim = ps === 'unpaid' && !!o.upi_utr, via = { razorpay: 'Razorpay', manual: 'UPI / bank', stripe: 'Stripe', test: 'Test order' }[o.pay_provider] || '';
+          return { payLabel: claim ? 'Check UPI' : (PAY_ST[ps] || PAY_ST.unpaid)[0], payBg: claim ? 'rgba(var(--brand-rgb),0.18)' : (PAY_ST[ps] || PAY_ST.unpaid)[1],
+            hasPaySub: claim || (ps === 'paid' && !!via), paySub: claim ? 'UTR ' + o.upi_utr : via, paySubTitle: claim ? 'Customer says they paid by UPI with this reference. Find the credit, then Mark paid.' : (o.pay_ref || '') }; })(),
         canMarkPaid: !o.local && (o.pay_status || 'unpaid') === 'unpaid' && VIA_WORKER(), onMarkPaid: () => this.markPaid(o), payBusy: S.payBusy === o.order_no,
-        hasCard: !!client, onOpen: () => client && this.editClient(client), hasNotes: !!o.notes, notes: 'Notes: ' + (o.notes || '') };
+        isDfm: o.mode === 'dfm', hasCard: !!client, onOpen: () => client && this.editClient(client), hasNotes: !!o.notes, notes: 'Notes: ' + (o.notes || '') };
     });
     return {
       tabs: [['clients', 'Clients', 0], ['orders', 'Orders', ocount('new')], ['leads', 'Leads', (S.leads || []).filter(l => l.status === 'new').length], ['coupons', 'Coupons', 0]].map(([id, label, n]) => { const on = S.tab === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', hasBadge: n > 0, badge: String(n) }; }),
@@ -1051,12 +1082,12 @@ class Component extends DCLogic {
       leadsSummary: (S.leads || []).length + ' leads · ' + (S.leads || []).filter(l => l.status === 'new').length + ' new', leadsEmpty: !(S.leads || []).length, refreshLeads: () => this.loadLeads(),
       leadRows: (S.leads || []).map(l => { const c = S.clients.find(x => x.id === l.card_id); return { id: l.id, name: l.name, phone: l.phone, telHref: 'tel:' + l.phone, waHref: 'https://wa.me/' + String(l.phone || '').replace(/\D/g, ''), email: l.email || '', hasEmail: !!l.email, mailHref: 'mailto:' + (l.email || ''),
         topic: l.topic || '', hasTopic: !!l.topic, message: l.message || '', hasMessage: !!l.message, card: c ? this.nameOf(c) : l.slug, when: new Date(l.created_at).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }),
-        statuses: [['new', 'New'], ['contacted', 'Contacted'], ['closed', 'Closed']].map(([id, label]) => { const on = l.status === id; return { label, pressed: on ? 'true' : 'false', bg: on ? 'var(--brand)' : 'transparent', ink: on ? '#04121A' : 'var(--ink-2)', pick: () => this.setLeadStatus(l, id) }; }) }; }),
+        status: l.status || 'new', statusBorder: (l.status || 'new') === 'new' ? 'rgba(var(--brand-rgb),0.55)' : 'rgba(var(--fg-rgb),0.16)', onStatus: e => this.setLeadStatus(l, e.target.value), statuses: [['new', 'New'], ['contacted', 'Contacted'], ['closed', 'Closed']].map(([id, label]) => { const on = l.status === id; return { label, pressed: on ? 'true' : 'false', bg: on ? 'var(--brand)' : 'transparent', ink: on ? 'var(--lc-white)' : 'var(--ink-2)', pick: () => this.setLeadStatus(l, id) }; }) }; }),
       ...this.couponVals(S),
       regionTabs: [['all', 'All countries', S.orders.length + ' orders'], ['IN', '🇮🇳 India', regStat('IN')], ['US', '🇺🇸 USA', regStat('US')]].map(([id, label, sub]) => { const on = S.oregion === id; return { label, sub, selected: on ? 'true' : 'false', pick: () => this.setState({ oregion: id }), border: on ? '2px solid var(--brand)' : '1px solid rgba(var(--fg-rgb),0.10)', bg: on ? 'rgba(var(--brand-rgb),0.07)' : 'var(--surface)' }; }),
       ordersSummary: (S.ordersSyncedAt ? 'Synced ' + S.ordersSyncedAt + ' · auto-refreshes every 20s · ' : '') + inRegion.length + ' orders · ' + ocount('new') + ' new · ' + ocount('in_progress') + ' in progress · ' + ocount('delivered') + ' delivered',
       ordersNeedSetup: S.ordersSetup, refreshOrders: () => this.loadOrders(),
-      orderFilters: [['all', 'All'], ['new', 'New'], ['in_progress', 'In progress'], ['delivered', 'Delivered']].map(([id, label]) => { const on = S.ofilter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ ofilter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? '#04121A' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
+      orderFilters: [['all', 'All'], ['new', 'New'], ['in_progress', 'In progress'], ['delivered', 'Delivered']].map(([id, label]) => { const on = S.ofilter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ ofilter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? 'var(--lc-white)' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
       orderRows, noOrderRows: orderRows.length === 0,
       ordersEmpty: S.orders.length ? 'No orders with this status.' : 'No orders yet. Orders from the website appear here.',
       isLoading: S.auth === 'loading', isLogin: S.auth === 'out', isNotAdmin: S.auth === 'notAdmin', signedIn: S.auth === 'in' || S.auth === 'notAdmin',
@@ -1069,8 +1100,8 @@ class Component extends DCLogic {
       emptyText: S.clients.length ? 'No clients match. Try another search or filter.' : 'No clients yet. Click New client to add the first one.',
       summary: S.clients.length + ' clients · ' + count('Active') + ' active · ' + count('Renews soon') + ' renewing within 30 days · ' + (count('Expired') + count('Paused')) + ' expired or paused' + (() => { const live = S.clients.filter(c => c.active); const sum = reg => live.filter(c => (c.region || 'IN') === reg).reduce((n, c) => n + (PRICING[reg][c.plan] || 0), 0); return ' · Yearly revenue ' + money('IN', sum('IN')) + ' + ' + money('US', sum('US')); })(),
       newClient: this.newClient, search: S.search, onSearch: e => this.setState({ search: e.target.value }),
-      filters: FIL.map(([id, label]) => { const on = S.filter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ filter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? '#04121A' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
-      rows, noRows: rows.length === 0,
+      filters: FIL.map(([id, label]) => { const on = S.filter === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ filter: id }), bg: on ? 'var(--brand)' : 'var(--surface)', ink: on ? 'var(--lc-white)' : 'var(--ink-3)', border: on ? 'var(--brand)' : 'rgba(var(--fg-rgb),0.14)' }; }),
+      rows: rows.map(r => { const [v, ...rest] = r.hasStats ? String(r.stats).split(' · ') : ['—']; return { ...r, statsShown: v, statsSub: rest.join(' · ') }; }), noRows: rows.length === 0,
 
       editTitle: editing ? 'Edit ' + this.nameOf(d) : 'New client', backToList: this.backToList,
       hasPhoto: !!d.photo, noPhoto: !d.photo, removePhoto: () => { this.pendingFile = null; this.setDraft('photo', ''); }, onPhoto: this.onPhoto, pickPhoto: this.pickPhoto, fileRef: this.fileRef,
@@ -1084,25 +1115,25 @@ class Component extends DCLogic {
       presetLabel: (PRESETS[d.preset] || PRESETS.entrepreneur).label,
       onProfession: e => { const v = e.target.value, k = PROF_PRESET[v] || 'entrepreneur', p = PRESETS[k]; this.setState(s => ({ draft: { ...s.draft, profession: v, preset: k, category: p.category, tagline: p.tagline }, errors: { ...s.errors, professionOther: '' } })); setTimeout(this.queuePreview, 0); },
       isOtherProf: d.profession === 'Other', draftProfessionOther: d.professionOther || '', onProfessionOther: e => this.setDraft('professionOther', e.target.value),
-      hasProfOtherError: !!err.professionOther, profOtherError: err.professionOther || '', profOtherInvalid: err.professionOther ? 'true' : 'false', profOtherBorder: err.professionOther ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)',
+      hasProfOtherError: !!err.professionOther, profOtherError: err.professionOther || '', profOtherInvalid: err.professionOther ? 'true' : 'false', profOtherBorder: err.professionOther ? 'var(--danger)' : 'rgba(var(--fg-rgb),0.15)',
       colourName: col.name,
       collName: (COLLS.find(c => c[0] === collOf(d.colour)) || COLLS[0])[1],
       collOptions: COLLS.map(([id, label]) => { const on = collOf(d.colour) === id; return { label, selected: on ? 'true' : 'false', bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', pick: () => { if (on) return; const first = id === 'professional' ? PRO_STYLES[0].id : id === 'luxury' ? LUX_STYLES[0].id : COLOURS[0].id; this.pickStyle(first); } }; }),
-      colourOptions: (collOf(d.colour) === 'professional' ? PRO_STYLES : collOf(d.colour) === 'luxury' ? LUX_STYLES : COLOURS).map(c => { const on = c.id === d.colour; return { ...c, selected: on ? 'true' : 'false', ring: on ? '0 0 0 3px #0F1624, 0 0 0 5px var(--brand)' : '0 0 0 1px rgba(var(--fg-rgb),0.10)', pick: () => this.pickStyle(c.id) }; }),
-      sections: SECTIONS.map(s => ({ title: s.title, fields: s.fields.map(f => ({ id: 'f-' + f.key, label: f.label, placeholder: f.placeholder || '', type: f.type || 'text', inputMode: f.inputMode || 'text',
-        value: d[f.key] || '', onChange: e => this.setDraft(f.key, e.target.value), isInput: !f.area, isArea: !!f.area, span: f.span === 1 ? 'span 1' : '1 / -1',
-        hasError: !!err[f.key], error: err[f.key] || '', invalid: err[f.key] ? 'true' : 'false', border: err[f.key] ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)' })) })),
+      colourOptions: (collOf(d.colour) === 'professional' ? PRO_STYLES : collOf(d.colour) === 'luxury' ? LUX_STYLES : COLOURS).map(c => { const on = c.id === d.colour; return { ...c, selected: on ? 'true' : 'false', ring: on ? '0 0 0 3px var(--surface), 0 0 0 5px var(--brand)' : '0 0 0 1px rgba(var(--fg-rgb),0.10)', pick: () => this.pickStyle(c.id) }; }),
+      sections: formSections(d).map(s => ({ title: s.title, fields: s.fields.map(f => ({ id: 'f-' + f.key, label: f.label, placeholder: f.placeholder || '', type: f.type || 'text', inputMode: f.inputMode || 'text',
+        value: d[f.key] || '', onChange: e => this.setDraft(f.key, e.target.value), isInput: !f.area && !f.yn, isArea: !!f.area, isYn: !!f.yn, span: f.span === 1 ? 'span 1' : '1 / -1',
+        hasError: !!err[f.key], error: err[f.key] || '', invalid: err[f.key] ? 'true' : 'false', border: err[f.key] ? 'var(--danger)' : 'rgba(var(--fg-rgb),0.15)' })) })),
       baseHost: BASE_HOST, draftSlug: d.slug, onSlug: e => { this.setState({ slugTouched: true }); this.setDraft('slug', slugify(e.target.value)); },
-      hasSlugError: !!err.slug, noSlugError: !err.slug, slugError: err.slug || '', slugInvalid: err.slug ? 'true' : 'false', slugBorder: err.slug ? '#FF8A8A' : 'rgba(var(--fg-rgb),0.15)',
+      hasSlugError: !!err.slug, noSlugError: !err.slug, slugError: err.slug || '', slugInvalid: err.slug ? 'true' : 'false', slugBorder: err.slug ? 'var(--danger)' : 'rgba(var(--fg-rgb),0.15)',
       regionOptions: ['IN', 'US'].map(k => { const on = (d.region || 'IN') === k; return { label: PRICING[k].label, selected: on ? 'true' : 'false', bg: on ? 'var(--surface-hi)' : 'transparent', weight: on ? '700' : '500', shadow: on ? '0 1px 3px rgba(0,0,0,0.12)' : 'none', pick: () => this.setDraft('region', k) }; }),
       planOptions: Object.keys(PLANS).map(k => { const on = d.plan === k; return { ...PLANS[k], price: money(d.region || 'IN', PRICING[d.region || 'IN'][k]) + ' / year', selected: on ? 'true' : 'false', pick: () => this.setDraft('plan', k), border: on ? '2px solid var(--brand)' : '1px solid rgba(var(--fg-rgb),0.14)', bg: on ? 'rgba(var(--brand-rgb),0.08)' : 'var(--surface)' }; }),
       draftRenewal: d.renewal, onRenewal: e => this.setDraft('renewal', e.target.value),
       activeStr: d.active ? 'true' : 'false', activeLabel: d.active ? 'Card is live' : 'Card is paused', toggleActive: () => this.setDraft('active', !d.active),
-      switchBg: d.active ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', knobLeft: d.active ? '19px' : '3px',
-      ...(() => { const mo = d.plan === 'motion', on = mo ? d.seasonal !== false : !!d.seasonAddon && d.seasonal !== false; return { seaLabel: mo ? 'Seasonal themes' : 'Seasonal add-on (extra)', seaStr: on ? 'true' : 'false', toggleSea: () => mo ? this.setDraft('seasonal', d.seasonal === false) : this.setState(s => ({ draft: { ...s.draft, seasonAddon: !on, seasonal: true } })), seaBg: on ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', seaKnob: on ? '19px' : '3px' }; })(),
+      switchBg: d.active ? 'var(--accent-2)' : 'rgba(var(--fg-rgb),0.17)', knobLeft: d.active ? '19px' : '3px',
+      ...(() => { const mo = d.plan === 'motion', on = mo ? d.seasonal !== false : !!d.seasonAddon && d.seasonal !== false; return { seaLabel: mo ? 'Seasonal themes' : 'Seasonal add-on (extra)', seaStr: on ? 'true' : 'false', toggleSea: () => mo ? this.setDraft('seasonal', d.seasonal === false) : this.setState(s => ({ draft: { ...s.draft, seasonAddon: !on, seasonal: true } })), seaBg: on ? 'var(--accent-2)' : 'rgba(var(--fg-rgb),0.17)', seaKnob: on ? '19px' : '3px' }; })(),
       showGreeting: (d.plan === 'motion' || d.seasonAddon) && d.seasonal !== false, greetingVal: d.greeting || '', onGreeting: e => this.setDraft('greeting', e.target.value), greetingName: d.firstName || 'you', greetingPh: 'Happy Holidays from the ' + (d.lastName || 'Moreno') + ' Team',
       pbStr: d.showPoweredBy !== false ? 'true' : 'false', togglePB: () => this.setDraft('showPoweredBy', d.showPoweredBy === false),
-      pbBg: d.showPoweredBy !== false ? '#00D6B3' : 'rgba(var(--fg-rgb),0.17)', pbKnob: d.showPoweredBy !== false ? '19px' : '3px',
+      pbBg: d.showPoweredBy !== false ? 'var(--accent-2)' : 'rgba(var(--fg-rgb),0.17)', pbKnob: d.showPoweredBy !== false ? '19px' : '3px',
       adjBg: d.photo ? 'url("' + d.photo + '")' : 'none', adjPos: (d.photoX ?? 50) + '% ' + (d.photoY ?? 50) + '%', adjZoom: String(d.photoZoom || 1),
       zoomLabel: Math.round((d.photoZoom || 1) * 100) + '%', adjDown: this.adjDown, onZoom: e => this.setDraft('photoZoom', Number(e.target.value)),
       focusPresets: [['Top', 50, 15], ['Centre', 50, 50], ['Bottom', 50, 85]].map(([label, x, y]) => ({ label, pick: () => this.setState(s => ({ draft: { ...s.draft, photoX: x, photoY: y } })) })).concat([{ label: 'Reset', pick: () => this.setState(s => ({ draft: { ...s.draft, photoX: 50, photoY: 50, photoZoom: 1 } })) }]),
@@ -1112,6 +1143,7 @@ class Component extends DCLogic {
       publish: this.publish, publishLabel: S.busy ? 'Saving…' : (editing ? 'Save & publish' : 'Publish card'),
 
       previewRef: this.previewRef, onPreviewLoad: this.onPreviewLoad,
+      ...(() => { const k = S.pvFit || 0.8205; return { pvScale: String(k), pvW: Math.round(390 * k) + 'px', pvH: Math.round(804 * k) + 'px', pvFrameW: Math.round(390 * k) + 16 + 'px' }; })(),
       previewSrc: '/app/card.html?preview=1',
       pvBg: col.bg, pvAccent: col.accent, pvBgTop: col.bgTop || 'color-mix(in srgb, ' + col.bg + ' 82%, ' + col.accent + ')', pvBgBack: col.bgBack || 'color-mix(in srgb, ' + col.bg + ' 70%, ' + col.accent + ')',
       pvHeroImg: d.photo ? 'url("' + d.photo + '")' : 'none', pvInitials: this.initialsOf(d),
@@ -1131,7 +1163,7 @@ class Component extends DCLogic {
       toast: S.toast,
       themeLabel: S.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode',
       themeIcon: S.theme === 'light' ? 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' : 'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 1 0 0-10z',
-      toggleTheme: () => { const t = S.theme === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('nbr-theme', t); } catch (e) {} this.setState({ theme: t }); },
+      toggleTheme: () => { const t = S.theme === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('lc-admin-theme', t); } catch (e) {} this.setState({ theme: t }); },
     };
   }
 }
