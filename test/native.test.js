@@ -464,3 +464,15 @@ test('admin "Mark paid": admin login and our own origin required; marks paid, pu
   await c.done();
   assert.equal(mails().find(m => m.to[0] === 'asha@example.com').subject, 'Your Linkcardly card is live');
 });
+
+test('contact, NFC order: reference returned, stored in the message, emailed to Linkcardly and the customer', async () => {
+  f = backend({ submit_site_lead: { ok: true } });
+  const c = ctx();
+  const r = await worker.fetch(post('/api/contact', { kind: 'nfc', name: 'Ravi Kumar', company: 'Blue Door', email: 'ravi@example.com', message: 'NFC order · Card: Google review card · Quantity: 2', turnstile: 'tok' }), env(), c);
+  const { ref } = await r.json();
+  assert.match(ref, /^NFC-[A-Z2-9]{6}$/);
+  assert.ok(JSON.parse(rpcCalls('submit_site_lead')[0].body).p.message.startsWith('Ref: ' + ref));
+  await c.done();
+  assert.deepEqual(mails().map(m => m.to[0]).sort(), ['hello@linkcardly.com', 'ravi@example.com']);
+  assert.ok(mails().every(m => JSON.stringify(m).includes(ref)));
+});
