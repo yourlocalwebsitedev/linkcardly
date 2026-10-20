@@ -18,13 +18,16 @@
 --       partner.clicks          visits through linkcardly.com/r/<code>
 --       partner.commissions     one row per paid order that used a partner code (+ refund claw-backs)
 --       partner.payouts         monthly payouts, with TDS and "held: PAN needed"
---     A partner's code is also a normal ₹100 coupon (public.coupons), so checkout is unchanged.
+--     A partner's code is also a normal ₹100 coupon (public.coupons), so checkout is unchanged. Any customer can use it
+--     on every order (no per-email limit), and every paid order with it earns commission, the partner's own included.
 --     When an order becomes paid (mark_order_paid), a trigger records the commission; refunds reverse it.
+--  3. UPI (India): the customer's UPI reference (orders.upi_utr) through claim_upi_payment(); an admin then
+--     confirms the credit with Mark paid. One UTR per order. (End of this file.)
 --
 -- Rules (change the constants in partner.settings below, not the code)
---   commission ₹100 per paid order · customer discount ₹100 · payable 14 days after payment
+--   commission ₹200 per paid order · customer discount ₹100 · payable 15 days after payment (refund window is 14)
 --   payouts monthly, minimum ₹500 · PAN required once a partner's earnings this financial year
---   pass ₹20,000; until then that partner's payouts are held · TDS 2% (Section 194H) from then on,
+--   pass ₹10,000 (no PAN or bank details needed before that, UPI is enough); from then on that partner's payouts are held until they add a PAN · TDS 2% (Section 194H) from then on,
 --   on the whole year's commission. Check the TDS wording with your CA.
 -- ================================================================
 
@@ -351,15 +354,19 @@ revoke all on schema partner from public, anon, authenticated;
 
 create table if not exists partner.settings (
   id boolean primary key default true check (id),
-  commission numeric not null default 100,        -- ₹ per paid order
+  commission numeric not null default 200,        -- ₹ per paid order
   discount numeric not null default 100,          -- ₹ off for the customer (the partner's coupon)
-  hold_days int not null default 14,              -- refund window before a commission is payable
+  hold_days int not null default 15,              -- days after payment before a commission is payable
   min_payout numeric not null default 500,        -- smallest monthly payout
-  pan_threshold numeric not null default 20000,   -- yearly earnings after which PAN is required
+  pan_threshold numeric not null default 10000,   -- yearly earnings after which PAN is required
   tds_rate numeric not null default 0.02,         -- Section 194H
   terms_version text not null default '2026-10'
 );
 insert into partner.settings (id) values (true) on conflict (id) do nothing;
+-- 2026-10: ₹200 and 15 days. Moves a database still on the first defaults; a value an admin changed is left alone.
+update partner.settings set commission = 200 where commission = 100;
+update partner.settings set hold_days = 15 where hold_days = 14;
+update partner.settings set pan_threshold = 10000 where pan_threshold = 20000;
 
 create table if not exists partner.partners (
   id uuid primary key default gen_random_uuid(),
@@ -439,19 +446,17 @@ create or replace function partner.phone10(t text) returns text language sql imm
 
 -- On every order insert/update: a paid order with a partner code earns commission; a refund reverses it.
 create or replace function partner.sync_commission() returns trigger language plpgsql security definer set search_path = partner, public as $$
-declare p partner.partners; s partner.settings; c partner.commissions; v_self boolean;
+declare p partner.partners; s partner.settings; c partner.commissions;
 begin
   if new.coupon is null or new.pay_provider = 'test' then return new; end if;
   select * into p from partner.partners where code = new.coupon;
   if not found then return new; end if;
   select * into s from partner.settings;
   if new.pay_status = 'paid' and (tg_op = 'INSERT' or old.pay_status is distinct from 'paid') then
-    v_self := lower(coalesce(new.customer_email, '')) = lower(p.email)
-           or (partner.phone10(new.customer_phone) <> '' and partner.phone10(new.customer_phone) = partner.phone10(p.phone));
     insert into partner.commissions (partner_id, order_no, kind, amount, status, reason, plan, order_total, paid_at, payable_after)
     values (p.id, new.order_no, 'sale', coalesce(p.commission, s.commission),
-      case when v_self then 'rejected' else 'pending' end, case when v_self then 'Own order' else '' end,
-      new.plan, new.total, coalesce(new.paid_at, now()), coalesce(new.paid_at, now()) + make_interval(days => s.hold_days))
+      'pending', '',
+      coalesce(new.product, new.plan), new.total, coalesce(new.paid_at, now()), coalesce(new.paid_at, now()) + make_interval(days => s.hold_days))
     on conflict (order_no, kind) do nothing;
   elsif new.pay_status = 'refunded' and tg_op = 'UPDATE' and old.pay_status is distinct from 'refunded' then
     select * into c from partner.commissions where order_no = new.order_no and kind = 'sale';
@@ -488,8 +493,8 @@ begin
   if p.code is null then return; end if;
   select * into s from partner.settings;
   insert into public.coupons (code, kind, value, region, plan, max_uses, per_email, active, note)
-  values (p.code, 'amount', s.discount, 'IN', null, null, 1, p.status = 'approved', 'partner:' || p.id)
-  on conflict (code) do update set active = (p.status = 'approved'), value = s.discount, note = 'partner:' || p.id;
+  values (p.code, 'amount', s.discount, 'IN', null, null, 100000, p.status = 'approved', 'partner:' || p.id)
+  on conflict (code) do update set active = (p.status = 'approved'), value = s.discount, per_email = 100000, note = 'partner:' || p.id;
 end $$;
 
 -- ----------------------------------------------------------------
@@ -543,12 +548,11 @@ end $$;
 revoke all on function public.partner_apply(jsonb) from public, anon;
 grant execute on function public.partner_apply(jsonb) to authenticated;
 
--- Everything the partner dashboard shows, for the signed-in partner only. Payout details come back masked.
-create or replace function public.partner_me() returns jsonb language plpgsql security definer set search_path = partner, public as $$
-declare p partner.partners; d partner.payout_details; s partner.settings; v_fy date := partner.fy_start(now()); v_year numeric;
+-- Everything the partner page shows, for one partner. Payout details come back masked. Reached through partner_me()
+-- (email sign-in) or partner_me_token() (private link + PIN).
+create or replace function partner.me_json(p partner.partners) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare d partner.payout_details; s partner.settings; v_fy date := partner.fy_start(now()); v_year numeric;
 begin
-  select * into p from partner.partners where user_id = auth.uid();
-  if not found then return jsonb_build_object('partner', null); end if;
   perform partner.approve_due();
   select * into d from partner.payout_details where partner_id = p.id;
   select * into s from partner.settings;
@@ -574,22 +578,30 @@ begin
         'this_year', v_year,
         'pan_needed', v_year > s.pan_threshold and d.pan = '')
       from partner.commissions where partner_id = p.id),
+    -- The customer's first name only. Nothing else about customers (surname, phone, email, card link) goes to partners.
     'commissions', coalesce((select jsonb_agg(jsonb_build_object('order', c.order_no, 'kind', c.kind, 'plan', c.plan, 'amount', c.amount, 'status', c.status,
-        'reason', c.reason, 'paid_at', c.paid_at, 'payable_after', c.payable_after) order by c.created_at desc)
+        'reason', c.reason, 'paid_at', c.paid_at, 'payable_after', c.payable_after,
+        'customer', (select left(split_part(trim(o.customer_name), ' ', 1), 30) from public.orders o where o.order_no = c.order_no)) order by c.created_at desc)
       from (select * from partner.commissions where partner_id = p.id order by created_at desc limit 100) c), '[]'::jsonb),
     'payouts', coalesce((select jsonb_agg(jsonb_build_object('period', o.period, 'gross', o.gross, 'tds', o.tds, 'net', o.net, 'status', o.status,
         'hold_reason', o.hold_reason, 'paid_at', o.paid_at, 'reference', o.reference) order by o.created_at desc)
       from partner.payouts o where o.partner_id = p.id), '[]'::jsonb));
 end $$;
+revoke all on function partner.me_json(partner.partners) from public, anon, authenticated;
+
+create or replace function public.partner_me() returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare p partner.partners;
+begin
+  select * into p from partner.partners where user_id = auth.uid();
+  if not found then return jsonb_build_object('partner', null); end if;
+  return partner.me_json(p);
+end $$;
 revoke all on function public.partner_me() from public, anon;
 grant execute on function public.partner_me() to authenticated;
 
 -- Partner updates where to be paid. Empty fields are left as they are.
-create or replace function public.partner_set_payout_details(p jsonb) returns jsonb language plpgsql security definer set search_path = partner, public as $$
-declare v_id uuid;
+create or replace function partner.set_payout(v_id uuid, p jsonb) returns jsonb language plpgsql security definer set search_path = partner, public as $$
 begin
-  select id into v_id from partner.partners where user_id = auth.uid();
-  if v_id is null then raise exception 'not a partner'; end if;
   perform public.rate_check('ppay', 10, interval '1 hour');
   update partner.payout_details set
     upi_id = coalesce(nullif(trim(p->>'upi_id'), ''), upi_id),
@@ -603,14 +615,31 @@ begin
   where partner_id = v_id;
   return jsonb_build_object('ok', true);
 end $$;
+revoke all on function partner.set_payout(uuid, jsonb) from public, anon, authenticated;
+
+create or replace function public.partner_set_payout_details(p jsonb) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare v_id uuid;
+begin
+  select id into v_id from partner.partners where user_id = auth.uid();
+  if v_id is null then raise exception 'not a partner'; end if;
+  return partner.set_payout(v_id, p);
+end $$;
 revoke all on function public.partner_set_payout_details(jsonb) from public, anon;
 grant execute on function public.partner_set_payout_details(jsonb) to authenticated;
 
 -- ----------------------------------------------------------------
 -- 5) ADMIN functions (signed-in admins only: public.admins)
 -- ----------------------------------------------------------------
+-- Signed-in admins (public.admins), or you in the Supabase SQL Editor. session_user is the login that opened the
+-- connection: the website API always connects as "authenticator", the SQL Editor as "postgres". (current_user would be
+-- wrong here: inside these SECURITY DEFINER functions it is always the owner.)
 create or replace function partner.require_admin() returns void language plpgsql stable security definer set search_path = public as $$
-begin if not exists (select 1 from public.admins where user_id = auth.uid()) then raise exception 'not allowed'; end if; end $$;
+begin
+  -- SQL Editor only: a postgres login with no API request on it. Every website call carries JWT claims (anon too).
+  if session_user in ('postgres', 'supabase_admin') and coalesce(current_setting('request.jwt.claims', true), '') = ''
+     and coalesce(current_setting('request.jwt.claim.sub', true), '') = '' and coalesce(current_setting('request.headers', true), '') = '' then return; end if;
+  if not exists (select 1 from public.admins where user_id = auth.uid()) then raise exception 'not allowed'; end if;
+end $$;
 
 create or replace function public.admin_partners() returns jsonb language plpgsql security definer set search_path = partner, public as $$
 begin
@@ -709,5 +738,357 @@ begin
 end $$;
 revoke all on function public.admin_payout_mark_paid(bigint, text, text) from public, anon;
 grant execute on function public.admin_payout_mark_paid(bigint, text, text) to authenticated;
+
+-- ----------------------------------------------------------------
+-- 6) PARTNERS ADDED BY AN ADMIN (2026-10): free Digital card + private partner-page link with a PIN
+-- ----------------------------------------------------------------
+-- An admin adds the partner (no self-signup needed). They get, in one step: an approved code (their ₹100 coupon),
+-- a free Digital card that never expires (cards.renewal 2099-12-31: the column is NOT NULL, and no renewal reminder ever comes; extras.partner_code makes its
+-- "Get a card like this" link /r/<code>), the card's edit link, and a private partner-page link. The page link's key
+-- is stored only as a hash (like edit links); the PIN is the last 4 digits of the partner's phone. 5 wrong PINs lock
+-- the link for 15 minutes. The Worker calls the page functions (from_worker()), never the browser directly.
+alter table partner.partners add column if not exists card_id uuid references public.cards(id) on delete set null;
+alter table partner.partners add column if not exists access_hash text;
+alter table partner.partners add column if not exists pin_fails int not null default 0;
+alter table partner.partners add column if not exists locked_until timestamptz;
+create unique index if not exists partners_access_hash_key on partner.partners (access_hash) where access_hash is not null;
+
+-- The partner a private link + PIN belongs to. Raises 'invalid link' or 'locked'; a wrong PIN returns null.
+create or replace function partner.by_token(p_token text, p_pin text) returns partner.partners language plpgsql security definer set search_path = partner, public as $$
+declare p partner.partners;
+begin
+  if not public.from_worker() then raise exception 'not allowed'; end if;
+  perform public.rate_check('ptoken', 60, interval '1 hour');
+  if coalesce(p_token, '') !~ '^[a-f0-9]{40}$' then raise exception 'invalid link'; end if;
+  select * into p from partner.partners where access_hash = public.edit_hash_of(p_token) for update;
+  if not found or p.status = 'rejected' then raise exception 'invalid link'; end if;
+  if p.locked_until is not null and p.locked_until > now() then raise exception 'locked'; end if;
+  -- Wrong PIN: count it and return no partner (raising would roll the count back).
+  if coalesce(p_pin, '') <> right(partner.phone10(p.phone), 4) then
+    update partner.partners set
+      locked_until = case when pin_fails + 1 >= 5 then now() + interval '15 minutes' end,
+      pin_fails = case when pin_fails + 1 >= 5 then 0 else pin_fails + 1 end
+    where id = p.id;
+    return null;
+  end if;
+  if p.pin_fails <> 0 or p.locked_until is not null then update partner.partners set pin_fails = 0, locked_until = null where id = p.id; end if;
+  return p;
+end $$;
+revoke all on function partner.by_token(text, text) from public, anon, authenticated;
+
+create or replace function public.partner_me_token(p_token text, p_pin text) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare p partner.partners; v jsonb;
+begin
+  p := partner.by_token(p_token, p_pin);
+  if p.id is null then return jsonb_build_object('ok', false, 'error', 'wrong pin'); end if;
+  v := partner.me_json(p);
+  return v || jsonb_build_object('ok', true, 'card', (select jsonb_build_object('slug', c.slug, 'link', 'https://linkcardly.com/' || c.slug) from public.cards c where c.id = p.card_id));
+end $$;
+revoke all on function public.partner_me_token(text, text) from public;
+grant execute on function public.partner_me_token(text, text) to anon, authenticated;
+
+create or replace function public.partner_set_payout_token(p_token text, p_pin text, p jsonb) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare v partner.partners;
+begin
+  v := partner.by_token(p_token, p_pin);
+  if v.id is null then return jsonb_build_object('ok', false, 'error', 'wrong pin'); end if;
+  return partner.set_payout(v.id, p);
+end $$;
+revoke all on function public.partner_set_payout_token(text, text, jsonb) from public;
+grant execute on function public.partner_set_payout_token(text, text, jsonb) to anon, authenticated;
+
+-- Admin: add a partner. p = { full_name, phone (India mobile), email, code, handle (their card link), upi_id?,
+-- title?, photo_url?, commission? }. Returns the code, the card link and the two private links (shown once).
+create or replace function public.admin_partner_create(p jsonb) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare s partner.settings; v_code text := upper(regexp_replace(coalesce(p->>'code', ''), '[^A-Za-z0-9]', '', 'g'));
+        v_slug text := public.slug_clean(p->>'handle'); v_phone text := partner.phone10(p->>'phone');
+        v_email text := lower(trim(coalesce(p->>'email', ''))); v_name text := left(trim(coalesce(p->>'full_name', '')), 80);
+        v_first text; v_last text; v_id uuid; v_card uuid; v_edit text := public.new_edit_token(); v_access text := public.new_edit_token(); r partner.partners;
+begin
+  perform partner.require_admin();
+  select * into s from partner.settings;
+  if length(v_name) < 2 then raise exception 'name required'; end if;
+  if v_phone !~ '^[6-9][0-9]{9}$' then raise exception 'invalid phone'; end if;
+  if v_email !~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then raise exception 'invalid email'; end if;
+  if exists (select 1 from partner.partners where lower(email) = v_email) then raise exception 'email already a partner'; end if;
+  if v_code !~ '^[A-Z0-9]{4,20}$' or exists (select 1 from partner.partners where code = v_code) or exists (select 1 from public.coupons where code = v_code) then raise exception 'code taken'; end if;
+  if v_slug !~ '^[a-z0-9](?:[a-z0-9-]{1,28})[a-z0-9]$' then raise exception 'invalid link'; end if;
+  if exists (select 1 from public.cards where slug = v_slug) then raise exception 'link taken'; end if;
+  v_first := split_part(v_name, ' ', 1); v_last := trim(substr(v_name, length(v_first) + 1));
+  insert into public.cards (region, layout, colour, preset, profession, slug, first_name, last_name, title, phone, whatsapp, email, photo_url,
+    plan, renewal, active, show_powered_by, extras)
+  values ('IN', 'original', 'forest', 'entrepreneur', 'Entrepreneur / Business owner', v_slug, left(v_first, 60), left(v_last, 60),
+    left(coalesce(p->>'title', ''), 120), v_phone, v_phone, v_email,
+    case when coalesce(p->>'photo_url', '') ~ '^https://img(-staging)?\.linkcardly\.com/p/[a-f0-9]{24}\.(webp|jpg|png|gif)$' then p->>'photo_url' else '' end,
+    'basic', date '2099-12-31', true, true, jsonb_build_object('partner_code', v_code, 'partner_free', true))
+  returning id into v_card;
+  update public.cards set edit_hash = public.edit_hash_of(v_edit) where id = v_card;
+  insert into partner.partners (status, full_name, email, phone, code, commission, terms_version, approved_at, card_id, access_hash, admin_note)
+  values ('approved', v_name, v_email, v_phone, v_code, nullif(p->>'commission', '')::numeric, s.terms_version, now(), v_card,
+    public.edit_hash_of(v_access), 'added by admin')
+  returning * into r;
+  insert into partner.payout_details (partner_id, upi_id) values (r.id, coalesce(nullif(trim(p->>'upi_id'), ''), ''));
+  perform partner.sync_coupon(r);
+  return jsonb_build_object('ok', true, 'partner_id', r.id, 'code', v_code, 'qr_link', 'https://linkcardly.com/r/' || lower(v_code),
+    'card_link', 'https://linkcardly.com/' || v_slug, 'edit_link', 'https://linkcardly.com/e/' || v_edit,
+    'partner_link', 'https://linkcardly.com/partner#' || v_access, 'pin', right(v_phone, 4));
+end $$;
+revoke all on function public.admin_partner_create(jsonb) from public, anon;
+grant execute on function public.admin_partner_create(jsonb) to authenticated;
+
+-- Admin: a new private partner-page link (the old one stops working), e.g. when a partner lost theirs.
+create or replace function public.admin_partner_new_link(p_id uuid) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare v_access text := public.new_edit_token();
+begin
+  perform partner.require_admin();
+  update partner.partners set access_hash = public.edit_hash_of(v_access), pin_fails = 0, locked_until = null where id = p_id;
+  if not found then raise exception 'partner not found'; end if;
+  return jsonb_build_object('ok', true, 'partner_link', 'https://linkcardly.com/partner#' || v_access);
+end $$;
+revoke all on function public.admin_partner_new_link(uuid) from public, anon;
+grant execute on function public.admin_partner_new_link(uuid) to authenticated;
+
+-- Admin: exactly what a partner sees on their page (partner.me_json), for one partner.
+create or replace function public.admin_partner_view(p_id uuid) returns jsonb language plpgsql security definer set search_path = partner, public as $$
+declare p partner.partners;
+begin
+  perform partner.require_admin();
+  select * into p from partner.partners where id = p_id;
+  if not found then raise exception 'partner not found'; end if;
+  return partner.me_json(p) || jsonb_build_object('ok', true, 'card', (select jsonb_build_object('slug', c.slug, 'link', 'https://linkcardly.com/' || c.slug) from public.cards c where c.id = p.card_id));
+end $$;
+revoke all on function public.admin_partner_view(uuid) from public, anon;
+grant execute on function public.admin_partner_view(uuid) to authenticated;
+
+-- ----------------------------------------------------------------
+-- UPI (India). The customer pays Linkcardly's UPI ID from any UPI app, then enters the 12-digit UPI reference
+-- (UTR) on the order page (/api/pay/upi). The order stays unpaid: an admin finds that credit and presses
+-- Mark paid (mark_order_paid_manual, the UTR is filled in). A UTR can belong to one order only.
+-- ----------------------------------------------------------------
+alter table public.orders add column if not exists upi_utr text;
+alter table public.orders add column if not exists upi_claimed_at timestamptz;
+create unique index if not exists orders_upi_utr_key on public.orders (upi_utr) where upi_utr is not null;
+
+create or replace function public.claim_upi_payment(p_order_no text, p_idem text, p_utr text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare o record; v_first boolean;
+begin
+  if not from_worker() then raise exception 'not allowed'; end if;
+  if coalesce(p_utr, '') !~ '^[0-9]{12}$' then raise exception 'invalid utr'; end if;
+  select * into o from orders where order_no = p_order_no and idem is not null and idem = p_idem for update;
+  if not found then raise exception 'order not found'; end if;
+  if o.pay_status <> 'unpaid' then return jsonb_build_object('ok', true, 'first', false, 'pay_status', o.pay_status); end if;
+  if exists (select 1 from orders where upi_utr = p_utr and id <> o.id) then raise exception 'utr used'; end if;
+  v_first := o.upi_utr is distinct from p_utr;
+  update orders set upi_utr = p_utr, upi_claimed_at = now() where id = o.id;
+  return jsonb_build_object('ok', true, 'first', v_first, 'pay_status', o.pay_status, 'order_no', o.order_no, 'total', o.total, 'currency', o.currency,
+    'customer_name', o.customer_name, 'customer_email', o.customer_email, 'customer_phone', o.customer_phone);
+end $$;
+revoke all on function public.claim_upi_payment(text, text, text) from public;
+grant execute on function public.claim_upi_payment(text, text, text) to anon, authenticated;
+
+-- 2026-10: partner coupons have no real per-email limit (coupons.per_email is NOT NULL, so 100000 stands for unlimited; repeat customers keep the discount and the partner earns again).
+update public.coupons set per_email = 100000 where note like 'partner:%' and per_email < 100000;
+
+
+-- ----------------------------------------------------------------
+-- 2026-10-17: one-time prices (docs/PRODUCT.md). Replaces the yearly plans priced in ALL-IN-ONE.sql.
+-- Products: Digital Card (₹799 / $29), NFC Card Basic (₹1,499 / $59), NFC Card Custom (₹2,499 / $89); NFC ships in India only, ₹99.
+-- plan_price() and shipping_fee() are the database's one source for prices; coupon_discount, check_coupon and
+-- place_order_core read them. Motion Card is switched off for new orders (existing Motion cards keep working).
+-- Every card is lifetime: renewal 2099-12-31 (the column is NOT NULL), so no renewal reminder goes out.
+-- ----------------------------------------------------------------
+create or replace function public.plan_price(p_product text, p_region text) returns numeric language sql immutable as $$
+  select (case when p_region = 'IN' then (case p_product when 'nfc' then 1499 when 'nfc_custom' then 2499 else 799 end)
+               else (case p_product when 'nfc' then 59 when 'nfc_custom' then 89 else 29 end) end)::numeric $$;
+create or replace function public.shipping_fee(p_product text, p_region text) returns numeric language sql immutable as $$
+  select (case when p_product in ('nfc', 'nfc_custom') and p_region = 'IN' then 99 else 0 end)::numeric $$;
+revoke all on function public.plan_price(text, text) from public;
+revoke all on function public.shipping_fee(text, text) from public;
+
+alter table public.orders add column if not exists product text not null default 'digital';
+alter table public.orders drop constraint if exists orders_product_check;
+alter table public.orders add constraint orders_product_check check (product in ('digital', 'nfc', 'nfc_custom'));
+alter table public.orders add column if not exists shipping numeric not null default 0;
+alter table public.orders add column if not exists ship jsonb not null default '{}'::jsonb;  -- NFC delivery address: name, line1, line2, city, state, pin, phone
+alter table public.coupons drop constraint if exists coupons_plan_check;
+alter table public.coupons add constraint coupons_plan_check check (plan in ('basic', 'motion', 'digital', 'nfc', 'nfc_custom'));
+
+alter table public.cards alter column renewal set default '2099-12-31';
+update public.cards set renewal = '2099-12-31' where renewal < '2099-12-31';
+
+-- p_plan is the product ('digital', 'nfc', 'nfc_custom'); 'basic' still means Digital for older callers. Coupons with
+-- plan 'basic' apply to Digital. The discount is on the product price only, never on shipping.
+create or replace function public.coupon_discount(p_code text, p_plan text, p_region text, p_email text, p_lock boolean default false)
+returns numeric language plpgsql security definer set search_path = public as $$
+declare c coupons; v_prod text := case when p_plan in ('nfc', 'nfc_custom') then p_plan else 'digital' end; v_base numeric;
+begin
+  v_base := plan_price(v_prod, p_region);
+  if p_lock then select * into c from coupons where code = upper(trim(p_code)) for update;
+  else select * into c from coupons where code = upper(trim(p_code)); end if;
+  if c.code is null or not c.active
+     or (c.starts_at is not null and now() < c.starts_at)
+     or (c.expires_at is not null and now() > c.expires_at)
+     or (c.region is not null and c.region <> p_region)
+     or (c.plan is not null and c.plan <> v_prod and not (c.plan = 'basic' and v_prod = 'digital'))
+     or (c.max_uses is not null and c.uses >= c.max_uses)
+     or (coalesce(p_email,'') <> '' and (select count(*) from coupon_redemptions r where r.code = c.code and lower(r.email) = lower(trim(p_email))) >= c.per_email)
+  then raise exception 'invalid coupon'; end if;
+  return least(v_base, case when c.kind = 'percent' then round(v_base * c.value / 100) else c.value end);
+end $$;
+revoke all on function public.coupon_discount(text, text, text, text, boolean) from public, anon, authenticated;
+
+create or replace function public.check_coupon(p_code text, p_plan text, p_region text, p_email text default '')
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_region text := case when p_region = 'IN' then 'IN' else 'US' end;
+        v_prod text := case when p_plan in ('nfc', 'nfc_custom') then p_plan when p_plan in ('basic', 'digital') then 'digital' end;
+        v_base numeric; v_disc numeric; v_ship numeric; v_tax numeric := 0;  -- no GST for now (no GSTIN yet)
+begin
+  perform rate_check('coupon', 15, interval '1 hour');
+  if v_prod is null or coalesce(p_code,'') !~* '^[A-Z0-9_-]{4,32}$' then return jsonb_build_object('ok', false); end if;
+  begin v_disc := coupon_discount(p_code, v_prod, v_region, left(coalesce(p_email,''), 200));
+  exception when others then return jsonb_build_object('ok', false); end;
+  v_base := plan_price(v_prod, v_region); v_ship := shipping_fee(v_prod, v_region);
+  return jsonb_build_object('ok', true, 'code', upper(trim(p_code)), 'base', v_base, 'discount', v_disc, 'shipping', v_ship, 'tax', v_tax, 'total', v_base - v_disc + v_ship + v_tax);
+end $$;
+revoke all on function public.check_coupon(text, text, text, text) from public;
+grant execute on function public.check_coupon(text, text, text, text) to anon, authenticated;
+
+create or replace function public.place_order_core(payload jsonb)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_card jsonb := payload->'card';
+  v_base text := left(regexp_replace(lower(coalesce(v_card->>'slug','card')), '[^a-z0-9-]', '', 'g'), 38);
+  v_slug text := v_base;
+  v_no text := 'NBR-' || upper(substr(md5(random()::text || clock_timestamp()::text), 1, 6));
+  v_mode text := payload->>'mode';
+  v_plan text := payload->>'plan';
+  v_region text := case when payload->>'region' = 'IN' then 'IN' else 'US' end;
+  v_price numeric;
+  v_tax numeric;
+  v_card_id uuid;
+  v_ex jsonb;
+  v_coupon text := nullif(upper(trim(coalesce(payload->>'coupon',''))), '');
+  v_disc numeric := 0;
+  v_pid text;
+  v_tok text;
+  v_product text := coalesce(nullif(payload->>'product', ''), 'digital');
+  v_ship jsonb := '{}'::jsonb;
+  v_ship_fee numeric := 0;
+begin
+  -- Same order sent twice (double tap, or retry after a dropped connection): return the first one instead of making a duplicate.
+  if coalesce(payload->>'idem', '') ~ '^[a-f0-9-]{36}$' then
+    declare p_prev record; begin
+      select o.order_no, o.discount, o.total, o.pay_status, c.slug, c.public_id into p_prev from orders o left join cards c on c.id = o.card_id where o.idem = payload->>'idem';
+      if found then return jsonb_build_object('order_no', p_prev.order_no, 'slug', p_prev.slug, 'public_id', p_prev.public_id, 'discount', p_prev.discount, 'total', p_prev.total, 'pay_status', p_prev.pay_status, 'repeat', true); end if;
+    end;
+  end if;
+  -- Motion Card is switched off (2026-10); every product is a Digital Card ('basic') on the card itself.
+  if v_mode not in ('builder','dfm') or v_plan is distinct from 'basic' or v_product not in ('digital','nfc','nfc_custom') then raise exception 'invalid order'; end if;
+  if v_product <> 'digital' then
+    if v_region <> 'IN' then raise exception 'invalid order'; end if;  -- NFC cards ship within India only
+    v_ship := case when jsonb_typeof(payload->'ship') = 'object' then payload->'ship' else '{}'::jsonb end;
+    v_ship := jsonb_build_object(
+      'name',  left(trim(coalesce(v_ship->>'name', '')), 120),
+      'line1', left(trim(coalesce(v_ship->>'line1', '')), 200),
+      'line2', left(trim(coalesce(v_ship->>'line2', '')), 200),
+      'city',  left(trim(coalesce(v_ship->>'city', '')), 80),
+      'state', left(trim(coalesce(v_ship->>'state', '')), 80),
+      'pin',   regexp_replace(coalesce(v_ship->>'pin', ''), '\D', '', 'g'),
+      'phone', left(regexp_replace(coalesce(v_ship->>'phone', ''), '[^0-9+ ()-]', '', 'g'), 30));
+    if v_ship->>'name' = '' or v_ship->>'line1' = '' or v_ship->>'city' = '' or v_ship->>'state' = '' then raise exception 'missing address'; end if;
+    if v_ship->>'pin' !~ '^[1-9][0-9]{5}$' then raise exception 'invalid pin code'; end if;
+    if v_ship->>'phone' <> '' and regexp_replace(v_ship->>'phone', '\D', '', 'g') !~ '^(91|0)?[6-9][0-9]{9}$' then raise exception 'invalid phone'; end if;
+    v_ship_fee := shipping_fee(v_product, v_region);
+  end if;
+  if coalesce(v_card->>'first_name','') = '' or coalesce(v_card->>'phone','') = '' then raise exception 'missing fields'; end if;
+  if length(payload::text) > 3000000 then raise exception 'payload too large'; end if;
+  while exists (select 1 from cards where slug = v_slug) loop
+    v_slug := v_base || (10 + floor(random() * 90))::int;
+  end loop;
+  v_card := v_card || jsonb_build_object('region', v_region, 'slug', v_slug, 'active', false, 'renewal', '2099-12-31'::date)  -- one-time price: the card never expires;
+
+  -- Server-side input hardening (never trust the browser)
+  v_ex := case when jsonb_typeof(v_card->'extras') = 'object' then v_card->'extras' else '{}'::jsonb end;
+  v_ex := v_ex || jsonb_build_object(
+    'facebook',     case when v_ex->>'facebook'     ~* '^https://[^\s<>"'']+$' then left(v_ex->>'facebook', 500)     else '' end,
+    'x_url',        case when v_ex->>'x_url'        ~* '^https://(www\.)?(x|twitter)\.com/[A-Za-z0-9_]{1,30}/?$' then v_ex->>'x_url' else '' end,
+    'listings_url', case when v_ex->>'listings_url' ~* '^https://[^\s<>"'']+$' then left(v_ex->>'listings_url', 500) else '' end,
+    'booking_url',  case when v_ex->>'booking_url'  ~* '^https://[^\s<>"'']+$' then left(v_ex->>'booking_url', 500)  else '' end,
+    'iabs_url',     case when v_ex->>'iabs_url'     ~* '^https://[^\s<>"'']+$' then left(v_ex->>'iabs_url', 500)     else '' end);
+  -- Business-specific fields (health, beauty, legal, trades, corporate)
+  v_ex := v_ex || jsonb_build_object('meeting_url', case when v_ex->>'meeting_url' ~* '^https://[^\s<>"'']+$' then left(v_ex->>'meeting_url', 500) else '' end, 'reg_no', left(coalesce(v_ex->>'reg_no', ''), 60), 'quals', left(coalesce(v_ex->>'quals', ''), 120), 'hours', left(coalesce(v_ex->>'hours', ''), 80), 'services', left(coalesce(v_ex->>'services', ''), 300), 'practice', left(coalesce(v_ex->>'practice', ''), 200), 'service_area', left(coalesce(v_ex->>'service_area', ''), 120), 'insured', left(coalesce(v_ex->>'insured', ''), 20), 'emergency', left(coalesce(v_ex->>'emergency', ''), 20));
+  -- Link-preview image (square JPG made in the browser from the photo or a video frame)
+  v_ex := v_ex || jsonb_build_object('og_image', case when public.media_url_ok(v_ex->>'og_image', true) then v_ex->>'og_image' else '' end);
+  v_card := v_card || jsonb_build_object(
+    'extras', v_ex,
+    'website',   case when v_card->>'website'   ~* '^https?://[^\s<>"'']+$' then left(v_card->>'website', 500)   else '' end,
+    'instagram', case when v_card->>'instagram' ~* '^https://[^\s<>"'']+$'  then left(v_card->>'instagram', 500) else '' end,
+    'linkedin',  case when v_card->>'linkedin'  ~* '^https://[^\s<>"'']+$'  then left(v_card->>'linkedin', 500)  else '' end,
+    'photo_url', case when public.media_url_ok(v_card->>'photo_url') then v_card->>'photo_url' else '' end,
+    'contact_photo_url', '',
+    'email',     case when v_card->>'email' ~* '^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$' then left(v_card->>'email', 200) else '' end,
+    'phone',     left(regexp_replace(coalesce(v_card->>'phone',''), '[^0-9+ ()-]', '', 'g'), 30),
+    'whatsapp',  left(regexp_replace(coalesce(v_card->>'whatsapp',''), '[^0-9+ ()-]', '', 'g'), 30),
+    'first_name', left(v_card->>'first_name', 60), 'last_name', left(coalesce(v_card->>'last_name',''), 60),
+    'title', left(coalesce(v_card->>'title',''), 120), 'company', left(coalesce(v_card->>'company',''), 120),
+    'tagline', left(coalesce(v_card->>'tagline',''), 120), 'category', left(coalesce(v_card->>'category',''), 60),
+    'quote', left(coalesce(v_card->>'quote',''), 300), 'bio', left(coalesce(v_card->>'bio',''), 1200),
+    'city', left(coalesce(v_card->>'city',''), 80), 'notes', left(coalesce(v_card->>'notes',''), 2000));
+  if length(regexp_replace(v_card->>'phone', '\D', '', 'g')) < 7 then raise exception 'missing fields'; end if;
+  -- Phone must be a real number for the order's country: India 10 digits (optionally 91/0), US 10 digits (optionally 1)
+  declare d text := regexp_replace(v_card->>'phone', '\D', '', 'g'); begin
+    if v_region = 'IN' and not (d ~ '^[6-9][0-9]{9}$' or d ~ '^91[6-9][0-9]{9}$' or d ~ '^0[6-9][0-9]{9}$') then raise exception 'invalid phone'; end if;
+    if v_region = 'US' and not (d ~ '^[2-9][0-9]{9}$' or d ~ '^1[2-9][0-9]{9}$') then raise exception 'invalid phone'; end if;
+  end;
+
+  insert into cards (extras, region, layout, photo_x, photo_y, photo_zoom, phone_display, signature, titles, contact_photo_url, show_powered_by,
+    profession, profession_other, city, notes, slug, prefix, first_name, last_name, title, company, preset, colour, category, tagline,
+    phone, whatsapp, email, linkedin, instagram, website, quote, bio, photo_url, plan, renewal, active)
+  select coalesce(v_card->'extras', '{}'::jsonb), r.region, r.layout, r.photo_x, r.photo_y, r.photo_zoom, r.phone_display, r.signature, r.titles, r.contact_photo_url, r.show_powered_by,
+    r.profession, r.profession_other, r.city, r.notes, r.slug, r.prefix, r.first_name, r.last_name, r.title, r.company, r.preset, r.colour, r.category, r.tagline,
+    r.phone, r.whatsapp, r.email, r.linkedin, r.instagram, r.website, r.quote, r.bio, r.photo_url, v_plan, r.renewal, r.active
+  from jsonb_populate_record(null::cards, v_card) r
+  returning id, public_id into v_card_id, v_pid;
+  v_tok := new_edit_token();
+  update cards set edit_hash = edit_hash_of(v_tok) where id = v_card_id;
+
+  v_price := plan_price(v_product, v_region);
+  if v_coupon is not null then
+    v_disc := coupon_discount(v_coupon, v_product, v_region, left(coalesce(payload->>'customer_email',''), 200), true);  -- row lock: no double-spend under concurrency
+    update coupons set uses = uses + 1 where code = v_coupon;
+    insert into coupon_redemptions (code, order_no, email, discount) values (v_coupon, v_no, left(coalesce(payload->>'customer_email',''), 200), v_disc);
+  end if;
+  v_tax := 0;  -- Linkcardly: no GST for now (no GSTIN yet). Was 18% for India: round((v_price - v_disc) * 0.18)
+  insert into orders (idem, order_no, mode, plan, region, price, tax, total, currency, customer_name, customer_email, customer_phone, notes, card, card_id, coupon, discount, product, shipping, ship)
+  values (case when coalesce(payload->>'idem', '') ~ '^[a-f0-9-]{36}$' then payload->>'idem' end, v_no, v_mode, v_plan, v_region, v_price, v_tax, v_price - v_disc + v_ship_fee + v_tax,
+    case when v_region = 'IN' then 'INR' else 'USD' end,
+    left(payload->>'customer_name', 120), left(payload->>'customer_email', 200), left(payload->>'customer_phone', 40), left(payload->>'notes', 4000),
+    v_card, v_card_id, v_coupon, v_disc, v_product, v_ship_fee, v_ship);
+
+  -- 100% coupon (partners, sales agents, influencers): nothing to pay, so the order counts as paid now.
+  if v_price - v_disc + v_ship_fee + v_tax <= 0 then
+    update orders set pay_status = 'waived', paid_at = now(), pay_provider = 'coupon' where order_no = v_no;
+    if v_mode = 'builder' then update cards set active = true where id = v_card_id; end if;
+    return jsonb_build_object('order_no', v_no, 'slug', v_slug, 'public_id', v_pid, 'edit_token', v_tok, 'discount', v_disc, 'shipping', 0, 'total', 0, 'pay_status', 'waived');
+  end if;
+  return jsonb_build_object('order_no', v_no, 'slug', v_slug, 'public_id', v_pid, 'edit_token', v_tok, 'discount', v_disc, 'shipping', v_ship_fee, 'total', v_price - v_disc + v_ship_fee + v_tax, 'pay_status', 'unpaid');
+end $$;
+revoke all on function public.place_order_core(jsonb) from public, anon, authenticated;
+
+-- Same as ALL-IN-ONE.sql, plus the product (for the checkout description).
+create or replace function public.get_order_for_pay(p_order_no text, p_idem text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare o record; c record;
+begin
+  if not from_worker() then raise exception 'not allowed'; end if;
+  select * into o from orders where order_no = p_order_no and idem is not null and idem = p_idem;
+  if not found then raise exception 'order not found'; end if;
+  select slug, public_id into c from cards where id = o.card_id;
+  return jsonb_build_object('order_no', o.order_no, 'mode', o.mode, 'plan', o.plan, 'product', o.product, 'region', o.region, 'total', o.total, 'currency', o.currency, 'pay_status', o.pay_status,
+    'customer_email', o.customer_email, 'customer_phone', o.customer_phone, 'slug', c.slug, 'public_id', c.public_id);
+end $$;
+revoke all on function public.get_order_for_pay(text, text) from public;
+grant execute on function public.get_order_for_pay(text, text) to anon, authenticated;
 
 notify pgrst, 'reload schema';

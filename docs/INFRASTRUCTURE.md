@@ -50,8 +50,9 @@ paid. Production's test mode stays **off**.
 | `CF_ANALYTICS_TOKEN` | Account API token `linkcardly-analytics-read` (Account Analytics: Read only) | Reading visit counts for the admin page |
 | `RESEND_API_KEY` | Resend → API Keys → `linkcardly-prod` (Sending access, linkcardly.com only) | Sending emails |
 
-  Later: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (and `STRIPE_SECRET_KEY`,
-  `STRIPE_WEBHOOK_SECRET` if US payments are added). Each payment provider stays off until its keys are set.
+  Payments: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (test keys on staging first; and
+  `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` if US payments are added). Each payment provider stays off until its keys
+  are set. UPI needs no secret: `UPI_VPA` / `UPI_NAME` / `RAZORPAY_FEE_PCT` are vars in `wrangler.toml`. See README → Payments.
 - Variables added with the native API (in `wrangler.toml`): `ADMIN_EMAIL` (`hello@linkcardly.com`), `MAIL_FROM`,
   `STATS_DATASET`.
 - Daily job: `[triggers] crons = ["30 3 * * *"]` (09:00 India), visible under Settings → Trigger events. Sends

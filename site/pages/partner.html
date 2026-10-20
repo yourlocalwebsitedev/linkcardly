@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/app/components/admin-partners.css">
+<section class="band p-app">
+  <div class="band-in lap">
+    <div class="lap-head"><h1 data-p-title>Your partner page</h1><p data-p-lead>Your scans, sales and earnings, and your QR code to share.</p></div>
+
+    <div class="lap-box p-gate" data-p-gate>
+      <p class="lap-note" data-p-nolink hidden>Open the private link we sent you on WhatsApp or email. Lost it? Email <a href="mailto:hello@linkcardly.com?subject=New%20partner%20link">hello@linkcardly.com</a> from the address you signed up with.</p>
+      <form class="lap-form" data-p-pin novalidate hidden>
+        <h2 class="lap-full">Enter your PIN</h2>
+        <label class="lap-field lap-full">PIN (last 4 digits of your phone)<input class="lap-input" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" required></label>
+        <label class="lap-field lap-full p-remember"><input type="checkbox" name="remember" checked> Remember me on this phone</label>
+        <div class="lap-row lap-full"><button class="lap-btn" type="submit">Open my page</button><span class="lap-err" data-p-msg role="alert"></span></div>
+      </form>
+    </div>
+
+    <div class="lap" data-p-main hidden>
+      <div class="lap-stats p-stats5" aria-label="Your numbers">
+        <div class="lap-stat"><span>Scans (30 days)</span><b data-v="clicks_30d">0</b></div>
+        <div class="lap-stat"><span>Sales</span><b data-v="orders">0</b></div>
+        <div class="lap-stat"><span>Waiting (15 days)</span><b data-v="pending">₹0</b></div>
+        <div class="lap-stat"><span>Ready to pay</span><b data-v="ready">₹0</b></div>
+        <div class="lap-stat"><span>Paid to you</span><b data-v="paid">₹0</b></div>
+      </div>
+
+      <section class="lap-box p-share">
+        <div class="p-qr" data-p-qr aria-hidden="true"></div>
+        <div class="lap">
+          <h2>Your code <span data-p-code></span></h2>
+          <p class="lap-note" data-p-offer></p>
+          <code class="lap-code"><a data-p-link href="#"></a></code>
+          <div class="lap-row"><button class="lap-btn" type="button" data-p-copy>Copy link</button><button class="lap-btn lap-btn--ghost" type="button" data-p-download>Download QR</button></div>
+          <p class="lap-note" data-p-card hidden>Your free card: <a data-p-cardlink href="#"></a>. Its "Get a card like this" link counts for you too.</p>
+        </div>
+      </section>
+
+      <section class="lap-box">
+        <h2>Your sales</h2>
+        <p class="lap-note" data-p-empty>No sales yet. Share your link or QR code to get started.</p>
+        <div class="lap-scroll" data-p-tablewrap tabindex="0" role="region" aria-label="Your sales" hidden><table class="lap-table"><thead><tr><th scope="col">Customer</th><th scope="col">Date</th><th scope="col">Plan</th><th scope="col">You earn</th><th scope="col">Status</th></tr></thead><tbody data-p-rows></tbody></table></div>
+      </section>
+
+      <section class="lap-box">
+        <h2>Month by month</h2>
+        <p class="lap-note" data-p-next></p>
+        <div class="lap-scroll" data-p-monthwrap hidden><table class="lap-table"><thead><tr><th scope="col">Month</th><th scope="col">Sales</th><th scope="col">Earned</th><th scope="col">Paid to you</th></tr></thead><tbody data-p-months></tbody></table></div>
+      </section>
+
+      <section class="lap-box">
+        <h2>Where we pay you</h2>
+        <p class="lap-note">We pay at the end of every month by UPI, for sales that have passed 15 days. Amounts under ₹<span data-p-min>500</span> roll over to the next month.</p>
+        <form class="lap-form" data-p-upi novalidate>
+          <label class="lap-field lap-full">UPI ID<input class="lap-input" name="upi_id" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="name@okaxis"></label>
+          <p class="lap-note lap-full" data-p-panwhy hidden>Your earnings this year have passed ₹10,000, so tax rules need your PAN before we can pay you. 2% TDS is deducted from then on.</p>
+          <label class="lap-field" data-p-pan hidden>PAN<input class="lap-input" name="pan" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="10" placeholder="ABCDE1234F"></label>
+          <label class="lap-field" data-p-pan hidden>Name on PAN<input class="lap-input" name="pan_name" type="text" autocomplete="name"></label>
+          <div class="lap-row lap-full"><button class="lap-btn" type="submit">Save</button><span class="lap-note" data-p-upimsg role="status"></span></div>
+        </form>
+      </section>
+    </div>
+  </div>
+</section>

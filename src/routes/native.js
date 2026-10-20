@@ -10,9 +10,11 @@
 //   POST /api/contact              contact form on linkcardly.com (emails Linkcardly)
 //   POST /api/pay/start | /api/pay/verify, GET /api/pay/status      Razorpay / Stripe checkout
 //   POST /api/razorpay/webhook | /api/stripe/webhook                 paid, failed and refunded events
+//   POST /api/partner/me, /api/partner/payout                        partner page (private key + PIN)
 //   GET  /api/stats, POST /api/purge, POST /api/admin/paid          admin only (Supabase admin login)
 // The scheduled job (renewal reminders, which also keeps the database active) is `scheduled()` below.
 import { rpc, view, RpcError } from '../lib/live.js';
+import { productName } from '../lib/products.js';
 import { verifyTurnstile } from '../lib/turnstile.js';
 import { sendMail, mailHtml, esc } from '../lib/mail.js';
 import { startPay, payReady, hmacHex, safeEq, razorpay, stripe, ProviderError } from '../lib/payments.js';
@@ -121,7 +123,7 @@ async function afterOrder(env, res, p) {
     'Questions? Just reply to this email.']));
   if (env.ADMIN_EMAIL) await sendMail(env, env.ADMIN_EMAIL, `New order ${res.order_no} · awaiting payment`, mailHtml(`New order ${res.order_no}`, [
     `${esc(p.customer_name)} · ${esc(p.customer_phone)} · ${esc(p.customer_email)}`,
-    `Plan: ${esc(p.plan)} · ${esc(p.region)} · total ${esc(res.total)}`,
+    `${esc(productName(p))} · ${esc(p.region)} · total ${esc(res.total)}`,
     online ? 'Payment: online checkout started. You will get another email when it is paid.' : '<b>Payment is not set up online.</b> Send the customer a payment link.',
     p.notes ? 'Notes: ' + esc(String(p.notes).slice(0, 1500)) : '']));
 }
@@ -169,7 +171,7 @@ async function order(req, env, url, ctx) {
   const out = { ...res };
   if (!(res.pay_status === 'paid' || res.pay_status === 'waived')) {
     delete out.edit_token;
-    out.pay = await startPay(env, { order_no: res.order_no, total: res.total, currency: p.region === 'IN' ? 'INR' : 'USD', plan: p.plan, customer_email: p.customer_email, customer_phone: p.customer_phone }, site(env)).catch(() => null);
+    out.pay = await startPay(env, { order_no: res.order_no, total: res.total, currency: p.region === 'IN' ? 'INR' : 'USD', plan: p.plan, product: p.product, customer_email: p.customer_email, customer_phone: p.customer_phone }, site(env)).catch(() => null);
   }
   return json(out, 200, noStore);
 }
@@ -329,9 +331,21 @@ async function hit(req, env) {
   env.STATS.writeDataPoint({ indexes: [k], blobs: [e, (req.cf && req.cf.country) || ''], doubles: [1] });
 }
 
+// Partner page (/partner#<key>): the private key and the PIN (last 4 digits of the partner's phone) go to the
+// database, which checks them (5 wrong PINs lock the link for 15 minutes). The key is never logged.
+async function partnerPage(sub, req, env) {
+  const b = await readJson(req, 4000), token = String(b.token || ''), pin = String(b.pin || '');
+  if (!/^[a-f0-9]{40}$/.test(token)) return fail('invalid link', 400);
+  if (!/^[0-9]{4}$/.test(pin)) return json({ ok: false, error: 'wrong pin' }, 200, noStore);
+  const r = sub === 'me'
+    ? await rpc(env, 'partner_me_token', { p_token: token, p_pin: pin }, { ip: ipOf(req) })
+    : await rpc(env, 'partner_set_payout_token', { p_token: token, p_pin: pin, p: { upi_id: String(b.upi_id || '').trim().slice(0, 80), pan: String(b.pan || '').trim().toUpperCase().slice(0, 10), pan_name: String(b.pan_name || '').trim().slice(0, 80) } }, { ip: ipOf(req) });
+  return json(r, 200, noStore);
+}
+
 export async function nativeApi(parts, req, env, url, ctx) {
   const [route, sub] = parts, m = req.method;
-  const formRoute = ['upload', 'order', 'edit', 'lead', 'contact', 'admin'].includes(route) || (route === 'pay' && m === 'POST');
+  const formRoute = ['upload', 'order', 'edit', 'lead', 'contact', 'admin', 'partner'].includes(route) || (route === 'pay' && m === 'POST');
   if (formRoute && !sameOrigin(req, url, env)) return fail('forbidden', 403);
   try {
     if (route === 'card' && m === 'GET' && parts.length === 2 && KEY_RE.test(sub || '')) {
@@ -349,6 +363,7 @@ export async function nativeApi(parts, req, env, url, ctx) {
     if (route === 'pay' && sub === 'status' && m === 'GET') return await stripeStatus(env, url, ctx);
     if (route === 'razorpay' && sub === 'webhook' && m === 'POST') return await razorpayWebhook(req, env, ctx);
     if (route === 'stripe' && sub === 'webhook' && m === 'POST') return await stripeWebhook(req, env, ctx);
+    if (route === 'partner' && (sub === 'me' || sub === 'payout') && m === 'POST') return await partnerPage(sub, req, env);
     if (route === 'stats' && m === 'GET') return await stats(req, env);
     if (route === 'admin' && sub === 'paid' && m === 'POST') return await adminPaid(req, env, ctx);
     if (route === 'purge' && m === 'POST') {

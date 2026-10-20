@@ -7,6 +7,7 @@ import { nativeApi, scheduled, localImage } from './routes/native.js';
 import { health } from './routes/health.js';
 import { withCardPreview } from './routes/og.js';
 import { appConfig, browserDbOrigin } from './routes/app-config.js';
+import { referral } from './routes/referral.js';
 
 const isFile = s => FILE_EXT.test(s);
 // API routes behind the per-IP rate limit (not /api/hit or /api/card, which every card view calls).
@@ -69,6 +70,9 @@ async function route(req, env, url, parts, ctx) {
     return res.status === 404 ? notFound(env, req) : res;
   }
 
+  // Partner links (/r/<code>): count the visit, remember the code, open the order page.
+  if (first === 'r' && parts.length === 2 && req.method === 'GET') return referral(env, req, parts, proxyMode);
+
   // Cards and edit links: the card and order app in both modes (its data comes from /api/*).
   if (isEditLink(parts)) return serveAsset(env, req, APP.order);
   if (isCardLink(parts)) return withCardPreview(await serveAsset(env, req, APP.card, url.search), req, env, parts[parts.length - 1], url.pathname, ctx);
@@ -99,7 +103,7 @@ export default {
     const vendored = ['app', 'create'].includes(first) || isAdmin(parts) || isCardLink(parts) || isEditLink(parts);
     const csp = !vendored && first !== 'api';
     res = secure(res, { csp, appCsp: vendored, editLink: isEditLink(parts), db: browserDbOrigin(env) });
-    if (isAdmin(parts) || url.pathname.startsWith('/app/admin')) { res.headers.set('X-Robots-Tag', 'noindex, nofollow'); res.headers.set('Cache-Control', 'no-store'); }
+    if (isAdmin(parts) || first === 'partner' || url.pathname.startsWith('/app/admin')) { res.headers.set('X-Robots-Tag', 'noindex, nofollow'); res.headers.set('Cache-Control', 'no-store'); }
     console.log(JSON.stringify({ t: 'req', method: req.method, path: logPath(url.pathname), status: res.status, ms: Date.now() - t0, mode: env.MODE, ray: req.headers.get('cf-ray') || undefined }));
     return res;
   }

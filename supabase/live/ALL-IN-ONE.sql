@@ -206,7 +206,7 @@ create or replace function public.coupon_discount(p_code text, p_plan text, p_re
 returns numeric language plpgsql security definer set search_path = public as $$
 declare c coupons; v_base numeric;
 begin
-  v_base := case when p_region = 'IN' then (case p_plan when 'motion' then 1799 else 799 end) else (case p_plan when 'motion' then 79 else 49 end) end;
+  v_base := case when p_region = 'IN' then (case p_plan when 'motion' then 1299 else 799 end) else (case p_plan when 'motion' then 79 else 49 end) end;
   if p_lock then select * into c from coupons where code = upper(trim(p_code)) for update;
   else select * into c from coupons where code = upper(trim(p_code)); end if;
   if c.code is null or not c.active
@@ -232,8 +232,8 @@ begin
   if coalesce(p_code,'') !~* '^[A-Z0-9_-]{4,32}$' then return jsonb_build_object('ok', false); end if;
   begin v_disc := coupon_discount(p_code, v_plan, v_region, left(coalesce(p_email,''), 200));
   exception when others then return jsonb_build_object('ok', false); end;
-  v_base := case when v_region = 'IN' then (case v_plan when 'motion' then 1799 else 799 end) else (case v_plan when 'motion' then 79 else 49 end) end;
-  v_tax := case when v_region = 'IN' then round((v_base - v_disc) * 0.18) else 0 end;
+  v_base := case when v_region = 'IN' then (case v_plan when 'motion' then 1299 else 799 end) else (case v_plan when 'motion' then 79 else 49 end) end;
+  v_tax := 0;  -- Linkcardly: no GST for now (no GSTIN yet). Was 18% for India: round((v_base - v_disc) * 0.18)
   return jsonb_build_object('ok', true, 'code', upper(trim(p_code)), 'base', v_base, 'discount', v_disc, 'tax', v_tax, 'total', v_base - v_disc + v_tax);
 end $$;
 revoke all on function public.check_coupon(text, text, text, text) from public;
@@ -322,13 +322,13 @@ begin
   v_tok := new_edit_token();
   update cards set edit_hash = edit_hash_of(v_tok) where id = v_card_id;
 
-  v_price := case when v_region = 'IN' then (case v_plan when 'motion' then 1799 else 799 end) else (case v_plan when 'motion' then 79 else 49 end) end;
+  v_price := case when v_region = 'IN' then (case v_plan when 'motion' then 1299 else 799 end) else (case v_plan when 'motion' then 79 else 49 end) end;
   if v_coupon is not null then
     v_disc := coupon_discount(v_coupon, v_plan, v_region, left(coalesce(payload->>'customer_email',''), 200), true);  -- row lock: no double-spend under concurrency
     update coupons set uses = uses + 1 where code = v_coupon;
     insert into coupon_redemptions (code, order_no, email, discount) values (v_coupon, v_no, left(coalesce(payload->>'customer_email',''), 200), v_disc);
   end if;
-  v_tax := case when v_region = 'IN' then round((v_price - v_disc) * 0.18) else 0 end;
+  v_tax := 0;  -- Linkcardly: no GST for now (no GSTIN yet). Was 18% for India: round((v_price - v_disc) * 0.18)
   insert into orders (idem, order_no, mode, plan, region, price, tax, total, currency, customer_name, customer_email, customer_phone, notes, card, card_id, coupon, discount)
   values (case when coalesce(payload->>'idem', '') ~ '^[a-f0-9-]{36}$' then payload->>'idem' end, v_no, v_mode, v_plan, v_region, v_price, v_tax, v_price - v_disc + v_tax,
     case when v_region = 'IN' then 'INR' else 'USD' end,
@@ -505,7 +505,7 @@ create view public.public_card_extras as
     'facebook', extras->'facebook', 'x_url', extras->'x_url', 'listings_url', extras->'listings_url', 'booking_url', extras->'booking_url',
     'office_address', extras->'office_address', 'iabs_url', extras->'iabs_url', 'lead_capture', extras->'lead_capture',
     'seasonal', extras->'seasonal', 'seasonal_addon', extras->'seasonal_addon', 'greeting', extras->'greeting', 'motion', to_jsonb(plan = 'motion'),
-    'meeting_url', extras->'meeting_url', 'reg_no', extras->'reg_no', 'quals', extras->'quals', 'hours', extras->'hours', 'services', extras->'services', 'practice', extras->'practice', 'service_area', extras->'service_area', 'insured', extras->'insured', 'emergency', extras->'emergency', 'og_image', extras->'og_image')) as extras
+    'meeting_url', extras->'meeting_url', 'reg_no', extras->'reg_no', 'quals', extras->'quals', 'hours', extras->'hours', 'services', extras->'services', 'practice', extras->'practice', 'service_area', extras->'service_area', 'insured', extras->'insured', 'emergency', extras->'emergency', 'og_image', extras->'og_image', 'partner_code', extras->'partner_code')) as extras
   from public.cards where active is not false;
 revoke all on public.public_card_extras from anon, authenticated;  -- Linkcardly: read-only (the default grants made the view writable)
 grant select on public.public_card_extras to anon, authenticated;

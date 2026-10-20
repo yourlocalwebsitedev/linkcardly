@@ -9,7 +9,13 @@ Used on sample cards (gallery renders, /designs preview, order-flow demos). From
 | samcarter.jpg | photo-1507003211169-0a1dd7228f2d |
 | meerakapoor.jpg | photo-1768221677463-191fc4e15690 |
 | priyanair.jpg | photo-1770627000564-3feb36aecbcd |
+| ananyaiyer.jpg, rohanmehta.jpg, kavyareddy.jpg, kabirsharma.jpg, sunitadesai.jpg, adityarao.jpg, ishaverma.jpg, vikramsingh.jpg, nehagupta.jpg, harishpatel.jpg | Supplied by Linkcardly (2026-10-17), India set: five women, five men. Cropped to 480 × 600. **Licence to be confirmed by the owner.** nehagupta.jpg shows a stock-photo watermark ("dreamstime"): replace it with a licensed photo before launch. |
+
+The last ten are the /designs gallery people (`people` in `site/catalogue.js`), one per design in turn.
 
 `../portrait.jpg` is Linkcardly's own photo (Arjun Mehta and Rahul Verma samples).
 `../portrait.gif` is Linkcardly's own moving portrait (Motion Card sample).
 `../digital.jpg` is Linkcardly's own photo (Digital Card plan tile).
+
+`../../home/face-*.webp` (home page faces, 160 × 160) are crops of the same India set.
+A US set is still to come; until then the US samples (alexmorgan, danareyes, samcarter) stay.

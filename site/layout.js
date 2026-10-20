@@ -5,7 +5,7 @@ const logo = '<a class="logo" href="/" aria-label="Linkcardly home">Link<span>ca
 const arrow = '<i class="ic ic-arrow" aria-hidden="true"></i>';
 
 const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${p.title}</title><meta name="description" content="${p.description}">
+<title>${p.title}</title><meta name="description" content="${p.description}">${p.noindex ? '<meta name="robots" content="noindex, nofollow">' : ''}
 <link rel="canonical" href="${SITE_URL}${p.path}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Linkcardly"><meta property="og:title" content="${p.title}"><meta property="og:description" content="${p.description}"><meta property="og:url" content="${SITE_URL}${p.path}"><meta property="og:image" content="${SITE_URL}/assets/img/brand/og-image.png">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#EEDFD4">
@@ -14,14 +14,16 @@ const head = p => `<meta charset="utf-8"><meta name="viewport" content="width=de
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/site.css">${p.preload ? `<link rel="preload" as="image" href="${p.preload}" fetchpriority="high">` : ''}`;
 
+const cur = (key, p) => key === p.active ? ' aria-current="page"' : '';
+
 const header = p => `<header class="top">
   <nav class="nav" aria-label="Main">
     ${logo}
-    <div class="nav-links">${NAV.map(([label, href, key]) => `<a href="${href}"${key === p.active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</div>
+    <div class="nav-links">${NAV.map(([label, href, key]) => `<a href="${href}"${cur(key, p)}>${label}</a>`).join('')}</div>
     <a class="btn nav-cta" href="/create">Create my card${arrow}</a>
     <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu"><i class="ic ic-menu" aria-hidden="true"></i></button>
   </nav>
-  <div class="menu" id="menu">${NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}<a class="btn" href="/create">Create my card →</a></div>
+  <div class="menu" id="menu">${NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}<a class="btn" href="/create">Create my card${arrow}</a></div>
 </header>`;
 
 const footer = () => `<footer class="foot">

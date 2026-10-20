@@ -1,6 +1,8 @@
 // Showcase cards for the marketing pages: static, accurate renders of the three card families
 // (Original, Luxury Estate, Listing Showcase). Used in page bodies as {{card:<kind>}} or
-// {{phone:<kind>:<size>}} and expanded by scripts/build.mjs. Styles live in assets/css/site.css (.lc-card).
+// {{phone:<kind>:<size>}} and expanded by scripts/build.mjs. {{plans:h2|h3}} is the product cards (site/plans.js). Styles live in assets/css/site.css (.lc-card).
+import { plans } from './plans.js';
+
 const PHOTO = '/assets/img/samples/portrait.jpg';
 const ALT = 'Sample card photo';
 
@@ -47,5 +49,6 @@ export const CARD_NAMES = { original: 'Original', luxury: 'Luxury Estate', listi
 export const phone = (kind, size = 'md') => `<div class="phone phone--${size}" role="img" aria-label="${CARD_NAMES[kind]} card design, sample"><div class="scr">${CARDS[kind]}</div></div>`;
 
 export const expand = html => html
+  .replace(/\{\{plans:(h2|h3)\}\}/g, (_, h) => plans(h))
   .replace(/\{\{phone:(\w+):(\w+)\}\}/g, (_, k, s) => phone(k, s))
   .replace(/\{\{card:(\w+)\}\}/g, (_, k) => CARDS[k]);

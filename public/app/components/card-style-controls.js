@@ -8,6 +8,8 @@
  *   └── NextButton      round next/save button
  *   CardColourRail      (separate global) vertical strip of colours at the top right of the card, shown
  *                       while the selected style belongs to a family of colour variants
+ *   CardStylePanel      (separate global) the desktop editor's picker: a form section beside the preview with
+ *                       every design and colour visible at once (see the end of this file)
  * Liquid glass: the trigger, the next button and the open sheet are frosted glass. Their tone follows the
  * selected style's background (thumb.bg): clear glass + white ink on dark cards, milky glass + navy ink on
  * light ones. A fade in the card's own colour sits under the controls so card text never collides with them.
@@ -281,4 +283,77 @@
       /* Linkcardly: no floating colour-name label beside the strip; each swatch keeps its name as title/aria-label */
   }
   window.LcCardColourRail = CardColourRail;
+
+  /* CardStylePanel: the desktop editor's style picker, a section in the form beside the preview (never over it).
+   * Every design of the current collection shows at once in a wrapping grid (no hidden scrolling row); colour
+   * variants of the selected design show under it with their names. Used through
+   *   <x-import component-from-global-scope="LcCardStylePanel" from="/app/components/card-style-controls.js" …>
+   * Props: options, value, onSelect (as CardStyleControls); title (optional heading, default "Design"). */
+  function CardStylePanel(props) {
+    var React = window.React;
+    ensureCss();
+    var options = props.options || [], groups = groupsOf(options), grouped = groups.length > 1;
+    var cur = options.find(function (o) { return o.id === props.value; }) || options[0] || {};
+    var curGroup = cur.group || '';
+    var tabState = React.useState(curGroup), tab = tabState[0], setTab = tabState[1];
+    var last = React.useRef({});
+    React.useEffect(function () { setTab(curGroup); }, [curGroup]);
+    if (groups.indexOf(tab) < 0) tab = curGroup;
+    if (cur.family) last.current[cur.family.id] = cur.id;
+    var items = [], seen = {};
+    options.forEach(function (o) {
+      if (grouped && (o.group || '') !== tab) return;
+      if (!o.family) { items.push({ option: o, selected: o.id === cur.id }); return; }
+      if (seen[o.family.id]) return; seen[o.family.id] = 1;
+      var members = options.filter(function (x) { return x.family && x.family.id === o.family.id; });
+      var rep = members.indexOf(cur) >= 0 ? cur : (members.find(function (x) { return x.id === last.current[o.family.id]; }) || members[0]);
+      items.push({ option: rep, name: o.family.name, selected: members.indexOf(cur) >= 0, count: members.length });
+    });
+    var colours = cur.family ? options.filter(function (o) { return o.family && o.family.id === cur.family.id; }) : [];
+    function pick(id) { if (props.onSelect) props.onSelect(id); }
+    function move(list, ids) {
+      return function (e) {
+        var step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (!step || !ids.length) return;
+        e.preventDefault();
+        var i = list.findIndex(function (x) { return x; }), n = ids[Math.min(ids.length - 1, Math.max(0, (i < 0 ? 0 : i) + step))];
+        pick(n);
+        var b = e.currentTarget.querySelector('[data-id="' + String(n).replace(/"/g, '\\"') + '"]'); if (b) b.focus();
+      };
+    }
+    var title = cur.family && cur.family.name && colours.length > 1 ? cur.family.name : cur.name;
+    return h('section', { className: 'lcp', 'aria-label': props.title || 'Design' },
+      h('div', { className: 'lcp__head' },
+        h('h3', { className: 'lcp__title' }, props.title || 'Design'),
+        h('span', { className: 'lcp__cur' }, [title, cur.group].filter(Boolean).join(' · '))),
+      grouped ? h('div', { className: 'lcp__tabs', role: 'tablist', 'aria-label': 'Style collection' },
+        groups.map(function (g) {
+          var on = g === tab;
+          return h('button', { key: g, type: 'button', role: 'tab', 'aria-selected': on ? 'true' : 'false', className: 'lcp__tab' + (on ? ' is-selected' : ''), onClick: function () { setTab(g); } },
+            g, g === curGroup && !on ? h('span', { className: 'lcs-tab__dot', 'aria-label': ' (current style)' }) : null);
+        })) : null,
+      h('div', { className: 'lcp__grid', role: 'radiogroup', 'aria-label': (grouped ? tab + ' ' : '') + 'card style',
+        onKeyDown: move(items.map(function (it) { return it.selected; }), items.map(function (it) { return it.option.id; })) },
+        items.map(function (it) {
+          var o = it.option, name = it.name || o.name;
+          return h('button', { key: it.name ? 'fam-' + o.family.id : o.id, type: 'button', role: 'radio', 'aria-checked': it.selected ? 'true' : 'false',
+            'aria-label': name + (it.count > 1 ? ', ' + it.count + ' colours' : ''), tabIndex: it.selected || (!items.some(function (x) { return x.selected; }) && it === items[0]) ? 0 : -1,
+            'data-id': o.id, className: 'lcp__opt' + (it.selected ? ' is-selected' : ''), onClick: function () { pick(o.id); } },
+            h('span', { className: 'lcs-option__art' }, h(Thumb, { thumb: o.thumb, size: 56, className: 'lcp__thumb' }),
+              it.count > 1 ? h('span', { className: 'lcp__count', 'aria-hidden': 'true' }, it.count) : null),
+            h('span', { className: 'lcp__label' }, name));
+        })),
+      colours.length > 1 ? h('div', { className: 'lcp__colours' },
+        h('span', { className: 'lcp__sub', id: 'lcp-colour-label' }, 'Colour'),
+        h('div', { className: 'lcp__swatches', role: 'radiogroup', 'aria-labelledby': 'lcp-colour-label',
+          onKeyDown: move(colours.map(function (o) { return o === cur; }), colours.map(function (o) { return o.id; })) },
+          colours.map(function (o) {
+            var on = o === cur, t = o.swatch || { bg: (o.thumb || {}).bg, dot: (o.thumb || {}).dot };
+            return h('button', { key: o.id, type: 'button', role: 'radio', 'aria-checked': on ? 'true' : 'false', tabIndex: on ? 0 : -1, 'data-id': o.id,
+              className: 'lcp__swatch' + (on ? ' is-selected' : ''), onClick: function () { pick(o.id); } },
+              h('span', { className: 'lcp__chip', 'aria-hidden': 'true', style: { background: t.bg } }, h('span', { className: 'lcr__dot', style: { background: t.dot || '#fff' } })),
+              h('span', null, o.name));
+          }))) : null);
+  }
+  window.LcCardStylePanel = CardStylePanel;
 })();

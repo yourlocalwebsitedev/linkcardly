@@ -1,11 +1,10 @@
 export const SITE_URL = 'https://linkcardly.com';
 
-// Header navigation, as in Home v13: [label, href, key]
+// Header navigation (docs/PRODUCT.md): [label, href, key]
 export const NAV = [
-  ['Features', '/#features', 'features'],
-  ['Designs', '/designs', 'designs'],
+  ['Digital Card', '/how-it-works', 'digital'],
+  ['NFC Cards', '/nfc-cards', 'nfc'],
   ['Pricing', '/pricing', 'pricing'],
-  ['NFC cards', '/nfc-cards', 'nfc'],
   ['Teams', '/teams', 'teams'],
   ['Contact', '/contact', 'contact']
 ];

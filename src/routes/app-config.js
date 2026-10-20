@@ -1,8 +1,9 @@
 // /app/config.js: the browser's settings for this environment (marketing pages, order and card app), so the same
 // files work on production, staging and previews. The one place these values reach the browser. In proxy mode the
 // app still talks to the NexBizRise database and widget (the old worker does ordering until cutover); in native mode
-// it uses Linkcardly's own (wrangler.toml), and `payments` says whether this Worker has payment keys.
-import { payReady } from '../lib/payments.js';
+// it uses Linkcardly's own (wrangler.toml), and `payments` says whether this Worker has payment keys
+// (`pay`: UPI and Razorpay for India).
+import { payReady, upiReady, rzpReady, feePct } from '../lib/payments.js';
 
 const LEGACY = {
   supabaseUrl: 'https://hyaqvmrtqafqhbhcdecd.supabase.co',
@@ -14,7 +15,9 @@ const LEGACY = {
 export function browserSettings(env) {
   const c = env.MODE === 'native'
     ? { native: true, supabaseUrl: env.SUPABASE_URL || '', supabaseKey: env.SUPABASE_ANON_KEY || '', turnstileSiteKey: env.TURNSTILE_SITE_KEY || '',
-        payments: payReady(env, 'INR') || payReady(env, 'USD') }
+        payments: payReady(env, 'INR') || payReady(env, 'USD'),
+        // India: which ways to pay are on, and Razorpay's convenience fee (%), so the order page can show the choice
+        pay: { upi: upiReady(env), card: rzpReady(env), feePct: feePct(env) } }
     : { native: false, ...LEGACY };
   return { ...c, orderUrl: '/create' };
 }

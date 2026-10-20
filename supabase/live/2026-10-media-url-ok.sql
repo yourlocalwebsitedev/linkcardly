@@ -1,0 +1,12 @@
+-- Linkcardly, 2026-10: media_url_ok() was missing on the live database. place_order_core and update_card_by_token
+-- call it, so orders and card edits with a photo failed without it. Same text as ALL-IN-ONE.sql.
+-- Run once (staging, then production). Safe to run again.
+create or replace function public.media_url_ok(u text, jpg_only boolean default false) returns boolean
+language sql immutable set search_path = public as $$
+  select coalesce(u, '') ~ case when jpg_only then '^https://img(-staging)?\.linkcardly\.com/p/[a-f0-9]{24}\.jpg$'
+                                else '^https://img(-staging)?\.linkcardly\.com/p/[a-f0-9]{24}\.(webp|jpg|png|gif|mp4|webm)$' end $$;
+notify pgrst, 'reload schema';
+
+-- Check: every function the Linkcardly SQL files define. Any row here is MISSING on this database.
+select f as missing from unnest(array['partner.approve_due', 'partner.by_token', 'partner.fy_start', 'partner.me_json', 'partner.phone10', 'partner.require_admin', 'partner.set_payout', 'partner.sync_commission', 'partner.sync_coupon', 'public.admin_new_edit_link', 'public.admin_partner_create', 'public.admin_partner_new_link', 'public.admin_partner_set', 'public.admin_partners', 'public.admin_payout_mark_paid', 'public.admin_payout_sheet', 'public.admin_payouts_prepare', 'public.bot_gate', 'public.check_coupon', 'public.claim_upi_payment', 'public.coupon_discount', 'public.edit_hash_of', 'public.from_worker', 'public.get_card_for_edit', 'public.get_order_for_pay', 'public.is_admin', 'public.keep_public_id', 'public.log_admin_change', 'public.mark_order_paid', 'public.mark_order_paid_manual', 'public.mark_order_refunded', 'public.media_url_ok', 'public.new_edit_token', 'public.new_public_id', 'public.on_order_refunded', 'public.order_card_clean', 'public.partner_apply', 'public.partner_click', 'public.partner_code_available', 'public.partner_me', 'public.partner_me_token', 'public.partner_set_payout_details', 'public.partner_set_payout_token', 'public.place_order', 'public.place_order_core', 'public.rate_check', 'public.release_stale_slug', 'public.renewal_due', 'public.safe_https', 'public.slug_available', 'public.slug_clean', 'public.slug_is_stale', 'public.submit_lead', 'public.submit_lead_core', 'public.submit_site_lead', 'public.test_mode', 'public.update_card_by_token']) f
+where not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname || '.' || p.proname = f);

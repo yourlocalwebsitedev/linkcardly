@@ -136,13 +136,14 @@ test('order (unpaid): sent with the worker secret and real IP; edit token withhe
   assert.equal(r.status, 200);
   const out = await r.json();
   assert.equal(out.edit_token, undefined, 'unpaid orders never get the edit link back');
-  assert.deepEqual(out.pay, { provider: 'razorpay', key: 'rzp_test_1', order_id: 'order_R1', amount: 19900, currency: 'INR', description: 'Digital Card · 1 year', email: 'asha@example.com', contact: '9811111111' });
+  // ₹199 + convenience fee (2.36% default, rounded up: ₹5) = ₹204; UPI is off (no UPI_VPA).
+  assert.deepEqual(out.pay, { provider: 'razorpay', key: 'rzp_test_1', order_id: 'order_R1', amount: 20400, fee: 5, currency: 'INR', description: 'Digital Card', email: 'asha@example.com', contact: '9811111111', upi: false });
   const call = rpcCalls('place_order')[0];
   assert.equal(call.headers['x-nbr-secret'], 'w-secret');
   assert.equal(call.headers['x-nbr-ip'], '203.0.113.5');
   assert.deepEqual(JSON.parse(call.body), { payload: payload() });
   const rz = JSON.parse(f.calls.find(c => c.url === 'https://api.razorpay.com/v1/orders').body);
-  assert.deepEqual([rz.amount, rz.currency, rz.receipt], [19900, 'INR', 'NBR-AB12CD']);
+  assert.deepEqual([rz.amount, rz.currency, rz.receipt], [20400, 'INR', 'NBR-AB12CD']);
   await c.done();
   const m = mails();
   assert.equal(m.length, 1, 'online payment: only the admin email (the customer gets one when paid)');
@@ -345,7 +346,7 @@ test('unknown API routes are 404 in native mode', async () => {
 // ---------- app settings ----------
 test('/app/config.js: Linkcardly settings in native mode, NexBizRise ones in proxy mode', async () => {
   const read = async e => { const t = await (await worker.fetch(request('/app/config.js'), e, ctx())).text(); const w = {}; new Function('window', t)(w); return w.LC_CONFIG; };
-  assert.deepEqual(await read(env({ SUPABASE_ANON_KEY: 'sb_publishable_new', TURNSTILE_SITE_KEY: '0xNEW' })), { native: true, supabaseUrl: 'https://db.test', supabaseKey: 'sb_publishable_new', turnstileSiteKey: '0xNEW', payments: false, orderUrl: '/create' });
+  assert.deepEqual(await read(env({ SUPABASE_ANON_KEY: 'sb_publishable_new', TURNSTILE_SITE_KEY: '0xNEW' })), { native: true, supabaseUrl: 'https://db.test', supabaseKey: 'sb_publishable_new', turnstileSiteKey: '0xNEW', payments: false, pay: { upi: false, card: false, feePct: 2.36 }, orderUrl: '/create' });
   assert.equal((await read(env({ RAZORPAY_KEY_ID: 'rzp', RAZORPAY_KEY_SECRET: 'x' }))).payments, true, 'payments on once a provider has keys');
   const p = await read(env({ MODE: 'proxy' }));
   assert.equal(p.native, false);

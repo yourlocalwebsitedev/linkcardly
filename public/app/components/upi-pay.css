@@ -1,0 +1,38 @@
+/* UpiPay (upi-pay.js). Mobile first (390 × 844): amount, UPI ID and "Open UPI app" fit the first screen.
+   Brand tokens from /assets/css/tokens.css, same panels as OrderDone (order-done.css). */
+.lcu{width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px;text-align:left;font-family:var(--font-b,Figtree,system-ui,sans-serif);color:var(--lc-text,#201e1d)}
+.lcu *{box-sizing:border-box}
+:where(.lcu button){font-family:inherit;margin:0;cursor:pointer}
+.lcu :is(a,button,input):focus-visible{outline:2px solid var(--lc-text);outline-offset:3px}
+.lcu__panel{padding:16px;border-radius:24px;background:var(--n100);border:1px solid var(--n300);display:flex;flex-direction:column;gap:14px}
+.lcu__panel--sand{background:var(--lc-surface);border-color:transparent;gap:10px}
+.lcu__panel--ok{flex-direction:row;align-items:flex-start;gap:12px;background:var(--lc-surface);border-color:transparent}
+.lcu__col{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lcu__kicker{font-size:11.5px;font-weight:800;letter-spacing:.16em;color:var(--lc-accent)}
+.lcu__amount{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.lcu__sum{font:400 44px/1 var(--font-h,Georgia,serif);letter-spacing:-.01em;color:var(--lc-text)}
+.lcu__free{font-size:13px;font-weight:600;color:var(--lc-success)}
+.lcu__to{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:16px;background:var(--lc-white);border:1px solid var(--n300)}
+.lcu__sub{font-size:13.5px;line-height:1.45;color:var(--n700);text-wrap:pretty}
+.lcu__vpa{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.lcu__pill{flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--n300);background:var(--lc-white);color:var(--lc-text);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.lcu__pill:hover{border-color:var(--lc-accent)}
+.lcu__main,.lcu__dark{min-height:56px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:700;text-decoration:none}
+.lcu__main{background:var(--lc-accent);color:var(--lc-white);box-shadow:0 8px 20px -10px rgba(176,78,34,.6)}
+.lcu__main:hover{background:var(--lc-accent-hover);color:var(--lc-white)}
+.lcu__dark{border:0;background:var(--lc-ink);color:var(--lc-white)}
+.lcu__dark:disabled{opacity:.6;cursor:default}
+.lcu__scan{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.lcu__qr{width:200px;height:200px;padding:12px;border-radius:18px;background:#fff;border:1px solid var(--a300)}
+.lcu__qr svg{width:100%;height:100%;display:block}
+.lcu__scan--small .lcu__qr{width:132px;height:132px;padding:8px}
+.lcu__scan-txt{max-width:300px;font-size:13.5px;line-height:1.45;color:var(--n700)}
+.lcu__h2{font-size:16px;font-weight:700;color:var(--lc-text)}
+.lcu__input{height:56px;width:100%;padding:0 16px;border-radius:14px;border:1px solid var(--n400);background:var(--lc-white);color:var(--lc-text);font:inherit;font-size:20px;font-weight:700;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.lcu__input:focus{outline:none;border-color:var(--lc-accent);box-shadow:0 0 0 4px rgba(176,78,34,.14)}
+.lcu__input[aria-invalid="true"]{border-color:var(--lc-danger)}
+.lcu__err{font-size:13.5px;font-weight:600;color:var(--lc-danger)}
+.lcu__ok-ic{flex:none;width:40px;height:40px;border-radius:50%;background:var(--lc-success);color:var(--lc-white);display:grid;place-items:center}
+.lcu__switch{align-self:center;min-height:44px;padding:0 12px;border:0;background:transparent;color:var(--lc-text);font-size:14.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;gap:8px;text-align:left}
+.lcu__switch:hover{color:var(--lc-accent)}
+@media (min-width:641px){.lcu__panel{padding:20px}.lcu__sum{font-size:52px}}

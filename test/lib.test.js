@@ -33,7 +33,7 @@ test('handles: every reserved word of 3+ chars is blocked', () => {
 
 test('handles: every routed path segment, including each page in site/pages.js, is reserved', async () => {
   const { STATIC_PAGES, STATIC_PREFIXES, ORDER_ALIASES } = await import('../src/config.js');
-  for (const p of [...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES, 'create', 'api', 'health', 'e', 'c']) if (p) assert.ok(RESERVED.has(p), p);
+  for (const p of [...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES, 'create', 'api', 'health', 'e', 'c', 'r']) if (p) assert.ok(RESERVED.has(p), p);
   const { pages } = await import('../site/pages.js');
   for (const p of pages) if (p.path !== '/404') assert.ok(STATIC_PAGES.has(p.path.slice(1)), p.path);
 });
@@ -149,16 +149,21 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   assert.equal(run(''), '');
 });
 
-test('order app, phone Preview step: uses the CardStyleControls component; desktop keeps its panel', async () => {
+test('order app, phone Preview step: swipe between designs, colour rail for colours; desktop keeps its panel', async () => {
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
-  // the phone controls sit in the fixed bar (pv.fixedBar); the desktop copy (pv.desktop) has no Next button of its own
-  const use = html.match(/<sc-if value="\{\{ pv\.fixedBar \}\}"[^>]*><x-import component-from-global-scope="LcCardStyleControls"[^>]*>/);
-  assert.ok(use, 'phone preview renders the component');
-  for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'open="{{ scs.open }}"', 'on-toggle="{{ scs.toggle }}"', 'on-select="{{ scs.select }}"', 'on-next="{{ next }}"', 'next-label="{{ pv.nextText }}"']) assert.ok(use[0].includes(a), a);
+  // Phone (pv.fixedBar): swipe left/right changes the design (swipe-guide.js shows the gesture once); the colour strip picks its colour.
+  const use = html.match(/<sc-if value="\{\{ pv\.fixedBar \}\}"[^>]*><x-import component-from-global-scope="LcCardColourRail"[^>]*>/);
+  assert.ok(use, 'phone preview renders the colour rail');
+  for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'on-select="{{ scs.select }}"']) assert.ok(use[0].includes(a), a);
+  assert.match(html, /<sc-if value="\{\{ sw\.guide \}\}"[^>]*><x-import component-from-global-scope="LcSwipeGuide" from="\/app\/components\/swipe-guide\.js"/);
   // Props must not collide with the runtime's host-style names or its style-* pseudo-class prefix.
   for (const [, name] of use[0].matchAll(/\s([a-z-]+)="/g)) assert.ok(!/^(position|left|right|top|bottom|inset|width|height|z-index|transform|style-.*)$/.test(name), name);
-  assert.match(html, /<sc-if value="\{\{ pv\.desktop \}\}"[^>]*><x-import component-from-global-scope="LcCardStyleControls"/, 'desktop keeps its own style picker');
+  // Desktop: the picker is a section of the form (LcCardStylePanel), never laid over the preview, and the plan step has no preview.
+  assert.ok(!/<sc-if value="\{\{ pv\.desktop \}\}"[^>]*><x-import component-from-global-scope="LcCard(StyleControls|ColourRail)"/.test(html), 'nothing floats over the desktop preview');
+  assert.match(html, /<sc-if value="\{\{ showStylePanel \}\}"[^>]*><x-import component-from-global-scope="LcCardStylePanel" from="\/app\/components\/card-style-controls\.js" options="\{\{ scs\.options \}\}" value="\{\{ scs\.value \}\}" on-select="\{\{ scs\.select \}\}"/);
+  assert.match(html, /showStylePanel: S\.vw >= 960 && S\.step === 2/);
+  assert.match(html, /display: S\.step === 1 && !S\.editToken \? 'none' : 'flex'/, 'desktop plan step: plans only');
   assert.ok(!/pillBlocks|swPillBd|handleTouchStart|lc-rise/.test(html), 'no phone-only leftovers in the shared bar');
 });
 
@@ -239,6 +244,49 @@ test('CardStyleControls: colour variants collapse into one tile; CardColourRail 
   assert.equal(render(el(win.LcCardColourRail, { options, value: 'lux-marble' })), null, 'no strip for styles without colours');
 });
 
+test('CardStylePanel: every design of the collection at once; colours of the selected design with names', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const src = await readFile(new URL('../public/app/components/card-style-controls.js', import.meta.url), 'utf8');
+  const el = (type, props, ...children) => ({ type, props: props || {}, children: children.flat() });
+  const React = { createElement: el, useRef: v => ({ current: v ?? null }), useEffect: () => {}, useState: v => [v, () => {}] };
+  const win = { React };
+  runInNewContext(src, { window: win, document: { getElementById: () => ({}), head: { appendChild() {} }, createElement: () => ({}) }, URL, Set });
+  const render = node => { if (!node || typeof node !== 'object') return node; if (typeof node.type === 'function') return render(node.type({ ...node.props, children: node.children })); return { ...node, children: node.children.map(render) }; };
+  const all = (n, out = []) => { if (n && typeof n === 'object') { out.push(n); n.children.forEach(c => all(c, out)); } return out; };
+  const fam = { id: 'poster', name: 'Poster' }, picked = [];
+  const options = [
+    { id: 're-poster', name: 'Skyline', group: 'Real Estate', family: fam, thumb: { bg: '#14213D' } },
+    { id: 're-poster-sage', name: 'Sage', group: 'Real Estate', family: fam, thumb: { bg: '#2f3d33' } },
+    { id: 're-sign', name: 'Yard Sign', group: 'Real Estate', thumb: { bg: '#F4F1EC' } },
+    { id: 'lux', name: 'Marble', group: 'Luxury', thumb: { bg: '#f7f6f3' } }];
+  const nodes = all(render(el(win.LcCardStylePanel, { options, value: 're-poster-sage', onSelect: id => picked.push(id) })));
+  const cls = c => nodes.filter(n => String(n.props.className || '').split(' ').includes(c));
+  assert.deepEqual(cls('lcp__tab').map(t => t.children[0]), ['Real Estate', 'Luxury']);
+  assert.deepEqual(cls('lcp__opt').map(o => o.props['data-id']), ['re-poster-sage', 're-sign'], 'one tile per design, this collection only');
+  assert.deepEqual(cls('lcp__opt').map(o => o.props['aria-checked']), ['true', 'false']);
+  assert.deepEqual(cls('lcp__swatch').map(o => o.props['data-id']), ['re-poster', 're-poster-sage'], 'colours listed with the panel');
+  cls('lcp__opt')[1].props.onClick(); cls('lcp__swatch')[0].props.onClick();
+  assert.deepEqual(picked, ['re-sign', 're-poster']);
+  const solo = all(render(el(win.LcCardStylePanel, { options, value: 're-sign', onSelect() {} })));
+  assert.ok(!solo.some(n => n.props.className === 'lcp__colours'), 'no colour row for a single-colour design');
+});
+
+test('order app: ?colour= keeps the chosen design by opening the business that owns it', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
+  assert.match(html, /const qb = VISIBLE_BIZ\.find\(b => b\.colls\.includes\(collOf\(qc\)\)\)/);
+  assert.ok(!/profession: STYLE_BY_ID\[qc\]\.layout === 'estate' \? 'Real Estate'/.test(html), 'estate styles of other businesses are not sent to Real Estate');
+});
+
+test('card page: a business CTA without a booking link opens the request form', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../public/app/card.html', import.meta.url), 'utf8');
+  assert.ok(!/<a href="\{\{ ctaHref \}\}" target="_blank"/.test(html), 'every CTA goes through onCta');
+  assert.match(html, /hasBook: !!\(bookU \|\| \(d\.cta && d\.cta\.url\) \|\| bcfg\.cta\)/);
+  assert.match(html, /this\.openLead\(e, ctaText, \(bcfg\.lead \|\| \[\]\)\[0\] \|\| ''\)/);
+});
+
 test('order app: Personal colours are one family; the phone preview shows the colour strip', async () => {
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
@@ -272,11 +320,14 @@ test('estate styles: one shared list, readable text, design families for the pic
   }
   // Ids already stored on customers' cards keep working.
   for (const id of ['re-poster', 're-sign', 're-list', 're-home', 're-poster-sage', 're-list-stone', 're-home-coast', 'hs-poster', 'hs-ticket', 'hs-list', 'hs-home-red', 'hs-poster-orange', 'hs-poster-blue', 'hs-list-green']) assert.ok(ids.has(id), id);
-  // Every family design has 2 to 4 colours.
+  // Every category groups its colours into designs, and every design offers exactly three colours to new orders.
+  const { retired = [] } = win.LC_ESTATE;
+  for (const k of Object.keys(rows)) assert.ok(families[k], k + ' has design families');
   for (const [k, fam] of Object.entries(families)) for (const mode of Object.keys(fam)) {
-    const n = rows[k].filter(r => r[2] === mode).length;
-    assert.ok(n >= 2 && n <= 4, k + ' ' + mode + ': ' + n + ' colours');
+    const n = rows[k].filter(r => r[2] === mode && !retired.includes(r[0])).length;
+    assert.equal(n, 3, k + ' ' + mode + ': ' + n + ' colours');
   }
+  for (const id of retired) assert.ok(Object.values(rows).flat().some(r => r[0] === id), 'retired ' + id + ' still renders');
 });
 
 test('scene styles (Personal: Summit, Tide): shared list, readable text, families, art and QR', async () => {
@@ -388,4 +439,12 @@ test('card page preview only listens to its own order page', async () => {
   assert.match(card, /bookingUrl: safeUrl\(x\.booking_url\)/);
   assert.doesNotMatch(order, /postMessage\(\{ type: 'nbr-preview', row: r \}, '\*'\)/);
   assert.match(order, /localStorage\.setItem\('nbr-pay', JSON\.stringify\(\{ \.\.\.base, tok: '' \}\)\)/);
+});
+
+test('products: names for checkout and emails; old orders fall back to their plan', async () => {
+  const { productName } = await import('../src/lib/products.js');
+  assert.equal(productName({ product: 'nfc_custom' }), 'NFC Card · Custom');
+  assert.equal(productName({ product: 'digital', plan: 'basic' }), 'Digital Card');
+  assert.equal(productName({ plan: 'motion' }), 'Motion Card');
+  assert.equal(productName(null), 'Digital Card');
 });
