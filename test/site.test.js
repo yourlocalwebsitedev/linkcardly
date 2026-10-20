@@ -94,7 +94,8 @@ test('design tokens: one source (tokens.css) loaded before site.css and the app 
 });
 
 test('every page uses the v13 sheet header and no inline layout styles', async () => {
-  for (const p of pages) {
+  // /partner is a private dashboard (admin-partners.css), not a marketing page with a sheet header.
+  for (const p of pages.filter(p => p.name !== 'partner')) {
     const html = await read(p.out), main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
     assert.match(main, /<section class="sheet[ "]/, p.name);
     assert.ok(!/style="/.test(main), `${p.name}: inline style in page body`);
@@ -104,9 +105,10 @@ test('every page uses the v13 sheet header and no inline layout styles', async (
 test('no previous-design leftovers: gold theme, old fonts, old stylesheets', async () => {
   for (const p of pages) {
     const html = await read(p.out);
-    assert.ok(!/gold|Caprasimo|Figtree|Bricolage|theme\.css|icons\.js/i.test(html), p.name);
+    // The old gold theme, not the word: NFC Custom is a gold metal card.
+    assert.ok(!/gold\.css|skin-gold|--gold|Caprasimo|Figtree|Bricolage|theme\.css|icons\.js/i.test(html), p.name);
   }
-  for (const f of ['assets/css/site.css', 'assets/css/tokens.css', 'assets/js/site.js', 'assets/js/designs.js', 'app/skin-v13.css']) assert.ok(!/gold|#ECC48F|Caprasimo/i.test((await read(f)).replace(/--gold:/g, '')), f);
+  for (const f of ['assets/css/site.css', 'assets/css/tokens.css', 'assets/js/site.js', 'assets/js/designs.js', 'app/skin-v13.css']) assert.ok(!/gold\.css|skin-gold|#ECC48F|Caprasimo/i.test((await read(f)).replace(/--gold:/g, '')), f);
   for (const f of ['assets/css/gold.css', 'assets/css/theme.css', 'app/skin-gold.css', 'app/skin.css', 'app/skin-paper.css', 'app/skin-warm.css', 'app/brand.js']) await assert.rejects(read(f), f);
 });
 
@@ -135,11 +137,13 @@ test('designs shows the real card page in preview mode, fed by the shared style 
   assert.ok(!/#[0-9a-f]{6}/i.test(js), 'designs.js has no colours of its own');
 });
 
-test('design renders exist for every shared estate and scene style', async () => {
+// The gallery and marketing pages show the first colour of each layout; the order flow renders every colour live.
+test('design renders exist for the first colour of each layout and every scene style', async () => {
   const { runInNewContext } = await import('node:vm');
   const ctx = { window: {} };
   runInNewContext(await read('app/estate-styles.js'), ctx); runInNewContext(await read('app/scene-styles.js'), ctx);
-  const ids = [...Object.values(ctx.window.LC_ESTATE.rows).flat().map(r => r[0]), ...ctx.window.LC_SCENES.styles.map(s => s.id)];
+  const first = rows => rows.filter(([, , mode], i) => rows.findIndex(r => r[2] === mode) === i).map(r => r[0]);
+  const ids = [...Object.values(ctx.window.LC_ESTATE.rows).flatMap(first), ...ctx.window.LC_SCENES.styles.map(s => s.id)];
   for (const id of ids) await read('assets/img/designs/' + id + '.webp');
 });
 

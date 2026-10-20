@@ -149,13 +149,14 @@ test('order app uses the handle claimed on the home page (/create?h=) when it is
   assert.equal(run(''), '');
 });
 
-test('order app, phone Preview step: uses the CardStyleControls component; desktop keeps its panel', async () => {
+test('order app, phone Preview step: swipe between designs, colour rail for colours; desktop keeps its panel', async () => {
   const { readFile } = await import('node:fs/promises');
   const html = await readFile(new URL('../public/app/order.html', import.meta.url), 'utf8');
-  // the phone controls sit in the fixed bar (pv.fixedBar); the desktop copy (pv.desktop) has no Next button of its own
-  const use = html.match(/<sc-if value="\{\{ pv\.fixedBar \}\}"[^>]*><x-import component-from-global-scope="LcCardStyleControls"[^>]*>/);
-  assert.ok(use, 'phone preview renders the component');
-  for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'open="{{ scs.open }}"', 'on-toggle="{{ scs.toggle }}"', 'on-select="{{ scs.select }}"', 'on-next="{{ next }}"', 'next-label="{{ pv.nextText }}"']) assert.ok(use[0].includes(a), a);
+  // Phone (pv.fixedBar): swipe left/right changes the design (swipe-guide.js shows the gesture once); the colour strip picks its colour.
+  const use = html.match(/<sc-if value="\{\{ pv\.fixedBar \}\}"[^>]*><x-import component-from-global-scope="LcCardColourRail"[^>]*>/);
+  assert.ok(use, 'phone preview renders the colour rail');
+  for (const a of ['options="{{ scs.options }}"', 'value="{{ scs.value }}"', 'on-select="{{ scs.select }}"']) assert.ok(use[0].includes(a), a);
+  assert.match(html, /<sc-if value="\{\{ sw\.guide \}\}"[^>]*><x-import component-from-global-scope="LcSwipeGuide" from="\/app\/components\/swipe-guide\.js"/);
   // Props must not collide with the runtime's host-style names or its style-* pseudo-class prefix.
   for (const [, name] of use[0].matchAll(/\s([a-z-]+)="/g)) assert.ok(!/^(position|left|right|top|bottom|inset|width|height|z-index|transform|style-.*)$/.test(name), name);
   // Desktop: the picker is a section of the form (LcCardStylePanel), never laid over the preview, and the plan step has no preview.
