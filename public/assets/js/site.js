@@ -83,18 +83,6 @@
     }
   }
 
-  // hero slideshow (NFC page): photos crossfade every 5 s; dots or a swipe on the phone photo pick one; no autoplay with reduced motion
-  $$('[data-slides]').forEach(h => {
-    const sets = [$$('.hero-photo img', h), $$('.hero-photo-m img', h)], dots = $$('[data-slide-dots] button', h); if (dots.length < 2) return;
-    let cur = 0, auto, x0 = null;
-    const show = i => { cur = (i + dots.length) % dots.length; sets.forEach(s => s.forEach((im, k) => im.classList.toggle('is-on', k === cur))); dots.forEach((d, k) => d.setAttribute('aria-current', String(k === cur))); };
-    const start = () => { clearInterval(auto); if (!reduce) auto = setInterval(() => show(cur + 1), 5000); };
-    dots.forEach((d, k) => d.addEventListener('click', () => { show(k); start(); }));
-    const m = $('.hero-photo-m', h);
-    if (m) { m.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true }); m.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) { show(cur + (dx < 0 ? 1 : -1)); start(); } }); }
-    start();
-  });
-
   // trades slider (home): swipe or scroll-snap; arrows, dots and a slow autoplay that pauses on hover, focus or touch
   $$('[data-slider]').forEach(sl => {
     const track = $('.trades', sl), cards = $$('.trade', track), dots = $('[data-dots]', sl); if (!cards.length) return;
@@ -150,6 +138,21 @@
   $$('[data-topics]').forEach(g => g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$('button', g).forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
   // NFC page: "Order this card" preselects that card in the order form
   $$('a[data-product]').forEach(a => a.addEventListener('click', () => { const s = $('[data-product-select]'); if (s) s.value = a.dataset.product; }));
+  // After sending: the form clears and steps aside for a confirmation (focused, so it's announced and in view);
+  // "Send another" brings back the empty form. Nothing stays stuck until a reload.
+  const showDone = (form, first, ref) => {
+    const d = form.parentElement.querySelector('[data-contact-done]'), rf = $('[data-ref]', d);
+    form.reset(); $$('[data-topics]', form).forEach(g => $$('button', g).forEach((x, i) => x.setAttribute('aria-pressed', String(i === 0))));
+    $('[data-contact-msg]', form).textContent = ''; window.turnstile && turnstile.reset();
+    $('[data-cname]', d).textContent = first;
+    if (rf) { rf.textContent = ref || ''; rf.parentElement.hidden = !ref; }
+    form.hidden = true; d.hidden = false; d.focus({ preventScroll: true });
+    const t = d.getBoundingClientRect().top; if (t < 80 || t > innerHeight - 120) scrollTo({ top: scrollY + t - 120, behavior: reduce ? 'auto' : 'smooth' });
+  };
+  $$('[data-contact-again]').forEach(b => b.addEventListener('click', () => {
+    const d = b.closest('[data-contact-done]'), form = d.parentElement.querySelector('form[data-contact]');
+    d.hidden = true; form.hidden = false; const f = form.querySelector('input:not([type=hidden])'); f && f.focus();
+  }));
   $$('form[data-contact]').forEach(form => form.addEventListener('submit', async e => {
     e.preventDefault();
     const msg = $('[data-contact-msg]', form), fd = Object.fromEntries(new FormData(form));
@@ -163,7 +166,7 @@
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Sending…';
     try {
       const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (r.ok) { const j = await r.json().catch(() => ({})); form.hidden = true; const d = form.parentElement.querySelector('[data-contact-done]'); d.hidden = false; $('[data-cname]', d).textContent = body.name.split(' ')[0]; const rf = $('[data-ref]', d); if (rf && j.ref) { rf.textContent = j.ref; rf.parentElement.hidden = false; } return; }
+      if (r.ok) { const j = await r.json().catch(() => ({})); showDone(form, body.name.split(' ')[0], j.ref); btn.disabled = false; return; }
       const j = await r.json().catch(() => ({}));
       msg.textContent = j.error || 'Something went wrong. Please try again, or email hello@linkcardly.com.';
     } catch (_) { msg.textContent = 'Could not send. Check your connection and try again.'; }

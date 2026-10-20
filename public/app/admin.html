@@ -202,6 +202,11 @@ button{white-space:nowrap;}
         </div>
       </sc-if>
 
+      <!-- Linkcardly: partner programme (components/admin-partners.js) -->
+      <sc-if value="{{ tabPartners }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="LcAdminPartners" from="/app/components/admin-partners.js" sb="{{ sbClient }}" toast="{{ toastFn }}" hint-size="100%,640px"></x-import>
+      </sc-if>
+
       <sc-if value="{{ tabCoupons }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:6px;">
           <h1 style="margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-0.01em;font-size:40px;line-height:1.05;">Coupons</h1>
@@ -1077,8 +1082,8 @@ class Component extends DCLogic {
         isDfm: o.mode === 'dfm', hasCard: !!client, onOpen: () => client && this.editClient(client), hasNotes: !!o.notes, notes: 'Notes: ' + (o.notes || '') };
     });
     return {
-      tabs: [['clients', 'Clients', 0], ['orders', 'Orders', ocount('new')], ['leads', 'Leads', (S.leads || []).filter(l => l.status === 'new').length], ['coupons', 'Coupons', 0]].map(([id, label, n]) => { const on = S.tab === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', hasBadge: n > 0, badge: String(n) }; }),
-      tabClients: S.tab === 'clients', tabOrders: S.tab === 'orders', tabCoupons: S.tab === 'coupons', tabLeads: S.tab === 'leads',
+      tabs: [['clients', 'Clients', 0], ['orders', 'Orders', ocount('new')], ['leads', 'Leads', (S.leads || []).filter(l => l.status === 'new').length], ['coupons', 'Coupons', 0], ['partners', 'Partners', 0]].map(([id, label, n]) => { const on = S.tab === id; return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id }), bg: on ? 'var(--surface-hi)' : 'transparent', ink: on ? 'var(--ink)' : 'var(--muted)', hasBadge: n > 0, badge: String(n) }; }),
+      tabClients: S.tab === 'clients', tabOrders: S.tab === 'orders', tabCoupons: S.tab === 'coupons', tabLeads: S.tab === 'leads', tabPartners: S.tab === 'partners', sbClient: this.sb, toastFn: m => this.toastMsg(m),
       leadsSummary: (S.leads || []).length + ' leads · ' + (S.leads || []).filter(l => l.status === 'new').length + ' new', leadsEmpty: !(S.leads || []).length, refreshLeads: () => this.loadLeads(),
       leadRows: (S.leads || []).map(l => { const c = S.clients.find(x => x.id === l.card_id); return { id: l.id, name: l.name, phone: l.phone, telHref: 'tel:' + l.phone, waHref: 'https://wa.me/' + String(l.phone || '').replace(/\D/g, ''), email: l.email || '', hasEmail: !!l.email, mailHref: 'mailto:' + (l.email || ''),
         topic: l.topic || '', hasTopic: !!l.topic, message: l.message || '', hasMessage: !!l.message, card: c ? this.nameOf(c) : l.slug, when: new Date(l.created_at).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }),

@@ -36,5 +36,6 @@
     return { id: id, name: p.name, layout: 'scene', scene: p.scene, family: { id: 'scene-' + p.scene, name: FAMILIES[p.scene] },
       bg: p.bg, ink: p.ink, accent: p.accent, on: p.on, ring: p.ring, sky: p.sky, sun: p.sun, layers: p.layers, hl: p.hl };
   });
-  window.LC_SCENES = { styles: styles, families: FAMILIES, svg: svg, thumb: thumb };
+  // Each design shows three colours; tide-sunrise is kept for saved cards but hidden from new orders.
+  window.LC_SCENES = { retired: ['tide-sunrise'], styles: styles, families: FAMILIES, svg: svg, thumb: thumb };
 })();

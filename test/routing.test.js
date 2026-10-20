@@ -238,3 +238,85 @@ test('/admin serves the admin page: report-only app CSP, never indexed or cached
   assert.doesNotMatch(r.headers.get('content-security-policy-report-only'), /esm\.sh/);
   assert.equal((await worker.fetch(request('/admin/x'), env())).status, 404);
 });
+
+test('partner link /r/<code>: counts the visit, remembers the code 30 days, opens the order page with it', async () => {
+  let called = null;
+  f = stubFetch((url, req, body) => { if (url.includes('/rpc/partner_click')) { called = JSON.parse(body); return json({ ok: true, code: 'RIYA' }); } });
+  const r = await worker.fetch(raw('https://linkcardly.com/r/riya'), env());
+  assert.equal(r.status, 302);
+  assert.equal(r.headers.get('Location'), '/create?partner=RIYA');
+  assert.deepEqual(called, { p_code: 'RIYA' });
+  assert.match(r.headers.get('Set-Cookie'), /^lc_partner=RIYA; Max-Age=2592000; Path=\/; Secure; SameSite=Lax$/);
+});
+
+test('partner link: unknown or paused code, bad code and proxy mode just open the order page, without a cookie', async () => {
+  f = stubFetch(url => url.includes('/rpc/partner_click') ? json({ ok: false }) : undefined);
+  for (const [path, e] of [['/r/nobody', env()], ['/r/a!', env()], ['/r/riya', env({ MODE: 'proxy' })]]) {
+    const r = await worker.fetch(raw('https://linkcardly.com' + path), e);
+    assert.equal(r.status, 302, path); assert.equal(r.headers.get('Location'), '/create'); assert.equal(r.headers.get('Set-Cookie'), null);
+  }
+  f.restore();
+  f = stubFetch(() => json({}, 500));
+  const r = await worker.fetch(raw('https://linkcardly.com/r/riya'), env());
+  assert.equal(r.headers.get('Location'), '/create', 'a database error never blocks the visitor');
+});
+
+test('partner page API: same origin only, checks the key format, passes key + PIN to the database', async () => {
+  const post = (path, body, origin = 'https://linkcardly.com') => worker.fetch(new Request('https://linkcardly.com/api/partner/' + path, { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), env());
+  const key = 'a'.repeat(40);
+  let sent = null;
+  f = stubFetch((url, req, body) => { if (url.includes('/rpc/partner_me_token')) { sent = JSON.parse(body); return json({ ok: true, partner: { code: 'RIYA' } }); } if (url.includes('/rpc/partner_set_payout_token')) { sent = JSON.parse(body); return json({ ok: true }); } });
+  assert.equal((await post('me', { token: key, pin: '2233' }, 'https://evil.example')).status, 403);
+  assert.equal((await post('me', { token: 'nope', pin: '2233' })).status, 400);
+  assert.equal((await (await post('me', { token: key, pin: '12' })).json()).error, 'wrong pin');
+  const r = await post('me', { token: key, pin: '2233' });
+  assert.equal(r.status, 200); assert.equal(r.headers.get('Cache-Control'), 'no-store');
+  assert.deepEqual(sent, { p_token: key, p_pin: '2233' });
+  await post('payout', { token: key, pin: '2233', upi_id: ' riya@okicici ' });
+  assert.deepEqual(sent, { p_token: key, p_pin: '2233', p: { upi_id: 'riya@okicici', pan: '', pan_name: '' } });
+});
+
+// ---------- partner programme: Worker leak checks (L18–L25) ----------
+test('L18 partner API answers POST only', async () => {
+  const r = await worker.fetch(new Request('https://linkcardly.com/api/partner/me', { headers: { Origin: 'https://linkcardly.com' } }), env());
+  assert.equal(r.status, 404);
+});
+test('L19 the partner key is never written to the logs', async () => {
+  const key = 'b'.repeat(40), seen = [], orig = [console.log, console.warn, console.error];
+  console.log = console.warn = console.error = (...a) => seen.push(a.join(' '));
+  f = stubFetch(url => url.includes('/rpc/') ? json({ ok: true, partner: { code: 'X' } }) : undefined);
+  try { await worker.fetch(new Request('https://linkcardly.com/api/partner/me', { method: 'POST', headers: { Origin: 'https://linkcardly.com', 'Content-Type': 'application/json' }, body: JSON.stringify({ token: key, pin: '1234' }) }), env()); }
+  finally { [console.log, console.warn, console.error] = orig; }
+  assert.ok(!seen.join('\n').includes(key)); assert.ok(!seen.join('\n').includes('1234'));
+});
+test('L20 the partner page is never cached or indexed', async () => {
+  const r = await worker.fetch(raw('https://linkcardly.com/partner'), env());
+  assert.equal(r.headers.get('Cache-Control'), 'no-store'); assert.match(r.headers.get('X-Robots-Tag') || '', /noindex/);
+});
+test('L21 partner links are never cached (each visit is counted)', async () => {
+  f = stubFetch(url => url.includes('/rpc/partner_click') ? json({ ok: true, code: 'RIYA' }) : undefined);
+  const r = await worker.fetch(raw('https://linkcardly.com/r/riya'), env());
+  assert.equal(r.headers.get('Cache-Control'), 'no-store');
+});
+test('L22 an over-long or odd partner code never reaches the database', async () => {
+  f = stubFetch(() => json({ ok: true }));
+  for (const c of ['x'.repeat(40), 'ri%27ya', 'abc']) await worker.fetch(raw('https://linkcardly.com/r/' + c), env());
+  assert.equal(f.calls.filter(x => x.url.includes('/rpc/')).length, 0);
+});
+test('L23 partner payout API refuses other sites', async () => {
+  const r = await worker.fetch(new Request('https://linkcardly.com/api/partner/payout', { method: 'POST', headers: { Origin: 'https://evil.example', 'Content-Type': 'application/json' }, body: JSON.stringify({ token: 'a'.repeat(40), pin: '1234', upi_id: 'x@ok' }) }), env());
+  assert.equal(r.status, 403);
+});
+test('L24 database errors reach the partner page as a generic message, never table or function names', async () => {
+  f = stubFetch(url => url.includes('/rpc/') ? json({ code: '42P01', message: 'relation partner.partners does not exist' }, 400) : undefined);
+  const r = await worker.fetch(new Request('https://linkcardly.com/api/partner/me', { method: 'POST', headers: { Origin: 'https://linkcardly.com', 'Content-Type': 'application/json' }, body: JSON.stringify({ token: 'a'.repeat(40), pin: '1234' }) }), env());
+  const s = await r.text(); assert.ok(!/partner\.partners|relation/.test(s), s);
+});
+test('L25 the Worker secret goes to the database but never back to the browser', async () => {
+  f = stubFetch(url => url.includes('/rpc/') ? json({ ok: true, partner: { code: 'X' } }) : undefined);
+  const e = env({ WORKER_SECRET: 's'.repeat(32) });
+  const r = await worker.fetch(new Request('https://linkcardly.com/api/partner/me', { method: 'POST', headers: { Origin: 'https://linkcardly.com', 'Content-Type': 'application/json' }, body: JSON.stringify({ token: 'a'.repeat(40), pin: '1234' }) }), e);
+  const call = f.calls.find(x => x.url.includes('/rpc/partner_me_token'));
+  assert.equal(call.headers['x-nbr-secret'], 's'.repeat(32)); assert.ok(!(await r.text()).includes('s'.repeat(32)));
+  for (const [k, v] of r.headers) assert.ok(!String(v).includes('s'.repeat(32)), k);
+});

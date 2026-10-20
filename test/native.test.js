@@ -136,7 +136,7 @@ test('order (unpaid): sent with the worker secret and real IP; edit token withhe
   assert.equal(r.status, 200);
   const out = await r.json();
   assert.equal(out.edit_token, undefined, 'unpaid orders never get the edit link back');
-  assert.deepEqual(out.pay, { provider: 'razorpay', key: 'rzp_test_1', order_id: 'order_R1', amount: 19900, currency: 'INR', description: 'Digital Card · 1 year', email: 'asha@example.com', contact: '9811111111' });
+  assert.deepEqual(out.pay, { provider: 'razorpay', key: 'rzp_test_1', order_id: 'order_R1', amount: 19900, currency: 'INR', description: 'Digital Card', email: 'asha@example.com', contact: '9811111111' });
   const call = rpcCalls('place_order')[0];
   assert.equal(call.headers['x-nbr-secret'], 'w-secret');
   assert.equal(call.headers['x-nbr-ip'], '203.0.113.5');

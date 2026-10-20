@@ -12,6 +12,21 @@ export const categories = [
   { id: 'cc', name: 'Corporate & Consultants', sub: 'Sales, founders, freelancers', style: 'cc-poster', theme: 'folio', person: 'Priya Nair', role: 'Head of Sales · Northwind', slug: 'priyanair', photo: '/assets/img/samples/people/priyanair.jpg', pitch: 'A calm, polished card for first meetings. Your booking link sits right next to Save contact.' }
 ];
 
+// Sample people for the /designs gallery: each design shows the next person in this list, so neighbouring
+// designs never share a face. Photos in assets/img/samples/people/ (Unsplash, see its README). Five women, five men.
+export const people = [
+  { name: 'Ananya Iyer', photo: '/assets/img/samples/people/ananyaiyer.jpg', y: 30 },
+  { name: 'Rohan Mehta', photo: '/assets/img/samples/people/rohanmehta.jpg', y: 28 },
+  { name: 'Kavya Reddy', photo: '/assets/img/samples/people/kavyareddy.jpg', y: 26 },
+  { name: 'Kabir Sharma', photo: '/assets/img/samples/people/kabirsharma.jpg', y: 30 },
+  { name: 'Sunita Desai', photo: '/assets/img/samples/people/sunitadesai.jpg', y: 28 },
+  { name: 'Aditya Rao', photo: '/assets/img/samples/people/adityarao.jpg', y: 28 },
+  { name: 'Isha Verma', photo: '/assets/img/samples/people/ishaverma.jpg', y: 26 },
+  { name: 'Vikram Singh', photo: '/assets/img/samples/people/vikramsingh.jpg', y: 26 },
+  { name: 'Neha Gupta', photo: '/assets/img/samples/people/nehagupta.jpg', y: 30 },
+  { name: 'Harish Patel', photo: '/assets/img/samples/people/harishpatel.jpg', y: 30 }
+];
+
 // Colourway key (src/lib/themes.js) → [display name, category, sample person, sample role].
 export const themeCopy = {
   spotlight: ['Spotlight', 'Personal', 'Arjun Mehta', 'Founder & CEO'],

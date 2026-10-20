@@ -1,0 +1,20 @@
+/* ShipAddress (ship-address.js). Delivery address on the Payment step of an NFC order. Brand tokens from
+   /assets/css/tokens.css; no colours of its own except white for the panel and inputs. Phone first: one column, two from 560px.
+   The fieldset is display:block with a floated legend, so the legend takes normal space in every browser (a flex fieldset
+   draws the legend outside the flow and the subtitle overlapped it). */
+.lcs-ship{display:block;margin:0;padding:20px;border:1px solid var(--lc-sand);border-radius:24px;background:#fff;box-shadow:0 12px 32px -20px rgba(17,16,15,.18);min-width:0;font-family:var(--font-b,system-ui,sans-serif);color:var(--lc-text)}
+.lcs-ship *{box-sizing:border-box}
+.lcs-ship__title{float:left;width:100%;padding:0;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--lc-text)}
+.lcs-ship__icon{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--a100);color:var(--a600)}
+.lcs-ship__sub{clear:both;margin:0;padding:8px 0 18px;font-size:13.5px;line-height:1.5;color:var(--n700)}
+.lcs-ship__grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.lcs-ship__field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lcs-ship__label{font-size:13.5px;font-weight:600;color:var(--n800,var(--lc-text))}
+.lcs-ship__input{width:100%;height:52px;padding:0 20px;border-radius:999px;border:1px solid var(--n300);background:#fff;color:var(--lc-text);font:500 16px var(--font-b,system-ui,sans-serif);transition:border-color .15s,box-shadow .15s}
+.lcs-ship__input:focus{outline:0;border-color:var(--a600);box-shadow:0 0 0 4px rgba(176,78,34,.14)}
+.lcs-ship__input:focus-visible{outline:2px solid var(--lc-text);outline-offset:2px}
+.lcs-ship__input.is-bad{border:2px solid var(--lc-danger)}
+select.lcs-ship__input{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236A5F52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 18px center}
+.lcs-ship__err{padding-left:20px;font-size:13px;font-weight:600;color:var(--lc-danger)}
+@media (min-width:560px){.lcs-ship{padding:24px}.lcs-ship__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lcs-ship__field--full{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){.lcs-ship__input{transition:none}}

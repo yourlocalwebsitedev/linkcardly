@@ -1,0 +1,48 @@
+/* LcAdminPartners (admin-partners.js): uses the admin page's theme variables (light and dark). */
+.lap{display:flex;flex-direction:column;gap:20px}
+.lap-head h1{margin:0;font-family:var(--font-h);font-weight:400;letter-spacing:-.01em;font-size:40px;line-height:1.05}
+.lap-head p,.lap-note{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}
+.lap-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lap-stat{display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),.08)}
+.lap-stat span{font-size:13px;font-weight:600;color:var(--ink-3)}
+.lap-stat b{font-family:var(--font-h);font-weight:400;font-size:30px;line-height:1.1}
+.lap-box{padding:20px;border-radius:16px;background:var(--surface);border:1px solid rgba(var(--fg-rgb),.08);display:flex;flex-direction:column;gap:14px}
+.lap-box h2{margin:0;font-size:17px;font-weight:800}
+.lap-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.lap-full{grid-column:1/-1}
+.lap-field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3)}
+.lap-input{height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(var(--fg-rgb),.16);background:var(--bg-2);color:var(--ink);font:14px var(--font-b);box-sizing:border-box;width:100%}
+.lap-input:focus-visible,.lap-btn:focus-visible,.lap-mini:focus-visible,.lap-scroll:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.lap-msg{height:auto;padding:12px;line-height:1.5;resize:vertical;font-size:14px}
+.lap-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.lap-btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border:0;border-radius:12px;background:var(--brand);color:var(--lc-white);font:700 15px var(--font-b);text-decoration:none;cursor:pointer}
+.lap-btn:hover{background:var(--brand-hi)}
+.lap-btn[disabled]{opacity:.6;cursor:default}
+.lap-btn--ghost{background:transparent;color:var(--ink-2);border:1px solid rgba(var(--fg-rgb),.14);font-weight:600}
+.lap-btn--ghost:hover{background:var(--surface-hi)}
+.lap-mini{white-space:nowrap;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(var(--fg-rgb),.14);background:transparent;color:var(--ink-2);font:600 13px var(--font-b);cursor:pointer}
+.lap-mini:hover{background:var(--surface-hi)}
+.lap-err{font-size:14px;font-weight:600;color:var(--danger,#B42318)}
+.lap-done{display:flex;flex-direction:column;gap:12px}
+.lap-done p{margin:0;font-size:15px}
+.lap-code{padding:10px 12px;border-radius:10px;background:var(--bg-2);font-size:13px;word-break:break-all}
+.lap-scroll{max-height:460px;overflow:auto;overscroll-behavior:contain;border-radius:12px;border:1px solid rgba(var(--fg-rgb),.08)}
+.lap-table{width:100%;border-collapse:collapse;font-size:14px}
+.lap-table th,.lap-table td{padding:12px 14px;text-align:left;vertical-align:middle;border-bottom:1px solid rgba(var(--fg-rgb),.08)}
+.lap-table thead th{position:sticky;top:0;background:var(--surface);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);z-index:1}
+.lap-table tbody th{font-weight:700}
+.lap-table small{display:block;margin-top:2px;font-size:12px;font-weight:500;color:var(--muted)}
+.lap-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lap-utr{width:170px;height:40px}
+.lap-pill{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface-hi);color:var(--ink-2)}
+.lap-pill--approved{background:rgba(var(--ok-rgb,46,125,79),.16);color:var(--ink)}
+@media (min-width:821px){.lap-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.lap-link{padding:0;border:0;background:none;color:var(--ink);font:inherit;font-weight:700;text-decoration:underline;text-decoration-color:var(--brand);text-underline-offset:3px;cursor:pointer;min-height:32px}
+.lap-link:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.lap-between{justify-content:space-between}
+.lap-share{display:grid;gap:16px;align-items:center}
+.lap-qr{width:160px;aspect-ratio:1;padding:8px;border-radius:12px;background:#fff;border:1px solid rgba(var(--fg-rgb),.08)}
+.lap-qr svg{display:block;width:100%;height:100%}
+@media (min-width:641px){.lap-share{grid-template-columns:160px minmax(0,1fr)}}
+@media (min-width:821px){.lap-stats5{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.lap [hidden]{display:none!important}

@@ -231,7 +231,7 @@ Unchanged from revision 1. Before release, provide documented test-mode evidence
 
 | Stage | Must prove |
 |---|---|
-| Quote | Server recomputes price, GST (IN 18 %) and coupon from plan, region and code, and ignores the `price`, `tax` and `total` the browser sends |
+| Quote | Server recomputes price, GST (off for now; IN 18 % once registered) and coupon from plan, region and code, and ignores the `price`, `tax` and `total` the browser sends |
 | Create | One order per idempotency key (`idem`); order and card created atomically |
 | Checkout | Stripe Checkout and Razorpay order created with the server amount and currency; customer-facing name is Linkcardly |
 | Confirm | Signature-verified **webhooks** are the source of truth (`checkout.session.completed`, Razorpay `payment.captured`); `pay/verify` checks the Razorpay HMAC |
@@ -258,7 +258,7 @@ Unchanged from revision 1. Before release, provide documented test-mode evidence
 | 11 | Self-edit through private link | ❌ | ⚠️ | Link kept and hardened; edit flow untested |
 | 12 | Admin | — | Untested | NexBizRise |
 | 13 | Marketing pages | ✅ | ✅ | Home crash fixed |
-| 14 | Real prices | ⚠️ | ⚠️ | Order app: ₹799/₹1,799 and $49/$79. Confirm they're final |
+| 14 | Real prices | ⚠️ | ⚠️ | ₹799 / ₹1,299 and $49 / $79 (2026-10), the same in the order app, card page, marketing pages and database |
 | 15 | Legal pages | ❌ | ⚠️ | Draft text; sign-off pending (DEF-10) |
 | 16 | `card.nexbizrise.com` 301 to linkcardly.com | ❌ | ❌ | Deliberately off until native (README cutover) |
 | 17 | Old cards migrated with the same handles | ❌ | ❌ | Schema ready (0002); script and rehearsal pending |

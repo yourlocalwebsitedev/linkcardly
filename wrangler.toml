@@ -42,10 +42,18 @@ STATS_DATASET = "linkcardly_stats"
 # Emails (Resend, RESEND_API_KEY): sent from MAIL_FROM; replies, new-order and enquiry emails go to ADMIN_EMAIL.
 MAIL_FROM = "Linkcardly <hello@linkcardly.com>"
 ADMIN_EMAIL = "hello@linkcardly.com"
+# Payments, India (src/lib/payments.js). UPI_VPA: Linkcardly's business UPI ID; empty keeps UPI off. Use a merchant
+# (business) UPI ID from your bank, PhonePe Business, Paytm for Business or similar: some UPI apps refuse large
+# payments to a personal UPI ID from a link or QR code. RAZORPAY_FEE_PCT: convenience fee on Razorpay payments
+# (2% + 18% GST = 2.36), paid by the customer; 0 turns it off. Razorpay itself is on once its keys are secrets.
+UPI_VPA = ""
+UPI_NAME = "Linkcardly"
+RAZORPAY_FEE_PCT = "2.36"
 
 # Secrets (set in the dashboard or with `npx wrangler secret put <NAME>`, never in this file):
 #   SUPABASE_SERVICE_KEY  WORKER_SECRET  CRON_KEY  TURNSTILE_SECRET  CF_ANALYTICS_TOKEN  RESEND_API_KEY
-#   later: RAZORPAY_KEY_ID  RAZORPAY_KEY_SECRET  RAZORPAY_WEBHOOK_SECRET  (STRIPE_SECRET_KEY  STRIPE_WEBHOOK_SECRET)
+#   payments: RAZORPAY_KEY_ID  RAZORPAY_KEY_SECRET  RAZORPAY_WEBHOOK_SECRET  (later, US: STRIPE_SECRET_KEY  STRIPE_WEBHOOK_SECRET)
+#   Staging uses Razorpay TEST keys (rzp_test_…); production gets live keys only after a full test on staging.
 # Production has all six of the first line (set 2026-10-03).
 
 # Daily job at 03:30 UTC (09:00 India): renewal reminders. It also queries the database every day, which keeps a
@@ -88,6 +96,14 @@ CF_ACCOUNT_ID = "56bb7259aae8956fc8e82826ee95e7cb"
 STATS_DATASET = "linkcardly_stats_staging"
 MAIL_FROM = "Linkcardly staging <hello@linkcardly.com>"
 ADMIN_EMAIL = "hello@linkcardly.com"
+# Payments, India (src/lib/payments.js). UPI_VPA: Linkcardly's business UPI ID; empty keeps UPI off. Use a merchant
+# (business) UPI ID from your bank, PhonePe Business, Paytm for Business or similar: some UPI apps refuse large
+# payments to a personal UPI ID from a link or QR code. RAZORPAY_FEE_PCT: convenience fee on Razorpay payments
+# (2% + 18% GST = 2.36), paid by the customer; 0 turns it off. Razorpay itself is on once its keys are secrets.
+UPI_VPA = ""
+UPI_NAME = "Linkcardly"
+RAZORPAY_FEE_PCT = "2.36"
+# To test payments on staging, its database must have test mode OFF (test mode marks every order paid).
 
 [env.staging.triggers]
 crons = ["30 3 * * *"]

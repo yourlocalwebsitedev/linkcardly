@@ -2,7 +2,7 @@ import { FILE_EXT, STATIC_PAGES, STATIC_PREFIXES, ORDER_ALIASES } from '../confi
 
 // Handles that can't be claimed: every first path segment the Worker routes itself (derived from
 // config.js, so new pages and prefixes are reserved automatically), plus words kept for later use.
-const ROUTED = ['create', 'api', 'health', 'e', 'c', ...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES];
+const ROUTED = ['create', 'api', 'health', 'e', 'c', 'r', ...STATIC_PAGES, ...STATIC_PREFIXES, ...ORDER_ALIASES];
 const KEPT = ['admin', 'login', 'logout', 'signup', 'edit', 'help', 'about', 'blog', 'static', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
 export const RESERVED = new Set([...ROUTED, ...KEPT].filter(Boolean));
 

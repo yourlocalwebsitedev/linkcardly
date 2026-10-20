@@ -154,3 +154,19 @@ test('prices: one currency per visitor, picked from location (no currency toggle
   assert.match(js, /cdn-cgi\/trace/);
   assert.match(js, /el\.dataset\[k\]/);
 });
+
+test('header: Digital Card · NFC Cards · Pricing · Teams · Contact; the footer keeps them too', async () => {
+  const html = await read('index.html');
+  const nav = html.slice(html.indexOf('<div class="nav-links">'), html.indexOf('<a class="btn nav-cta"'));
+  assert.deepEqual([...nav.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map(m => [m[1], m[2]]), [['/how-it-works', 'Digital Card'], ['/nfc-cards', 'NFC Cards'], ['/pricing', 'Pricing'], ['/teams', 'Teams'], ['/contact', 'Contact']]);
+  const foot = html.slice(html.indexOf('<footer'));
+  for (const h of ['/teams', '/designs', '/contact']) assert.ok(foot.includes(`href="${h}"`), h);
+});
+
+test('product cards: one source on home, pricing and NFC pages; no shipping before checkout', async () => {
+  for (const f of ['index.html', 'pricing/index.html', 'nfc-cards/index.html']) {
+    const html = await read(f);
+    for (const id of ['digital', 'basic', 'custom']) assert.match(html, new RegExp(`class="surface[^"]*plan" id="${id}"`), f + ' ' + id);
+    assert.ok(!/shipping/i.test(html.slice(html.indexOf('<div class="plans plans--3">'), html.indexOf('</ul>', html.indexOf('id="custom"')))), f);
+  }
+});

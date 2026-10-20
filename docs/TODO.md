@@ -4,6 +4,23 @@ The one list of what's left before and after launch. Tick items (`[x]`) as they'
 **Who:** *You* = needs the owner (accounts, money, legal decisions). *Code* = a change in this repo (ask Claude).
 How-to details are in the linked docs; code-level debt is in `docs/ARCHITECTURE.md` under "Known debt".
 
+## 0. New offer (decided 2026-10-17, see [PRODUCT.md](PRODUCT.md))
+
+- [x] **Code:** Record the decisions in `docs/PRODUCT.md` (2026-10-17).
+- [x] **Code:** One-time prices (Digital ₹799/$29, NFC Basic ₹1,499/$59, Custom ₹2,499/$89, ₹99 shipping); Motion disabled; existing cards lifetime. Database, order page, marketing pages (2026-10-17).
+- [ ] **You:** Run `supabase/live/linkcardly.sql` again on staging, then production.
+- [x] **Code:** Header and phone menu: Digital Card · NFC Cards · Pricing · Teams · Contact, on the site and the order page (2026-10-18).
+- [ ] **Code:** Home: "Your business. One tap." and "What do you need?" with three options.
+- [x] **Code:** `/nfc-cards`: Digital, Basic and Custom side by side, ordered online; stands "customised, from $69" (2026-10-18).
+- [x] **Code:** Order flow: product step, designs with three colours, address, PIN code, delivery phone; pay disabled until the address is valid (2026-10-18).
+- [ ] **Code:** NFC Custom in the order flow: logo upload → colours → 3 layouts → approve. Today the Done screen says we email for the logo.
+- [ ] **You:** Stand prices in India (now ₹1,499; you mentioned ₹1,999) and stand ordering (no order button flow yet).
+- [ ] **You:** Delete `_audit/` and `public/_preview/` before committing. Run `npm run test:e2e` (docs/QA-2026-10-18.md).
+- [ ] **You:** Higher-resolution product photo (≥ 1400 px wide) for the Digital Card picture; watermark check on one sample photo; US sample photos.
+- [ ] **You:** Run `npm test` and `npm run test:db`, paste the output. **Code:** fix, then the admin Partners tab.
+- [ ] **You:** Razorpay approval (applied). Payments turn on once keys are set.
+- [ ] Later, after 30 paying customers: Business Pro yearly add-on.
+
 ## 1. Go live on Linkcardly's own setup
 
 - [ ] **You:** Push the branches `claude/native-api` and `claude/admin` and open the pull requests (don't merge yet).
@@ -30,8 +47,9 @@ How-to details are in the linked docs; code-level debt is in `docs/ARCHITECTURE.
 - [ ] **You:** Legal pages signed off (privacy, terms, refunds) with the legal business name and address. Razorpay's
       website check usually also asks for a contact page with an address and sometimes a delivery policy for
       digital products.
-- [ ] **You:** GST: the order page adds 18% GST. Charge it only if registered for GST; then every payment needs a
-      tax invoice with the GSTIN. Decide with an accountant, then **Code:** invoices or receipts by email to match.
+- [ ] **You:** GST is **off** for now (no tax on orders, no "+ GST" anywhere). Once registered: set `GST` in
+      `public/app/order.html` and `v_tax` in `supabase/live/ALL-IN-ONE.sql` (check_coupon, place_order_core) back to 18%,
+      the "+ GST" labels and the Terms line come back, and every payment needs a tax invoice with the GSTIN. Decide with an accountant, then **Code:** invoices or receipts by email to match.
 - [ ] **You:** Razorpay account (owner's PAN, Aadhaar, Indian bank account, KYC); test keys and webhook on staging,
       then live keys. Online payment turns on by itself once the keys are set.
 - [ ] **Code:** Payment tests in the E2E suite once Razorpay test keys exist (all listed as "Not tested" now).
